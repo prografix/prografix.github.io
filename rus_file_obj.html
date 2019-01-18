@@ -1,17 +1,17 @@
-<html>
-<head><title>Формат Wavefront OBJ</title>
+п»ї<html>
+<head><title>Р¤РѕСЂРјР°С‚ Wavefront OBJ</title>
 <link rel="stylesheet" type="text/css" href="stylle.css"></head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
 <div align="center"><center>
 <table width="680" cellspacing="0" cellpadding="0">
 <div align=center>
-<br><font color="" style="font-size: 20pt">Формат Wavefront OBJ</font>
+<br><font color="" style="font-size: 20pt">Р¤РѕСЂРјР°С‚ Wavefront OBJ</font>
 </div>
 <div align=left><td>
 <p><br>
-Формат Wavefront OBJ предназначен для хранения моделей трёхмерной графики.
-Я реализовал его возможности не полностью, а только то, что связано с представлением геометрии многогранников.
-В результате получился абстрактный класс PutWavefrontOBJ и функция loadOBJ для чтения файла:
+Р¤РѕСЂРјР°С‚ Wavefront OBJ РїСЂРµРґРЅР°Р·РЅР°С‡РµРЅ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РјРѕРґРµР»РµР№ С‚СЂС‘С…РјРµСЂРЅРѕР№ РіСЂР°С„РёРєРё.
+РЇ СЂРµР°Р»РёР·РѕРІР°Р» РµРіРѕ РІРѕР·РјРѕР¶РЅРѕСЃС‚Рё РЅРµ РїРѕР»РЅРѕСЃС‚СЊСЋ, Р° С‚РѕР»СЊРєРѕ С‚Рѕ, С‡С‚Рѕ СЃРІСЏР·Р°РЅРѕ СЃ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёРµРј РіРµРѕРјРµС‚СЂРёРё РјРЅРѕРіРѕРіСЂР°РЅРЅРёРєРѕРІ.
+Р’ СЂРµР·СѓР»СЊС‚Р°С‚Рµ РїРѕР»СѓС‡РёР»СЃСЏ Р°Р±СЃС‚СЂР°РєС‚РЅС‹Р№ РєР»Р°СЃСЃ PutWavefrontOBJ Рё С„СѓРЅРєС†РёСЏ loadOBJ РґР»СЏ С‡С‚РµРЅРёСЏ С„Р°Р№Р»Р°:
 </p>
 <pre>
 class PutWavefrontOBJ
@@ -26,7 +26,7 @@ public:
 
 bool loadOBJ ( class IReadFile & file, PutWavefrontOBJ & obj );
 </pre>
-А также класс GetWavefrontOBJ и функция saveOBJ для записи в файл:
+Рђ С‚Р°РєР¶Рµ РєР»Р°СЃСЃ GetWavefrontOBJ Рё С„СѓРЅРєС†РёСЏ saveOBJ РґР»СЏ Р·Р°РїРёСЃРё РІ С„Р°Р№Р»:
 <pre>
 class GetWavefrontOBJ
 {
@@ -41,8 +41,8 @@ public:
 
 bool saveOBJ ( class IWriteFile & file, const GetWavefrontOBJ & obj, nat prec );
 </pre>
-<p>Для того, чтобы записать данные объекта типа <a href="rus_polyhedron.html">Polyhedron</a> в файл 
-и обратно предназначены следующие классы:
+<p>Р”Р»СЏ С‚РѕРіРѕ, С‡С‚РѕР±С‹ Р·Р°РїРёСЃР°С‚СЊ РґР°РЅРЅС‹Рµ РѕР±СЉРµРєС‚Р° С‚РёРїР° <a href="rus_polyhedron.html">Polyhedron</a> РІ С„Р°Р№Р» 
+Рё РѕР±СЂР°С‚РЅРѕ РїСЂРµРґРЅР°Р·РЅР°С‡РµРЅС‹ СЃР»РµРґСѓСЋС‰РёРµ РєР»Р°СЃСЃС‹:
 </p>
 <pre>
 class PutWavefrontOBJ_Polyhedron : public PutWavefrontOBJ
@@ -79,15 +79,15 @@ public:
     bool getFacet ( nat i, nat & nv, const nat * & vert, const nat * & norm ) const;
 };
 </pre>
-<p>В приложении <a href="demo/demo.html">DEMO</a> ( начиная с версии 4 ) показано, как применять эти классы.
+<p>Р’ РїСЂРёР»РѕР¶РµРЅРёРё <a href="demo/demo.html">DEMO</a> ( РЅР°С‡РёРЅР°СЏ СЃ РІРµСЂСЃРёРё 4 ) РїРѕРєР°Р·Р°РЅРѕ, РєР°Рє РїСЂРёРјРµРЅСЏС‚СЊ СЌС‚Рё РєР»Р°СЃСЃС‹.
 </p>
-<p>Исходники этих функций находятся в файлах <a href="source/source.zip">fileOBJ.cpp и fileOBJplh.cpp</a>.
+<p>РСЃС…РѕРґРЅРёРєРё СЌС‚РёС… С„СѓРЅРєС†РёР№ РЅР°С…РѕРґСЏС‚СЃСЏ РІ С„Р°Р№Р»Р°С… <a href="source/source.zip">fileOBJ.cpp Рё fileOBJplh.cpp</a>.
 </p>
-<p>О классах IReadFile и IWriteFile смотрите <a href="rus_file.html">здесь</a>.
+<p>Рћ РєР»Р°СЃСЃР°С… IReadFile Рё IWriteFile СЃРјРѕС‚СЂРёС‚Рµ <a href="rus_file.html">Р·РґРµСЃСЊ</a>.
 </p>
-</p><a href="source/obj_files.zip">Коллекция OBJ-файлов</a>.
+</p><a href="source/obj_files.zip">РљРѕР»Р»РµРєС†РёСЏ OBJ-С„Р°Р№Р»РѕРІ</a>.
 </p>
-<a href="rus_graphics.html">Наверх</a>
+<a href="rus_graphics.html">РќР°РІРµСЂС…</a>
 <pre>
 
 </pre></td></div>

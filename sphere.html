@@ -1,34 +1,34 @@
-<html>
-<head><title>Построение сферы</title>
+п»ї<html>
+<head><title>РџРѕСЃС‚СЂРѕРµРЅРёРµ СЃС„РµСЂС‹</title>
 <link rel="stylesheet" type="text/css" href="stylle.css"></head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
 <div align="center"><center>
 <table width="800" cellspacing="0" cellpadding="0">
 <div align=center><br>
-<font color="" style="font-size: 20pt">Построение сферы</font>
+<font color="" style="font-size: 20pt">РџРѕСЃС‚СЂРѕРµРЅРёРµ СЃС„РµСЂС‹</font>
 </div>
 <div align=left><td><br>
-<p>Две функции getSphere строят сферу по трём и четырём точкам. При этом находятся центр o и квадрат радиуса q:
+<p>Р”РІРµ С„СѓРЅРєС†РёРё getSphere СЃС‚СЂРѕСЏС‚ СЃС„РµСЂСѓ РїРѕ С‚СЂС‘Рј Рё С‡РµС‚С‹СЂС‘Рј С‚РѕС‡РєР°Рј. РџСЂРё СЌС‚РѕРј РЅР°С…РѕРґСЏС‚СЃСЏ С†РµРЅС‚СЂ o Рё РєРІР°РґСЂР°С‚ СЂР°РґРёСѓСЃР° q:
 </p>
 <pre>
 bool getSphere ( Vector3d a, Vector3d b, const Vector3d & c, Vector3d & o, double & q );
 bool getSphere ( Vector3d a, Vector3d b, Vector3d c, const Vector3d & d, Vector3d & o, double & q );
 </pre>
-<p>Функция spherePPPP строит сферу по четырём плоскостям:
+<p>Р¤СѓРЅРєС†РёСЏ spherePPPP СЃС‚СЂРѕРёС‚ СЃС„РµСЂСѓ РїРѕ С‡РµС‚С‹СЂС‘Рј РїР»РѕСЃРєРѕСЃС‚СЏРј:
 </p>
 <pre>
 Def&lt;Sphere3d> spherePPPP ( const Plane3d & a, const Plane3d & b, const Plane3d & c, const Plane3d & d );
 </pre>
-<p>Центр сферы <font color="blue">о</font> должен находится в отрицательных полупространствах для всех плоскостей.
-Если это сделать невозможно, то тогда сфера не строится ( <font color="blue">isDef = false</font> ).
-Нормали плоскостей должны быть единичными.
+<p>Р¦РµРЅС‚СЂ СЃС„РµСЂС‹ <font color="blue">Рѕ</font> РґРѕР»Р¶РµРЅ РЅР°С…РѕРґРёС‚СЃСЏ РІ РѕС‚СЂРёС†Р°С‚РµР»СЊРЅС‹С… РїРѕР»СѓРїСЂРѕСЃС‚СЂР°РЅСЃС‚РІР°С… РґР»СЏ РІСЃРµС… РїР»РѕСЃРєРѕСЃС‚РµР№.
+Р•СЃР»Рё СЌС‚Рѕ СЃРґРµР»Р°С‚СЊ РЅРµРІРѕР·РјРѕР¶РЅРѕ, С‚Рѕ С‚РѕРіРґР° СЃС„РµСЂР° РЅРµ СЃС‚СЂРѕРёС‚СЃСЏ ( <font color="blue">isDef = false</font> ).
+РќРѕСЂРјР°Р»Рё РїР»РѕСЃРєРѕСЃС‚РµР№ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ РµРґРёРЅРёС‡РЅС‹РјРё.
 </p>
-<p>Описание шаблона классов Def находится <a href="def.html">здесь</a>.
-<br>Описание класса Vector3d смотрите в разделе <a href="rus_vector.html">Вектора в пространстве</a>.
-<br>Описание классов Plane3d и Sphere3d смотрите в разделе <a href="figure3d.html">Фигуры в пространстве</a>.
-<br>Исходники алгоритмов находятся в файле <a href="source/source.zip">func3d.cpp</a>.
+<p>РћРїРёСЃР°РЅРёРµ С€Р°Р±Р»РѕРЅР° РєР»Р°СЃСЃРѕРІ Def РЅР°С…РѕРґРёС‚СЃСЏ <a href="def.html">Р·РґРµСЃСЊ</a>.
+<br>РћРїРёСЃР°РЅРёРµ РєР»Р°СЃСЃР° Vector3d СЃРјРѕС‚СЂРёС‚Рµ РІ СЂР°Р·РґРµР»Рµ <a href="rus_vector.html">Р’РµРєС‚РѕСЂР° РІ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРµ</a>.
+<br>РћРїРёСЃР°РЅРёРµ РєР»Р°СЃСЃРѕРІ Plane3d Рё Sphere3d СЃРјРѕС‚СЂРёС‚Рµ РІ СЂР°Р·РґРµР»Рµ <a href="figure3d.html">Р¤РёРіСѓСЂС‹ РІ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРµ</a>.
+<br>РСЃС…РѕРґРЅРёРєРё Р°Р»РіРѕСЂРёС‚РјРѕРІ РЅР°С…РѕРґСЏС‚СЃСЏ РІ С„Р°Р№Р»Рµ <a href="source/source.zip">func3d.cpp</a>.
 </p>
-<a href="rus_geom.html">Наверх</a>
+<a href="rus_geom.html">РќР°РІРµСЂС…</a>
 </pre>
 
 <pre>

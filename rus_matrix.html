@@ -1,25 +1,25 @@
-<html>
-<head><title>Матрицы</title>
+п»ї<html>
+<head><title>РњР°С‚СЂРёС†С‹</title>
 <link rel="stylesheet" type="text/css" href="stylle.css"></head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
 <div align="center"><center>
 <table width="680" cellspacing="0" cellpadding="0">
 <div align=center><br>
-<font color="" style="font-size: 20pt">Матрицы</font>
+<font color="" style="font-size: 20pt">РњР°С‚СЂРёС†С‹</font>
 </div><br><td>
-<p>В этот разделе описаны шаблоны классов предназначенные для представления математических матриц.
-<br>Шаблон IMatrix является интерфейсным, и его классы не выделяют память для элементов матриц:
+<p>Р’ СЌС‚РѕС‚ СЂР°Р·РґРµР»Рµ РѕРїРёСЃР°РЅС‹ С€Р°Р±Р»РѕРЅС‹ РєР»Р°СЃСЃРѕРІ РїСЂРµРґРЅР°Р·РЅР°С‡РµРЅРЅС‹Рµ РґР»СЏ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЏ РјР°С‚РµРјР°С‚РёС‡РµСЃРєРёС… РјР°С‚СЂРёС†.
+<br>РЁР°Р±Р»РѕРЅ IMatrix СЏРІР»СЏРµС‚СЃСЏ РёРЅС‚РµСЂС„РµР№СЃРЅС‹Рј, Рё РµРіРѕ РєР»Р°СЃСЃС‹ РЅРµ РІС‹РґРµР»СЏСЋС‚ РїР°РјСЏС‚СЊ РґР»СЏ СЌР»РµРјРµРЅС‚РѕРІ РјР°С‚СЂРёС†:
 <pre>
 template &lt;class Type>
 class IMatrix
 {
     Type * const * const data;
-// Запрет оператора присваивания и конструктора копии
+// Р—Р°РїСЂРµС‚ РѕРїРµСЂР°С‚РѕСЂР° РїСЂРёСЃРІР°РёРІР°РЅРёСЏ Рё РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂР° РєРѕРїРёРё
     void operator = ( const IMatrix & );
     IMatrix ( const IMatrix & );
 public:
-    const nat nRow; // к-во строк
-    const nat nCol; // к-во столбцов
+    const nat nRow; // Рє-РІРѕ СЃС‚СЂРѕРє
+    const nat nCol; // Рє-РІРѕ СЃС‚РѕР»Р±С†РѕРІ
 
     IMatrix ( nat r, nat c, Type * const * const p ) : nRow(r), nCol(c), data(p) {}
 
@@ -45,11 +45,11 @@ public:
     operator const Type * const * () const { return data; }
 };
 </pre>
-Имеются: 1) конструктор, 2) функция-член fill, которая заполняет матрицу указанным значением,
-3) оператор *=, который умножает матрицу на число, и 4) два оператора пребразования типа.
+РРјРµСЋС‚СЃСЏ: 1) РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ, 2) С„СѓРЅРєС†РёСЏ-С‡Р»РµРЅ fill, РєРѕС‚РѕСЂР°СЏ Р·Р°РїРѕР»РЅСЏРµС‚ РјР°С‚СЂРёС†Сѓ СѓРєР°Р·Р°РЅРЅС‹Рј Р·РЅР°С‡РµРЅРёРµРј,
+3) РѕРїРµСЂР°С‚РѕСЂ *=, РєРѕС‚РѕСЂС‹Р№ СѓРјРЅРѕР¶Р°РµС‚ РјР°С‚СЂРёС†Сѓ РЅР° С‡РёСЃР»Рѕ, Рё 4) РґРІР° РѕРїРµСЂР°С‚РѕСЂР° РїСЂРµР±СЂР°Р·РѕРІР°РЅРёСЏ С‚РёРїР°.
 </p>
-<p>Шаблон SMatrix может создавать матрицу в стеке и применяется, когда размер матрицы
-известен на этапе компиляции:
+<p>РЁР°Р±Р»РѕРЅ SMatrix РјРѕР¶РµС‚ СЃРѕР·РґР°РІР°С‚СЊ РјР°С‚СЂРёС†Сѓ РІ СЃС‚РµРєРµ Рё РїСЂРёРјРµРЅСЏРµС‚СЃСЏ, РєРѕРіРґР° СЂР°Р·РјРµСЂ РјР°С‚СЂРёС†С‹
+РёР·РІРµСЃС‚РµРЅ РЅР° СЌС‚Р°РїРµ РєРѕРјРїРёР»СЏС†РёРё:
 <pre>template &lt;class Type, nat R, nat C>
 class SMatrix : public IMatrix&lt;Type>
 {
@@ -77,12 +77,12 @@ public:
     }
 };
 </pre>
-Шаблон HMatrix располагает элементы матрицы в динамической памяти ( куче ):
+РЁР°Р±Р»РѕРЅ HMatrix СЂР°СЃРїРѕР»Р°РіР°РµС‚ СЌР»РµРјРµРЅС‚С‹ РјР°С‚СЂРёС†С‹ РІ РґРёРЅР°РјРёС‡РµСЃРєРѕР№ РїР°РјСЏС‚Рё ( РєСѓС‡Рµ ):
 <pre>template &lt;class Type, nat R, nat C>
 class HMatrix : public IMatrix&lt;Type>
 {
     Type ** p;
-// Запрет оператора присваивания
+// Р—Р°РїСЂРµС‚ РѕРїРµСЂР°С‚РѕСЂР° РїСЂРёСЃРІР°РёРІР°РЅРёСЏ
     HMatrix & operator = ( const HMatrix & m );
 public:
     HMatrix ( nat r, nat c ) : IMatrix&lt;Type> ( r, c, p = r > 0 ? new Type*[r] : 0 )
@@ -124,14 +124,14 @@ public:
     }
 };
 </pre>
-Шаблон CmbMatrix является комбинацией двух предыдущих:
+РЁР°Р±Р»РѕРЅ CmbMatrix СЏРІР»СЏРµС‚СЃСЏ РєРѕРјР±РёРЅР°С†РёРµР№ РґРІСѓС… РїСЂРµРґС‹РґСѓС‰РёС…:
 <pre>template &lt;class Type, nat R, nat C>
 class CmbMatrix : public IMatrix&lt;Type>
 {
     Type ** p;
     Type * pa[R];
     Type stor[R*C];
-// Запрет оператора присваивания
+// Р—Р°РїСЂРµС‚ РѕРїРµСЂР°С‚РѕСЂР° РїСЂРёСЃРІР°РёРІР°РЅРёСЏ
     CmbMatrix & operator = ( const CmbMatrix & m );
 public:
     CmbMatrix ( nat r, nat c ) : IMatrix&lt;Type> ( r, c, p = r > R ? new Type*[r] : pa )
@@ -168,8 +168,8 @@ public:
     }
 };
 </pre>
-Следующая группа функций-шаблонов выполняет копирование, сложение, отнимание и умножение матриц,
-если размеры матриц согласованы:
+РЎР»РµРґСѓСЋС‰Р°СЏ РіСЂСѓРїРїР° С„СѓРЅРєС†РёР№-С€Р°Р±Р»РѕРЅРѕРІ РІС‹РїРѕР»РЅСЏРµС‚ РєРѕРїРёСЂРѕРІР°РЅРёРµ, СЃР»РѕР¶РµРЅРёРµ, РѕС‚РЅРёРјР°РЅРёРµ Рё СѓРјРЅРѕР¶РµРЅРёРµ РјР°С‚СЂРёС†,
+РµСЃР»Рё СЂР°Р·РјРµСЂС‹ РјР°С‚СЂРёС† СЃРѕРіР»Р°СЃРѕРІР°РЅС‹:
 <pre>
 template &lt;class Type>
 bool copy ( const IMatrix&lt;Type> & a, IMatrix&lt;Type> & b ) // b = a
@@ -183,36 +183,36 @@ bool minus ( const IMatrix&lt;Type> & a, const IMatrix&lt;Type> & b, IMatrix&lt;
 template &lt;class Type>
 bool multi ( const IMatrix&lt;Type> & a, const IMatrix&lt;Type> & b, IMatrix&lt;Type> & c ) // c = a * b
 </pre>
-Следующая группа функций определена для вещественных матриц
-( исходники находятся в файле <a href="source/source.zip">matrix.cpp</a> ):
+РЎР»РµРґСѓСЋС‰Р°СЏ РіСЂСѓРїРїР° С„СѓРЅРєС†РёР№ РѕРїСЂРµРґРµР»РµРЅР° РґР»СЏ РІРµС‰РµСЃС‚РІРµРЅРЅС‹С… РјР°С‚СЂРёС†
+( РёСЃС…РѕРґРЅРёРєРё РЅР°С…РѕРґСЏС‚СЃСЏ РІ С„Р°Р№Р»Рµ <a href="source/source.zip">matrix.cpp</a> ):
 <pre>
 bool determinant ( const IMatrix&lt;double> & m, double & d );
 bool trans  ( const IMatrix&lt;double> & a, IMatrix&lt;double> & b ); // b = aT
 bool inverse( const IMatrix&lt;double> & a, IMatrix&lt;double> & b ); // a * b = 1
 
-// Матричные нормы
+// РњР°С‚СЂРёС‡РЅС‹Рµ РЅРѕСЂРјС‹
 
-double norm1 ( const IMatrix&lt;double> & ); // 1-норма
-double norm2 ( const IMatrix&lt;double> & ); // 2-норма
-double normF ( const IMatrix&lt;double> & ); // норма Фробениуса
-double normU ( const IMatrix&lt;double> & ); // бесконечная норма
+double norm1 ( const IMatrix&lt;double> & ); // 1-РЅРѕСЂРјР°
+double norm2 ( const IMatrix&lt;double> & ); // 2-РЅРѕСЂРјР°
+double normF ( const IMatrix&lt;double> & ); // РЅРѕСЂРјР° Р¤СЂРѕР±РµРЅРёСѓСЃР°
+double normU ( const IMatrix&lt;double> & ); // Р±РµСЃРєРѕРЅРµС‡РЅР°СЏ РЅРѕСЂРјР°
 
-// Cингулярное разложение: A = U * W * V
+// CРёРЅРіСѓР»СЏСЂРЅРѕРµ СЂР°Р·Р»РѕР¶РµРЅРёРµ: A = U * W * V
 
 bool svd ( const IMatrix&lt;double> & A, IMatrix&lt;double> & U, IMatrix&lt;double> & W, IMatrix&lt;double> & V ); 
 </pre>
-Следующая группа функций определена для <a href="rus_complex.html">комплексных</a> матриц
-( исходники находятся в файле <a href="source/source.zip">cmatrix.cpp</a> ):
+РЎР»РµРґСѓСЋС‰Р°СЏ РіСЂСѓРїРїР° С„СѓРЅРєС†РёР№ РѕРїСЂРµРґРµР»РµРЅР° РґР»СЏ <a href="rus_complex.html">РєРѕРјРїР»РµРєСЃРЅС‹С…</a> РјР°С‚СЂРёС†
+( РёСЃС…РѕРґРЅРёРєРё РЅР°С…РѕРґСЏС‚СЃСЏ РІ С„Р°Р№Р»Рµ <a href="source/source.zip">cmatrix.cpp</a> ):
 <pre>
-// Транспонирование
+// РўСЂР°РЅСЃРїРѕРЅРёСЂРѕРІР°РЅРёРµ
 
 bool trans  ( const IMatrix&lt;Complex> & a, IMatrix&lt;Complex> & b ); // b = aT
 
-// Решение задачи наименьших квадратов при помощи преобразований Хаусхолдера
+// Р РµС€РµРЅРёРµ Р·Р°РґР°С‡Рё РЅР°РёРјРµРЅСЊС€РёС… РєРІР°РґСЂР°С‚РѕРІ РїСЂРё РїРѕРјРѕС‰Рё РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёР№ РҐР°СѓСЃС…РѕР»РґРµСЂР°
 
 bool lss_h ( IMatrix&lt;Complex> & a, const Complex * b, Complex * x ); // b[a.nRow], x[a.nCol]
 </pre>
-<a href="template.html">Наверх</a>
+<a href="template.html">РќР°РІРµСЂС…</a>
 <p>
 <br>
 </p></td>

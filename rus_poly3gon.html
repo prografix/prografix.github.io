@@ -1,37 +1,37 @@
-<html>
-<head><title>Шаблон Poly3gon</title><link rel="stylesheet" type="text/css" href="stylle.css"></head>
+п»ї<html>
+<head><title>РЁР°Р±Р»РѕРЅ Poly3gon</title><link rel="stylesheet" type="text/css" href="stylle.css"></head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
 <div align="center"><center>
 <table width="680" cellspacing="0" cellpadding="0">
 <div align=center><br>
-<font color="" style="font-size: 20pt">Шаблон Poly3gon</font>
+<font color="" style="font-size: 20pt">РЁР°Р±Р»РѕРЅ Poly3gon</font>
 </div>
 <div align=left><td>
 <p><br>
-Шаблон Poly3gon состоит из двух массивов: vertex для вершин и side для треугольных граней.
-Параметр шаблона V задаёт тип вершины ( например, это могут быть классы Vector3d, Vector3f, Vector3i ),
- а параметр I тип дополнительной информации грани ( тип void означает её отсутствие ).
+РЁР°Р±Р»РѕРЅ Poly3gon СЃРѕСЃС‚РѕРёС‚ РёР· РґРІСѓС… РјР°СЃСЃРёРІРѕРІ: vertex РґР»СЏ РІРµСЂС€РёРЅ Рё side РґР»СЏ С‚СЂРµСѓРіРѕР»СЊРЅС‹С… РіСЂР°РЅРµР№.
+РџР°СЂР°РјРµС‚СЂ С€Р°Р±Р»РѕРЅР° V Р·Р°РґР°С‘С‚ С‚РёРї РІРµСЂС€РёРЅС‹ ( РЅР°РїСЂРёРјРµСЂ, СЌС‚Рѕ РјРѕРіСѓС‚ Р±С‹С‚СЊ РєР»Р°СЃСЃС‹ Vector3d, Vector3f, Vector3i ),
+ Р° РїР°СЂР°РјРµС‚СЂ I С‚РёРї РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅРѕР№ РёРЅС„РѕСЂРјР°С†РёРё РіСЂР°РЅРё ( С‚РёРї void РѕР·РЅР°С‡Р°РµС‚ РµС‘ РѕС‚СЃСѓС‚СЃС‚РІРёРµ ).
 </p>
 <pre>
 template &lt;class I> class Trigon
 {
 public:
-    unsigned int a, b, c; // Номера вершин 
+    unsigned int a, b, c; // РќРѕРјРµСЂР° РІРµСЂС€РёРЅ 
     I info;
 };
 
 template <> class Trigon&lt;void>
 {
 public:
-    unsigned int a, b, c; // Номера вершин 
+    unsigned int a, b, c; // РќРѕРјРµСЂР° РІРµСЂС€РёРЅ 
 };
 
 template &lt;class V, class I> class Poly3gon
 {
     Poly3gon ( Poly3gon & );
 public:
-    DynArray&lt;V> vertex;         // массив вершин
-    DynArray&lt; Trigon&lt;I> > side; // массив треугольников
+    DynArray&lt;V> vertex;         // РјР°СЃСЃРёРІ РІРµСЂС€РёРЅ
+    DynArray&lt; Trigon&lt;I> > side; // РјР°СЃСЃРёРІ С‚СЂРµСѓРіРѕР»СЊРЅРёРєРѕРІ
 
     Poly3gon () {}
     Poly3gon ( unsigned int nv, unsigned int ns ) : vertex(nv), side(ns) {}
@@ -51,12 +51,12 @@ void swap ( Poly3gon&lt;T,I> & p1, Poly3gon&lt;T,I> & p2 )
     p1.side.swap ( p2.side );
 }
 </pre>
-<p>О векторах на плоскости смотрите <a href="rus_vector2d.html">здесь</a>.
-<br>О векторах в пространстве смотрите <a href="rus_vector.html">здесь</a>.
-<br>Описание шаблона классов DynArray находится <a href=array.html>здесь</a>.
-<br>Исходники находятся <a href="source/source.zip">здесь</a>.
+<p>Рћ РІРµРєС‚РѕСЂР°С… РЅР° РїР»РѕСЃРєРѕСЃС‚Рё СЃРјРѕС‚СЂРёС‚Рµ <a href="rus_vector2d.html">Р·РґРµСЃСЊ</a>.
+<br>Рћ РІРµРєС‚РѕСЂР°С… РІ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРµ СЃРјРѕС‚СЂРёС‚Рµ <a href="rus_vector.html">Р·РґРµСЃСЊ</a>.
+<br>РћРїРёСЃР°РЅРёРµ С€Р°Р±Р»РѕРЅР° РєР»Р°СЃСЃРѕРІ DynArray РЅР°С…РѕРґРёС‚СЃСЏ <a href=array.html>Р·РґРµСЃСЊ</a>.
+<br>РСЃС…РѕРґРЅРёРєРё РЅР°С…РѕРґСЏС‚СЃСЏ <a href="source/source.zip">Р·РґРµСЃСЊ</a>.
 </p>
-<a href="template.html">Наверх</a>
+<a href="template.html">РќР°РІРµСЂС…</a>
 <pre>
 
 </pre></td></div>

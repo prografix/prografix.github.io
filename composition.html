@@ -1,17 +1,17 @@
-<html>
-<head><title>Наборы объектов</title>
+п»ї<html>
+<head><title>РќР°Р±РѕСЂС‹ РѕР±СЉРµРєС‚РѕРІ</title>
 <link rel="stylesheet" type="text/css" href="stylle.css"></head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
 <div align="center"><center>
 <table width="700" cellspacing="0" cellpadding="0">
 <div align=center>
 <br>
-<font color="" style="font-size: 20pt">Наборы объектов</font>
+<font color="" style="font-size: 20pt">РќР°Р±РѕСЂС‹ РѕР±СЉРµРєС‚РѕРІ</font>
 </div>
 <br>
 <div align=left><td>
 <p>
-Шаблон классов Set1 предназначен для создания набора с одним объектом указанного типа:
+РЁР°Р±Р»РѕРЅ РєР»Р°СЃСЃРѕРІ Set1 РїСЂРµРґРЅР°Р·РЅР°С‡РµРЅ РґР»СЏ СЃРѕР·РґР°РЅРёСЏ РЅР°Р±РѕСЂР° СЃ РѕРґРЅРёРј РѕР±СЉРµРєС‚РѕРј СѓРєР°Р·Р°РЅРЅРѕРіРѕ С‚РёРїР°:
 </p>
 <pre>template < class A > struct Set1
 {
@@ -24,7 +24,7 @@
 };
 </pre>
 <p>
-Шаблон классов Set2 предназначен для представления двойки объектов заданных типов:
+РЁР°Р±Р»РѕРЅ РєР»Р°СЃСЃРѕРІ Set2 РїСЂРµРґРЅР°Р·РЅР°С‡РµРЅ РґР»СЏ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЏ РґРІРѕР№РєРё РѕР±СЉРµРєС‚РѕРІ Р·Р°РґР°РЅРЅС‹С… С‚РёРїРѕРІ:
 </p>
 <pre>template < class A, class B = A > struct Set2
 {
@@ -36,7 +36,7 @@
 };
 </pre>
 <p>
-Шаблон классов Set3 предназначен для представления тройки объектов заданных типов:
+РЁР°Р±Р»РѕРЅ РєР»Р°СЃСЃРѕРІ Set3 РїСЂРµРґРЅР°Р·РЅР°С‡РµРЅ РґР»СЏ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЏ С‚СЂРѕР№РєРё РѕР±СЉРµРєС‚РѕРІ Р·Р°РґР°РЅРЅС‹С… С‚РёРїРѕРІ:
 </p>
 <pre>template < class A, class B = A, class C = B > struct Set3
 {
@@ -48,7 +48,7 @@
     Set3 ( const A & x, const B & y, const C & z ) : a(x), b(y), c(z) {} 
 };
 </pre>
-Шаблон классов Set4 предназначен для представления четвёрки объектов заданных типов:
+РЁР°Р±Р»РѕРЅ РєР»Р°СЃСЃРѕРІ Set4 РїСЂРµРґРЅР°Р·РЅР°С‡РµРЅ РґР»СЏ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЏ С‡РµС‚РІС‘СЂРєРё РѕР±СЉРµРєС‚РѕРІ Р·Р°РґР°РЅРЅС‹С… С‚РёРїРѕРІ:
 </p>
 <pre>template < class A, class B = A, class C = B, class D = C > struct Set4
 {
@@ -62,9 +62,9 @@
 };
 </pre>
 <p>
-Обратите внимание, что, например, записи Set2&lt;int> и Set2&lt;int, int> обозначают один и тот же тип.
+РћР±СЂР°С‚РёС‚Рµ РІРЅРёРјР°РЅРёРµ, С‡С‚Рѕ, РЅР°РїСЂРёРјРµСЂ, Р·Р°РїРёСЃРё Set2&lt;int> Рё Set2&lt;int, int> РѕР±РѕР·РЅР°С‡Р°СЋС‚ РѕРґРёРЅ Рё С‚РѕС‚ Р¶Рµ С‚РёРї.
 </p>
-<p>Шаблоны Merge2 и Merge3 предназначены для создания типов состоящих из полей указанных классов:
+<p>РЁР°Р±Р»РѕРЅС‹ Merge2 Рё Merge3 РїСЂРµРґРЅР°Р·РЅР°С‡РµРЅС‹ РґР»СЏ СЃРѕР·РґР°РЅРёСЏ С‚РёРїРѕРІ СЃРѕСЃС‚РѕСЏС‰РёС… РёР· РїРѕР»РµР№ СѓРєР°Р·Р°РЅРЅС‹С… РєР»Р°СЃСЃРѕРІ:
 </p>
 <pre>
 template &lt; class A, class B > struct Merge2 : public A, public B {};
@@ -72,9 +72,9 @@ template &lt; class A, class B > struct Merge2 : public A, public B {};
 template &lt; class A, class B, class C > struct Merge3 : public A, public B, public C {};
 </pre>
 <p>
-Исходники находятся в файле <a href="source/source.zip">Template.h</a>.
+РСЃС…РѕРґРЅРёРєРё РЅР°С…РѕРґСЏС‚СЃСЏ РІ С„Р°Р№Р»Рµ <a href="source/source.zip">Template.h</a>.
 </p>
-<a href="template.html">Наверх</a>
+<a href="template.html">РќР°РІРµСЂС…</a>
 <pre>
 
 </pre>

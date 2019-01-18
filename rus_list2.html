@@ -1,14 +1,14 @@
-<html>
-<head><title>Списки (продолжение)</title>
+п»ї<html>
+<head><title>РЎРїРёСЃРєРё (РїСЂРѕРґРѕР»Р¶РµРЅРёРµ)</title>
 <link rel="stylesheet" type="text/css" href="stylle.css"></head>
 <body bgcolor=#eeeeba MARGINWIDTH="0" MARGINHEIGHT="0" link=#0000f0 alink=#aaaaff vlink=#339900>
 <div align="center">
 <table width="680" cellspacing="0" cellpadding="0"><br>
-<div align="center"><font style="FONT-SIZE: 20pt">Списки (продолжение)</font></div>
+<div align="center"><font style="FONT-SIZE: 20pt">РЎРїРёСЃРєРё (РїСЂРѕРґРѕР»Р¶РµРЅРёРµ)</font></div>
 <div align=left><td><br>
-<p>Классы ShevItem и ShevList предназначены в основном для использования, как базовые классы, 
-хотя в простейших случаях можно обойтись без наследования, используя член info.
-В большинстве других случаев можно применить шаблоны, которые представлены ниже:
+<p>РљР»Р°СЃСЃС‹ ShevItem Рё ShevList РїСЂРµРґРЅР°Р·РЅР°С‡РµРЅС‹ РІ РѕСЃРЅРѕРІРЅРѕРј РґР»СЏ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ, РєР°Рє Р±Р°Р·РѕРІС‹Рµ РєР»Р°СЃСЃС‹, 
+С…РѕС‚СЏ РІ РїСЂРѕСЃС‚РµР№С€РёС… СЃР»СѓС‡Р°СЏС… РјРѕР¶РЅРѕ РѕР±РѕР№С‚РёСЃСЊ Р±РµР· РЅР°СЃР»РµРґРѕРІР°РЅРёСЏ, РёСЃРїРѕР»СЊР·СѓСЏ С‡Р»РµРЅ info.
+Р’ Р±РѕР»СЊС€РёРЅСЃС‚РІРµ РґСЂСѓРіРёС… СЃР»СѓС‡Р°РµРІ РјРѕР¶РЅРѕ РїСЂРёРјРµРЅРёС‚СЊ С€Р°Р±Р»РѕРЅС‹, РєРѕС‚РѕСЂС‹Рµ РїСЂРµРґСЃС‚Р°РІР»РµРЅС‹ РЅРёР¶Рµ:
 </p>
 <pre>
 template &lt;class T> class ListItem : public T, public ShevItem
@@ -30,7 +30,7 @@ public:
 
 template &lt;class T> class List : public ShevList
 {
-// Запрет конструктора копии и оператора присваивания:
+// Р—Р°РїСЂРµС‚ РєРѕРЅСЃС‚СЂСѓРєС‚РѕСЂР° РєРѕРїРёРё Рё РѕРїРµСЂР°С‚РѕСЂР° РїСЂРёСЃРІР°РёРІР°РЅРёСЏ:
     List ( List & );
     void operator = ( List & );
 public:
@@ -56,18 +56,18 @@ public:
     T * cprev() { return (T *) ShevList::cprev(); }
     T * cnext() { return (T *) ShevList::cnext(); }
 
-// Сделать текущим данный элемент ( небезопасная функция ):
+// РЎРґРµР»Р°С‚СЊ С‚РµРєСѓС‰РёРј РґР°РЅРЅС‹Р№ СЌР»РµРјРµРЅС‚ ( РЅРµР±РµР·РѕРїР°СЃРЅР°СЏ С„СѓРЅРєС†РёСЏ ):
     List & jump ( T * i ) { return (List&) ShevList::jump(i); }
-// Добавить в список один элемент
-    List & addBefFir ( T * i ) { return (List&) ShevList::addBefFir(i); } // перед первым
-    List & addBefCur ( T * i ) { return (List&) ShevList::addBefCur(i); } // перед текущим и сделать его текущим
-    List & addAftCur ( T * i ) { return (List&) ShevList::addAftCur(i); } // после текущего и сделать его текущим
-    List & addAftLas ( T * i ) { return (List&) ShevList::addAftLas(i); } // после последнего элемента
-// Добавить из другого списка
-    List & addAllBefFir ( List & list ) { return (List&) ShevList::addAllBefFir(list); } // все элементы в начало
-    List & addAllBefCur ( List & list ) { return (List&) ShevList::addAllBefCur(list); } // все элементы перед текущим
-    List & addAllAftCur ( List & list ) { return (List&) ShevList::addAllAftCur(list); } // все элементы после текущего
-    List & addAllAftLas ( List & list ) { return (List&) ShevList::addAllAftLas(list); } // все элементы в конец
+// Р”РѕР±Р°РІРёС‚СЊ РІ СЃРїРёСЃРѕРє РѕРґРёРЅ СЌР»РµРјРµРЅС‚
+    List & addBefFir ( T * i ) { return (List&) ShevList::addBefFir(i); } // РїРµСЂРµРґ РїРµСЂРІС‹Рј
+    List & addBefCur ( T * i ) { return (List&) ShevList::addBefCur(i); } // РїРµСЂРµРґ С‚РµРєСѓС‰РёРј Рё СЃРґРµР»Р°С‚СЊ РµРіРѕ С‚РµРєСѓС‰РёРј
+    List & addAftCur ( T * i ) { return (List&) ShevList::addAftCur(i); } // РїРѕСЃР»Рµ С‚РµРєСѓС‰РµРіРѕ Рё СЃРґРµР»Р°С‚СЊ РµРіРѕ С‚РµРєСѓС‰РёРј
+    List & addAftLas ( T * i ) { return (List&) ShevList::addAftLas(i); } // РїРѕСЃР»Рµ РїРѕСЃР»РµРґРЅРµРіРѕ СЌР»РµРјРµРЅС‚Р°
+// Р”РѕР±Р°РІРёС‚СЊ РёР· РґСЂСѓРіРѕРіРѕ СЃРїРёСЃРєР°
+    List & addAllBefFir ( List & list ) { return (List&) ShevList::addAllBefFir(list); } // РІСЃРµ СЌР»РµРјРµРЅС‚С‹ РІ РЅР°С‡Р°Р»Рѕ
+    List & addAllBefCur ( List & list ) { return (List&) ShevList::addAllBefCur(list); } // РІСЃРµ СЌР»РµРјРµРЅС‚С‹ РїРµСЂРµРґ С‚РµРєСѓС‰РёРј
+    List & addAllAftCur ( List & list ) { return (List&) ShevList::addAllAftCur(list); } // РІСЃРµ СЌР»РµРјРµРЅС‚С‹ РїРѕСЃР»Рµ С‚РµРєСѓС‰РµРіРѕ
+    List & addAllAftLas ( List & list ) { return (List&) ShevList::addAllAftLas(list); } // РІСЃРµ СЌР»РµРјРµРЅС‚С‹ РІ РєРѕРЅРµС†
 
     T * addNewBefFir ( List & list )
     {
@@ -114,16 +114,16 @@ public:
     List & movAllBefCur ( List & list ) { return (List&) ShevList::movAllBefCur ( list ); }
     List & movAllAftCur ( List & list ) { return (List&) ShevList::movAllAftCur ( list ); }
     List & movAllAftLas ( List & list ) { return (List&) ShevList::movAllAftLas ( list ); }
-// Обмен элементами внутри списка:
+// РћР±РјРµРЅ СЌР»РµРјРµРЅС‚Р°РјРё РІРЅСѓС‚СЂРё СЃРїРёСЃРєР°:
     ShevList & swapCurAndFir () { return (List&) ShevList::swapCurAndFir (); }
     ShevList & swapCurAndLas () { return (List&) ShevList::swapCurAndLas (); }
     ShevList & swapFirAndLas () { return (List&) ShevList::swapFirAndLas (); }
-// Обмен элементами между двумя списками:
-    List & swapCurAndCur ( List & list ) { return (List&) ShevList::swapCurAndCur ( list ); } // Обмен текущими элементами
-    List & swapAllAndAll ( List & list ) { return (List&) ShevList::swapAllAndAll ( list ); } // Обмен всеми элементами
-// Для всех элементов присвоить члену info значение i:
+// РћР±РјРµРЅ СЌР»РµРјРµРЅС‚Р°РјРё РјРµР¶РґСѓ РґРІСѓРјСЏ СЃРїРёСЃРєР°РјРё:
+    List & swapCurAndCur ( List & list ) { return (List&) ShevList::swapCurAndCur ( list ); } // РћР±РјРµРЅ С‚РµРєСѓС‰РёРјРё СЌР»РµРјРµРЅС‚Р°РјРё
+    List & swapAllAndAll ( List & list ) { return (List&) ShevList::swapAllAndAll ( list ); } // РћР±РјРµРЅ РІСЃРµРјРё СЌР»РµРјРµРЅС‚Р°РјРё
+// Р”Р»СЏ РІСЃРµС… СЌР»РµРјРµРЅС‚РѕРІ РїСЂРёСЃРІРѕРёС‚СЊ С‡Р»РµРЅСѓ info Р·РЅР°С‡РµРЅРёРµ i:
     List & setAllInfo ( int i ) { return (List&) ShevList::setAllInfo(i); }
-// Удаление элементов из списка
+// РЈРґР°Р»РµРЅРёРµ СЌР»РµРјРµРЅС‚РѕРІ РёР· СЃРїРёСЃРєР°
     List & delFir () { return (List&) ShevList::delFir (); }
     List & delCur () { return (List&) ShevList::delCur (); }
     List & delLas () { return (List&) ShevList::delLas (); }
@@ -177,56 +177,56 @@ public:
     }
 };
 </pre>
-<p>Шаблоны ListItem и ListItemA создают производные классы от ShevItem. Шаблон List делает производные классы от ShevList. 
-В качестве параметра для него нужно задавать класс производный от ShevItem.
+<p>РЁР°Р±Р»РѕРЅС‹ ListItem Рё ListItemA СЃРѕР·РґР°СЋС‚ РїСЂРѕРёР·РІРѕРґРЅС‹Рµ РєР»Р°СЃСЃС‹ РѕС‚ ShevItem. РЁР°Р±Р»РѕРЅ List РґРµР»Р°РµС‚ РїСЂРѕРёР·РІРѕРґРЅС‹Рµ РєР»Р°СЃСЃС‹ РѕС‚ ShevList. 
+Р’ РєР°С‡РµСЃС‚РІРµ РїР°СЂР°РјРµС‚СЂР° РґР»СЏ РЅРµРіРѕ РЅСѓР¶РЅРѕ Р·Р°РґР°РІР°С‚СЊ РєР»Р°СЃСЃ РїСЂРѕРёР·РІРѕРґРЅС‹Р№ РѕС‚ ShevItem.
 </p>
-<p>Иногда нужно передать список в функцию для того, чтобы его можно было просматривать,
-но не изменять. Для этого предназначен класс ShowList и производные от него: 
+<p>РРЅРѕРіРґР° РЅСѓР¶РЅРѕ РїРµСЂРµРґР°С‚СЊ СЃРїРёСЃРѕРє РІ С„СѓРЅРєС†РёСЋ РґР»СЏ С‚РѕРіРѕ, С‡С‚РѕР±С‹ РµРіРѕ РјРѕР¶РЅРѕ Р±С‹Р»Рѕ РїСЂРѕСЃРјР°С‚СЂРёРІР°С‚СЊ,
+РЅРѕ РЅРµ РёР·РјРµРЅСЏС‚СЊ. Р”Р»СЏ СЌС‚РѕРіРѕ РїСЂРµРґРЅР°Р·РЅР°С‡РµРЅ РєР»Р°СЃСЃ ShowList Рё РїСЂРѕРёР·РІРѕРґРЅС‹Рµ РѕС‚ РЅРµРіРѕ: 
 </p>
 <pre>
 class ShowList
 {
-    const ShevItem *       cPtr; // указатель на текущий элемент списка
-    const ShevItem * const fPtr; // указатель на первый элемент списка
-    const ShevItem * const lPtr; // указатель на последний элемент списка
-    const unsigned int listSize; // количество элементов в списке
+    const ShevItem *       cPtr; // СѓРєР°Р·Р°С‚РµР»СЊ РЅР° С‚РµРєСѓС‰РёР№ СЌР»РµРјРµРЅС‚ СЃРїРёСЃРєР°
+    const ShevItem * const fPtr; // СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РїРµСЂРІС‹Р№ СЌР»РµРјРµРЅС‚ СЃРїРёСЃРєР°
+    const ShevItem * const lPtr; // СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РїРѕСЃР»РµРґРЅРёР№ СЌР»РµРјРµРЅС‚ СЃРїРёСЃРєР°
+    const unsigned int listSize; // РєРѕР»РёС‡РµСЃС‚РІРѕ СЌР»РµРјРµРЅС‚РѕРІ РІ СЃРїРёСЃРєРµ
 public:
     ShowList ( const ShevList & p ) : cPtr(p.cPtr), fPtr(p.fPtr), lPtr(p.lPtr), listSize(p.listSize) {}
-// Количество элементов в списке:
+// РљРѕР»РёС‡РµСЃС‚РІРѕ СЌР»РµРјРµРЅС‚РѕРІ РІ СЃРїРёСЃРєРµ:
     unsigned int size () const { return listSize; }
-// Количество элементов с заданным свойством
+// РљРѕР»РёС‡РµСЃС‚РІРѕ СЌР»РµРјРµРЅС‚РѕРІ СЃ Р·Р°РґР°РЅРЅС‹Рј СЃРІРѕР№СЃС‚РІРѕРј
     unsigned int count ( Predicate1 & ) const;
-// Первый элемент с заданным свойством:
+// РџРµСЂРІС‹Р№ СЌР»РµРјРµРЅС‚ СЃ Р·Р°РґР°РЅРЅС‹Рј СЃРІРѕР№СЃС‚РІРѕРј:
     const ShevItem * fir ( Predicate1 & ) const;
-// Последний элемент с заданным свойством:
+// РџРѕСЃР»РµРґРЅРёР№ СЌР»РµРјРµРЅС‚ СЃ Р·Р°РґР°РЅРЅС‹Рј СЃРІРѕР№СЃС‚РІРѕРј:
     const ShevItem * las ( Predicate1 & ) const;
-// Текущий элемент первый?
+// РўРµРєСѓС‰РёР№ СЌР»РµРјРµРЅС‚ РїРµСЂРІС‹Р№?
     bool curIsFir () const { return cPtr == fPtr; }
-// Текущий элемент последний?
+// РўРµРєСѓС‰РёР№ СЌР»РµРјРµРЅС‚ РїРѕСЃР»РµРґРЅРёР№?
     bool curIsLas () const { return cPtr == lPtr; }
-// Имеется ли списке данный элемент?
+// РРјРµРµС‚СЃСЏ Р»Рё СЃРїРёСЃРєРµ РґР°РЅРЅС‹Р№ СЌР»РµРјРµРЅС‚?
     bool has ( const ShevItem * ) const;
-// Доступ к отдельному элементу списка
+// Р”РѕСЃС‚СѓРї Рє РѕС‚РґРµР»СЊРЅРѕРјСѓ СЌР»РµРјРµРЅС‚Сѓ СЃРїРёСЃРєР°
     const ShevItem * fir () const { return fPtr; }
     const ShevItem * cur () const { return cPtr; }
     const ShevItem * las () const { return lPtr; }
-// Сделать текущим первый элемент
+// РЎРґРµР»Р°С‚СЊ С‚РµРєСѓС‰РёРј РїРµСЂРІС‹Р№ СЌР»РµРјРµРЅС‚
     const ShevItem * top () { return cPtr = fPtr; }
-// Сделать текущим последний элемент
+// РЎРґРµР»Р°С‚СЊ С‚РµРєСѓС‰РёРј РїРѕСЃР»РµРґРЅРёР№ СЌР»РµРјРµРЅС‚
     const ShevItem * end () { return cPtr = lPtr; }
-// Сделать текущим предыдущий элемент
+// РЎРґРµР»Р°С‚СЊ С‚РµРєСѓС‰РёРј РїСЂРµРґС‹РґСѓС‰РёР№ СЌР»РµРјРµРЅС‚
     const ShevItem * prev () { return cPtr != fPtr ? cPtr = cPtr->prevPtr : 0; }
-// Сделать текущим следующий элемент
+// РЎРґРµР»Р°С‚СЊ С‚РµРєСѓС‰РёРј СЃР»РµРґСѓСЋС‰РёР№ СЌР»РµРјРµРЅС‚
     const ShevItem * next () { return cPtr != lPtr ? cPtr = cPtr->nextPtr : 0; }
-// Сделать текущим предыдущий элемент в цикле
+// РЎРґРµР»Р°С‚СЊ С‚РµРєСѓС‰РёРј РїСЂРµРґС‹РґСѓС‰РёР№ СЌР»РµРјРµРЅС‚ РІ С†РёРєР»Рµ
     const ShevItem * cprev () { return cPtr = (cPtr==fPtr) ? lPtr : cPtr->prevPtr; }
-// Сделать текущим следующий элемент в цикле
+// РЎРґРµР»Р°С‚СЊ С‚РµРєСѓС‰РёРј СЃР»РµРґСѓСЋС‰РёР№ СЌР»РµРјРµРЅС‚ РІ С†РёРєР»Рµ
     const ShevItem * cnext () { return cPtr = (cPtr==lPtr) ? fPtr : cPtr->nextPtr; }
-// Сделать текущим данный элемент ( небезопасная функция ):
+// РЎРґРµР»Р°С‚СЊ С‚РµРєСѓС‰РёРј РґР°РЅРЅС‹Р№ СЌР»РµРјРµРЅС‚ ( РЅРµР±РµР·РѕРїР°СЃРЅР°СЏ С„СѓРЅРєС†РёСЏ ):
     void jump ( const ShevItem * m ) { cPtr = m; }
-// Сделать текущим первый элемент с заданным свойством:
+// РЎРґРµР»Р°С‚СЊ С‚РµРєСѓС‰РёРј РїРµСЂРІС‹Р№ СЌР»РµРјРµРЅС‚ СЃ Р·Р°РґР°РЅРЅС‹Рј СЃРІРѕР№СЃС‚РІРѕРј:
     bool findFir ( Predicate1 & );
-// Сделать текущим последний элемент с заданным свойством:
+// РЎРґРµР»Р°С‚СЊ С‚РµРєСѓС‰РёРј РїРѕСЃР»РµРґРЅРёР№ СЌР»РµРјРµРЅС‚ СЃ Р·Р°РґР°РЅРЅС‹Рј СЃРІРѕР№СЃС‚РІРѕРј:
     bool findLas ( Predicate1 & );
 };
 
@@ -234,36 +234,36 @@ template &lt;class T> class Show : public ShowList
 {
 public:
     Show ( const List&lt;T> & p ) : ShowList ( p ) {}
-// Доступ к отдельному элементу списка
+// Р”РѕСЃС‚СѓРї Рє РѕС‚РґРµР»СЊРЅРѕРјСѓ СЌР»РµРјРµРЅС‚Сѓ СЃРїРёСЃРєР°
     const T * fir () const { return (const T *) ShowList::fir(); }
     const T * cur () const { return (const T *) ShowList::cur(); }
     const T * las () const { return (const T *) ShowList::las(); }
-// Первый элемент с заданным свойством:
+// РџРµСЂРІС‹Р№ СЌР»РµРјРµРЅС‚ СЃ Р·Р°РґР°РЅРЅС‹Рј СЃРІРѕР№СЃС‚РІРѕРј:
     const T * fir ( Predicate1 & p ) const { return (const T *) ShowList::fir(); }
-// Последний элемент с заданным свойством:
+// РџРѕСЃР»РµРґРЅРёР№ СЌР»РµРјРµРЅС‚ СЃ Р·Р°РґР°РЅРЅС‹Рј СЃРІРѕР№СЃС‚РІРѕРј:
     const T * las ( Predicate1 & p ) const { return (const T *) ShowList::las(); }
-// Сделать текущим первый элемент
+// РЎРґРµР»Р°С‚СЊ С‚РµРєСѓС‰РёРј РїРµСЂРІС‹Р№ СЌР»РµРјРµРЅС‚
     const T * top () { return (const T *) ShowList::top(); }
-// Сделать текущим последний элемент
+// РЎРґРµР»Р°С‚СЊ С‚РµРєСѓС‰РёРј РїРѕСЃР»РµРґРЅРёР№ СЌР»РµРјРµРЅС‚
     const T * end () { return (const T *) ShowList::end(); }
-// Сделать текущим предыдущий элемент
+// РЎРґРµР»Р°С‚СЊ С‚РµРєСѓС‰РёРј РїСЂРµРґС‹РґСѓС‰РёР№ СЌР»РµРјРµРЅС‚
     const T * prev () { return (const T *) ShowList::prev(); }
-// Сделать текущим следующий элемент
+// РЎРґРµР»Р°С‚СЊ С‚РµРєСѓС‰РёРј СЃР»РµРґСѓСЋС‰РёР№ СЌР»РµРјРµРЅС‚
     const T * next () { return (const T *) ShowList::next(); }
-// Сделать текущим предыдущий элемент в цикле
+// РЎРґРµР»Р°С‚СЊ С‚РµРєСѓС‰РёРј РїСЂРµРґС‹РґСѓС‰РёР№ СЌР»РµРјРµРЅС‚ РІ С†РёРєР»Рµ
     const T * cprev () { return (const T *) ShowList::cprev(); }
-// Сделать текущим следующий элемент в цикле
+// РЎРґРµР»Р°С‚СЊ С‚РµРєСѓС‰РёРј СЃР»РµРґСѓСЋС‰РёР№ СЌР»РµРјРµРЅС‚ РІ С†РёРєР»Рµ
     const T * cnext () { return (const T *) ShowList::cnext(); }
-// Сделать текущим данный элемент ( небезопасная функция ):
+// РЎРґРµР»Р°С‚СЊ С‚РµРєСѓС‰РёРј РґР°РЅРЅС‹Р№ СЌР»РµРјРµРЅС‚ ( РЅРµР±РµР·РѕРїР°СЃРЅР°СЏ С„СѓРЅРєС†РёСЏ ):
     void jump ( const T * m ) { ShowList::jump ( m ); }
 };
 </pre>
-<p>Интерфейс класса ShowList аналогичен интерфейсу класса ShevList, но имеет только те методы,
-которые не меняют список и его элементы.
+<p>РРЅС‚РµСЂС„РµР№СЃ РєР»Р°СЃСЃР° ShowList Р°РЅР°Р»РѕРіРёС‡РµРЅ РёРЅС‚РµСЂС„РµР№СЃСѓ РєР»Р°СЃСЃР° ShevList, РЅРѕ РёРјРµРµС‚ С‚РѕР»СЊРєРѕ С‚Рµ РјРµС‚РѕРґС‹,
+РєРѕС‚РѕСЂС‹Рµ РЅРµ РјРµРЅСЏСЋС‚ СЃРїРёСЃРѕРє Рё РµРіРѕ СЌР»РµРјРµРЅС‚С‹.
 </p>
-<p>Исходники находятся в файлах <a href="source/source.zip">ShevList.h и ShevList.cpp</a>
+<p>РСЃС…РѕРґРЅРёРєРё РЅР°С…РѕРґСЏС‚СЃСЏ РІ С„Р°Р№Р»Р°С… <a href="source/source.zip">ShevList.h Рё ShevList.cpp</a>
 </p>
-<p><a href="rus_list.html">Начало</a>
+<p><a href="rus_list.html">РќР°С‡Р°Р»Рѕ</a>
 <pre>
 
 </pre></td></div>

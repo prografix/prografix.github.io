@@ -1,16 +1,16 @@
-<html>
-<head><title>Двухмерные массивы</title>
+п»ї<html>
+<head><title>Р”РІСѓС…РјРµСЂРЅС‹Рµ РјР°СЃСЃРёРІС‹</title>
 <link rel="stylesheet" type="text/css" href="stylle.css">
 </head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
 <div align="center">
 <table width="800" cellspacing="0" cellpadding="0">
 <div align=center>
-<br><font color="" style="font-size: 20pt">Двухмерные массивы</font>
+<br><font color="" style="font-size: 20pt">Р”РІСѓС…РјРµСЂРЅС‹Рµ РјР°СЃСЃРёРІС‹</font>
 </div>
 <div align=left><td>
-<p><br>Шаблон классов CArrRef2 представляет собой ссылку на константный двухмерный массив. 
-У него можно узнать размеры массива и получить доступ к <a href="array.html">одномерному массиву</a> по индексу:
+<p><br>РЁР°Р±Р»РѕРЅ РєР»Р°СЃСЃРѕРІ CArrRef2 РїСЂРµРґСЃС‚Р°РІР»СЏРµС‚ СЃРѕР±РѕР№ СЃСЃС‹Р»РєСѓ РЅР° РєРѕРЅСЃС‚Р°РЅС‚РЅС‹Р№ РґРІСѓС…РјРµСЂРЅС‹Р№ РјР°СЃСЃРёРІ. 
+РЈ РЅРµРіРѕ РјРѕР¶РЅРѕ СѓР·РЅР°С‚СЊ СЂР°Р·РјРµСЂС‹ РјР°СЃСЃРёРІР° Рё РїРѕР»СѓС‡РёС‚СЊ РґРѕСЃС‚СѓРї Рє <a href="array.html">РѕРґРЅРѕРјРµСЂРЅРѕРјСѓ РјР°СЃСЃРёРІСѓ</a> РїРѕ РёРЅРґРµРєСЃСѓ:
 <pre>template &lt;class T> class CArrRef2
 {
     void operator= ( CCArrRef2 & );
@@ -23,7 +23,7 @@ public:
     nat size1 () const { return _size1; }
 };
 </pre>
-Шаблон классов ArrRef2 представляет собой ссылку на неконстантный двухмерный массив:
+РЁР°Р±Р»РѕРЅ РєР»Р°СЃСЃРѕРІ ArrRef2 РїСЂРµРґСЃС‚Р°РІР»СЏРµС‚ СЃРѕР±РѕР№ СЃСЃС‹Р»РєСѓ РЅР° РЅРµРєРѕРЅСЃС‚Р°РЅС‚РЅС‹Р№ РґРІСѓС…РјРµСЂРЅС‹Р№ РјР°СЃСЃРёРІ:
 <pre>template &lt;class T> class ArrRef2 : protected ArrRef&lt;T>
 {
     void operator= ( const ArrRef2 & );
@@ -45,7 +45,7 @@ public:
 friend class CArrRef2&lt;T>;
 };
 </pre>
-Шаблон классов FixArray2 представляет собой двухмерный массив постоянного размера:
+РЁР°Р±Р»РѕРЅ РєР»Р°СЃСЃРѕРІ FixArray2 РїСЂРµРґСЃС‚Р°РІР»СЏРµС‚ СЃРѕР±РѕР№ РґРІСѓС…РјРµСЂРЅС‹Р№ РјР°СЃСЃРёРІ РїРѕСЃС‚РѕСЏРЅРЅРѕРіРѕ СЂР°Р·РјРµСЂР°:
 <pre>template &lt;class T, nat n0, nat n1> class FixArray2 : public ArrRef2&lt;T>
 {
     T stor[n0*n1];
@@ -59,8 +59,8 @@ public:
     }
 };
 </pre>
-Шаблон классов DynArray2 представляет собой динамический двухмерный массив, т.е. его размер определяется
-во время выполнения программы: 
+РЁР°Р±Р»РѕРЅ РєР»Р°СЃСЃРѕРІ DynArray2 РїСЂРµРґСЃС‚Р°РІР»СЏРµС‚ СЃРѕР±РѕР№ РґРёРЅР°РјРёС‡РµСЃРєРёР№ РґРІСѓС…РјРµСЂРЅС‹Р№ РјР°СЃСЃРёРІ, С‚.Рµ. РµРіРѕ СЂР°Р·РјРµСЂ РѕРїСЂРµРґРµР»СЏРµС‚СЃСЏ
+РІРѕ РІСЂРµРјСЏ РІС‹РїРѕР»РЅРµРЅРёСЏ РїСЂРѕРіСЂР°РјРјС‹: 
 <pre>template &lt;class T> class DynArray2 : public ArrRef2&lt;T>
 {
     DynArray2 ( const DynArray2 & );
@@ -103,7 +103,7 @@ public:
     }
 };
 </pre>
-Шаблон классов CmbArray2 представляет собой комбинацию двух предыдущих шаблонов:
+РЁР°Р±Р»РѕРЅ РєР»Р°СЃСЃРѕРІ CmbArray2 РїСЂРµРґСЃС‚Р°РІР»СЏРµС‚ СЃРѕР±РѕР№ РєРѕРјР±РёРЅР°С†РёСЋ РґРІСѓС… РїСЂРµРґС‹РґСѓС‰РёС… С€Р°Р±Р»РѕРЅРѕРІ:
 <pre>template &lt;class T, nat N> class CmbArray2 : public ArrRef2&lt;T>
 {
     T stor[N];
@@ -141,9 +141,9 @@ public:
 </pre>
 </p>
 <p>
-Исходники находятся в файле <a href="source/source.zip">ShevArray2.h</a>.
+РСЃС…РѕРґРЅРёРєРё РЅР°С…РѕРґСЏС‚СЃСЏ РІ С„Р°Р№Р»Рµ <a href="source/source.zip">ShevArray2.h</a>.
 </p>
-<a href="template.html">Наверх</a>
+<a href="template.html">РќР°РІРµСЂС…</a>
 <pre>
 
 </pre></td>

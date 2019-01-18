@@ -1,4 +1,4 @@
-<html>
+Ôªø<html>
 <head>
     <title>Vectors</title>
 </head>
@@ -78,24 +78,24 @@ public :
     Vector3d   perpendicular () const;
 
 };</pre>
-<p>Letís start from naming. As you could see I use capital letters for names 
+<p>Let‚Äôs start from naming. As you could see I use capital letters for names 
 of the object classes, but for function ones I do lowercase letters. I never 
 use prefixes, such as MicroSoft and others. Since I operate <font color=blue>2d, 3f, 3i,</font> etc. 
 the <font color=blue>3d (double)</font> notation has been applied to distinguish the particular vector. 
 The template using seems to me less elegant. Besides, different classes have 
 different interfaces. </p>
-<p>Letís go further. Why class has been used, not sructure. 
+<p>Let‚Äôs go further. Why class has been used, not sructure. 
 I think the idea proposed by Straustrup to practically put the same meaning 
 for both of class and structure is not perfect. If a new term has to be created 
-then old one should remain. Thatís why I apply the struct, when there are no 
+then old one should remain. That‚Äôs why I apply the struct, when there are no 
 function-operand inside, otherwise I do class.
 </p>
 <p>Probably many of you will agree with x, y, z notation for data-operand, 
 though there are other options.  </p>
-<p>Constructor without parameters (no-parameter-constructor) doesnít initialized data. 
+<p>Constructor without parameters (no-parameter-constructor) doesn‚Äôt initialized data. 
 I have noted, some developers initialize data by 0, but from my standpoint it is 
 an extra meaningless work I recognized the modern computers are extremely fast, 
-but if there is something you donít have to perform, just donít do it.
+but if there is something you don‚Äôt have to perform, just don‚Äôt do it.
 Copy constructor as well as assignment operator are redundant here since 
 compiler generates the same by default. </p>
 <p>Unary negate as well as several mentioned functions returns a nonconstant value, 
@@ -120,12 +120,12 @@ Some folks utilize !-operator to denote vector length. People needed a unary ope
 and they took this one. But I have decided to keep its original meaning. </p>
 <p><font color=blue>norm</font> function transforms a given vector to a vector with a specified length 
 (the unit length vector by default) and with the same vector magnitude. I am familiar 
-with a variant of the function (having a different name), which doesnít change 
+with a variant of the function (having a different name), which doesn‚Äôt change 
 the original vector, but returns a new one. I have preferred <font color=blue>norm</font> function, 
 because more often I have exercised to normalize a given vector than create a new one. 
 This function is first from described ones, which is not inline. Actually the function 
 is simple and could be such it is, but this case the sqrt needs to be declared, 
-what is not my programming style (I donít use #include in header files). </p>
+what is not my programming style (I don‚Äôt use #include in header files). </p>
 <p><font color=blue>perpendicular</font> function returns the unit length vector which is a perpendicular 
 to the transformed one. In fact, there is infinite number of the vectors. 
 Below is just one of them. I have never seen anyone uses the function like this one 
@@ -194,15 +194,15 @@ subjects of debates. Unlike the above mentioned the implementation of cross prod
 dot product is a different business. There are a lot of options to choose from. 
 I am familiar with usage of <font color=blue>&amp;,|, ^</font> symbols  in vector manipulation expressions as 
 well as with a number of different function names. My
-approach is to practice the ì*î notation to get a dot product and do ì%î  notation to 
+approach is to practice the ‚Äú*‚Äù notation to get a dot product and do ‚Äú%‚Äù  notation to 
 denote cross product. In math ( please note, vector manipulation is, first and foremost, 
 mathematics, and then programming ) the dot product is denoted in the same way 
 as the multiplication symbol (i.e. dot is a symbol of multiplication). Since 
 in C++ programming language ( as well as in other programming languages ) the 
-ì*î is the symbol of multiplication the symbol has been chosen by me to use it in 
+‚Äú*‚Äù is the symbol of multiplication the symbol has been chosen by me to use it in 
 appropriate expressions to get the dot product. 
 In math two cross slash is the symbol in vector manipulation expression which is 
-intended to get the cross product. So the ì%î symbol has been chosen to obtain the 
+intended to get the cross product. So the ‚Äú%‚Äù symbol has been chosen to obtain the 
 cross product. There is one slash in the symbol and two small zeroes that 
 symbolize the latter one. Another advantage of the introduced symbols versus <font color=blue>&amp;,|, ^</font> symbols 
 is priority of performance. In expressions like <font color=blue>v1*v2 + v3*v4</font> the parentheses are 
@@ -225,7 +225,7 @@ above.</p>
 <p>
 Concerning <font color=blue>==</font> and <font color=blue>!=</font>  
   operators the following
-could be stated. These operators require the right usage. Values with ìdoubleî type could 
+could be stated. These operators require the right usage. Values with ‚Äúdouble‚Äù type could 
 be slightly different for some reasons so consequently there is no need to 
 compare. On the other hand, if it is known that vectors have specified values, 
 then the comparison makes sense. </p>
@@ -234,10 +234,10 @@ then the comparison makes sense. </p>
 to two perpendicular vectors, i.e. we obtain the right-handed coordinate system. 
 If the first vector has unit length then the two resulting vectors will be  
 the same. </p>
-<p>Now letís talk about the reason for which I didnít describe some 
+<p>Now let‚Äôs talk about the reason for which I didn‚Äôt describe some 
 functions, that might be utilized in other implementations. There are other specific 
 multiplication and division operations, which are analogs of addition and subtraction. 
-I have never needed the operations during my ten yearsí experience in the geometric 
+I have never needed the operations during my ten years‚Äô experience in the geometric 
 programming field. There are no operations such as these in math either. 
 For the same reason there are no calls to vector components using indexes.</p>
 <p>

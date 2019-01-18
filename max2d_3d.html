@@ -1,46 +1,46 @@
-<html>
+п»ї<html>
 <head>
-<title>Максимальная плоская фигура вписанная в многогранник</title>
+<title>РњР°РєСЃРёРјР°Р»СЊРЅР°СЏ РїР»РѕСЃРєР°СЏ С„РёРіСѓСЂР° РІРїРёСЃР°РЅРЅР°СЏ РІ РјРЅРѕРіРѕРіСЂР°РЅРЅРёРє</title>
 <link rel="stylesheet" type="text/css" href="stylle.css">
 </head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
 <div align="center"><center>
 <table width="800" cellspacing="0" cellpadding="0">
 <div align=center><br>
-<font color="" style="font-size: 20pt">Максимальная плоская фигура вписанная в многогранник</font>
+<font color="" style="font-size: 20pt">РњР°РєСЃРёРјР°Р»СЊРЅР°СЏ РїР»РѕСЃРєР°СЏ С„РёРіСѓСЂР° РІРїРёСЃР°РЅРЅР°СЏ РІ РјРЅРѕРіРѕРіСЂР°РЅРЅРёРє</font>
 </div>
 <div align=left><td><br>
-В этом разделе представлены функции, которые вписывают максимальную по размеру плоскую фигуру 
-( чаще всего в этом качестве используется площадь ) в выпуклый многогранник:
+Р’ СЌС‚РѕРј СЂР°Р·РґРµР»Рµ РїСЂРµРґСЃС‚Р°РІР»РµРЅС‹ С„СѓРЅРєС†РёРё, РєРѕС‚РѕСЂС‹Рµ РІРїРёСЃС‹РІР°СЋС‚ РјР°РєСЃРёРјР°Р»СЊРЅСѓСЋ РїРѕ СЂР°Р·РјРµСЂСѓ РїР»РѕСЃРєСѓСЋ С„РёРіСѓСЂСѓ 
+( С‡Р°С‰Рµ РІСЃРµРіРѕ РІ СЌС‚РѕРј РєР°С‡РµСЃС‚РІРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РїР»РѕС‰Р°РґСЊ ) РІ РІС‹РїСѓРєР»С‹Р№ РјРЅРѕРіРѕРіСЂР°РЅРЅРёРє:
 <p>
-&bull; Круг.
+&bull; РљСЂСѓРі.
 </p>
 <pre>Def&lt;Circle3d> maxCircleInConvexPolyhedron ( const Polyhedron & poly );
 </pre>
-&bull; Треугольник.
+&bull; РўСЂРµСѓРіРѕР»СЊРЅРёРє.
 </p>
 <pre>Def&lt;Triangle3d> maxTriangleInConvexPolyhedronA ( const Polyhedron & poly );
 </pre>
-&bull; Прямоугольник без вращения.
+&bull; РџСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє Р±РµР· РІСЂР°С‰РµРЅРёСЏ.
 </p>
 <pre>Def&lt;Rectangle3d> maxRectangleInConvexPolyhedronANR ( const Polyhedron & outer );
 </pre>
-&bull; Ромб без вращения.
+&bull; Р РѕРјР± Р±РµР· РІСЂР°С‰РµРЅРёСЏ.
 </p>
 <pre>Def&lt;Rhombus3d> maxRhombusInConvexPolyhedronANR ( const Polyhedron & outer );
 </pre>
-&bull; Параллелограмм (  A - максимум площади, P - максимум периметра ).
+&bull; РџР°СЂР°Р»Р»РµР»РѕРіСЂР°РјРј (  A - РјР°РєСЃРёРјСѓРј РїР»РѕС‰Р°РґРё, P - РјР°РєСЃРёРјСѓРј РїРµСЂРёРјРµС‚СЂР° ).
 </p>
 <pre>Def&lt;Parallelogram3d> maxParallelogramInConvexPolyhedronA ( const Polyhedron & poly );
 Def&lt;Parallelogram3d> maxParallelogramInConvexPolyhedronP ( const Polyhedron & poly );
 </pre>
 </p>
-<p>Описание классов Circle3d, Triangle3d, Rectangle3d, Rhombus3d и Parallelogram3d находится <a href="figure3d.html">здесь</a>.
-<br>Описание шаблона классов Def находится <a href="def.html">здесь</a>.
-<br>Описание класса Polyhedron находится <a href="rus_polyhedron.html">здесь</a>.
-<br>Исходники находятся в файле <a href="source/source.zip">opti2d_3d.cpp</a>.
+<p>РћРїРёСЃР°РЅРёРµ РєР»Р°СЃСЃРѕРІ Circle3d, Triangle3d, Rectangle3d, Rhombus3d Рё Parallelogram3d РЅР°С…РѕРґРёС‚СЃСЏ <a href="figure3d.html">Р·РґРµСЃСЊ</a>.
+<br>РћРїРёСЃР°РЅРёРµ С€Р°Р±Р»РѕРЅР° РєР»Р°СЃСЃРѕРІ Def РЅР°С…РѕРґРёС‚СЃСЏ <a href="def.html">Р·РґРµСЃСЊ</a>.
+<br>РћРїРёСЃР°РЅРёРµ РєР»Р°СЃСЃР° Polyhedron РЅР°С…РѕРґРёС‚СЃСЏ <a href="rus_polyhedron.html">Р·РґРµСЃСЊ</a>.
+<br>РСЃС…РѕРґРЅРёРєРё РЅР°С…РѕРґСЏС‚СЃСЏ РІ С„Р°Р№Р»Рµ <a href="source/source.zip">opti2d_3d.cpp</a>.
 </p>
-<a href="rus_geom.html">Наверх</a>
+<a href="rus_geom.html">РќР°РІРµСЂС…</a>
 </pre>
 
 <pre>

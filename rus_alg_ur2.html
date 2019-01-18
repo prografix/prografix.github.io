@@ -1,18 +1,18 @@
-<html>
-<head><title>Квадратные уравнения</title>
+п»ї<html>
+<head><title>РљРІР°РґСЂР°С‚РЅС‹Рµ СѓСЂР°РІРЅРµРЅРёСЏ</title>
 <link rel="stylesheet" type="text/css" href="stylle.css"></head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
 <div align="center"><center>
 <table width="800" cellspacing="0" cellpadding="0">
 <div align=center>
 <font color="" style="font-size: 20pt">
-<br>Квадратные уравнения</font>
+<br>РљРІР°РґСЂР°С‚РЅС‹Рµ СѓСЂР°РІРЅРµРЅРёСЏ</font>
 </div>
 <br><div align=left><td>
-<p>В этом разделе рассматриваются решения квадратных уравнений.
-<br>Первые алгоритмы находят только действительные корни:
+<p>Р’ СЌС‚РѕРј СЂР°Р·РґРµР»Рµ СЂР°СЃСЃРјР°С‚СЂРёРІР°СЋС‚СЃСЏ СЂРµС€РµРЅРёСЏ РєРІР°РґСЂР°С‚РЅС‹С… СѓСЂР°РІРЅРµРЅРёР№.
+<br>РџРµСЂРІС‹Рµ Р°Р»РіРѕСЂРёС‚РјС‹ РЅР°С…РѕРґСЏС‚ С‚РѕР»СЊРєРѕ РґРµР№СЃС‚РІРёС‚РµР»СЊРЅС‹Рµ РєРѕСЂРЅРё:
 <pre>
-// a * x^2 + b * x + c = 0 - общее квадратное уравнение
+// a * x^2 + b * x + c = 0 - РѕР±С‰РµРµ РєРІР°РґСЂР°С‚РЅРѕРµ СѓСЂР°РІРЅРµРЅРёРµ
 
 unsigned int root2 ( double a, double b, double c, double x[2] )
 {
@@ -50,7 +50,7 @@ unsigned int root2 ( double a, double b, double c, double x[2] )
     return 2;
 }
 
-// x^2 + a * x + b = 0 - приведённое квадратное уравнение
+// x^2 + a * x + b = 0 - РїСЂРёРІРµРґС‘РЅРЅРѕРµ РєРІР°РґСЂР°С‚РЅРѕРµ СѓСЂР°РІРЅРµРЅРёРµ
 
 unsigned int root2 ( double a, double b, double x[2] )
 {
@@ -71,10 +71,10 @@ unsigned int root2 ( double a, double b, double x[2] )
     return 2;
 }
 </pre>
-Функции возвращают количество корней, а сами корни помещаются в массив x[2] по возрастанию модуля числа. 
-<br>Исходники этих функций находятся в файле <a href="source/source.zip">mathem.cpp</a>.
+Р¤СѓРЅРєС†РёРё РІРѕР·РІСЂР°С‰Р°СЋС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ РєРѕСЂРЅРµР№, Р° СЃР°РјРё РєРѕСЂРЅРё РїРѕРјРµС‰Р°СЋС‚СЃСЏ РІ РјР°СЃСЃРёРІ x[2] РїРѕ РІРѕР·СЂР°СЃС‚Р°РЅРёСЋ РјРѕРґСѓР»СЏ С‡РёСЃР»Р°. 
+<br>РСЃС…РѕРґРЅРёРєРё СЌС‚РёС… С„СѓРЅРєС†РёР№ РЅР°С…РѕРґСЏС‚СЃСЏ РІ С„Р°Р№Р»Рµ <a href="source/source.zip">mathem.cpp</a>.
 </p>
-Следующий алгоритм находит комплексные корни:
+РЎР»РµРґСѓСЋС‰РёР№ Р°Р»РіРѕСЂРёС‚Рј РЅР°С…РѕРґРёС‚ РєРѕРјРїР»РµРєСЃРЅС‹Рµ РєРѕСЂРЅРё:
 <pre>void root2 ( double a, double b, Complex & x1, Complex & x2 )
 {
     if ( b == 0 )
@@ -102,7 +102,7 @@ unsigned int root2 ( double a, double b, double x[2] )
     }
 }
 </pre>
-Этот алгоритм решает уравнение с комплексными коэффициентами:
+Р­С‚РѕС‚ Р°Р»РіРѕСЂРёС‚Рј СЂРµС€Р°РµС‚ СѓСЂР°РІРЅРµРЅРёРµ СЃ РєРѕРјРїР»РµРєСЃРЅС‹РјРё РєРѕСЌС„С„РёС†РёРµРЅС‚Р°РјРё:
 <pre>void root2 ( const Complex & a, const Complex & b, Complex & x1, Complex & x2 )
 {
     if ( b.re == 0 && b.im == 0 )
@@ -119,9 +119,9 @@ unsigned int root2 ( double a, double b, double x[2] )
     }
 }
 </pre>
-Описание типа Complex смотрите в разделе <a href="rus_complex.html">Класс Complex</a>.
-<br>Исходники этих функций находятся в файле <a href="source/source.zip">complex.cpp</a>.</p>
-<a href="rus_alg_ur.html">Наверх</a>
+РћРїРёСЃР°РЅРёРµ С‚РёРїР° Complex СЃРјРѕС‚СЂРёС‚Рµ РІ СЂР°Р·РґРµР»Рµ <a href="rus_complex.html">РљР»Р°СЃСЃ Complex</a>.
+<br>РСЃС…РѕРґРЅРёРєРё СЌС‚РёС… С„СѓРЅРєС†РёР№ РЅР°С…РѕРґСЏС‚СЃСЏ РІ С„Р°Р№Р»Рµ <a href="source/source.zip">complex.cpp</a>.</p>
+<a href="rus_alg_ur.html">РќР°РІРµСЂС…</a>
 <p>
 <br>
 </p>

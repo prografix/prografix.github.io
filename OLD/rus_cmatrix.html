@@ -1,24 +1,24 @@
-<html>
-<head><title>Класс CMatrix</title>
+п»ї<html>
+<head><title>РљР»Р°СЃСЃ CMatrix</title>
 <link rel="stylesheet" type="text/css" href="stylle.css"></head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
 <div align="center"><center>
 <table width="680" cellspacing="0" cellpadding="0">
 <div align=center><br>
-<font color="" style="font-size: 20pt">Класс CMatrix</font>
+<font color="" style="font-size: 20pt">РљР»Р°СЃСЃ CMatrix</font>
 </div><br><td>
 <p>
-Этот класс аналогичен классу <a href="rus_matrix.html">Matrix</a> и предназначен для представления комплексных матриц: 
+Р­С‚РѕС‚ РєР»Р°СЃСЃ Р°РЅР°Р»РѕРіРёС‡РµРЅ РєР»Р°СЃСЃСѓ <a href="rus_matrix.html">Matrix</a> Рё РїСЂРµРґРЅР°Р·РЅР°С‡РµРЅ РґР»СЏ РїСЂРµРґСЃС‚Р°РІР»РµРЅРёСЏ РєРѕРјРїР»РµРєСЃРЅС‹С… РјР°С‚СЂРёС†: 
 </p>
 <pre>
 class CMatrix
 {
     Complex ** p;
-// Запрет оператора присваивания
+// Р—Р°РїСЂРµС‚ РѕРїРµСЂР°С‚РѕСЂР° РїСЂРёСЃРІР°РёРІР°РЅРёСЏ
     void operator = ( const CMatrix & );
 public:
-    const unsigned int nRow; // к-во строк
-    const unsigned int nCol; // к-во столбцов
+    const unsigned int nRow; // Рє-РІРѕ СЃС‚СЂРѕРє
+    const unsigned int nCol; // Рє-РІРѕ СЃС‚РѕР»Р±С†РѕРІ
 
     CMatrix ( unsigned int r, unsigned int c );
     CMatrix ( unsigned int r, unsigned int c, const Complex * const * a );
@@ -31,7 +31,7 @@ public:
     operator const Complex * const * () const { return p; }
 };
 
-// Разные функции
+// Р Р°Р·РЅС‹Рµ С„СѓРЅРєС†РёРё
 
 bool copy   ( const CMatrix & a, CMatrix & b ); // b = a
 bool trans  ( const CMatrix & a, CMatrix & b ); // b = aT
@@ -40,24 +40,24 @@ bool  plus ( const CMatrix & a, const CMatrix & b, CMatrix & c ); // c = a + b;
 bool minus ( const CMatrix & a, const CMatrix & b, CMatrix & c ); // c = a - b;
 bool multi ( const CMatrix & a, const CMatrix & b, CMatrix & c ); // c = a * b;
 </pre>
-<p>Комплексное транспонирование не только переставляет элементы матрицы, но и сопрягает их.
+<p>РљРѕРјРїР»РµРєСЃРЅРѕРµ С‚СЂР°РЅСЃРїРѕРЅРёСЂРѕРІР°РЅРёРµ РЅРµ С‚РѕР»СЊРєРѕ РїРµСЂРµСЃС‚Р°РІР»СЏРµС‚ СЌР»РµРјРµРЅС‚С‹ РјР°С‚СЂРёС†С‹, РЅРѕ Рё СЃРѕРїСЂСЏРіР°РµС‚ РёС….
 </p>
-<p>Следующие две функции lss_h решают <a href="rus_lss.html">задачу наименьших квадратов</a>
-при помощи преобразований Хаусхолдера. 
-Первая из них изменяет исходные данные ( матрицу ), а вторая - нет:
+<p>РЎР»РµРґСѓСЋС‰РёРµ РґРІРµ С„СѓРЅРєС†РёРё lss_h СЂРµС€Р°СЋС‚ <a href="rus_lss.html">Р·Р°РґР°С‡Сѓ РЅР°РёРјРµРЅСЊС€РёС… РєРІР°РґСЂР°С‚РѕРІ</a>
+РїСЂРё РїРѕРјРѕС‰Рё РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёР№ РҐР°СѓСЃС…РѕР»РґРµСЂР°. 
+РџРµСЂРІР°СЏ РёР· РЅРёС… РёР·РјРµРЅСЏРµС‚ РёСЃС…РѕРґРЅС‹Рµ РґР°РЅРЅС‹Рµ ( РјР°С‚СЂРёС†Сѓ ), Р° РІС‚РѕСЂР°СЏ - РЅРµС‚:
 </p>
 <pre>
 bool lss_h ( CMatrix & a, const Complex * b, Complex * x ); // b[a.nRow], x[a.nCol]
 
 bool lss_h ( unsigned int r, unsigned int c, const Complex * const * a, const Complex * b, Complex * x );
 </pre>
-<p>Эти же функции решают систему линейных уравнений в случае, когда к-во строк матрицы равно к-ву столбцов. 
+<p>Р­С‚Рё Р¶Рµ С„СѓРЅРєС†РёРё СЂРµС€Р°СЋС‚ СЃРёСЃС‚РµРјСѓ Р»РёРЅРµР№РЅС‹С… СѓСЂР°РІРЅРµРЅРёР№ РІ СЃР»СѓС‡Р°Рµ, РєРѕРіРґР° Рє-РІРѕ СЃС‚СЂРѕРє РјР°С‚СЂРёС†С‹ СЂР°РІРЅРѕ Рє-РІСѓ СЃС‚РѕР»Р±С†РѕРІ. 
 </p>
-<p>Описание класса Complex смотрите <a href="rus_complex.html">здесь</a>.
+<p>РћРїРёСЃР°РЅРёРµ РєР»Р°СЃСЃР° Complex СЃРјРѕС‚СЂРёС‚Рµ <a href="rus_complex.html">Р·РґРµСЃСЊ</a>.
 </p>
-<p>Исходники находятся в файле <a href="source/source.zip">mathem.cpp</a>.
+<p>РСЃС…РѕРґРЅРёРєРё РЅР°С…РѕРґСЏС‚СЃСЏ РІ С„Р°Р№Р»Рµ <a href="source/source.zip">mathem.cpp</a>.
 </p>
-<a href="rus_pro.html">Наверх</a>
+<a href="rus_pro.html">РќР°РІРµСЂС…</a>
 <p>
 <br>
 </p></td>

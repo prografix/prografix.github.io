@@ -1,18 +1,18 @@
-<html>
-<head><title>Шаблон Def</title>
+п»ї<html>
+<head><title>РЁР°Р±Р»РѕРЅ Def</title>
 <link rel="stylesheet" type="text/css" href="stylle.css"></head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
 <div align="center"><center>
 <table width="680" cellspacing="0" cellpadding="0">
 <div align=center>
 <br>
-<font color="" style="font-size: 20pt">Шаблон Def</font>
+<font color="" style="font-size: 20pt">РЁР°Р±Р»РѕРЅ Def</font>
 </div>
 <br>
 <div align=left><td>
 <p>
-Шаблон Def предназначен для того, чтобы образовывать производный класс от заданного
-и добавлять к нему член isDef. Этот член позволяет узнать определён объект или нет:
+РЁР°Р±Р»РѕРЅ Def РїСЂРµРґРЅР°Р·РЅР°С‡РµРЅ РґР»СЏ С‚РѕРіРѕ, С‡С‚РѕР±С‹ РѕР±СЂР°Р·РѕРІС‹РІР°С‚СЊ РїСЂРѕРёР·РІРѕРґРЅС‹Р№ РєР»Р°СЃСЃ РѕС‚ Р·Р°РґР°РЅРЅРѕРіРѕ
+Рё РґРѕР±Р°РІР»СЏС‚СЊ Рє РЅРµРјСѓ С‡Р»РµРЅ isDef. Р­С‚РѕС‚ С‡Р»РµРЅ РїРѕР·РІРѕР»СЏРµС‚ СѓР·РЅР°С‚СЊ РѕРїСЂРµРґРµР»С‘РЅ РѕР±СЉРµРєС‚ РёР»Рё РЅРµС‚:
 </p>
 <pre>template < class T > struct BaseType { typedef T type; };
 template <> struct BaseType < nat > { typedef Set1 < nat > type; };
@@ -30,12 +30,12 @@ struct Def : public BaseType < T >::type
     Def & operator = ( const T & v ) { isDef = true; *(base*) this = v; return *this; }
 };
 </pre>
-<p>Описание шаблона Set1 находится <a href="composition.html">здесь</a>.
+<p>РћРїРёСЃР°РЅРёРµ С€Р°Р±Р»РѕРЅР° Set1 РЅР°С…РѕРґРёС‚СЃСЏ <a href="composition.html">Р·РґРµСЃСЊ</a>.
 </p>
 <p>
-Исходники находятся в файле <a href="source/source.zip">Template.h</a>.
+РСЃС…РѕРґРЅРёРєРё РЅР°С…РѕРґСЏС‚СЃСЏ РІ С„Р°Р№Р»Рµ <a href="source/source.zip">Template.h</a>.
 </p>
-<a href="template.html">Наверх</a>
+<a href="template.html">РќР°РІРµСЂС…</a>
 </td></div>
 </table>
 </div>
