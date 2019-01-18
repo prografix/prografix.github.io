@@ -1,0 +1,45 @@
+<html>
+<head><title>Масштабирование столбцов матрицы</title>
+<link rel="stylesheet" type="text/css" href="stylle.css">
+</head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align=center>
+<table width="680" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Масштабирование столбцов матрицы</font>
+</div>
+<div align=left><td><br>
+<p>Масштабирование столбцов матрицы для решения систем уравнений - это когда столбцы умножаются на числа,
+чтобы их нормы были приблизительно одинаковыми, после этого решается система уравнений и полученное решение
+масштабируется обратно. При этом полученное решение может быть более точным, чем решение полученное
+без масштабирования.
+<pre>
+bool columnScale ( bool (*func) ( unsigned int n, unsigned int m, const double * const * a, const double * b, double * x ),
+                unsigned int n, unsigned int m, const double * const * a, const double * b, double * x );
+</pre>
+Здесь func - это указатель на функцию решающую систему уравнений, n - к-во строк, m - к-во столбцов, 
+a - матрица, b - столбец свободных членов, x - массив неизвестных.
+<br>В качестве func могут быть использованы функции slu_ortho и slu_orthoH1 из раздела <a href="rus_slu_ortho.html">
+Решение систем линейных уравнений методом ортогонализации</a>, lss_h и ortholin из раздела <a href="rus_lss.html">
+Метод наименьших квадратов</a>.
+Мои эксперименты на случайных данных показали, что для slu_ortho масштабирование улучшает решение в 99% случаев, 
+для slu_orthoH1 в 45%, для lss_h в 50%, а для ortholin решение в обоих случаях всегда одинаковое.
+<p>Исходники находятся в файле <a href="source/source.zip">mathem.cpp</a>.</p>
+<a href="rus_lin_alg.html">Наверх</a>
+<pre>
+
+</pre></td></div>
+</table>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10825496-1");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
+</body>
+</html>

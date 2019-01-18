@@ -1,0 +1,272 @@
+<html>
+<head><title>Списки (продолжение)</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH="0" MARGINHEIGHT="0" link=#0000f0 alink=#aaaaff vlink=#339900>
+<div align="center">
+<table width="680" cellspacing="0" cellpadding="0"><br>
+<div align="center"><font style="FONT-SIZE: 20pt">Списки (продолжение)</font></div>
+<div align=left><td><br>
+<p>Классы ShevItem и ShevList предназначены в основном для использования, как базовые классы, 
+хотя в простейших случаях можно обойтись без наследования, используя член info.
+В большинстве других случаев можно применить шаблоны, которые представлены ниже:
+</p>
+<pre>
+template &lt;class T> class ListItem : public T, public ShevItem
+{
+public:
+    ListItem () {}
+    explicit ListItem ( const T & t, int i = -123456789 ) : T(t), ShevItem(i) {}
+    T & base () { return *this; }
+};
+
+template &lt;class T> class ListItemA : public ShevItem
+{
+public:
+    T a;
+    ListItemA () {}
+    explicit ListItemA ( const T & t, int i = -123456789 ) : a(t), ShevItem(i) {}
+    operator const T & () const { return a; }
+};
+
+template &lt;class T> class List : public ShevList
+{
+// Запрет конструктора копии и оператора присваивания:
+    List ( List & );
+    void operator = ( List & );
+public:
+    List() {}
+
+    const T * fir() const { return (const T *) ShevList::fir(); }
+    const T * cur() const { return (const T *) ShevList::cur(); }
+    const T * las() const { return (const T *) ShevList::las(); }
+
+    T * fir ( Predicate1 & pre ) { return (T *) ShevList::fir(pre); }
+    T * las ( Predicate1 & pre ) { return (T *) ShevList::las(pre); }
+
+    const T * fir ( Predicate1 & pre ) const { return (const T *) ShevList::fir(pre); }
+    const T * las ( Predicate1 & pre ) const { return (const T *) ShevList::las(pre); }
+
+    T * fir ()  { return (T *) ShevList::fir (); }
+    T * cur ()  { return (T *) ShevList::cur (); }
+    T * las ()  { return (T *) ShevList::las (); }
+    T * top ()  { return (T *) ShevList::top (); }
+    T * end ()  { return (T *) ShevList::end (); }
+    T * prev()  { return (T *) ShevList::prev(); }
+    T * next()  { return (T *) ShevList::next(); }
+    T * cprev() { return (T *) ShevList::cprev(); }
+    T * cnext() { return (T *) ShevList::cnext(); }
+
+// Сделать текущим данный элемент ( небезопасная функция ):
+    List & jump ( T * i ) { return (List&) ShevList::jump(i); }
+// Добавить в список один элемент
+    List & addBefFir ( T * i ) { return (List&) ShevList::addBefFir(i); } // перед первым
+    List & addBefCur ( T * i ) { return (List&) ShevList::addBefCur(i); } // перед текущим и сделать его текущим
+    List & addAftCur ( T * i ) { return (List&) ShevList::addAftCur(i); } // после текущего и сделать его текущим
+    List & addAftLas ( T * i ) { return (List&) ShevList::addAftLas(i); } // после последнего элемента
+// Добавить из другого списка
+    List & addAllBefFir ( List & list ) { return (List&) ShevList::addAllBefFir(list); } // все элементы в начало
+    List & addAllBefCur ( List & list ) { return (List&) ShevList::addAllBefCur(list); } // все элементы перед текущим
+    List & addAllAftCur ( List & list ) { return (List&) ShevList::addAllAftCur(list); } // все элементы после текущего
+    List & addAllAftLas ( List & list ) { return (List&) ShevList::addAllAftLas(list); } // все элементы в конец
+
+    T * addNewBefFir ( List & list )
+    {
+        if ( list.las() )
+            list.ShevList::movLasBefFir ( *this );
+        else
+            ShevList::addBefFir ( new T );
+        return fir();
+    }
+
+    T * addNewAftLas ( List & list )
+    {
+        if ( list.las() )
+            list.ShevList::movLasAftLas ( *this );
+        else
+            ShevList::addAftLas ( new T );
+        return las();
+    }
+
+    List & invert     () { return (List&) ShevList::invert (); }
+    List & makeCurFir () { return (List&) ShevList::makeCurFir (); }
+    List & makeCurLas () { return (List&) ShevList::makeCurLas (); }
+    List & makeFir ( T * p ) { return (List&) ShevList::makeFir ( p ); }
+    List & makeLas ( T * p ) { return (List&) ShevList::makeLas ( p ); }
+    List & sort123    () { return (List&) ShevList::sort123 (); }
+    List & sort321    () { return (List&) ShevList::sort321 (); }
+
+    List & movFirBefFir ( List & list ) { return (List&) ShevList::movFirBefFir ( list ); }
+    List & movFirBefCur ( List & list ) { return (List&) ShevList::movFirBefCur ( list ); }
+    List & movFirAftCur ( List & list ) { return (List&) ShevList::movFirAftCur ( list ); }
+    List & movFirAftLas ( List & list ) { return (List&) ShevList::movFirAftLas ( list ); }
+    List & movCurBefFir ( List & list ) { return (List&) ShevList::movCurBefFir ( list ); }
+    List & movCurBefCur ( List & list ) { return (List&) ShevList::movCurBefCur ( list ); }
+    List & movCurAftCur ( List & list ) { return (List&) ShevList::movCurAftCur ( list ); }
+    List & movCurAftLas ( List & list ) { return (List&) ShevList::movCurAftLas ( list ); }
+    List & movLasBefFir ( List & list ) { return (List&) ShevList::movLasBefFir ( list ); }
+    List & movLasBefCur ( List & list ) { return (List&) ShevList::movLasBefCur ( list ); }
+    List & movLasAftCur ( List & list ) { return (List&) ShevList::movLasAftCur ( list ); }
+    List & movLasAftLas ( List & list ) { return (List&) ShevList::movLasAftLas ( list ); }
+
+    List & movFirBefFir ( nat n, List & list ) { return (List&) ShevList::movFirBefFir ( n, list ); }
+    List & movLasAftLas ( nat n, List & list ) { return (List&) ShevList::movLasAftLas ( n, list ); }
+    List & movAllBefFir ( List & list ) { return (List&) ShevList::movAllBefFir ( list ); }
+    List & movAllBefCur ( List & list ) { return (List&) ShevList::movAllBefCur ( list ); }
+    List & movAllAftCur ( List & list ) { return (List&) ShevList::movAllAftCur ( list ); }
+    List & movAllAftLas ( List & list ) { return (List&) ShevList::movAllAftLas ( list ); }
+// Обмен элементами внутри списка:
+    ShevList & swapCurAndFir () { return (List&) ShevList::swapCurAndFir (); }
+    ShevList & swapCurAndLas () { return (List&) ShevList::swapCurAndLas (); }
+    ShevList & swapFirAndLas () { return (List&) ShevList::swapFirAndLas (); }
+// Обмен элементами между двумя списками:
+    List & swapCurAndCur ( List & list ) { return (List&) ShevList::swapCurAndCur ( list ); } // Обмен текущими элементами
+    List & swapAllAndAll ( List & list ) { return (List&) ShevList::swapAllAndAll ( list ); } // Обмен всеми элементами
+// Для всех элементов присвоить члену info значение i:
+    List & setAllInfo ( int i ) { return (List&) ShevList::setAllInfo(i); }
+// Удаление элементов из списка
+    List & delFir () { return (List&) ShevList::delFir (); }
+    List & delCur () { return (List&) ShevList::delCur (); }
+    List & delLas () { return (List&) ShevList::delLas (); }
+
+    template &lt;class F> List & delSel ( F & filter )
+    {
+        if ( top() ) for(;;)
+        { 
+            if ( filter ( *cur() ) )
+            {
+                if ( delCur_() ) break;
+                continue;
+            }
+            if ( ! next() ) break; 
+        }
+        return *this;
+    }
+
+    template &lt;class T2> List & operator += ( const T2 & p )
+    {
+        if ( top() ) do { *cur() += p; } while ( next() );  return *this;
+    }
+
+    template &lt;class T2> List & operator -= ( const T2 & p )
+    {
+        if ( top() ) do { *cur() -= p; } while ( next() );  return *this;
+    }
+
+    template &lt;class T2> List & operator *= ( const T2 & p )
+    {
+        if ( top() ) do { *cur() *= p; } while ( next() );  return *this;
+    }
+
+    template &lt;class T2> List & operator /= ( const T2 & p )
+    {
+        if ( top() ) do { *cur() /= p; } while ( next() );  return *this;
+    }
+
+    List & resize ( nat n )
+    {
+        while ( size() > n ) ShevList::delLas();
+        while ( size() < n ) ShevList::addAftLas ( new T );
+        return *this;
+    }
+
+    List & resize ( nat n, List & stor )
+    {
+        stor.addAllBefFir(*this).movFirBefFir ( n, *this );
+        while ( size() < n ) ShevList::addAftLas ( new T );
+        return *this;
+    }
+};
+</pre>
+<p>Шаблоны ListItem и ListItemA создают производные классы от ShevItem. Шаблон List делает производные классы от ShevList. 
+В качестве параметра для него нужно задавать класс производный от ShevItem.
+</p>
+<p>Иногда нужно передать список в функцию для того, чтобы его можно было просматривать,
+но не изменять. Для этого предназначен класс ShowList и производные от него: 
+</p>
+<pre>
+class ShowList
+{
+    const ShevItem *       cPtr; // указатель на текущий элемент списка
+    const ShevItem * const fPtr; // указатель на первый элемент списка
+    const ShevItem * const lPtr; // указатель на последний элемент списка
+    const unsigned int listSize; // количество элементов в списке
+public:
+    ShowList ( const ShevList & p ) : cPtr(p.cPtr), fPtr(p.fPtr), lPtr(p.lPtr), listSize(p.listSize) {}
+// Количество элементов в списке:
+    unsigned int size () const { return listSize; }
+// Количество элементов с заданным свойством
+    unsigned int count ( Predicate1 & ) const;
+// Первый элемент с заданным свойством:
+    const ShevItem * fir ( Predicate1 & ) const;
+// Последний элемент с заданным свойством:
+    const ShevItem * las ( Predicate1 & ) const;
+// Текущий элемент первый?
+    bool curIsFir () const { return cPtr == fPtr; }
+// Текущий элемент последний?
+    bool curIsLas () const { return cPtr == lPtr; }
+// Имеется ли списке данный элемент?
+    bool has ( const ShevItem * ) const;
+// Доступ к отдельному элементу списка
+    const ShevItem * fir () const { return fPtr; }
+    const ShevItem * cur () const { return cPtr; }
+    const ShevItem * las () const { return lPtr; }
+// Сделать текущим первый элемент
+    const ShevItem * top () { return cPtr = fPtr; }
+// Сделать текущим последний элемент
+    const ShevItem * end () { return cPtr = lPtr; }
+// Сделать текущим предыдущий элемент
+    const ShevItem * prev () { return cPtr != fPtr ? cPtr = cPtr->prevPtr : 0; }
+// Сделать текущим следующий элемент
+    const ShevItem * next () { return cPtr != lPtr ? cPtr = cPtr->nextPtr : 0; }
+// Сделать текущим предыдущий элемент в цикле
+    const ShevItem * cprev () { return cPtr = (cPtr==fPtr) ? lPtr : cPtr->prevPtr; }
+// Сделать текущим следующий элемент в цикле
+    const ShevItem * cnext () { return cPtr = (cPtr==lPtr) ? fPtr : cPtr->nextPtr; }
+// Сделать текущим данный элемент ( небезопасная функция ):
+    void jump ( const ShevItem * m ) { cPtr = m; }
+// Сделать текущим первый элемент с заданным свойством:
+    bool findFir ( Predicate1 & );
+// Сделать текущим последний элемент с заданным свойством:
+    bool findLas ( Predicate1 & );
+};
+
+template &lt;class T> class Show : public ShowList
+{
+public:
+    Show ( const List&lt;T> & p ) : ShowList ( p ) {}
+// Доступ к отдельному элементу списка
+    const T * fir () const { return (const T *) ShowList::fir(); }
+    const T * cur () const { return (const T *) ShowList::cur(); }
+    const T * las () const { return (const T *) ShowList::las(); }
+// Первый элемент с заданным свойством:
+    const T * fir ( Predicate1 & p ) const { return (const T *) ShowList::fir(); }
+// Последний элемент с заданным свойством:
+    const T * las ( Predicate1 & p ) const { return (const T *) ShowList::las(); }
+// Сделать текущим первый элемент
+    const T * top () { return (const T *) ShowList::top(); }
+// Сделать текущим последний элемент
+    const T * end () { return (const T *) ShowList::end(); }
+// Сделать текущим предыдущий элемент
+    const T * prev () { return (const T *) ShowList::prev(); }
+// Сделать текущим следующий элемент
+    const T * next () { return (const T *) ShowList::next(); }
+// Сделать текущим предыдущий элемент в цикле
+    const T * cprev () { return (const T *) ShowList::cprev(); }
+// Сделать текущим следующий элемент в цикле
+    const T * cnext () { return (const T *) ShowList::cnext(); }
+// Сделать текущим данный элемент ( небезопасная функция ):
+    void jump ( const T * m ) { ShowList::jump ( m ); }
+};
+</pre>
+<p>Интерфейс класса ShowList аналогичен интерфейсу класса ShevList, но имеет только те методы,
+которые не меняют список и его элементы.
+</p>
+<p>Исходники находятся в файлах <a href="source/source.zip">ShevList.h и ShevList.cpp</a>
+</p>
+<p><a href="rus_list.html">Начало</a>
+<pre>
+
+</pre></td></div>
+</table></div>
+</body>
+</html>

@@ -1,0 +1,50 @@
+<html>
+<head>
+<title>Максимальная плоская фигура вписанная в многогранник</title>
+<link rel="stylesheet" type="text/css" href="stylle.css">
+</head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Максимальная плоская фигура вписанная в многогранник</font>
+</div>
+<div align=left><td><br>
+В этом разделе представлены функции, которые вписывают максимальную по размеру плоскую фигуру 
+( чаще всего в этом качестве используется площадь ) в выпуклый многогранник:
+<p>
+&bull; Круг.
+</p>
+<pre>Def&lt;Circle3d> maxCircleInConvexPolyhedron ( const Polyhedron & poly );
+</pre>
+&bull; Треугольник.
+</p>
+<pre>Def&lt;Triangle3d> maxTriangleInConvexPolyhedronA ( const Polyhedron & poly );
+</pre>
+&bull; Прямоугольник без вращения.
+</p>
+<pre>Def&lt;Rectangle3d> maxRectangleInConvexPolyhedronANR ( const Polyhedron & outer );
+</pre>
+&bull; Ромб без вращения.
+</p>
+<pre>Def&lt;Rhombus3d> maxRhombusInConvexPolyhedronANR ( const Polyhedron & outer );
+</pre>
+&bull; Параллелограмм (  A - максимум площади, P - максимум периметра ).
+</p>
+<pre>Def&lt;Parallelogram3d> maxParallelogramInConvexPolyhedronA ( const Polyhedron & poly );
+Def&lt;Parallelogram3d> maxParallelogramInConvexPolyhedronP ( const Polyhedron & poly );
+</pre>
+</p>
+<p>Описание классов Circle3d, Triangle3d, Rectangle3d, Rhombus3d и Parallelogram3d находится <a href="figure3d.html">здесь</a>.
+<br>Описание шаблона классов Def находится <a href="def.html">здесь</a>.
+<br>Описание класса Polyhedron находится <a href="rus_polyhedron.html">здесь</a>.
+<br>Исходники находятся в файле <a href="source/source.zip">opti2d_3d.cpp</a>.
+</p>
+<a href="rus_geom.html">Наверх</a>
+</pre>
+
+<pre>
+</td></div>
+</table>
+</body>
+</html>

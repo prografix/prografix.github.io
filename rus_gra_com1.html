@@ -1,0 +1,399 @@
+<html>
+<head><title>Описание gra-команд версии 1</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align=center>
+<br><font color="" style="font-size: 20pt">Описание gra-команд версии 1</font>
+</div>
+<p>Эти команды предназначены для виртуальной gra-машины или виртуального графического процессора. 
+На файле команды, а также целые и рациональные числа, занимают по 4 байта. 
+Gra-машина имеет два отдельных адресных пространства: для целых (int) и рациональных (float) чисел,
+которые здесь представлены массивами соответственно intValue и floatValue. 
+</p>
+<p>Группа Clear 
+</p>
+<table cellspacing="10" cellpadding="0">
+<tr><td>Дес. код</td><td>Мнемо-код</td><td>Параметры</td><td>Действие</td></tr>
+<tr><td>0</td><td>CLEAR_COLOR</td><td>float r, float g, float b, float a</td><td>glClearColor ( r, g, b, a );</td></tr>
+<tr><td>1</td><td>CLEAR_COLOR_BUFFER</td><td>Нет</td><td>glClear ( GL_COLOR_BUFFER_BIT );</td></tr>
+<tr><td>2</td><td>CLEAR_DEPTH_BUFFER</td><td>Нет</td><td>glClear ( GL_DEPTH_BUFFER_BIT );</td></tr>
+<tr><td>3</td><td>CLEAR_STENCIL_BUFFER</td><td>Нет</td><td>glClear (GL_STENCIL_BUFFER_BIT);</td></tr>
+</table>
+<p>Группа Enable 
+</p>
+<table cellspacing="10" cellpadding="0">
+<tr><td>Дес. код</td><td>Мнемо-код</td><td>Параметры</td><td>Действие</td></tr>
+<tr><td>4</td><td>ENABLE_BLEND</td><td>Нет</td><td>glEnable(GL_BLEND);</td></tr>
+<tr><td>5</td><td>ENABLE_CULL_FACE</td><td>Нет</td><td>glEnable(GL_CULL_FACE);</td></tr>
+<tr><td>6</td><td>ENABLE_DEPTH_TEST</td><td>Нет</td><td>glEnable(GL_DEPTH_TEST);</td></tr>
+<tr><td>7</td><td>ENABLE_LIGHT</td><td>int i</td><td>glEnable(GL_LIGHT0 + i);</td></tr>
+<tr><td>8</td><td>ENABLE_LINE_LIGHTING</td><td>Нет</td><td>glEnable(GL_LIGHTING);</td></tr>
+<tr><td>9</td><td>ENABLE_LINE_STIPPLE</td><td>Нет</td><td>glEnable(GL_LINE_STIPPLE);</td></tr>
+<tr><td>10</td><td>ENABLE_NORMALIZE</td><td>Нет</td><td>glEnable(GL_NORMALIZE);</td></tr>
+<tr><td>11</td><td>ENABLE_POLYGON_STIPPLE</td><td>Нет</td><td>glEnable(GL_POLYGON_STIPPLE);</td></tr>
+<tr><td>12</td><td>ENABLE_STENCIL_TEST</td><td>Нет</td><td>glEnable(GL_STENCIL_TEST);</td></tr>
+<tr><td>13</td><td>ENABLE_TEXTURE_2D</td><td>Нет</td><td>glEnable(GL_TEXTURE_2D);</td></tr>
+<tr><td>14</td><td>ENABLE_TEXTURE_GEN_S</td><td>Нет</td><td>glEnable(GL_TEXTURE_GEN_S);</td></tr>
+<tr><td>15</td><td>ENABLE_TEXTURE_GEN_T</td><td>Нет</td><td>glEnable(GL_TEXTURE_GEN_T);</td></tr>
+</table>
+<p>Группа Disable 
+</p>
+<table cellspacing="10" cellpadding="0">
+<tr><td>Дес. код</td><td>Мнемо-код</td><td>Параметры</td><td>Действие</td></tr>
+<tr><td>16</td><td>DISABLE_BLEND</td><td>Нет</td><td>glDisable(GL_BLEND);</td></tr>
+<tr><td>17</td><td>DISABLE_CULL_FACE</td><td>Нет</td><td>glDisable(GL_CULL_FACE);</td></tr>
+<tr><td>18</td><td>DISABLE_DEPTH_TEST</td><td>Нет</td><td>glDisable(GL_DEPTH_TEST);</td></tr>
+<tr><td>19</td><td>DISABLE_LIGHT</td><td>int i</td><td>glDisable(GL_LIGHT0 + i);</td></tr>
+<tr><td>20</td><td>DISABLE_LINE_LIGHTING</td><td>Нет</td><td>glDisable(GL_LIGHTING);</td></tr>
+<tr><td>21</td><td>DISABLE_LINE_STIPPLE</td><td>Нет</td><td>glDisable(GL_LINE_STIPPLE);</td></tr>
+<tr><td>22</td><td>DISABLE_NORMALIZE</td><td>Нет</td><td>glDisable(GL_NORMALIZE);</td></tr>
+<tr><td>23</td><td>DISABLE_POLYGON_STIPPLE</td><td>Нет</td><td>glDisable(GL_POLYGON_STIPPLE);</td></tr>
+<tr><td>24</td><td>DISABLE_STENCIL_TEST</td><td>Нет</td><td>glDisable(GL_STENCIL_TEST);</td></tr>
+<tr><td>25</td><td>DISABLE_TEXTURE_2D</td><td>Нет</td><td>glDisable(GL_TEXTURE_2D);</td></tr>
+<tr><td>26</td><td>DISABLE_TEXTURE_GEN_S</td><td>Нет</td><td>glDisable(GL_TEXTURE_GEN_S);</td></tr>
+<tr><td>27</td><td>DISABLE_TEXTURE_GEN_T</td><td>Нет</td><td>glDisable(GL_TEXTURE_GEN_T);</td></tr>
+</table>
+<p>Группа Blend и Deph 
+</p>
+<table cellspacing="10" cellpadding="0">
+<tr><td>Дес. код</td><td>Мнемо-код</td><td>Параметры</td><td>Действие</td><td>Примечание</td></tr>
+<tr><td>28</td><td>BLEND_FUNC</td><td>int src, int dst</td><td>glBlendFunc(blend[src], blend[dst]);</td><td>См. ниже таблицу Blend</td></tr>
+<tr><td>29</td><td>DEPTH_FUNC_NEVER</td><td>Нет</td><td>glDepthFunc(GL_NEVER);</td></tr>
+<tr><td>30</td><td>DEPTH_FUNC_LESS</td><td>Нет</td><td>glDepthFunc(GL_LESS);</td></tr>
+<tr><td>31</td><td>DEPTH_FUNC_LEQUAL</td><td>Нет</td><td>glDepthFunc(GL_LEQUAL);</td></tr>
+<tr><td>32</td><td>DEPTH_FUNC_EQUAL</td><td>Нет</td><td>glDepthFunc(GL_EQUAL);</td></tr>
+<tr><td>33</td><td>DEPTH_FUNC_GREATER</td><td>Нет</td><td>glDepthFunc(GL_GREATER);</td></tr>
+<tr><td>34</td><td>DEPTH_FUNC_NOTEQUAL</td><td>Нет</td><td>glDepthFunc(GL_NOTEQUAL);</td></tr>
+<tr><td>35</td><td>DEPTH_FUNC_GEQUAL</td><td>Нет</td><td>glDepthFunc(GL_GEQUAL);</td></tr>
+<tr><td>36</td><td>DEPTH_FUNC_ALWAYS</td><td>Нет</td><td>glDepthFunc(GL_ALWAYS);</td></tr>
+</table>
+<p>Группа Stencil 
+</p>
+<table cellspacing="10" cellpadding="0">
+<tr><td>Дес. код</td><td>Мнемо-код</td><td>Параметры</td><td>Действие</td><td>Примечание</td></tr>
+<tr><td>37</td><td>STENCIL_FUNC_NEVER</td><td>int ref, int mask</td><td>glStencilFunc(GL_NEVER, ref, mask);</td></tr>
+<tr><td>38</td><td>STENCIL_FUNC_LESS</td><td>int ref, int mask</td><td>glStencilFunc(GL_LESS, ref, mask);</td></tr>
+<tr><td>39</td><td>STENCIL_FUNC_LEQUAL</td><td>int ref, int mask</td><td>glStencilFunc(GL_LEQUAL, ref, mask);</td></tr>
+<tr><td>40</td><td>STENCIL_FUNC_EQUAL</td><td>int ref, int mask</td><td>glStencilFunc(GL_EQUAL, ref, mask);</td></tr>
+<tr><td>41</td><td>STENCIL_FUNC_GREATER</td><td>int ref, int mask</td><td>glStencilFunc(GL_GREATER, ref, mask);</td></tr>
+<tr><td>42</td><td>STENCIL_FUNC_NOTEQUAL</td><td>int ref, int mask</td><td>glStencilFunc(GL_NOTEQUAL, ref, mask);</td></tr>
+<tr><td>43</td><td>STENCIL_FUNC_GEQUAL</td><td>int ref, int mask</td><td>glStencilFunc(GL_GEQUAL, ref, mask);</td></tr>
+<tr><td>44</td><td>STENCIL_FUNC_ALWAYS</td><td>int ref, int mask</td><td>glStencilFunc(GL_ALWAYS, ref, mask);</td></tr>
+<tr><td>45</td><td>STENCIL_OP</td><td>int fail, int zfail, int zpass</td><td>glStencilOp(stencil[fail], stencil[zfail], stencil[zpass]);</td><td>См. ниже таблицу Stencil</td></tr>
+</table>
+<p>Группа Begin, End
+</p>
+<table cellspacing="10" cellpadding="0">
+<tr><td>Дес. код</td><td>Мнемо-код</td><td>Параметры</td><td>Действие</td></tr>
+<tr><td>46</td><td>BEGIN_POINTS</td><td>Нет</td><td>glBegin(GL_POINTS);</td></tr>
+<tr><td>47</td><td>BEGIN_LINES</td><td>Нет</td><td>glBegin(GL_LINES);</td></tr>
+<tr><td>48</td><td>BEGIN_LINE_STRIP</td><td>Нет</td><td>glBegin(GL_LINE_STRIP);</td></tr>
+<tr><td>49</td><td>BEGIN_LINE_LOOP</td><td>Нет</td><td>glBegin(GL_LINE_LOOP);</td></tr>
+<tr><td>50</td><td>BEGIN_TRIANGLES</td><td>Нет</td><td>glBegin(GL_TRIANGLES);</td></tr>
+<tr><td>51</td><td>BEGIN_TRIANGLE_STRIP</td><td>Нет</td><td>glBegin(GL_TRIANGLE_STRIP);</td></tr>
+<tr><td>52</td><td>BEGIN_TRIANGLE_FAN</td><td>Нет</td><td>glBegin(GL_TRIANGLE_FAN);</td></tr>
+<tr><td>53</td><td>BEGIN_QUADS</td><td>Нет</td><td>glBegin(GL_QUADS);</td></tr>
+<tr><td>54</td><td>BEGIN_QUAD_STRIP</td><td>Нет</td><td>glBegin(GL_QUAD_STRIP);</td></tr>
+<tr><td>55</td><td>BEGIN_POLYGON</td><td>Нет</td><td>glBegin(GL_POLYGON);</td></tr>
+<tr><td>56</td><td>END</td><td>Нет</td><td>glEnd();</td></tr>
+</table>
+<p>Группа Cull face
+</p>
+<table cellspacing="10" cellpadding="0">
+<tr><td>Дес. код</td><td>Мнемо-код</td><td>Параметры</td><td>Действие</td></tr>
+<tr><td>57</td><td>CULL_FACE_BACK</td><td>Нет</td><td>glCullFace(GL_BACK);</td></tr>
+<tr><td>58</td><td>CULL_FACE_FRONT</td><td>Нет</td><td>glCullFace(GL_FRONT);</td></tr>
+<tr><td>59</td><td>CULL_FACE_FRONT_AND_BACK</td><td>Нет</td><td>glCullFace(GL_FRONT_AND_BACK);</td></tr>
+</table>
+<p>Группа Light
+</p>
+<table cellspacing="10" cellpadding="0">
+<tr><td>Дес. код</td><td>Мнемо-код</td><td>Параметры</td><td>Действие</td></tr>
+<tr><td>60</td><td>LIGHT_AMBIENT</td><td>int id, float data[4]</td><td>glLightfv(GL_LIGHT0 + id, GL_AMBIENT, data);</td></tr>
+<tr><td>61</td><td>LIGHT_AMBIENT_4V</td><td>int id, int index</td><td>glLightfv(GL_LIGHT0 + id, GL_AMBIENT, floatValue + index);</td></tr>
+<tr><td>62</td><td>LIGHT_DIFFUSE</td><td>int id, float data[4]</td><td>glLightfv(GL_LIGHT0 + id, GL_DIFFUSE, data);</td></tr>
+<tr><td>63</td><td>LIGHT_DIFFUSE_4V</td><td>int id, int index</td><td>glLightfv(GL_LIGHT0 + id, GL_DIFFUSE, floatValue + index);</td></tr>
+<tr><td>64</td><td>LIGHT_SPECULAR</td><td>int id, float data[4]</td><td>glLightfv(GL_LIGHT0 + id, GL_SPECULAR, data);</td></tr>
+<tr><td>65</td><td>LIGHT_SPECULAR_4V</td><td>int id, int index</td><td>glLightfv(GL_LIGHT0 + id, GL_SPECULAR, floatValue + index);</td></tr>
+<tr><td>66</td><td>LIGHT_POSITION</td><td>int id, float data[4]</td><td>glLightfv(GL_LIGHT0 + id, GL_POSITION, data);</td></tr>
+<tr><td>67</td><td>LIGHT_POSITION_4V</td><td>int id, int index</td><td>glLightfv(GL_LIGHT0 + id, GL_POSITION, floatValue + index);</td></tr>
+</table>
+<p>Группа Stipple
+</p>
+<table cellspacing="10" cellpadding="0">
+<tr><td>Дес. код</td><td>Мнемо-код</td><td>Параметры</td><td>Действие</td><td>Примечание</td></tr>
+<tr><td>68</td><td>LINE_STIPPLE</td><td>int factor, int pattern</td><td>glLineStipple(factor, pattern);</td></tr>
+<tr><td>69</td><td>POLYGON_STIPPLE_ARR</td><td>unsigned char mask[128]</td><td>glPolygonStipple(mask);</td></tr>
+<tr><td>70</td><td>POLYGON_STIPPLE_PTR</td><td>unsigned char * mask</td><td>glPolygonStipple(mask);</td><td>Эта команда не для файла</td></tr>
+</table>
+<p>Группа Material
+</p>
+<table cellspacing="10" cellpadding="0">
+<tr><td>Дес. код</td><td>Мнемо-код</td><td>Параметры</td><td>Действие</td></tr>
+<tr><td>71</td><td>MATERIAL_BACK_AMBIENT</td><td>float data[4]</td><td>glMaterialfv(GL_BACK, GL_AMBIENT, data);</td></tr>
+<tr><td>72</td><td>MATERIAL_BACK_DIFFUSE</td><td>float data[4]</td><td>glMaterialfv(GL_BACK, GL_DIFFUSE, data);</td></tr>
+<tr><td>73</td><td>MATERIAL_BACK_EMISSION</td><td>float data[4]</td><td>glMaterialfv(GL_BACK, GL_EMISSION, data);</td></tr>
+<tr><td>74</td><td>MATERIAL_BACK_SPECULAR</td><td>float data[4]</td><td>glMaterialfv(GL_BACK, GL_SPECULAR, data);</td></tr>
+<tr><td>75</td><td>MATERIAL_BACK_SHININESS</td><td>float s</td><td>glMaterialf(GL_BACK, GL_SHININESS, s);</td></tr>
+<tr><td>76</td><td>MATERIAL_FRONT_AMBIENT</td><td>float data[4]</td><td>glMaterialfv(GL_FRONT, GL_AMBIENT, data);</td></tr>
+<tr><td>77</td><td>MATERIAL_FRONT_DIFFUSE</td><td>float data[4]</td><td>glMaterialfv(GL_FRONT, GL_DIFFUSE, data);</td></tr>
+<tr><td>78</td><td>MATERIAL_FRONT_EMISSION</td><td>float data[4]</td><td>glMaterialfv(GL_FRONT, GL_EMISSION, data);</td></tr>
+<tr><td>79</td><td>MATERIAL_FRONT_SPECULAR</td><td>float data[4]</td><td>glMaterialfv(GL_FRONT, GL_SPECULAR, data);</td></tr>
+<tr><td>80</td><td>MATERIAL_FRONT_SHININESS</td><td>float s</td><td>glMaterialf(GL_FRONT, GL_SHININESS, s);</td></tr>
+</table>
+<p>Группа Polygon mode
+</p>
+<table cellspacing="10" cellpadding="0">
+<tr><td>Дес. код</td><td>Мнемо-код</td><td>Параметры</td><td>Действие</td><td>Примечание</td></tr>
+<tr><td>81</td><td>POLYGON_MODE</td><td>int iface, int imode</td><td>glPolygonMode(face[iface], mode[imode]);</td>
+<td>Таблицы Face и PolygonMode смотрите ниже</td></tr>
+</table>
+<p>Группа Color
+</p>
+<table cellspacing="10" cellpadding="0">
+<tr><td>Дес. код</td><td>Мнемо-код</td><td>Параметры</td><td>Действие</td></tr>
+<tr><td>82</td><td>COLOR3</td><td>float r, float g, float b</td><td>glColor3f(r, g, b);</td></tr>
+<tr><td>83</td><td>COLOR4</td><td>float r, float g, float b, float a</td><td>glColor4f(r, g, b, a);</td></tr>
+<tr><td>84</td><td>COLOR_3V</td><td>int i</td><td>glColor3f(floatValue[i], floatValue[i+1], floatValue[i+2]);</td></tr>
+<tr><td>85</td><td>COLOR_4V</td><td>int i</td><td>glColor4f(floatValue[i], floatValue[i+1], floatValue[i+2], floatValue[i+3]);</td></tr>
+</table>
+<p>Группа Normal
+</p>
+<table cellspacing="10" cellpadding="0">
+<tr><td>Дес. код</td><td>Мнемо-код</td><td>Параметры</td><td>Действие</td></tr>
+<tr><td>86</td><td>NORMAL3</td><td>float x, float y, float z</td><td>glNormal3f(x, y, z);</td></tr>
+<tr><td>87</td><td>NORMAL_3V</td><td>int i</td><td>glNormal3f(floatValue[i], floatValue[i+1], floatValue[i+2]);</td></tr>
+</table>
+<p>Группа Vertex
+</p>
+<table cellspacing="10" cellpadding="0">
+<tr><td>Дес. код</td><td>Мнемо-код</td><td>Параметры</td><td>Действие</td></tr>
+<tr><td>88</td><td>VERTEX2</td><td>float x, float y</td><td>glVertex2f(x, y);</td></tr>
+<tr><td>89</td><td>VERTEX3</td><td>float x, float y, float z</td><td>glVertex3f(x, y, z);</td></tr>
+<tr><td>90</td><td>VERTEX_2V</td><td>int i</td><td>glVertex2f(floatValue[i], floatValue[i+1]);</td></tr>
+<tr><td>91</td><td>VERTEX_3V</td><td>int i</td><td>glVertex3f(floatValue[i], floatValue[i+1], floatValue[i+2]);</td></tr>
+</table>
+<p>Группа Display list
+</p>
+<table cellspacing="10" cellpadding="0">
+<tr><td>Дес. код</td><td>Мнемо-код</td><td>Параметры</td><td>Действие</td></tr>
+<tr><td>92</td><td>CALL_LIST</td><td>int list</td><td>glCallList(list);</td></tr>
+<tr><td>93</td><td>CALL_LIST_INDEX</td><td>int index</td><td>glCallList(intValue[index]);</td></tr>
+<tr><td>94</td><td>END_LIST</td><td>Нет</td><td>glEndList();</td></tr>
+<tr><td>95</td><td>NEW_LIST_COMPILE</td><td>int list</td><td>glNewList(list, GL_COMPILE);</td></tr>
+<tr><td>96</td><td>NEW_LIST_COMPILE_AND_EXECUTE</td><td>int list</td><td>glNewList(list, GL_COMPILE_AND_EXECUTE);</td></tr>
+</table>
+<p>Группа Matrix
+</p>
+<table cellspacing="10" cellpadding="0">
+<tr><td>Дес. код</td><td>Мнемо-код</td><td>Параметры</td><td>Действие</td></tr>
+<tr><td>97</td><td>LOAD_IDENTITY</td><td>Нет</td><td>glLoadIdentity();</td></tr>
+<tr><td>98</td><td>LOOK_AT</td><td>int i</td><td>gluLookAt ( floatValue[i], floatValue[i+1], floatValue[i+2],
+															floatValue[i+3], floatValue[i+4], floatValue[i+5],
+															floatValue[i+6], floatValue[i+7], floatValue[i+8] );</td></tr>
+<tr><td>99</td><td>MATRIX_MODE_MODEL_VIEW</td><td>Нет</td><td>glMatrixMode(GL_MODELVIEW);</td></tr>
+<tr><td>10</td><td>MATRIX_MODE_PROJECTION</td><td>Нет</td><td>glMatrixMode(GL_PROJECTION);</td></tr>
+<tr><td>101</td><td>MATRIX_MODE_TEXTURE</td><td>Нет</td><td>glMatrixMode(GL_TEXTURE);</td></tr>
+<tr><td>102</td><td>MULT_MATRIX</td><td>int i</td><td>glMultMatrixf(floatValue+i);</td></tr>
+<tr><td>103</td><td>PERSPECTIVE</td><td>float fovy, float aspect, float zNear, float zFar</td>
+									<td>gluPerspective(fovy, aspect, zNear, zFar);</td></tr>
+<tr><td>104</td><td>PERSPECTIVE_4V</td><td>int i</td>
+									<td>gluPerspective(floatValue[i], floatValue[i+1], floatValue[i+2], floatValue[i+3]);</td></tr>
+<tr><td>105</td><td>POP_MATRIX</td><td>Нет</td><td>glPopMatrix();</td></tr>
+<tr><td>106</td><td>PUSH_MATRIX</td><td>Нет</td><td>glPushMatrix();</td></tr>
+<tr><td>107</td><td>ROTATE</td><td>float angle, float x, float y, float z</td><td>glRotatef(angle, x, y, z);</td></tr>
+<tr><td>108</td><td>ROTATE_4V</td><td>int i</td><td>glRotatef(floatValue[i], floatValue[i+1], floatValue[i+2], floatValue[i+3]);</td></tr>
+<tr><td>109</td><td>SCALE</td><td>float x, float y, float z</td><td>glScalef(x, y, z);</td></tr>
+<tr><td>110</td><td>SCALE_3V</td><td>int i</td><td>glScalef(floatValue[i], floatValue[i+1], floatValue[i+2]);</td></tr>
+<tr><td>111</td><td>TRANSLATE</td><td>float x, float y, float z</td><td>glTranslatef(x, y, z);</td></tr>
+<tr><td>112</td><td>TRANSLATE_3V</td><td>int i</td><td>glTranslatef(floatValue[i], floatValue[i+1], floatValue[i+2]);</td></tr>
+</table>
+<p>Группа Texture
+</p>
+<table cellspacing="10" cellpadding="0">
+<tr><td>Дес. код</td><td>Мнемо-код</td><td>Параметры</td><td>Действие</td></tr>
+<tr><td>113</td><td>BIND_TEXTURE_2D</td><td>int i</td><td>glBindTexture(GL_TEXTURE_2D, intValue[i]);</td></tr>
+<tr><td>114</td><td>BUILD_2D_MIPMAPS_BGR_ARR</td><td>int width, int height, unsigned char pData[]</td>
+		<td>gluBuild2DMipmaps(GL_TEXTURE_2D, 3, width, height, GL_BGR_EXT, GL_UNSIGNED_BYTE, pData);</td></tr>
+<tr><td>115</td><td>BUILD_2D_MIPMAPS_BGR_PTR</td><td>int width, int height, unsigned char * pData</td>
+		<td>gluBuild2DMipmaps(GL_TEXTURE_2D, 3, width, height, GL_BGR_EXT, GL_UNSIGNED_BYTE, pData);</td></tr>
+<tr><td>116</td><td>GEN_TEXTURES</td><td>int n, int i</td><td>glGenTextures(n, intValue + i);</td></tr>
+<tr><td>117</td><td>TEX_COORD2</td><td>float s, float t</td><td>glGenTextures(s, t);</td></tr>
+<tr><td>118</td><td>TEX_PAR_2D_MIN_FILTER_MIPMAP_NEARST</td><td>Нет</td>
+		<td>glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);</td></tr>
+<tr><td>119</td><td>TEX_PAR_2D_WRAP_S_REPEAT</td><td>Нет</td><td>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);</td></tr>
+<tr><td>120</td><td>TEX_PAR_2D_WRAP_T_REPEAT</td><td>Нет</td><td>glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);</td></tr>
+</table>
+<p>Группа Get
+</p>
+<table cellspacing="10" cellpadding="0">
+<tr><td>Дес. код</td><td>Мнемо-код</td><td>Параметры</td><td>Действие</td></tr>
+<tr><td>121</td><td>GET_FLOAT_VIEWPORT</td><td>int i</td><td>glGetFloatv(GL_VIEWPORT, floatValue + i);</td></tr>
+<tr><td>122</td><td>GET_INT_VIEWPORT</td><td>int i</td><td>glGetIntegerv(GL_VIEWPORT, intValue + i);</td></tr>
+</table>
+<p>Группа Quadric objects
+</p>
+<table cellspacing="10" cellpadding="0">
+<tr><td>Дес. код</td><td>Мнемо-код</td><td>Параметры</td><td>Действие</td></tr>
+<tr><td>123</td><td>QUADRIC_TEXTURE</td><td>int i</td><td>gluQuadricTexture(quadObj, i);</td></tr>
+<tr><td>124</td><td>SPHERE</td><td>float radius, int slices, int stacks</td><td>gluSphere(quadObj, radius, slices, stacks);</td></tr>
+</table>
+<p>Группа Integer
+</p>
+<table cellspacing="10" cellpadding="0">
+<tr><td>Дес. код</td><td>Мнемо-код</td><td>Параметры</td><td>Действие</td></tr>
+<tr><td>125</td><td>INT_AST_DC</td><td>int i1, int i2</td><td>intValue[i1] = i2;</td></tr>
+<tr><td>126</td><td>INT_AST_DD</td><td>int i1, int i2</td><td>intValue[i1] = intValue[i2];</td></tr>
+<tr><td>127</td><td>INT_ADD_DC</td><td>int i1, int i2</td><td>intValue[i1] += i2;</td></tr>
+<tr><td>128</td><td>INT_ADD_DD</td><td>int i1, int i2</td><td>intValue[i1] += intValue[i2];</td></tr>
+<tr><td>129</td><td>INT_SUB_DC</td><td>int i1, int i2</td><td>intValue[i1] -= i2;</td></tr>
+<tr><td>130</td><td>INT_SUB_DD</td><td>int i1, int i2</td><td>intValue[i1] -= intValue[i2];</td></tr>
+<tr><td>131</td><td>INT_MUL_DC</td><td>int i1, int i2</td><td>intValue[i1] *= i2;</td></tr>
+<tr><td>132</td><td>INT_MUL_DD</td><td>int i1, int i2</td><td>intValue[i1] *= intValue[i2];</td></tr>
+<tr><td>133</td><td>INT_DIV_DC</td><td>int i1, int i2</td><td>intValue[i1] /= i2;</td></tr>
+<tr><td>134</td><td>INT_DIV_DD</td><td>int i1, int i2</td><td>intValue[i1] /= intValue[i2];</td></tr>
+<tr><td>135</td><td>INT_MOD_DC</td><td>int i1, int i2</td><td>intValue[i1] %= i2;</td></tr>
+<tr><td>136</td><td>INT_MOD_DD</td><td>int i1, int i2</td><td>intValue[i1] %= intValue[i2];</td></tr>
+</table>
+<p>Группа Float
+</p>
+<table cellspacing="10" cellpadding="0">
+<tr><td>Дес. код</td><td>Мнемо-код</td><td>Параметры</td><td>Действие</td></tr>
+<tr><td>137</td><td>FLOAT_AST_DC</td><td>int i, float f</td><td>floatValue[i] = f;</td></tr>
+<tr><td>138</td><td>FLOAT_AST_DD</td><td>int i1, int i2</td><td>floatValue[i1] = floatValue[i2];</td></tr>
+<tr><td>139</td><td>FLOAT_AST_DI</td><td>int i1, int i2</td><td>floatValue[i1] = floatValue[intValue[i2]];</td></tr>
+<tr><td>140</td><td>FLOAT_AST_IC</td><td>int i, float f</td><td>floatValue[intValue[i]] = f;</td></tr>
+<tr><td>141</td><td>FLOAT_AST_ID</td><td>int i1, int i2</td><td>floatValue[intValue[i1]] = floatValue[i2];</td></tr>
+<tr><td>142</td><td>FLOAT_AST_II</td><td>int i1, int i2</td><td>floatValue[intValue[i1]] = floatValue[intValue[i2]];</td></tr>
+<tr><td>143</td><td>FLOAT_ADD_DC</td><td>int i, float f</td><td>floatValue[i] += f;</td></tr>
+<tr><td>144</td><td>FLOAT_ADD_DD</td><td>int i1, int i2</td><td>floatValue[i1] += floatValue[i2];</td></tr>
+<tr><td>145</td><td>FLOAT_ADD_DI</td><td>int i1, int i2</td><td>floatValue[i1] += floatValue[intValue[i2]];</td></tr>
+<tr><td>146</td><td>FLOAT_ADD_IC</td><td>int i, float f</td><td>floatValue[intValue[i]] += f;</td></tr>
+<tr><td>147</td><td>FLOAT_ADD_ID</td><td>int i1, int i2</td><td>floatValue[intValue[i1]] += floatValue[i2];</td></tr>
+<tr><td>148</td><td>FLOAT_ADD_II</td><td>int i1, int i2</td><td>floatValue[intValue[i1]] += floatValue[intValue[i2]];</td></tr>
+<tr><td>149</td><td>FLOAT_SUB_DC</td><td>int i, float f</td><td>floatValue[i] -= f;</td></tr>
+<tr><td>150</td><td>FLOAT_SUB_DD</td><td>int i1, int i2</td><td>floatValue[i1] -= floatValue[i2];</td></tr>
+<tr><td>151</td><td>FLOAT_SUB_DI</td><td>int i1, int i2</td><td>floatValue[i1] -= floatValue[intValue[i2]];</td></tr>
+<tr><td>152</td><td>FLOAT_SUB_IC</td><td>int i, float f</td><td>floatValue[intValue[i]] -= f;</td></tr>
+<tr><td>153</td><td>FLOAT_SUB_ID</td><td>int i1, int i2</td><td>floatValue[intValue[i1]] -= floatValue[i2];</td></tr>
+<tr><td>154</td><td>FLOAT_SUB_II</td><td>int i1, int i2</td><td>floatValue[intValue[i1]] -= floatValue[intValue[i2]];</td></tr>
+<tr><td>155</td><td>FLOAT_MUL_DC</td><td>int i, float f</td><td>floatValue[i] *= f;</td></tr>
+<tr><td>156</td><td>FLOAT_MUL_DD</td><td>int i1, int i2</td><td>floatValue[i1] *= floatValue[i2];</td></tr>
+<tr><td>157</td><td>FLOAT_MUL_DI</td><td>int i1, int i2</td><td>floatValue[i1] *= floatValue[intValue[i2]];</td></tr>
+<tr><td>158</td><td>FLOAT_MUL_IC</td><td>int i, float f</td><td>floatValue[intValue[i]] *= f;</td></tr>
+<tr><td>159</td><td>FLOAT_MUL_ID</td><td>int i1, int i2</td><td>floatValue[intValue[i1]] *= floatValue[i2];</td></tr>
+<tr><td>160</td><td>FLOAT_MUL_II</td><td>int i1, int i2</td><td>floatValue[intValue[i1]] *= floatValue[intValue[i2]];</td></tr>
+<tr><td>161</td><td>FLOAT_DIV_DC</td><td>int i, float f</td><td>floatValue[i] /= f;</td></tr>
+<tr><td>162</td><td>FLOAT_DIV_DD</td><td>int i1, int i2</td><td>floatValue[i1] /= floatValue[i2];</td></tr>
+<tr><td>163</td><td>FLOAT_DIV_DI</td><td>int i1, int i2</td><td>floatValue[i1] /= floatValue[intValue[i2]];</td></tr>
+<tr><td>164</td><td>FLOAT_DIV_IC</td><td>int i, float f</td><td>floatValue[intValue[i]] /= f;</td></tr>
+<tr><td>165</td><td>FLOAT_DIV_ID</td><td>int i1, int i2</td><td>floatValue[intValue[i1]] /= floatValue[i2];</td></tr>
+<tr><td>166</td><td>FLOAT_DIV_II</td><td>int i1, int i2</td><td>floatValue[intValue[i1]] /= floatValue[intValue[i2]];</td></tr>
+</table>
+<p>Группа Mix commands
+</p>
+<table cellspacing="10" cellpadding="0">
+<tr><td>Дес. код</td><td>Мнемо-код</td><td>Параметры</td><td>Действие</td></tr>
+<tr><td>167</td><td>INT_AST_FROM_FLOAT</td><td>int i1, int i2</td><td>intValue[i1] = int(floatValue[i2]);</td></tr>
+<tr><td>168</td><td>FLOAT_AST_FROM_INT</td><td>int i1, int i2</td><td>floatValue[i1] = float(intValue[i2]);</td></tr>
+</table>
+<p>Группа Conditional commands
+</p>
+<table cellspacing="10" cellpadding="0">
+<tr><td>Дес. код</td><td>Мнемо-код</td><td>Параметры</td><td>Действие</td><td>Примечание</td></tr>
+<tr><td>169</td><td>IF_INT_DC</td><td>int i1, int rel, int i2</td><td>if ( intValue[i1] rel i2 )</td><td>rel означает ==, !=, <, <=, >, >= </td></tr>
+<tr><td>170</td><td>IF_INT_DD</td><td>int i1, int rel, int i2</td><td>if ( intValue[i1] rel intValue[i2] )</td></tr>
+<tr><td>171</td><td>IF_FLOAT_DC</td><td>int i, int rel, float f</td><td>if ( floatValue[i] rel f )</td></tr>
+<tr><td>172</td><td>IF_FLOAT_DD</td><td>int i1, int rel, int i2</td><td>if ( floatValue[i1] rel floatValue[i2] )</td></tr>
+<tr><td>173</td><td>ELSE</td><td>Нет</td><td>else</td></tr>
+<tr><td>174</td><td>END_IF</td><td>Нет</td><td>endif</td></tr>
+</table>
+<p>Группа Loop
+</p>
+<table cellspacing="10" cellpadding="0">
+<tr><td>Дес. код</td><td>Мнемо-код</td><td>Параметры</td><td>Действие</td><td>Примечание</td></tr>
+<tr><td>175</td><td>DO</td><td>Нет</td><td>do</td></tr>
+<tr><td>176</td><td>WHILE_INT_DC</td><td>int i1, int rel, int i2</td><td>while ( intValue[i1] rel i2 )</td><td>rel означает ==, !=, <, <=, >, >= </td></tr>
+<tr><td>177</td><td>WHILE_INT_DC</td><td>int i1, int rel, int i2</td><td>while ( intValue[i1] rel intValue[i2] )</td></tr>
+</table>
+<p>Группа Mathematics
+</p>
+<table cellspacing="10" cellpadding="0">
+<tr><td>Дес. код</td><td>Мнемо-код</td><td>Параметры</td><td>Действие</td></tr>
+<tr><td>178</td><td>FLOAT_ABS</td><td>int i</td><td>floatValue[i] = fabsf(floatValue[i]);</td></tr>
+<tr><td>179</td><td>FLOAT_ATAN2</td><td>int i1, int i2</td><td>floatValue[i1] = atan2f(floatValue[i1], floatValue[i2]);</td></tr>
+<tr><td>180</td><td>FLOAT_COS</td><td>int i</td><td>floatValue[i] = cosf(floatValue[i]);</td></tr>
+<tr><td>181</td><td>FLOAT_SIN</td><td>int i</td><td>floatValue[i] = sinf(floatValue[i]);</td></tr>
+<tr><td>182</td><td>FLOAT_SQRT</td><td>int i</td><td>floatValue[i] = sqrtf(floatValue[i]);</td></tr>
+</table>
+<p>Группа Start position
+</p>
+<table cellspacing="10" cellpadding="0">
+<tr><td>Дес. код</td><td>Мнемо-код</td><td>Параметры</td><td>Действие</td><td>Примечание</td></tr>
+<tr><td>183</td><td>NEXT_START</td><td>const Node * node</td><td>В следующий раз начинать отсюда</td><td>Для файла параметр равен нулю</td></tr>
+<tr><td>184</td><td>NEXT_START_AND_RETURN</td><td>const Node * node</td><td>В следующий раз начинать отсюда, 
+а сейчас закончить</td><td>Для файла параметр равен нулю</td></tr>
+<tr><td>185</td><td>NEXT_START_FIRST</td><td>Нет</td><td>В следующий раз начинать с начала</td></tr>
+</table>
+<p>Группа Time
+</p>
+<table cellspacing="10" cellpadding="0">
+<tr><td>Дес. код</td><td>Мнемо-код</td><td>Параметры</td><td>Действие</td><td>Примечание</td></tr>
+<tr><td>186</td><td>CLOCK</td><td>int i</td><td>intValue[i] = clock();</td></tr>
+<tr><td>187</td><td>SET_TIMER</td><td>int i</td><td>SetTimer(i);</td><td>Запустить таймер окна</td></tr>
+</table>
+<p>Код 188 используется для внутренних нужд.
+</p>
+<p>Далее идут таблицы соответствия числовых кодов и констант OpenGL.
+</p>
+<p>Таблица Blend
+</p>
+<table cellspacing="10" cellpadding="0">
+<tr><td>0</td><td>GL_ZERO</td></tr>
+<tr><td>1</td><td>GL_ONE</td></tr>
+<tr><td>2</td><td>GL_COLOR</td></tr>
+<tr><td>3</td><td>GL_ONE_MINUS_DST_COLOR</td></tr>
+<tr><td>4</td><td>GL_SRC_ALPHA</td></tr>
+<tr><td>5</td><td>GL_MINUS_SRC_ALPHA</td></tr>
+<tr><td>6</td><td>GL_DST_ALPHA</td></tr>
+<tr><td>7</td><td>GL_ONE_MINUS_DST_ALPHA</td></tr>
+<tr><td>8</td><td>GL_SRC_ALPHA_SATURATE</td></tr>
+</table>
+<p>Таблица Stencil
+</p>
+<table cellspacing="10" cellpadding="0">
+<tr><td>0</td><td>GL_KEEP</td></tr>
+<tr><td>1</td><td>GL_ZERO</td></tr>
+<tr><td>2</td><td>GL_REPLACE</td></tr>
+<tr><td>3</td><td>GL_INCR</td></tr>
+<tr><td>4</td><td>GL_DECR</td></tr>
+<tr><td>5</td><td>GL_INVERT</td></tr>
+</table>
+<p>Таблица Face
+</p>
+<table cellspacing="10" cellpadding="0">
+<tr><td>1</td><td>GL_FRONT</td></tr>
+<tr><td>2</td><td>GL_BACK</td></tr>
+<tr><td>3</td><td>GL_FRONT_AND_BACK</td></tr>
+</table>
+<p>Таблица PolygonMode
+</p>
+<table cellspacing="10" cellpadding="0">
+<tr><td>0</td><td>GL_POINT</td></tr>
+<tr><td>1</td><td>GL_LINE</td></tr>
+<tr><td>2</td><td>GL_FILL</td></tr>
+</table>
+<p>
+<a href=rus_gra.html>Вернуться</a>
+</p>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10825496-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+</body>
+</html>

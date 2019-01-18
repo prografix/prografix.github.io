@@ -1,0 +1,153 @@
+<html>
+<head><title>Небольшие системы линейных уравнений</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="680" cellspacing="0" cellpadding="0">
+<div align=center>
+<font color="" style="font-size: 20pt">
+<br>Небольшие системы линейных уравнений
+</font>
+</div>
+<div align=left><td><br>
+<p>Здесь представлены два шаблона классов: SLU2 и SLU3, предназначенные для решения систем линейных уравнений 
+второго и третьего порядка:
+<pre>
+inline float qmod ( const float & x ) { return x * x; }
+
+inline double qmod ( const double & x ) { return x * x; }
+
+//************************ 20.11.2002 *************************//
+//
+// Решение систем линейных уравнений 2-го порядка методом Гаусса
+//         Выбор ведущего элемента по столбцам
+//
+//************************ 10.04.2015 *************************//
+
+template &lt;class T1, class T2 = T1> class SLU2
+{
+public:
+    T1 aa, ab, // aa * x + ab * y = ac
+       ba, bb; // ba * x + bb * y = bc
+    T2 ac, bc;
+
+// Решение системы линейных уравнений 2-го порядка методом Гаусса
+    bool gauss ( T2 & x, T2 & y ) const
+    {
+        T2 v1, v2;
+        const double ma = qmod ( aa );
+        const double mb = qmod ( ba );
+        if ( ma >= mb )
+        {
+            if ( ! ma ) return false;
+            const T1 c = ab / aa;
+            const T1 b = bb - c * ba;
+            if ( ! b ) return false;
+            ( v1 = ac ) /= aa;
+            ( v2 = v1 ) *= ba;
+            ( ( y = bc ) -= v2 ) /= b;
+            ( v2 = y ) *= c;
+        }
+        else
+        {
+            const T1 c = bb / ba;
+            const T1 a = ab - c * aa;
+            if ( a == 0 ) return false;
+            ( v1 = bc ) /= ba;
+            ( v2 = v1 ) *= aa;
+            ( ( y = ac ) -= v2 ) /= a;
+            ( v2 = y ) *= c;
+        }
+        ( x = v1 ) -= v2;
+        return true;
+    }
+
+    SLU2 & fill ( const T1 & v1, const T2 & v2 )
+    {
+        aa = ab =
+        ba = bb = v1;
+        ac = bc = v2;
+        return *this;
+    }
+};
+
+//************************ 20.11.2002 *************************//
+//
+// Решение систем линейных уравнений 3-го порядка методом Гаусса
+//         Выбор ведущего элемента по столбцам
+//
+//************************ 08.11.2014 *************************//
+
+template &lt;class T1, class T2 = T1> class SLU3
+{
+public:
+    T1 aa, ab, ac, // aa * x + ab * y + ac * z = ad
+       ba, bb, bc, // ba * x + bb * y + bc * z = bd
+       ca, cb, cc; // ca * x + cb * y + cc * z = cd
+    T2 ad, bd, cd;
+
+// Решение системы линейных уравнений 3-го порядка методом Гаусса
+    bool gauss ( T2 & x, T2 & y, T2 & z ) const
+    {
+        SLU2&lt;T1, T2> slu;
+        T1 a, b;
+        T2 d, e;
+        const double ma = qmod ( ac );
+        const double mb = qmod ( bc );
+        const double mc = qmod ( cc );
+        if ( mc >= mb && mc >= ma )
+        {
+            if ( ! mc ) return false;
+            a = ca / cc;
+            b = cb / cc;
+            ( d = cd ) /= cc;
+            slu.aa = aa - a * ac;   slu.ab = ab - b * ac;   ( e = d ) *= ac;   ( slu.ac = ad ) -= e;
+            slu.ba = ba - a * bc;   slu.bb = bb - b * bc;   ( e = d ) *= bc;   ( slu.bc = bd ) -= e;
+        }
+        else
+        if ( mb >= ma )
+        {
+            a = ba / bc;
+            b = bb / bc;
+            ( d = bd ) /= bc;
+            slu.aa = aa - a * ac;   slu.ab = ab - b * ac;   ( e = d ) *= ac;    ( slu.ac = ad ) -= e;
+            slu.ba = ca - a * cc;   slu.bb = cb - b * cc;   ( e = d ) *= cc;    ( slu.bc = cd ) -= e;
+        }
+        else
+        {
+            a = aa / ac;
+            b = ab / ac;
+            ( d = ad ) /= ac;
+            slu.aa = ba - a * bc;   slu.ab = bb - b * bc;   ( e = d ) *= bc;    ( slu.ac = bd ) -= e;
+            slu.ba = ca - a * cc;   slu.bb = cb - b * cc;   ( e = d ) *= cc;    ( slu.bc = cd ) -= e;
+        }
+        if ( ! slu.gauss ( x, y ) ) return false;
+        z = d;
+        ( e = x ) *= a; z -= e;
+        ( e = y ) *= b; z -= e;
+        return true;
+    }
+
+    SLU3 & fill ( const T1 & v1, const T2 & v2 )
+    {
+        aa = ab = ac = 
+        ba = bb = bc = 
+        ca = cb = cc = v1;
+        ad = bd = cd = v2;
+        return *this;
+    }
+};
+</pre>
+В качестве типа Т1 можно задавать действительные ( float, double ) или комплексные числа ( <a href="rus_complex.html">Complex</a> ).
+В качестве типа Т2, кроме одиночных чисел, можно задавать наборы чисел, такие как: <a href="rus_vector2d.html">Vector2d</a>, 
+<a href="rus_vector.html">Vector3d</a>, <a href="vector4d.html">Vector4d</a>, <a href="array.html">FixArray</a> и т. д.
+</p>
+<p>Исходники находятся в файле <a href="source/source.zip">LinAlg.h</a>.</p>
+<a href="rus_lin_alg.html">Наверх</a>
+</pre>
+
+<pre>
+</td></div>
+</table>
+</body>
+</html>

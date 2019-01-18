@@ -1,0 +1,96 @@
+<html>
+<head><title>Вычисление моментов в пространстве</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align=center><br>
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center>
+<font color="" style="font-size: 20pt">Вычисление моментов в пространстве</font>
+</div>
+<div align=left><td><br>
+<p>Моменты в пространстве можно вычислять относительно точек, прямых или плоскостей.
+В данном разделе будут рассматриваться моменты относительно плоскостей.
+Моментом первого порядка множества точек называется сумма произведений расстояний точек до плоскости на массу точки.
+Расстояние берётся со знаком ( положительные и отрицательные полупространства ). В том случае, когда знак не учитывается
+момент называется абсолютным. Если множество точек непрерывно, то сумма заменяется на интегрирование.
+<br>Центр масс точек можно определить, как вектор у которого каждая компонента равна моменту первого порядка относительно
+соответствующей координатной плоскости. Имеются следующие функции вычисляющие центры масс -
+у множества точек ( с одинаковой массой и с заданной ), у множества отрезков ( с одинаковой плотностью ),
+у заданной грани многогранника и у самого многогранника ( с равномерной плотностью ):
+</p>
+<pre>typedef unsigned int nat;
+
+Def&lt;Vector3d> centerOfMass ( CArrRef&lt;Vector3d> point ); // Центр масс набора точек
+
+Def&lt;Vector3d> centerOfMass ( CArrRef&lt;Vector3d> point, CArrRef&lt;double> mass ); // то же с весами
+
+Def&lt;Vector3d> centerOfMass ( CArrRef&lt;Segment3d> segm ); // Центр масс набора отрезков
+
+Def&lt;Vector3d> centerOfMass ( nat i, const Polyhedron & poly ); // Центр масс i-той грани
+
+Def&lt;Vector3d> centerOfMass ( const Facet & facet, CArrRef&lt;Vector3d> vert ); // Центр масс грани
+
+Def&lt;Vector3d> centerOfMass ( const Polyhedron & poly ); // Центр масс многогранника
+</pre>
+<p>
+У всех функций результат не вычисляется в случае, когда сумма масс равна нулю.
+</p>
+<p>Моментом второго порядка множества точек называется сумма произведений квадратов расстояний точек до плоскости 
+на массу точки:
+<pre>
+double momentum2pnt ( CArrRef&lt;Vector3d> point, const Plane3d & plane );
+
+double momentum2pnt ( CArrRef&lt;Vector3d> point, CArrRef&lt;double> mass, const Plane3d & plane );
+
+double momentum2sgm ( CArrRef&lt;Segment3d> segm, const Plane3d & plane );
+
+double momentum2fct ( nat i, const Polyhedron & poly, const Plane3d & plane );
+
+double momentum2plh ( const Polyhedron & poly, const Plane & plane );
+</pre>
+Следующие функции вычисляют основные моменты второго порядка и нормали плоскостей проходящих
+через центр масс, которые всегда взаимно-ортогональны:
+</p>
+<pre>
+struct Mom3d
+{
+    double minMom, midMom, maxMom;
+    Vector3d minNorm, midNorm, maxNorm;
+    Vector3d o;
+};
+
+Def&lt;Mom3d> momentum2pnt ( CArrRef&lt;Vector3d> point );
+
+Def&lt;Mom3d> momentum2pnt ( CArrRef&lt;Vector3d> point, CArrRef&lt;double> mass );
+
+Def&lt;Mom3d> momentum2sgm ( CArrRef&lt;Segment3d> segm );
+
+Def&lt;Mom3d> momentum2fct ( nat i, const Polyhedron & poly );
+
+Def&lt;Mom3d> momentum2plh ( const Polyhedron & poly );
+</pre>
+<p>Выходные параметры для всех функций: o - это центр масс, 
+minMom ( минимальный момент 2-го порядка ), minNorm ( направление нормали минимального момента ), 
+midMom ( средний момент 2-го порядка ), midNorm ( направление нормали среднего момента ), 
+maxMom ( максимальный момент 2-го порядка ), maxNorm ( направление нормали максимального момента ).</p>
+Функция getEllipsoid вычисляет параметры эллипсоида по моментам 2-го порядка:
+<pre>
+Def&lt;Ellipsoid3d> getEllipsoid ( const Def&lt;Mom3d> & mom );
+</pre>
+Функция getCuboid вычисляет параметры параллелепипеда по моментам 2-го порядка:
+<pre>
+Def&lt;Cuboid3d> getCuboid ( const Def&lt;Mom3d> & mom );
+</pre>
+<p>Описание классов Segment3d, Plane3d, Ellipsoid3d и Cuboid3d находится <a href="figure3d.html">здесь</a>.
+<br>Описание шаблона классов CArrRef находится <a href=array.html>здесь</a>.
+<br>Описание шаблона классов Def находится <a href="def.html">здесь</a>.
+<br>Описание классов Vector3d находится <a href="rus_vector.html">здесь</a>.
+<br>Описание класса Polyhedron находится <a href="rus_polyhedron.html">здесь</a>.
+<br><br>Исходники находятся в файле <a href="source/source.zip">moment3d.cpp</a>.</p>
+<a href="rus_geom.html">Наверх</a>
+<pre>
+
+</pre></td></div>
+</table>
+</body>
+</html>

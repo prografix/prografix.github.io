@@ -1,0 +1,157 @@
+<html>
+<head><title>Простые шаблоны-функции</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="680" cellspacing="0" cellpadding="0">
+<div align=center>
+<br>
+<font color="" style="font-size: 20pt">Простые шаблоны-функции</font>
+</div>
+<br>
+<div align=left><td>
+<p>
+Возведение в степень:
+<pre>
+template&lt;class T> inline 
+T _pow2 ( const T & i )
+{
+    return i * i;
+}
+
+template&lt;class T> inline 
+T _pow3 ( const T & i )
+{
+    return i * i * i;
+}
+
+template&lt;class T> inline 
+T _pow4 ( const T & i )
+{
+    return _pow2 ( i * i );
+}
+
+template&lt;class T> inline 
+T _pow5 ( const T & i )
+{
+    return _pow2 ( i * i ) * i;
+}
+
+template&lt;class T> inline 
+T _pow6 ( const T & i )
+{
+    return _pow3 ( i * i );
+}
+
+template&lt;class T> inline 
+T _pow7 ( const T & i )
+{
+    return _pow3 ( i * i ) * i;
+}
+
+template&lt;class T> inline 
+T _pow8 ( const T & i )
+{
+    return _pow4 ( i * i );
+}
+
+template&lt;class T> inline 
+T _pow9 ( const T & i )
+{
+    return _pow3 ( i * i * i );
+}
+
+template&lt;class T> inline 
+T _pow10 ( const T & i )
+{
+    return _pow5 ( i * i );
+}
+</pre>
+Обмен местами:
+<pre>
+template&lt;class T> inline 
+void _swap ( T & i1, T & i2 )
+{
+    const T i ( i1 );
+    i1 = i2;
+    i2 = i;
+}
+</pre>
+Минимум и максимум двух элементов:
+<pre>
+template&lt;class T> inline 
+const T & _min ( const T & i1, const T & i2 )
+{
+    return i1 < i2 ? i1 : i2;
+}
+
+template&lt;class T> inline 
+const T & _max ( const T & i1, const T & i2 )
+{
+    return i1 > i2 ? i1 : i2;
+}
+</pre>
+Минимум и максимум трёх элементов:
+<pre>
+template&lt;class T> inline 
+const T & _min ( const T & i1, const T & i2, const T & i3 )
+{
+    return i1 < i2 ? i1 < i3 ? i1 : i3 : i3 < i2 ? i3 : i2;
+}
+
+template&lt;class T> inline 
+const T & _max ( const T & i1, const T & i2, const T & i3 )
+{
+    return i1 > i2 ? i1 > i3 ? i1 : i3 : i3 > i2 ? i3 : i2;
+}
+</pre>
+Минимум и максимум четырёх элементов:
+<pre>
+template&lt;class T> inline 
+const T & _min ( const T & i1, const T & i2, const T & i3, const T & i4 )
+{
+    return _min ( i1, _min ( i2, i3, i4 ) );
+}
+
+template&lt;class T> inline 
+const T & _max ( const T & i1, const T & i2, const T & i3, const T & i4 )
+{
+    return _max ( i1, _max ( i2, i3, i4 ) );
+}
+</pre>
+Минимум и максимум пяти элементов:
+<pre>
+template&lt;class T> inline 
+const T & _min ( const T & i1, const T & i2, const T & i3, const T & i4, const T & i5 )
+{
+    return _min ( i1, _min ( i2, i3, i4, i5 ) );
+}
+
+template&lt;class T> inline 
+const T & _max ( const T & i1, const T & i2, const T & i3, const T & i4, const T & i5 )
+{
+    return _max ( i1, _max ( i2, i3, i4, i5 ) );
+}
+</pre>
+</p>
+<p>
+Исходники находятся в файле <a href="source/source.zip">Template.h</a>.
+</p>
+<a href="template.html">Наверх</a>
+<pre>
+
+</pre>
+</td></div>
+</table>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10825496-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+</body>
+</html>

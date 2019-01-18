@@ -1,0 +1,174 @@
+<html>
+<head><title>Уравнения четвёртой степени</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center>
+<font color="" style="font-size: 20pt">
+<br>Уравнения четвёртой степени</font>
+</div>
+<br><div align=left><td>
+<p>Вначале немного теории. Как обычно, будем рассматривать уравнение в котором коэффициент при x<SUP>3</SUP> равен нулю:
+</p>
+<pre>
+x<SUP>4</SUP> + px<SUP>2</SUP> + qx + r = 0    (1)
+</pre>
+<p>
+Представим это уравнение в виде произведения двух квадратных:
+</p>
+<pre>
+x<SUP>4</SUP> + px<SUP>2</SUP> + qx + r = ( x<SUP>2</SUP> + ax + b ) ( x<SUP>2</SUP> - ax + c )    (2)
+</pre>
+<p>
+Тогда для коэффициентов a, b, c получим следующую систему уравнений:
+</p>
+<pre>
+b + c - a<SUP>2</SUP> = p
+a ( c - b ) = q    (3)
+bc = r
+</pre>
+<p>
+Из первых двух уравнений системы (3) получаем:
+</p>
+<pre>
+2c = p + a<SUP>2</SUP> + q/a    (4)
+2b = p + a<SUP>2</SUP> - q/a
+</pre>
+<p>
+Затем подставляем выражения для b и c в третье уравнение системы (3) и получаем уравнение шестой степени 
+относительно a:
+</p>
+<pre>
+a<SUP>6</SUP> + 2pa<SUP>4</SUP> + (p<SUP>2</SUP> - 4r)a<SUP>2</SUP> - q<SUP>2</SUP> = 0    (5)
+</pre>
+<p>
+Сделаем подстановку: y = a<SUP>2</SUP>.
+</p>
+<pre>
+y<SUP>3</SUP> + 2py<SUP>2</SUP> + (p<SUP>2</SUP> - 4r)y - q<SUP>2</SUP> = 0    (6)
+</pre>
+<p>
+Таким образом получается следующий метод решения уравнения четвёртой степени (1). 
+Вначале решаем <a href="rus_alg_ur3.html">кубическое уравнение</a> (6). Берём произвольный корень и получаем a. Затем подставляем a в (4) 
+и находим b и c. Остаётся только решить два <a href="rus_alg_ur2.html">квадратных уравнения</a> из (2) и получить четыре корня.
+</p>
+<p> Для нахождения действительных корней уравнения четвёртой степени предлагаю следующие две функции:
+</p>
+<pre>
+typedef unsigned int nat;
+
+// x^4 + p * x^2 + q * x + r = 0
+
+nat root4s ( double p, double q, double r, double * x )
+{
+    if ( r == 0 ) // это условие добавлено 21.10.2008
+    {
+        *x = 0;
+        return 1 + root3s ( p, q, x+1 );
+    }
+    if ( q == 0 )
+    {
+m1:     double t[2];
+        nat n = root2 ( p, r, t );
+        if ( n == 0 ) return 0;
+        if ( t[0] >= 0 )
+        {
+            x[0] = sqrt ( t[0] );
+            x[1] = - x[0];
+            n = 2;
+        }
+        else
+        {
+            n = 0;
+        }
+        if ( t[1] >= 0 )
+        {
+            x[n] = sqrt ( t[1] );
+            x[n+1] = - x[n];
+            n += 2;
+        }
+        return n;
+    }
+    nat n = root3 ( p + p, p * p - 4. * r, -q * q, x );
+    double a = *x;
+    if ( n == 3 )
+    {
+        if ( a < x[1] ) a = x[1];
+        if ( a < x[2] ) a = x[2];
+    }
+    if ( a <= 0 ) goto m1; // этот переход сделан 09.12.2011
+    p += a;
+    a = sqrt ( a );
+    const double b = q / a;
+    n = root2 (  a, 0.5 * ( p - b ), x   );
+    n+= root2 ( -a, 0.5 * ( p + b ), x+n );
+    return n;
+}
+
+// x^4 + a * x^3 + b * x^2 + c * x + d = 0
+
+nat root4 ( double a, double b, double c, double d, double * x )
+{
+    if ( a == 0 )
+    {
+        return root4s ( b, c, d, x );
+    }
+    if ( d == 0 )
+    {
+        *x = 0;
+        return 1 + root3 ( a, b, c, x+1 );
+    }
+    const double e = a / 4;
+    const double h = e * e;
+    const double p = -6 * h + b;
+    const double q =  8 * h * e - 2 * b * e + c;
+    const double r = -3 * h * h + b * h - c * e + d;
+    const nat n = root4s ( p, q, r, x );
+    for ( nat i = 0; i < n; ++i ) x[i] -= e;
+    return n;
+}
+</pre>
+<p>
+Первая из них решает "неполное" уравнение, т.е. у которого коэффициент при x<SUP>3</SUP> равен нулю, 
+а вторая сводит общий случай к предыдущему.
+<br>Исходники этих функций находятся в файле <a href="source/source.zip">mathem.cpp</a>.</p>
+<p>Следующие две функции, кроме вещественных корней, вычисляют также комплексные корни:
+<pre>
+void root4s ( double p, double q, double r, 
+              Complex & x1, Complex & x2, Complex & x3, Complex & x4 );
+
+void root4 ( double a, double b, double c, double d, 
+             Complex & x1, Complex & x2, Complex & x3, Complex & x4 );
+</pre>
+Они устроены аналогично предыдущим функциям.
+<br>Следующие две функции вычисляют корни уравнений с комплексными параметрами:
+<pre>
+void root4s ( const Complex & p, const Complex & q, const Complex & r, 
+              Complex & x1, Complex & x2, Complex & x3, Complex & x4 );
+
+void root4 ( const Complex & a, const Complex & b, const Complex & c, const Complex & d, 
+             Complex & x1, Complex & x2, Complex & x3, Complex & x4 )
+</pre>
+<br>Исходники этих функций находятся в файле <a href="source/source.zip">complex.cpp</a>.
+<br>Описание типа Complex смотрите в разделе <a href="rus_complex.html">Класс Complex</a>.
+</p>
+<a href="rus_alg_ur.html">Наверх</a>
+<pre>
+
+</pre>
+</td></div>
+</table>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10825496-1");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
+</body>
+</html>

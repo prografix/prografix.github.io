@@ -1,0 +1,659 @@
+<html>
+<head><title>Одномерные массивы</title>
+<link rel="stylesheet" type="text/css" href="stylle.css">
+</head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center">
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center>
+<br><font color="" style="font-size: 20pt">Одномерные массивы</font>
+</div>
+<div align=left><td>
+<p><br>
+При описании массивов используются: тип nat ( натуральное число ), макрос ARRAY_TEST 
+( для проверки правильности при обращении к массивам ) и макрос CCArrRef ( для сокращения записи ):
+<pre>
+typedef unsigned int nat;
+
+#ifdef ARRAY_TEST
+void outOfRange ( const char * name, nat size, nat index );
+#endif
+
+#define CCArrRef const CArrRef
+</pre>
+Шаблон классов CArrRef представляет собой ссылку на константный массив:
+<pre>template &lt;class T> class CArrRef
+{
+    void operator= ( CCArrRef & );
+protected:
+    union { const T * con; T * var; } _data;
+    nat _size;
+public:
+    CArrRef () : _size(0) { _data.con = 0; }
+    CArrRef ( const T * d, nat n ) :  _size(n) { _data.con = d; }
+    CArrRef ( CCArrRef&lt;T> & a ) : _data(a._data), _size(a._size) {}
+// Указатель на i-ый элемент:
+    const T * operator() ( nat i = 0 ) const { return _size > i ? _data.con + i : 0; }
+#ifdef ARRAY_TEST
+    void error ( nat n, nat i ) const { outOfRange ( "CArrRef", n, i ); }
+    CArrRef ( CCArrRef&lt;T> & a, nat i, nat n ) : _size(n) { _data.con = a(i); if ( a._size < i + n ) error ( a._size, i + n ); }
+// Ссылка на i-ый элемент:
+    const T & operator[] ( nat i ) const { if ( _size <= i ) error ( _size, i ); return _data.con[i]; }
+// Ссылка на i-ый элемент от конца:
+    const T & las ( nat i = 0 ) const { if ( _size <= i ) error ( _size, i ); return _data.con[_size-1-i]; }
+// Ссылка на предыдущий элемент в цикле:
+    const T & cprev ( nat i )        const { if ( _size <= i ) error ( _size, i ); return _data.con[i>0 ? i-1:_size-1]; }
+    const T & cprev ( nat i, nat k ) const { if ( _size <= i ) error ( _size, i ); return _data.con[(i+_size-k)%_size]; }
+// Ссылка на следущий элемент в цикле:
+    const T & cnext ( nat i )        const { if ( _size <= i ) error ( _size, i ); return _data.con[i+1<_size?i+1:0]; }
+    const T & cnext ( nat i, nat k ) const { if ( _size <= i ) error ( _size, i ); return _data.con[(i+k)%_size]; }
+#else
+    CArrRef ( CCArrRef&lt;T> & a, nat i, nat n ) : _size(n) { _data.con = a(i); }
+// Ссылка на i-ый элемент:
+    const T & operator[] ( nat i ) const { return _data.con[i]; }
+// Ссылка на i-ый элемент от конца:
+    const T & las ( nat i = 0 ) const { return _data.con[_size-1-i]; }
+// Ссылка на предыдущий элемент в цикле:
+    const T & cprev ( nat i )        const { return _data.con[i>0 ? i-1:_size-1]; }
+    const T & cprev ( nat i, nat k ) const { return _data.con[(i+_size-k)%_size]; }
+// Ссылка на следущий элемент в цикле:
+    const T & cnext ( nat i )        const { return _data.con[i+1<_size?i+1:0]; }
+    const T & cnext ( nat i, nat k ) const { return _data.con[(i+k)%_size]; }
+#endif
+// Количество элементов
+    nat size () const { return _size; }
+};
+</pre>
+Шаблон классов MutCArrRef представляет собой изменяемую ссылку на константный массив:
+<pre>
+template &lt;class T> class MutCArrRef : public CArrRef&lt;T>
+{
+    void operator= ( const MutCArrRef & );
+public:
+    void reset ( CCArrRef&lt;T> & a )
+    {
+        _data.con = a();
+        _size = a.size();
+    }
+};
+</pre>
+Шаблон классов ArrRef представляет собой ссылку на неконстантный массив:
+<pre>template &lt;class T> class ArrRef : public CArrRef&lt;T>
+{
+public:
+    ArrRef () {}
+    ArrRef ( T * d, nat n ) : CArrRef&lt;T>( d, n ) {}
+    CCArrRef&lt;T> & operator * () const { return *this; }
+// Указатель на i-ый элемент:
+    T * operator() ( nat i = 0 ) { return _size > i ? _data.var + i : 0; }
+    const T * operator() ( nat i = 0 ) const { return _size > i ? _data.var + i : 0; }
+#ifdef ARRAY_TEST
+    void error ( nat n, nat i ) const { outOfRange ( "ArrRef", n, i ); }
+    ArrRef ( ArrRef&lt;T> a, nat i, nat n ) : CArrRef&lt;T>( a(i), n ) { if ( a._size < i + n ) error ( a._size, i + n ); }
+// Ссылка на i-ый элемент:
+    T & operator[] ( nat i ) { if ( _size <= i ) error ( _size, i ); return _data.var[i]; }
+// Ссылка на i-ый элемент от конца:
+    T & las ( nat i = 0 ) { if ( _size <= i ) error ( _size, i ); return _data.var[_size-1-i]; }
+// Ссылка на предыдущий элемент в цикле:
+    T & cprev ( nat i )        { if ( _size <= i ) error ( _size, i ); return _data.var[i>0 ? i-1:_size-1]; }
+    T & cprev ( nat i, nat k ) { if ( _size <= i ) error ( _size, i ); return _data.var[(i+_size-k)%_size]; }
+// Ссылка на следущий элемент в цикле:
+    T & cnext ( nat i )        { if ( _size <= i ) error ( _size, i ); return _data.var[i+1<_size?i+1:0]; }
+    T & cnext ( nat i, nat k ) { if ( _size <= i ) error ( _size, i ); return _data.var[(i+k)%_size]; }
+// Ссылка на i-ый элемент:
+    const T & operator[] ( nat i ) const { if ( _size <= i ) error ( _size, i ); return _data.var[i]; }
+// Ссылка на i-ый элемент от конца:
+    const T & las ( nat i = 0 ) const { if ( _size <= i ) error ( _size, i ); return _data.var[_size-1-i]; }
+// Ссылка на предыдущий элемент в цикле:
+    const T & cprev ( nat i )        const { if ( _size <= i ) error ( _size, i ); return _data.var[i>0 ? i-1:_size-1]; }
+    const T & cprev ( nat i, nat k ) const { if ( _size <= i ) error ( _size, i ); return _data.var[(i+_size-k)%_size]; }
+// Ссылка на следущий элемент в цикле:
+    const T & cnext ( nat i )        const { if ( _size <= i ) error ( _size, i ); return _data.var[i+1<_size?i+1:0]; }
+    const T & cnext ( nat i, nat k ) const { if ( _size <= i ) error ( _size, i ); return _data.var[(i+k)%_size]; }
+#else
+    ArrRef ( ArrRef&lt;T> a, nat i, nat n ) : CArrRef&lt;T>( a(i), n ) {}
+// Ссылка на i-ый элемент:
+    T & operator[] ( nat i ) { return _data.var[i]; }
+// Ссылка на i-ый элемент от конца:
+    T & las ( nat i = 0 ) { return _data.var[_size-1-i]; }
+// Ссылка на предыдущий элемент в цикле:
+    T & cprev ( nat i )        { return _data.var[i>0 ? i-1:_size-1]; }
+    T & cprev ( nat i, nat k ) { return _data.var[(i+_size-k)%_size]; }
+// Ссылка на следущий элемент в цикле:
+    T & cnext ( nat i ) { return _data.var[i+1<_size?i+1:0]; }
+    T & cnext ( nat i, nat k ) { return _data.var[(i+k)%_size]; }
+// Ссылка на i-ый элемент:
+    const T & operator[] ( nat i ) const { return _data.var[i]; }
+// Ссылка на i-ый элемент от конца:
+    const T & las ( nat i = 0 ) const { return _data.var[_size-1-i]; }
+// Ссылка на предыдущий элемент в цикле:
+    const T & cprev ( nat i )        const { return _data.var[i>0 ? i-1:_size-1]; }
+    const T & cprev ( nat i, nat k ) const { return _data.var[(i+_size-k)%_size]; }
+// Ссылка на следущий элемент в цикле:
+    const T & cnext ( nat i )        const { return _data.var[i+1<_size?i+1:0]; }
+    const T & cnext ( nat i, nat k ) const { return _data.var[(i+k)%_size]; }
+#endif
+// Операторы присваивания
+    ArrRef & operator= ( CCArrRef&lt;T> & p )
+    {
+        const nat n = _min ( _size, p.size() );
+        for ( nat i = 0; i < n; ++i ) _data.var[i] = p[i];
+        return *this;
+    }
+    ArrRef & operator= ( const ArrRef & a )
+    {
+        return *this = *a;
+    }
+// Изменение порядка следования элементов на обратный
+    ArrRef & reverse ()
+    {
+        if ( _size < 2 ) return *this;
+        const nat n = _size - 1;
+        const nat m = _size / 2;
+        for ( nat i = 0; i < m; ++i ) _swap ( _data.var[i], _data.var[n-i] );
+        return *this;
+    }
+// Заполнение всех элементов заданным значением
+    ArrRef & fill ( const T & t )
+    {
+        for ( nat i = 0; i < _size; ++i ) _data.var[i] = t;
+        return *this;
+    }
+// Выполнение оператора <= для всех элементов массива
+    template &lt;class S> ArrRef & operator << ( S & s )
+    {
+        for ( nat i = 0; i < _size; ++i ) _data.var[i] <= s;
+        return *this;
+    }
+};
+</pre>
+Шаблон классов FixArrRef представляет собой ссылку на массив постоянной длины:
+<pre>template &lt;class T, nat n> class FixArrRef : public ArrRef&lt;T>
+{
+protected:
+    FixArrRef ( T * d ) : ArrRef&lt;T>( d, n ) {}
+public:
+explicit FixArrRef ( ArrRef&lt;T> a, nat i = 0 ) : ArrRef&lt;T> ( a, i, n ) {}
+
+    FixArrRef & operator= ( const FixArrRef & a )
+    {
+        for ( nat i = 0; i < n; ++i ) _data.var[i] = a[i];
+        return *this;
+    }
+
+    FixArrRef & operator+= ( const FixArrRef & a )
+    {
+        for ( nat i = 0; i < n; ++i ) _data.var[i] += a[i];
+        return *this;
+    }
+
+    FixArrRef & operator-= ( const FixArrRef & a )
+    {
+        for ( nat i = 0; i < n; ++i ) _data.var[i] -= a[i];
+        return *this;
+    }
+
+    friend inline void _swap ( FixArrRef & a1, FixArrRef & a2 )
+    {
+        for ( nat i = 0; i < n; ++i ) _swap ( a1[i], a2[i] );
+    }
+};
+</pre>
+Шаблон классов FixArray представляет собой массив постоянной длины:
+<pre>template &lt;class T, nat n> class FixArray : public FixArrRef&lt;T>
+{
+    T stor[n];
+    FixArray ( const FixArray & );
+public:
+    FixArray () : FixArrRef<&lt;T, n> ( stor ) {}
+
+    FixArray & operator= ( const FixArray & a )
+    {
+        for ( nat i = 0; i < n; ++i ) stor[i] = a.stor[i];
+        return *this;
+    }
+
+    FixArray & operator+= ( const FixArray & a )
+    {
+        for ( nat i = 0; i < n; ++i ) stor[i] += a[i];
+        return *this;
+    }
+
+    FixArray & operator-= ( const FixArray & a )
+    {
+        for ( nat i = 0; i < n; ++i ) stor[i] -= a[i];
+        return *this;
+    }
+
+    FixArray & operator*= ( const T & t )
+    {
+        for ( nat i = 0; i < n; ++i ) stor[i] *= t;
+        return *this;
+    }
+// Заполнение всех элементов заданным значением
+    FixArray & fill ( const T & t )
+    {
+        ArrRef&lt;T>::fill ( t );
+        return *this;
+    }
+};
+</pre>
+Шаблон классов DynArrRef предназначен для создания ссылок на массивы с изменяемым размером.
+Размер массива меняется при помощи виртуальной функции resize:
+<pre>template &lt;class T> class DynArrRef : public ArrRef&lt;T>
+{
+protected:
+    DynArrRef ( T * d, nat n ) : ArrRef&lt;T>( d, n ) {}
+public:
+    virtual DynArrRef & resize ( nat n = 0 ) = 0;
+
+    DynArrRef & operator= ( CCArrRef&lt;T> & r )
+    {
+        if ( _data.var == r() ) return *this;
+        if ( _size != r.size() ) resize ( r.size() );
+        for ( nat i = 0; i < _size; ++i ) _data.var[i] = r[i];
+        return *this;
+    }
+
+    DynArrRef & operator= ( const DynArrRef & a )
+    {
+        return *this = *a;
+    }
+};
+</pre>
+Шаблон классов DynArray предназначен для создания динамических массивов, т.е. они могут менять свой размер
+во время выполнения программы. В его конструкторе можно указать к-во элементов. 
+Функция-член resize меняет размер массива на указанный, при этом значения элементов теряются, даже в случае,
+когда новый размер равен предыдущему.
+Дружественная функция _swap меняет содержимое двух массивов.
+<pre>template &lt;class T> class DynArray : public DynArrRef&lt;T>
+{
+    DynArray ( const DynArray & );
+public:
+explicit DynArray ( nat n = 0 ) : DynArrRef&lt;T> ( n > 0 ? new T[n] : 0, n ) {}
+explicit DynArray ( CCArrRef&lt;T> & r ) : DynArrRef&lt;T> ( new T[r.size()], r.size() )
+     {
+        for ( nat i = 0; i < _size; ++i ) _data.var[i] = r[i];
+     }
+
+    ~DynArray () { delete[] _data.var; }
+
+    DynArray & operator= ( CCArrRef&lt;T> & r )
+    {
+        if ( _data.var == r() ) return *this;
+        if ( _size != r.size() ) resize ( r.size() );
+        for ( nat i = 0; i < _size; ++i ) _data.var[i] = r[i];
+        return *this;
+    }
+
+    DynArray & operator= ( const DynArray & a )
+    {
+        return *this = *a;
+    }
+
+    virtual DynArrRef&lt;T> & resize ( nat n = 0 )
+    {
+        delete[] _data.var;
+        _data.var = 0; // на случай исключения в new
+        if ( ( _size = n ) > 0 ) _data.var = new T[n];
+        return *this;
+    }
+
+    DynArray & swap ( DynArray & a )
+    {
+        _swap ( _size, a._size );
+        _swap ( _data, a._data );
+        return *this;
+    }
+
+    friend inline void _swap ( DynArray & a1, DynArray & a2 )
+    {
+        a1.swap ( a2 );
+    }
+};
+</pre>
+Шаблон CmbArray является комбинированным массивом, т.е. в зависимости от размера его элементы
+могут находится в стеке или в "куче". Параметр шаблона N определяет размер встроенного массива.
+Заметим, что в предыдущем шаблоне DynArray функция-член resize всегда вызывает для старых элементов массива деструктор, 
+а для новых элементов - конструктор. Для шаблона CmbArray это происходит не всегда. Например, если размеры
+массива меняются в пределах N, то значения элементов не меняются.
+<pre>
+template &lt;class T, nat N> class CmbArray : public DynArrRef&lt;T>
+{
+    T stor[N];
+    CmbArray ( const CmbArray & );
+public:
+explicit CmbArray ( nat n = 0 ) : DynArrRef&lt;T> ( n > N ? new T[n] : stor, n ) {}
+explicit CmbArray ( CCArrRef&lt;T> & r ) : DynArrRef&lt;T> ( r.size() > N ? new T[r.size()] : stor, r.size() )
+     {
+        for ( nat i = 0; i < _size; ++i ) _data.var[i] = r[i];
+     }
+
+    ~CmbArray () { if ( _data.var != stor ) delete[] _data.var; }
+
+    CmbArray & operator= ( CCArrRef&lt;T> & r )
+    {
+        if ( _data.var == r() ) return *this;
+        resize ( r.size() );
+        for ( nat i = 0; i < _size; ++i ) _data.var[i] = r[i];
+        return *this;
+    }
+
+    CmbArray & operator= ( const CmbArray & a )
+    {
+        return *this = *a;
+    }
+
+    CmbArray & operator -= ( const CmbArray & a )
+    {
+        const nat n = _min ( _size, a._size );
+        for ( nat i = 0; i < n; ++i ) _data.var[i] -= a[i];
+        return *this;
+    }
+
+    virtual DynArrRef&lt;T> & resize ( nat n = 0 )
+    {
+        if ( _size == n ) return *this;
+        if ( _data.var != stor )
+        {
+            delete[] _data.var;
+            _data.var = stor;
+        }
+        if ( ( _size = n ) > N ) _data.var = new T[_size];
+        return *this;
+    }
+};
+</pre>
+Шаблон классов SuiteRef предназначен для создания ссылок на последовательные наборы однотипных элементов.
+<br>Функция-член add добавляет в конец массива указанный элемент.
+<br>Функция-член inc ( increase ) без параметра увеличивает размер набора на 1 и возвращает ссылку на добавленный элемент.
+<br>Функция-член inc ( increase ) с параметром увеличивает размер набора на величину параметра.
+<br>Функция-член dec ( decrease ) уменьшает размер набора на n ( по умолчанию на 1 ).
+<br>Функция-член del удаляет указанный элемент. Если он не последний в наборе, то его место занимает последний элемент.
+<br>Функция-член delAndShift удаляет указанный элемент, а стоящие после него элементы сдвигает на одну позицию.
+<br>Функция-член addAftLas добавляет множество элементов в конец набора. 
+<pre>template &lt;class T> class SuiteRef : public DynArrRef&lt;T>
+{
+    SuiteRef ( const SuiteRef & );
+
+    void _del ( nat i )
+    {
+        if ( i < --_size ) _data.var[i] = _data.var[_size];
+    }
+
+    virtual void resizeAndCopy ( nat n ) = 0;
+protected:
+    nat real_size;
+    SuiteRef ( T * d, nat n ) : DynArrRef&lt;T>( d, n ) {}
+public:
+    SuiteRef & operator= ( CCArrRef&lt;T> & r )
+    {
+        if ( _data.var == r() ) return *this;
+        resize ( r.size() );
+        for ( nat i = 0; i < _size; ++i ) _data.var[i] = r[i];
+        return *this;
+    }
+
+    SuiteRef & operator= ( const SuiteRef & a )
+    {
+        return *this = *a;
+    }
+
+    virtual DynArrRef&lt;T> & resize ( nat n = 0 )
+    {
+        if ( n > real_size ) resizeAndCopy ( n );
+        else _size = n;
+        return *this;
+    }
+
+    SuiteRef & add ( const T & t )
+    {
+        inc() = t;
+        return *this;
+    } 
+
+    SuiteRef & addIfHasNot ( const T & t )
+    {
+        for ( nat i = 0; i < _size; ++i ) if ( _data.var[i] == t ) return *this;
+        inc() = t;
+        return *this;
+    }
+
+    T & inc ()
+    {
+        if ( _size == real_size ) resizeAndCopy ( _size + 1 );
+        else ++_size;
+        return _data.var[_size-1];
+    }
+
+    SuiteRef & inc ( nat n )
+    {
+        if ( _size + n > real_size ) resizeAndCopy ( _size + n );
+        else _size += n;
+        return *this;
+    }
+
+    SuiteRef & dec ( nat n = 1 )
+    {
+        _size = _size > n ? _size - n : 0;
+        return *this;
+    }
+
+    SuiteRef & del ( nat i )
+    {
+        if ( i < _size ) _del ( i );
+#ifdef ARRAY_TEST
+        else outOfRange ( "SuiteRef::del", _size, i );
+#endif ARRAY_TEST
+        return *this;
+    }
+
+    SuiteRef & delAndShift ( nat i )
+    {
+        if ( i < _size )
+        {
+            --_size;
+#if _MSC_VER > 1200 // MS VC 6.0
+            for ( ; i < _size; ++i ) copyFunc ( _data.var[i], _data.var[i+1] );
+#else
+            for ( ; i < _size; ++i ) _data.var[i] = _data.var[i+1];
+#endif
+        }
+#ifdef ARRAY_TEST
+        else outOfRange ( "SuiteRef::delAndShift", _size, i );
+#endif ARRAY_TEST
+        return *this;
+    }
+
+    SuiteRef & addAftLas ( CCArrRef&lt;T> & a )
+    {
+        const nat s = _size;
+        inc ( a.size() );
+        for ( nat i = s; i < _size; ++i ) _data.var[i] = a[i-s];
+        return *this;
+    }
+};
+</pre>
+Шаблон классов Suite предназначен для создания последовательных наборов однотипных элементов.
+<br>Дружественная функция _swap меняет содержимое двух наборов.
+<pre>template &lt;class T> class Suite : SuiteRef&lt;T>
+{
+    Suite ( const Suite & );
+
+    virtual void resizeAndCopy ( nat n )
+    {
+        real_size = _max ( real_size + n, 8u );
+        T * tmp = new T[real_size];
+#if _MSC_VER > 1200 // MS VC 6.0
+        for ( nat i = 0; i < _size; ++i ) copyFunc ( tmp[i], _data.var[i] );
+#else
+        for ( nat i = 0; i < _size; ++i ) tmp[i] = _data.var[i];
+#endif
+        delete[] _data.var;
+        _data.var = tmp;
+        _size = n;
+    }
+public:
+    Suite () : SuiteRef&lt;T>(0, real_size=0) {}
+    explicit Suite ( nat n, nat m = 0 ) : SuiteRef&lt;T>((real_size=_max(n,m)) > 0 ? new T[real_size] : 0, m) {}
+    ~Suite () { delete[] _data.var; }
+
+    Suite & operator= ( CCArrRef&lt;T> & r )
+    {
+        if ( _data.var == r() ) return *this;
+        _size = r.size();
+        if ( real_size < _size )
+        {
+            real_size = _size;
+            delete[] _data.var;
+            _data.var = 0; // на случай исключения в new
+            _data.var = new T[_size];
+        }
+        for ( nat i = 0; i < _size; ++i ) _data.var[i] = r[i];
+        return *this;
+    }
+
+    Suite & operator= ( const Suite & a )
+    {
+        return *this = *a;
+    }
+
+    Suite & swap ( Suite & a )
+    {
+        _swap ( real_size, a.real_size );
+        _swap ( _size, a._size );
+        _swap ( _data, a._data );
+        return *this;
+    }
+
+    friend inline void _swap ( Suite & a1, Suite & a2 )
+    {
+        a1.swap ( a2 );
+    }
+};
+
+#if _MSC_VER > 1200 // MS VC 6.0
+template &lt;class T> inline void copyFunc ( T & a, T & b ) { a = b; }
+template &lt;class T> inline void copyFunc ( Suite   &lt;T> & a, Suite   &lt;T> & b ) { _swap ( a, b ); }
+template &lt;class T> inline void copyFunc ( DynArray&lt;T> & a, DynArray&lt;T> & b ) { _swap ( a, b ); }
+#endif
+</pre>
+Шаблон классов CmbSuite также предназначен для создания последовательных наборов однотипных элементов,
+но в отличии от шаблона Suite он является комбинированным аналогично CmbArray:
+<pre>template &lt;class T, nat N> class CmbSuite : public SuiteRef&lt;T>
+{
+    T stor[N];
+    CmbSuite ( const CmbSuite & );
+
+    virtual void resizeAndCopy ( nat n )
+    {
+        real_size = _max ( real_size + n, 8u );
+        T * tmp = new T[real_size];
+#if _MSC_VER > 1200 // MS VC 6.0
+        for ( nat i = 0; i < _size; ++i ) copyFunc ( tmp[i], _data.var[i] );
+#else
+        for ( nat i = 0; i < _size; ++i ) tmp[i] = _data.var[i];
+#endif
+        if ( _data.var != stor ) delete[] _data.var;
+        _data.var = tmp;
+        _size = n;
+    }
+public:
+    CmbSuite () : SuiteRef&lt;T>(stor, 0) { real_size = N; }
+    explicit CmbSuite ( nat n, nat m = 0 ) : 
+        SuiteRef&lt;T> ( ( real_size = _max(n,m) ) > N ? new T[real_size] : ( real_size = N, stor ), m ) {}
+    ~CmbSuite () { if ( _data.var != stor ) delete[] _data.var; }
+
+    CmbSuite & operator= ( CCArrRef&lt;T> & r )
+    {
+        if ( _data.var == r() ) return *this;
+        _size = r.size();
+        if ( real_size < _size )
+        {
+            real_size = _size;
+            if ( _data.var != stor )
+            {
+                delete[] _data.var;
+                _data.var = stor; // на случай исключения в new
+            }
+            _data.var = new T[_size];
+        }
+        for ( nat i = 0; i < _size; ++i ) _data.var[i] = r[i];
+        return *this;
+    }
+
+    CmbSuite & operator= ( const CmbSuite & a )
+    {
+        return *this = *a;
+    }
+};
+</pre>
+Шаблон классов LtdSuiteRef предназначен для создания ссылок на набор элементов ограниченного размера.
+<pre>template &lt;class T> class LtdSuiteRef : public SuiteRef&lt;T>
+{
+    virtual void resizeAndCopy ( nat n )
+    {
+#ifdef ARRAY_TEST
+        if ( n > real_size ) outOfRange ( "LtdSuiteRef::resizeAndCopy", real_size, n );
+#endif
+        _size = real_size;
+    }
+public:
+    LtdSuiteRef ( ArrRef&lt;T> a, nat i, nat n ) : SuiteRef&lt;T>( a(i), 0 )
+    {
+        real_size = n;
+#ifdef ARRAY_TEST
+        if ( a.size() < i + n ) outOfRange ( "LtdSuiteRef", a.size(), i + n );
+#endif
+    }
+
+    LtdSuiteRef & operator= ( CCArrRef&lt;T> & r )
+    {
+        _size = r.size();
+#ifdef ARRAY_TEST
+        if ( _size > real_size ) outOfRange ( "LtdSuiteRef::operator=", real_size, _size );
+#endif
+        if ( _size > real_size ) _size = real_size;
+        for ( nat i = 0; i < _size; ++i ) _data.var[i] = r[i];
+        return *this;
+    }
+
+    LtdSuiteRef & operator= ( const LtdSuiteRef & a )
+    {
+        return *this = *a;
+    }
+};
+</pre>
+В результате получаем следующую иерархию классов:
+<pre>
+        CArrRef -> MutCArrRef
+           |
+           |
+         ArrRef -> FixArrRef -> FixArray
+           |
+           |
+      DynArrRef -> DynArray, CmbArray
+           |
+           |
+       SuiteRef -> Suite, CmbSuite
+           |
+           |
+      LtdSuiteRef
+</pre>
+Семь из них являются интерфейсными ( или ссылками на массив ) и пять - контейнерными классами.
+Такое большое к-во классов вызвано стремлением, по возможности, избегать применение операторов new и delete.
+</p>
+<p>
+Исходники находятся в файле <a href="source/source.zip">ShevArray.h</a>.
+</p>
+<p>
+Смотрите также раздел <a href="array2.html">Операции с массивами</a>.
+</p>
+<a href="template.html">Наверх</a>
+<pre>
+
+</pre></td>
+</div>
+</table>
+</body>
+</html>

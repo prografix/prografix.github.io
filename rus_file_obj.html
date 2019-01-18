@@ -1,0 +1,106 @@
+<html>
+<head><title>Формат Wavefront OBJ</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="680" cellspacing="0" cellpadding="0">
+<div align=center>
+<br><font color="" style="font-size: 20pt">Формат Wavefront OBJ</font>
+</div>
+<div align=left><td>
+<p><br>
+Формат Wavefront OBJ предназначен для хранения моделей трёхмерной графики.
+Я реализовал его возможности не полностью, а только то, что связано с представлением геометрии многогранников.
+В результате получился абстрактный класс PutWavefrontOBJ и функция loadOBJ для чтения файла:
+</p>
+<pre>
+class PutWavefrontOBJ
+{
+protected:
+    virtual ~PutWavefrontOBJ();
+public:
+    virtual void putVertex ( double x, double y, double z ) = 0;
+    virtual void putNormal ( double x, double y, double z ) = 0;
+    virtual void putFacet ( nat nv, const nat * vert, const nat * norm ) = 0;
+};
+
+bool loadOBJ ( class IReadFile & file, PutWavefrontOBJ & obj );
+</pre>
+А также класс GetWavefrontOBJ и функция saveOBJ для записи в файл:
+<pre>
+class GetWavefrontOBJ
+{
+protected:
+    virtual ~GetWavefrontOBJ();
+public:
+    virtual void start ( nat & nv, nat & nn, nat & nf ) const = 0;
+    virtual bool getVertex ( nat i, double & x, double & y, double & z ) const = 0;
+    virtual bool getNormal ( nat i, double & x, double & y, double & z ) const = 0;
+    virtual bool getFacet ( nat i, nat & nv, const nat * & vert, const nat * & norm ) const = 0;
+};
+
+bool saveOBJ ( class IWriteFile & file, const GetWavefrontOBJ & obj, nat prec );
+</pre>
+<p>Для того, чтобы записать данные объекта типа <a href="rus_polyhedron.html">Polyhedron</a> в файл 
+и обратно предназначены следующие классы:
+</p>
+<pre>
+class PutWavefrontOBJ_Polyhedron : public PutWavefrontOBJ
+{
+    struct IndexArray
+    {
+        nat nv;
+        DynArray&lt;nat> index;
+    };
+    nat vsize, vcount;
+    Vector3d * vert;
+    nat fsize, fcount;
+    IndexArray * face;
+    bool err;
+public:
+    PutWavefrontOBJ_Polyhedron ();
+    void putVertex ( double x, double y, double z );
+    void putNormal ( double x, double y, double z );
+    void putFacet ( nat nv, const nat * vert, const nat * norm );
+    bool give_to ( Shev::Polyhedron & poly );
+};
+
+class GetWavefrontOBJ_Polyhedron : public GetWavefrontOBJ
+{
+    mutable nat nbuf;
+    mutable nat * vbuf;
+    const Shev::Polyhedron & poly;
+public:
+    GetWavefrontOBJ_Polyhedron ( const Shev::Polyhedron & p ) : poly(p), nbuf(0), vbuf(0) {}
+   ~GetWavefrontOBJ_Polyhedron ();
+    void start ( nat & nv, nat & nn, nat & nf ) const;
+    bool getVertex ( nat i, double & x, double & y, double & z ) const;
+    bool getNormal ( nat i, double & x, double & y, double & z ) const;
+    bool getFacet ( nat i, nat & nv, const nat * & vert, const nat * & norm ) const;
+};
+</pre>
+<p>В приложении <a href="demo/demo.html">DEMO</a> ( начиная с версии 4 ) показано, как применять эти классы.
+</p>
+<p>Исходники этих функций находятся в файлах <a href="source/source.zip">fileOBJ.cpp и fileOBJplh.cpp</a>.
+</p>
+<p>О классах IReadFile и IWriteFile смотрите <a href="rus_file.html">здесь</a>.
+</p>
+</p><a href="source/obj_files.zip">Коллекция OBJ-файлов</a>.
+</p>
+<a href="rus_graphics.html">Наверх</a>
+<pre>
+
+</pre></td></div>
+</table>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10825496-1");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
+</body>
+</html>

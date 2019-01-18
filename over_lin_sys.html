@@ -1,0 +1,66 @@
+<html>
+<head><title>Переопределённые системы линейных уравнений</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Переопределённые системы линейных уравнений</font>
+</div><br>
+<div align=left><td>
+<p>Система линейных уравнений у которой к-во уравнений ( n ) больше, чем к-во неизвестных ( m ) называется переопределённой.
+В этом случае чаще всего решения не существует, поэтому под решением подразумевают такие значения неизвестных, 
+которые минимизируют некоторую <a href="normv.html">норму</a> вектора невязок.
+<br>При использовании p-норм условие задачи можно записать в виде:
+<pre>
+    | A * x - b |<sub>p</sub> -> min
+</pre>
+где A - это матрица коэффициентов ( n * m ), x - вектор решения ( m ), b - вектор свободных членов ( n ).
+<br>Обычно используется 2-норма, что приводит к <a href="rus_lss.html">методу наименьших квадратов</a>.
+Эта норма обладает многими хорошими свойствами ( простота реализации, единственность и непрерывность решения ),
+но в некоторых случаях предпочтительнее другие нормы. Например, при использовании 1-нормы решение
+менее подвержено влиянию шумов ( неточные исходные данные ).
+Решение этой задачи ( которое может быть не единственным ) заключается в выборе из этой системы m уравнений, 
+решение которых будет минимизировать вектор невязок исходной системы. Назовём эти уравнения главными.
+<br>Следующие функции находят решение с минимальной 1-нормой:
+<pre>
+    bool minNorm1 ( CArrRef2&lt;double> data, ArrRef&lt;double> x, ArrRef&lt;nat> index );
+    bool minNorm1 ( CArrRef2&lt;double> data, ArrRef&lt;double> x );
+    bool minNorm1 ( CArrRef2&lt;double> data, ArrRef&lt;nat> index );
+</pre>Здесь data - это двухмерный массив ( n * (m+1) ) с исходными данными, в последнем столбце которого записан вектор b, 
+x - ссылка на массив решения, index - ссылка на массив в который запишутся индексы главных уравнений.
+В этих функциях вначале определяются главные уравнения, а затем, если нужно, по ним методом исключений ( 
+или <a href="rus_ling.html">Гаусса</a> ) находится решение х.
+<br><br>Следующая функция находит решение с минимальной 2-нормой:
+<pre>
+    bool minNorm2 ( CArrRef2&lt;double> data, ArrRef&lt;double> x );
+</pre>Здесь вначале строится система нормальных уравнений, а затем она решается методом Гаусса.
+<br><br>При использовании бесконечной нормы минимизируется максимальное значение невязок.  
+Следующие функции находят решение с минимальной &#8734;-нормой:
+<pre>
+    bool minNormU ( CArrRef2&lt;double> data, ArrRef&lt;double> x, ArrRef&lt;nat> index );
+    bool minNormU ( CArrRef2&lt;double> data, ArrRef&lt;double> x );
+</pre>Эти функции определяют m + 1 главных уравнений, для которых невязки будут равны максимальному значению,
+а для остальных уранений невязки будут меньше или равны максимальному значению.
+</p>
+<p>Описание шаблона классов ArrRef находится <a href=array.html>здесь</a>.
+<br>Описание шаблона классов CArrRef2 находится <a href=array2d.html>здесь</a>.
+<br>Исходники алгоритмов находятся в файле <a href="source/source.zip">mathem.cpp</a>.
+<br><br><a href="rus_lin_alg.html">Наверх</a>
+<pre>
+
+</pre></td></div>
+</table>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10825496-1");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<html>
+<head>
+    <title>Диаметр многоугольника</title>
+</head>
+<style type="text/css">
+ pre {color: blue;}
+</style>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="680" cellspacing="0" cellpadding="0">
+<div align=center>
+<font color="" style="font-size: 20pt">
+Диаметр многоугольника
+</font>
+</div>
+<p>Диаметром множества точек называется максимальное расстояние между его двумя произвольными точками.
+Для выпуклого многоугольника существует алгоритм, который находит диаметр за время O(n), где n -
+количество вершин. Он основан на следующем факте: диаметр плоской выпуклой фигуры равен максимальному 
+расстоянию между двумя параллельными прямыми опорными к этой фигуре. Идея алгоритма взята из книги
+"Вычислительная геометрия" (Препарата, Шеймос).
+</p>
+<pre>
+double convexPolygonDiameter ( unsigned int n, const Vector2d * vert )
+{
+    if ( n < 2 ) return 0.;
+    const Vector2d v = vert[0] - vert[n-1];
+    unsigned int r = 1;
+    double max = v % vert[r];
+    for ( unsigned int j = 2; j < n; ++j )
+    {
+        const double t = v % vert[j];
+        if ( max < t ) max = t, r = j;
+        else break;
+    }
+    double result = 0.;
+    for ( unsigned int i = 1; ; ++i )
+    {
+        const unsigned int i1 = i - 1;
+        const Vector2d v = vert[i] - vert[i1];
+        unsigned int l = r;
+        double max = v % vert[r];
+        unsigned int j;
+        for ( j = r+1; j < n; ++j )
+        {
+            const double t = v % vert[j];
+            if ( max <= t ) max = t, l = j;
+            else break;
+        }
+        for ( j = r; j <= l; ++j )
+        {
+            const Vector2d u = vert[j] - vert[i1];
+            const double t = u * u;
+            if ( result < t ) result = t;
+        }
+        if ( l == n - 1 && max <= v % vert[0] ) break;
+        r = l;
+    }
+    return sqrt ( result );
+}
+</pre>
+<p>Входные параметры для функции convexPolygonDiameter - это количество точек и указатель на массив, 
+где эти точки расположены. Как обычно обход вершин полагается против часовой стрелки.</p>
+<p>Известно, что для простого многоугольника можно построить выпуклую оболочку за время O(n)
+( смотрите раздел <a href="rus_convex2d.html">Выпуклая оболочка на плоскости</a> ), 
+и что диаметр множества точек равен диаметру его выпуклой оболочки.
+Отсюда следует, что диаметр простого многоугольника можно найти за время O(n).
+</p>
+<p>Для трёхмерного случая неизвестен подобный по эффективности алгоритм, поэтому там целесообразно
+применять простой перебор вершин.
+</p>
+<p>Описание класса Vector2d находится <a href="rus_vector2d.html">здесь</a>. 
+</p>
+<p>Исходники алгоритма находятся в файле <a href="source/source.zip">func2d.cpp</a>.</p>
+<a href="rus_geom.html">Наверх</a>
+</table>
+</body>
+</html>

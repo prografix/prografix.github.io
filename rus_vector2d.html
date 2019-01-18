@@ -1,0 +1,179 @@
+<html>
+<head><title>Вектора на плоскости</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="800" cellspacing="0" cellpadding="0">
+<br>
+<div align=center>
+<font color="" style="font-size: 20pt">Вектора на плоскости</font>
+</div>
+<br>
+<div align=left><td>
+<pre>
+class Vector2d
+{
+    template &lt;typename T> void mul ( const T & t, ... )
+    {
+        *this = t ( *this );
+    }
+
+    template &lt;typename T> void mul ( const T & t, double d )
+    {
+        x *= d; y *= d;
+    }
+public :
+    double x, y;
+    Vector2d () {}
+    Vector2d ( double a, double b ) : x ( a ), y ( b ) {}
+
+    Vector2d & operator += ( const Vector2d & u )
+    {
+        x += u.x; y += u.y; return * this;
+    }
+
+    Vector2d & operator -= ( const Vector2d & u )
+    {
+        x -= u.x; y -= u.y; return * this;
+    }
+ 
+    Vector2d & operator *= ( const Vector2d & u )
+    {
+        x *= u.x; y *= u.y; return * this;
+    }
+
+    Vector2d & operator /= ( const Vector2d & u )
+    {
+        x /= u.x; y /= u.y; return * this;
+    }
+
+    template &lt;typename T> Vector2d & operator *= ( const T & t )
+    {
+        mul ( t, t ); return * this;
+    }
+
+    Vector2d & operator /= ( const double d )
+    {
+        x /= d; y /= d; return * this;
+    }
+
+    Vector2d & fill ( double d = 0 )
+    {
+        x = y = d; return * this;
+    }
+
+    bool operator ! () const
+    {
+        return !x && !y;
+    }
+
+    Vector2d operator - () const
+    {
+        return Vector2d ( -x, -y );
+    }
+
+    Vector2d leftPerpendicular () const
+    {
+        return Vector2d ( -y, x );
+    }
+
+    Vector2d rightPerpendicular () const
+    {
+        return Vector2d ( y, -x );
+    }
+
+// Задание векторных норм
+    Vector2d & setNorm1 ( double p = 1 ); // единичная норма
+    Vector2d & setNorm2 ( double p = 1 ); // квадратичная норма
+    Vector2d & setNormU ( double p = 1 ); // бесконечная норма
+};
+</pre>
+<p>
+Класс Vector2d имеет два конструктора, а также несколько арифметических и логических операторов. 
+Для *= есть функция с параметром типа Vector2d и шаблонная функция. 
+Если параметр функции может быть преобразован к типу double, то тогда вектор умножается на это число.
+Иначе считается, что параметр - это функтор и вектор преобразуется им.
+Для /= есть две функции - с параметром типа Vector2d и double.
+Функция-член fill заполняет вектор заданным значением ( нулевым по умолчанию ). 
+Оператор ! возвращает значение true для нулевого вектора.
+Унарный минус возвращает противоположный вектор.
+Функции-члены leftPerpendicular и rightPerpendicular возвращают векторы перпендикулярные данному и имеющие ту же длину.
+Функции-члены setNorm... в случае, когда вектор ненулевой, делают соответсвующую <a href=normv.html>норму вектора</a> 
+равной значению | p | ( по умолчанию 1 ). Если параметр p - отрицательный, то вектор меняет направление на противоположное.
+В случае, когда вектор нулевой - он остаётся нулевым.
+<br>Есть ещё группа операторов и функций предназначенных для работы с векторами. 
+Там есть два типа скалярных произведений обозначенных символами * и %. 
+Первое из них называется внутренним и равно произведению длин векторов на косинус угла между ними. 
+Второе называется внешним и равно произведению длин векторов на синус угла между ними.
+Функция qmod вычисляет квадрат модуля вектора, а функции norm... соответствующие <a href=normv.html>нормы вектора</a>.
+</p>
+<pre>
+const Vector2d null2d ( 0, 0 );
+
+inline Vector2d operator + ( const Vector2d & a, const Vector2d & b )
+{
+        return Vector2d ( a.x + b.x, a.y + b.y );
+}
+
+inline Vector2d operator - ( const Vector2d & a, const Vector2d & b )
+{
+        return Vector2d ( a.x - b.x, a.y - b.y );
+}
+
+inline Vector2d operator * ( const Vector2d & a, const double & d )
+{
+        return Vector2d ( a.x * d, a.y * d );
+}
+
+inline Vector2d operator * ( const double & d, const Vector2d & a )
+{
+        return Vector2d ( a.x * d, a.y * d );
+}
+
+inline Vector2d operator / ( const Vector2d & a, const double & d )
+{
+        return Vector2d ( a.x / d, a.y / d );
+}
+
+inline double operator * ( const Vector2d & a, const Vector2d & b )
+{
+        return a.x * b.x + a.y * b.y;
+}
+
+inline double qmod ( const Vector2d & a )
+{
+        return a.x * a.x + a.y * a.y;
+}
+
+inline double operator % ( const Vector2d & a, const Vector2d & b )
+{
+        return a.x * b.y - a.y * b.x;
+}
+
+inline bool operator != ( const Vector2d & a, const Vector2d & b )
+{
+        return a.x != b.x || a.y != b.y;
+}
+
+inline bool operator == ( const Vector2d & a, const Vector2d & b )
+{
+        return a.x == b.x && a.y == b.y;
+}
+
+double norm1 ( const Vector2d & v ); // единичная норма
+double norm2 ( const Vector2d & v ); // квадратичная норма
+double normU ( const Vector2d & v ); // бесконечная норма
+</pre>
+<p>Примеры использования всех этих классов можно посмотреть в приложении <a href="demo/demo.html">DEMO</a>.
+</p>
+<p>
+Исходники находятся в файлах <a href="source/source.zip">vector2d.h, vector2d.cpp</a>. 
+</p>
+<a href="rus_geom.html">Наверх</a>
+<p>
+<br>
+</p>
+</td></div>
+</table>
+</body>
+</html>

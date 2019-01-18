@@ -1,0 +1,102 @@
+<html>
+<head><title>Минимальный охватывающий многоугольник</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align=center>
+<table width=800 cellspacing=0 cellpadding=0>
+<br>
+<div align=center>
+<font color="" style="font-size: 20pt">Минимальный охватывающий многоугольник</font>
+</div>
+<br>
+<div align=left><td>
+<p>Вначале рассмотрим фигуры охватывающие выпуклые многоугольники с обходом вершин против часовой стрелки.
+<br><br>&bull; Функция minTriangleAroundConvexPolygonA находит минимальный по площади треугольник 
+охватывающий данный выпуклый многоугольник inner:
+<pre>
+Def&lt;Triangle2d> minTriangleAroundConvexPolygonA ( CArrRef&lt;Vector2d> inner );
+</pre>
+Эта функция является реализацией алгоритма описанного в <a href="source/orourke1986.pdf">статье 
+"An Optimal Algorithm for Finding Minimal Enclosing Triangles"</a> ( O'Rourke и др. ).
+<br><br>&bull; Функции minRectangleAroundConvexPolygonA и minRectangleAroundConvexPolygonP находят 
+минимальный прямоугольник по площади и по периметру соответственно:
+<pre>
+Def&lt;Rectangle2d> minRectangleAroundConvexPolygonA ( CArrRef&lt;Vector2d> inner );
+Def&lt;Rectangle2d> minRectangleAroundConvexPolygonP ( CArrRef&lt;Vector2d> inner );
+</pre>
+&bull; Функция minParallelogramAroundConvexPolygonA находит минимальный по площади параллелограмм
+охватывающий заданный выпуклый многоугольник:
+<pre>
+Def&lt;Parallelogram2d> minParallelogramAroundConvexPolygonA ( CArrRef&lt;Vector2d> inner );
+</pre>
+Эта функция сделана на основе <a href="source/min_parallelogram.pdf">статьи А. Д. Вайнштейна</a> "Построение
+минимального объемлющего параллелограмма".
+<br>
+<br>&bull; Функция minTrapezoidAroundConvexPolygonA находит минимальную по площади трапецию
+охватывающую заданный выпуклый многоугольник при условии, что одна из её параллельных сторон
+лежит на стороне внутреннего многоугольника:
+<pre>
+bool miTrapezoidAroundConvexPolygonA ( FixArrRef&lt;Vector2d, 4> & outer, CArrRef&lt;Vector2d> inner );
+</pre>
+У всех предыдущих функций время работы зависит линейно от к-во вершин данного многоугольника. 
+<br>
+<br>&bull; Функция minNgonAroundConvexPolygonA находит минимальный по площади N-угольник
+охватывающий заданный выпуклый многоугольник:
+<pre>
+bool minNgonAroundConvexPolygonA ( ArrRef&lt;Vector2d> outer, CArrRef&lt;Vector2d> inner );
+</pre>
+Размер массива outer определяет к-во вершин N-угольника. Если это к-во больше к-ва вершин многоугольника inner,
+то функция возвращает значение false и не заполняет массив outer.
+<br>
+<br>&bull; Функция minEquianglarPolygonAroundConvexPolygonA находит минимальный по площади равноугольный многоугольник
+охватывающий заданный выпуклый многоугольник:
+<pre>
+bool minEquianglarPolygonAroundConvexPolygonA ( ArrRef&lt;Vector2d> outer, CArrRef&lt;Vector2d> inner );
+</pre>
+В результате в равноугольнике outer некоторые вершины могут совпадать ( рёбра иметь нулевую длину ).
+<br>
+<br>&bull; Теперь рассмотрим поиск минимальных фигур охватывающих произвольные простые многоугольники и наборы точек. 
+В этом случае вначале строится <a href="rus_convex2d.html">выпуклая оболочка</a> исходных многоугольников или точек, 
+а затем вызывается соответствующая функция для выпуклых многоугольников:
+<pre>
+Def&lt;Triangle2d>  minTriangleAroundPolygonA  ( CArrRef&lt;Vector2d> inner );
+Def&lt;Triangle2d>  minTriangleAroundPointsA   ( CArrRef&lt;Vector2d> inner );
+Def&lt;Rectangle2d> minRectangleAroundPolygonA ( CArrRef&lt;Vector2d> inner );
+Def&lt;Rectangle2d> minRectangleAroundPointsA  ( CArrRef&lt;Vector2d> inner );
+Def&lt;Rectangle2d> minRectangleAroundPolygonP ( CArrRef&lt;Vector2d> inner );
+Def&lt;Rectangle2d> minRectangleAroundPointsP  ( CArrRef&lt;Vector2d> inner );
+Def&lt;Parallelogram2d> minParallelogramAroundPolygonA ( CArrRef&lt;Vector2d> inner );
+Def&lt;Parallelogram2d> minParallelogramAroundPointsA  ( CArrRef&lt;Vector2d> inner );
+bool minTrapezoidAroundPolygonA  ( FixArrRef&lt;Vector2d, 4> & outer, CArrRef&lt;Vector2d> inner );
+bool minTrapezoidAroundPointsA   ( FixArrRef&lt;Vector2d, 4> & outer, CArrRef&lt;Vector2d> inner );
+bool minNgonAroundPolygonA       ( ArrRef&lt;Vector2d> outer, CArrRef&lt;Vector2d> inner );
+bool minNgonAroundPointsA        ( ArrRef&lt;Vector2d> outer, CArrRef&lt;Vector2d> inner );
+bool minEquianglarPolygonAroundPolygonA ( ArrRef&lt;Vector2d> outer, CArrRef&lt;Vector2d> inner );
+bool minEquianglarPolygonAroundPointsA  ( ArrRef&lt;Vector2d> outer, CArrRef&lt;Vector2d> inner );
+</pre>
+&bull; Также имеются функции поиска минимального охватывающие ромба вокруг набора точек
+( A - минимум площади, Р - минимум периметра ):
+<pre>
+Def&lt;Rhombus2d> minRhombusAroundPointsA ( CArrRef&lt;Vector2d> inner );
+Def&lt;Rhombus2d> minRhombusAroundPointsP ( CArrRef&lt;Vector2d> inner );
+</pre>
+</p>
+<p>
+В приложении <a href="demo/demo.html">DEMO</a> можно посмотреть примеры использования этих функций.
+</p>
+<p>
+<p>Описание шаблонов классов ArrRef, FixArrRef и CArrRef находится <a href=array.html>здесь</a>.
+<br>Описание шаблона классов Def находится <a href="def.html">здесь</a>.
+<br>Описание класса Vector2d находится <a href="rus_vector2d.html">здесь</a>.
+<br>Описание классов Triangle2d, Rhombus2d, Rectangle2d и Parallelogram2d находится <a href="figure2d.html">здесь</a>.
+<br>Исходники алгоритмов находятся в файле <a href="source/source.zip">opti2d.cpp</a>.
+</p>
+<a href=opti2d.html>Наверх</a>
+<pre>
+
+</pre>
+</td></div>
+</table>
+</div>
+</body>
+</html>

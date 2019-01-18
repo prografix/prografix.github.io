@@ -1,0 +1,39 @@
+<html>
+<head><title>Аппроксимация многоугольника</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="680" cellspacing="0" cellpadding="0">
+<div align=center>
+<br><font color="" style="font-size: 20pt">Аппроксимация многоугольника</font>
+</div>
+<br><div align=left><td>
+<p>Если многоугольник надо аппроксимировать кругом, то можно построить круг у которого центр масс и площадь
+будут такие же, как у многоугольника.
+Если многоугольник надо аппроксимировать эллипсом ( прямоугольником ), то можно воспользоваться 
+<a href="mom2.html">моментами 2-го порядка</a>
+и построить эллипс ( прямоугольник ), у которого центр масс и моменты 2-го порядка будут такие же, как у многоугольника:
+</p>
+<pre>
+Def&lt;Circle2d>    getCirclePlg    ( CArrRef&lt;Vector2d> poly );
+Def&lt;Ellipse2d>   getEllipsePlg   ( CArrRef&lt;Vector2d> poly );
+Def&lt;Rectangle2d> getRectanglePlg ( CArrRef&lt;Vector2d> poly );
+</pre>
+<p>Исходными данными для всех трёх функций является массив вершин многоугольника poly. 
+Направление обхода вершин многоугольника произвольно.
+</p>
+<p>Описание классов Circle2d, Ellipse2d и Rectangle2d находится <a href="figure2d.html">здесь</a>.
+<br>Описание шаблона классов CArrRef находится <a href=array.html>здесь</a>.
+<br>Описание шаблона классов Def находится <a href="def.html">здесь</a>.
+<br>Описание класса Vector2d находится <a href="rus_vector2d.html">здесь</a>.
+</p>
+<p>Исходники находятся в <a href="source/source.zip">approx2d.cpp</a></p>
+<p>Примеры использования всех этих функций можно посмотреть в приложении <a href="demo/demo.html">DEMO</a>.</p>
+<a href="rus_approx.html">Наверх</a>
+</td></div>
+</table>
+<pre>
+
+</pre>
+</body>
+</html>

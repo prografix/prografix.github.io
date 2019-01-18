@@ -1,0 +1,92 @@
+<html>
+<head>
+    <title>Аппроксимация отрезков прямой на плоскости</title>
+</head>
+<style type="text/css">
+ a:hover {text-decoration: underline; color: #ff6600 }
+ pre {color: blue;}
+</style>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="680" cellspacing="0" cellpadding="0">
+<div align=center>
+<font color="" style="font-size: 20pt">
+Аппроксимация отрезков прямой на плоскости
+</font>
+</div>
+<p>Пусть задано N отрезков на плоскости ( это может быть ломаная ). 
+Нужно  аппроксимировать их прямой так, чтобы при этом достигался минимум суммы квадратов отклонений. 
+Квадрат отклонения отрезка от прямой - это интеграл квадратов отклонения точек отрезка от прямой.
+Следующая функция делает это:
+</p>
+<pre>
+bool getLine2 ( const unsigned int n, const Segment2d * segm, Vector2d & dir, Vector2d & point )
+{
+    Vector2d o ( 0., 0. );
+    double sum = 0.;
+    double * length = new double[n];
+    unsigned int i;
+    for ( i = 0; i < n; ++i )
+    {
+        length[i] = sqrt ( qmod ( segm[i].b - segm[i].a ) );
+        o += ( 0.5 * length[i] ) * ( segm[i].b + segm[i].a );
+        sum += length[i];
+    }
+    if ( sum == 0 )
+    {
+        delete[] length;
+        return false;
+    }
+    point = o / sum;
+    double xx, xy, yy;
+    xx = xy = yy = 0.;
+    for ( i = 0; i < n; ++i )
+    {
+        const Vector2d a = segm[i].a - point;
+        const Vector2d b = segm[i].b - point;
+        xx += length[i] * ( a.x * ( a.x + a.x + b.x ) + b.x * ( a.x + b.x + b.x ) );
+        xy += length[i] * ( a.y * ( a.x + a.x + b.x ) + b.y * ( a.x + b.x + b.x ) );
+        yy += length[i] * ( a.y * ( a.y + a.y + b.y ) + b.y * ( a.y + b.y + b.y ) );
+    }
+    double * a[2], a0[2], a1[2];
+    a[0] = a0;
+    a[1] = a1;
+    a[0][0] = xx;
+    a[0][1] = xy;
+    a[1][0] = xy;
+    a[1][1] = yy;
+    double d[2];
+    double * u[2], u0[2], u1[2];
+    u[0] = u0;
+    u[1] = u1;
+    jacobi ( 2, a, d, u );
+    if ( d[0] > d[1] )
+    {
+        dir.x = u[0][0];
+        dir.y = u[1][0];
+    }
+    else
+    {
+        dir.x = u[0][1];
+        dir.y = u[1][1];
+    }
+    delete[] length;
+    return true;
+}
+</pre>
+<p>
+Результатом работы являются: направление прямой dir и точка point через которую проходит прямая. 
+Дополнительно известно, что dir - это единичный вектор, а point является центром масс исходных отрезков. 
+В случае, когда функция возвращает значение false, параметры dir и point
+не меняются.
+</p>
+<p>Описания классов Vector2d и Segment2d находятся <a href="rus_vector2d.html">здесь</a>. 
+</p>
+<p>Описание функции jacobi находится <a href="rus_jacobi.html">здесь</a>. 
+</p>
+<p>Исходники находятся в <a href="source/source.zip">approx.cpp</a></p>
+</p>
+<a href="rus_approx.html">Наверх</a>
+</table>
+</body>
+</html>

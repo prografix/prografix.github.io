@@ -1,0 +1,52 @@
+<html>
+<head><title>Аппроксимация функции полиномом</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Аппроксимация функции полиномом</font>
+</div>
+<br><div align=left><td>
+<p>Пусть заданы значения функции в некоторых точках и степень полинома. Необходимо выбрать
+коэффициенты полинома так, чтобы минимизировать отклонения от заданных значений функции.
+Обычно минимизируют сумму квадратов отклонений, т.е. решают <a href="rus_lss.html">задачу наименьших квадратов</a>. 
+Известно несколько способов решения этой задачи. Ниже представлены два из них.
+</p>
+<pre>
+bool apprLSS_H ( nat n, CArrRef&lt;double> x, CArrRef&lt;double> y, nat m, ArrRef&lt;double> c );
+
+bool apprLSS_O ( nat n, CArrRef&lt;double> x, CArrRef&lt;double> y, nat m, ArrRef&lt;double> c );
+</pre>
+<p>
+Первый из них решает задачу наименьших квадратов при помощи преобразований Хаусхолдера.
+В моих экспериментах этот способ давал наилучшую точность в сложных случаях. 
+<br>Второй способ использует для решения ортогонализацию Грамма-Шмидта и работает несколько быстрее предыдущего. 
+</p>
+<p>
+Входными данными являются: количество исходных точек, ссылки на массивы x и y, количество коэффициентов
+полинома и ссылку на них. Обратите внимание, что m - это не степень полинома, а количество коэффициентов.
+Степень полинома равна m-1. 
+</p>
+<p>Описание класса Matrix находится <a href="rus_matrix.html">здесь</a>
+<br>Описание шаблонов классов CArrRef и ArrRef находится <a href=array.html>здесь</a>.
+</p>
+<p>Исходники находятся в <a href="source/source.zip">approx.cpp</a></p>
+</p>
+<a href="rus_approx.html">Наверх</a>
+<pre>
+
+</pre>
+</td></div>
+</table>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10825496-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+</body>
+</html>

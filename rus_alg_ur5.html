@@ -1,0 +1,113 @@
+<html>
+<head><title>Уравнения пятой степени</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center>
+<font color="" style="font-size: 20pt">
+<br>Уравнения пятой степени</font>
+</div>
+<br><div align=left><td>
+<p>Будем рассматривать уравнения вида:
+<pre> x<sup>5</sup> + a * x<sup>4</sup> + b * x<sup>3</sup> + c * x<sup>2</sup> + d * x + e = 0
+</pre>
+</p>
+<p>Как и все уравнения нечётных степеней, уравнение пятой степени всегда имеет по крайней мере 
+один действительный корень. Определив отрезок, на концах которого полином имеет разные знаки, 
+этот корень можно вычислить при помощи алгоритма <a href="rus_alg_urp.html">zeroin</a>.
+Затем, используя полученный корень, уравнение сводится к <a href="rus_alg_ur4.html">уравнению четвёртой степени</a>:
+</p>
+<p> Для нахождения действительных корней уравнения пятой степени предлагаю следующую функцию:
+<pre>class Polynom5 : public MathFunc1
+{
+public:
+    double a, b, c, d, e;
+
+    double operator () ( double t ) const
+    {
+        return e + t * ( d + t * ( c + t * ( b + t * ( a + t ) ) ) );
+    }
+};
+
+double root5 ( double & a, double & b, double & c, double & d, double e )
+{
+    if ( e == 0 ) return 0;
+    double x;
+    Polynom5 func;
+    func.a = a;
+    func.b = b;
+    func.c = c;
+    func.d = d;
+    func.e = e;
+    if ( e < 0 )
+    {
+        if ( func ( 1 ) < 0 )
+        {
+            double g = - e;
+            if ( d < 0 ) g -= d;
+            if ( c < 0 ) g -= c;
+            if ( b < 0 ) g -= b;
+            if ( a < 0 ) g -= a;
+            zeroin ( 1, g, func, 0, x );
+        }
+        else
+            zeroin ( 0, 1, func, 0, x );
+    }
+    else
+    {
+        if ( func ( -1 ) > 0 )
+        {
+            double g = - e;
+            if ( d < 0 ) g += d;
+            if ( c > 0 ) g -= c;
+            if ( b < 0 ) g += b;
+            if ( a > 0 ) g -= a;
+            zeroin ( g, -1, func, 0, x );
+        }
+        else
+            zeroin ( -1, 0, func, 0, x );
+    }
+    a += x;
+    b += x * a;
+    c += x * b;
+    d += x * c;
+    return x;
+}
+
+nat root5 ( double a, double b, double c, double d, double e, double * x )
+{
+    x[0] = root5 ( a, b, c, d, e );
+    return 1 + root4 ( a, b, c, d, x+1 );
+}
+</pre>Исходники этой функции находятся в файле <a href="source/source.zip">mathem.cpp</a>.</p>
+<p>Следующая функция, кроме вещественных корней, вычисляет также комплексные корни:
+<pre>
+void root5 ( double a, double b, double c, double d, double e, double & x1,
+             Complex & x2, Complex & x3, Complex & x4, Complex & x5 )
+{
+    x1 = root5 ( a, b, c, d, e );
+    root4 ( a, b, c, d, x2, x3, x4, x5 );
+}
+</pre>Исходники этой функции находятся в файле <a href="source/source.zip">complex.cpp</a>.
+<br>Описание типа Complex смотрите в разделе <a href="rus_complex.html">Класс Complex</a>.
+</p>
+<a href="rus_alg_ur.html">Наверх</a>
+<pre>
+
+</pre>
+</td></div>
+</table>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10825496-1");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
+</body>
+</html>

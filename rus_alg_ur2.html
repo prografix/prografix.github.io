@@ -1,0 +1,131 @@
+<html>
+<head><title>Квадратные уравнения</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center>
+<font color="" style="font-size: 20pt">
+<br>Квадратные уравнения</font>
+</div>
+<br><div align=left><td>
+<p>В этом разделе рассматриваются решения квадратных уравнений.
+<br>Первые алгоритмы находят только действительные корни:
+<pre>
+// a * x^2 + b * x + c = 0 - общее квадратное уравнение
+
+unsigned int root2 ( double a, double b, double c, double x[2] )
+{
+    if ( a == 0 )
+    {
+        if ( c == 0 )
+        {
+            x[0] = 0.;
+        }
+        else
+        {
+            if ( b == 0 ) return 0;
+            x[0] = -c / b;
+        }
+        return 1;
+    }
+    else
+    {
+        if ( c == 0 )
+        {
+            x[0] = 0.;
+            x[1] = -b / a;
+        }
+        else
+        {
+            b *= -0.5;
+            double d = b * b - a * c;
+            if ( d < 0 ) return 0;
+            d = sqrt ( d );
+            double t = b > 0 ? b + d : b - d;
+            x[0] = c / t;
+            x[1] = t / a;
+        }
+    }
+    return 2;
+}
+
+// x^2 + a * x + b = 0 - приведённое квадратное уравнение
+
+unsigned int root2 ( double a, double b, double x[2] )
+{
+    if ( b == 0 )
+    {
+        x[0] = 0.;
+        x[1] = -a;
+    }
+    else
+    {
+        a *= -0.5;
+        double d = a * a - b;
+        if ( d < 0 ) return 0;
+        d = sqrt ( d );
+        x[1] = a > 0 ? a + d : a - d;
+        x[0] = b / x[1];
+    }
+    return 2;
+}
+</pre>
+Функции возвращают количество корней, а сами корни помещаются в массив x[2] по возрастанию модуля числа. 
+<br>Исходники этих функций находятся в файле <a href="source/source.zip">mathem.cpp</a>.
+</p>
+Следующий алгоритм находит комплексные корни:
+<pre>void root2 ( double a, double b, Complex & x1, Complex & x2 )
+{
+    if ( b == 0 )
+    {
+        x1.re = -a;
+        x2.re = x1.im = x2.im = 0;
+    }
+    else
+    {
+        a *= -0.5;
+        double d = a * a - b;
+        if ( d < 0 )
+        {
+            x1.re = x2.re = a;
+            x1.im = sqrt ( -d );
+            x2.im = - x1.im;
+        }
+        else
+        {
+            d = sqrt ( d );
+            x1.re = a > 0 ? a + d : a - d;
+            x2.re = b / x1.re;
+            x1.im = x2.im = 0;
+        }
+    }
+}
+</pre>
+Этот алгоритм решает уравнение с комплексными коэффициентами:
+<pre>void root2 ( const Complex & a, const Complex & b, Complex & x1, Complex & x2 )
+{
+    if ( b.re == 0 && b.im == 0 )
+    {
+        x1 = b;
+        x2 = -a;
+    }
+    else
+    {
+        const Complex c ( -0.5 * a.re, -0.5 * a.im );
+        const Complex d = sqrt ( c * c - b );
+        x1 = c - d;
+        x2 = c + d;
+    }
+}
+</pre>
+Описание типа Complex смотрите в разделе <a href="rus_complex.html">Класс Complex</a>.
+<br>Исходники этих функций находятся в файле <a href="source/source.zip">complex.cpp</a>.</p>
+<a href="rus_alg_ur.html">Наверх</a>
+<p>
+<br>
+</p>
+</td></div>
+</table>
+</body>
+</html>

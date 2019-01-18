@@ -1,0 +1,77 @@
+<html>
+<head><title>Максимальный многоугольник вписанный в выпуклый многоугольник</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center">
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Максимальный многоугольник вписанный<br> в выпуклый многоугольник</font>
+</div>
+<div align=left><td><br>
+<p>Многоугольники задаются массивами вершин. Обход вершин должен быть против часовой стрелки.</div>
+<br><br>
+&bull; Максимальный многоугольник:
+<pre>Def&lt;Conform2d> maxPolygonInConvexPolygon ( CCArrRef&lt;Vector2d> & inner, CCArrRef&lt;Vector2d> & outer );
+</pre>
+Ответ получатся в виде ортогонального преобразования, которое надо применить
+к вершинам внутреннего многоугольника ( inner ), чтобы получить оптимальное положение.
+<br>Следующая функция делает то же самое, но без вращения:
+<pre>Def&lt;Conform2d> maxPolygonInConvexPolygonNR ( CCArrRef&lt;Vector2d> & inner, CCArrRef&lt;Vector2d> & outer );
+</pre>
+&bull; Максимальный по площади прямоугольник:
+<pre>
+Def&lt;Rectangle2d> maxRectangleInConvexPolygonA ( CCArrRef&lt;Vector2d> & poly );
+</pre>
+Следующая функция делает то же самое, но без вращения:
+<pre>Def&lt;Rectangle2d> maxRectangleInConvexPolygonANR ( CCArrRef&lt;Vector2d> & poly );
+</pre>
+&bull; Максимальный ромб (  A - максимум площади, P - максимум периметра ):
+<pre>
+Def&lt;Rhombus2d> maxRhombusInConvexPolygonA ( CCArrRef&lt;Vector2d> & poly );
+Def&lt;Rhombus2d> maxRhombusInConvexPolygonP ( CCArrRef&lt;Vector2d> & poly );
+</pre>
+Без вращения:
+<pre>Def&lt;Rhombus2d> maxRhombusInConvexPolygonANR ( CCArrRef&lt;Vector2d> & outer );
+</pre>
+&bull; Максимальный параллелограмм (  A - максимум площади, P - максимум периметра ):
+<pre>
+Def&lt;Parallelogram2d> maxParallelogramInConvexPolygonA ( CCArrRef&lt;Vector2d> & poly );
+Def&lt;Parallelogram2d> maxParallelogramInConvexPolygonP ( CCArrRef&lt;Vector2d> & poly );
+</pre>
+</p>
+&bull; Максимальный по площади треугольник:
+<pre>
+Def&lt;Triangle2d> maxTriangleInConvexPolygonA ( CCArrRef&lt;Vector2d> & poly );
+</pre>
+Этот алгоритм перебирает все тройки вершин многоугольника и выбирает из них лучшую.
+<p>&bull; Максимальный по площади четырёхугольник:
+<pre>
+bool maxQuadInConvexPolygonA ( FixArrRef&lt;Vector2d, 4> & quad, CCArrRef&lt;Vector2d> & poly );
+</pre>
+Фиксированный массив из 4-х элементов quad в случае успешного завершения будет содержать координаты вершин
+вписанного четырёхугольника. Этот алгоритм перебирает все четвёрки вершин многоугольника и выбирает из них лучшую.
+<br><br>&bull; Максимальный по площади N-угольник:
+<pre>
+bool maxNgonInConvexPolygonA ( ArrRef&lt;Vector2d> & inner, CCArrRef&lt;Vector2d> & outer );
+</pre>
+Массив из N элементов inner в случае успешного завершения будет содержать координаты вершин
+вписанного N-угольника. Этот алгоритм не всегда даёт оптимальное решение.
+</p>
+<p>
+В приложении <a href="demo/demo.html">DEMO</a> можно посмотреть примеры использования этих функций.
+</p>
+<p>
+Описание класса Vector2d смотрите в разделе <a href="rus_vector2d.html">Вектора на плоскости</a>.
+<br>Описание класса Conform2d смотрите в разделе <a href="transform2d.html">Преобразования на плоскости</a>.
+<br>Описание шаблонов FixArrRef и CCArrRef смотрите в разделе <a href="array.html">Массивы</a>.
+<br>Описание шаблона классов Def смотрите в разделе <a href="def.html">Шаблон Def</a>.
+<br>Описание классов Triangle2d, Rhombus2d, Rectangle2d и Parallelogram2d находится <a href="figure2d.html">здесь</a>.
+<br>Исходники алгоритмов находятся в файле <a href="source/source.zip">opti2d_4.cpp</a>.
+</p>
+<a href="opti2d.html">Наверх</a>
+<pre>
+
+</pre></td></div>
+</table>
+</body>
+</html>

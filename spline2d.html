@@ -1,0 +1,56 @@
+<html>
+<head><title>Сплайн на плоскости</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="680" cellspacing="0" cellpadding="0">
+<div align=center>
+<br><font color="" style="font-size: 20pt">Сплайн на плоскости</font>
+</div>
+<br><div align=left><td>
+<p>В этом разделе описывается сплайн 2-го порядка, который задаётся двумя точками ( концы сплайна ) и
+двумя нормалями в этих точках ( необязательно единичными ):
+</p>
+<pre>
+class Spline2d
+{
+    Vector2d a, b, c;
+    mutable bool isDef;
+    mutable Def&lt;double> curv;
+    mutable double aa, ab, bb, aaa, abc;
+public:
+    Spline2d () {}
+    Spline2d ( const Vector2d & p1, const Vector2d & p2, const Vector2d & n1, const Vector2d & n2 );
+    Def&lt;Vector2d> getPoint ( const Vector2d & norm ) const;
+    Vector2d getPoint ( double par ) const
+    {
+        return c + ( b + a * par ) * par;
+    }
+    Vector2d getNormal ( double par ) const
+    {
+        return ( b + a * ( par + par ) ).rightPerpendicular().setNorm2();
+    }
+    double getLength ( double par = 1 ) const;
+    double getCurvature ( double par ) const;
+    double getCurvatureAvg () const;
+};
+</pre>
+<p>Имеются две функции getPoint. Одна из них возвращает точку кривой с указанной нормалью, если такая есть,
+а вторая возвращает точку по параметру в диапазоне от 0 ( точка p1 ) до 1 ( точка p2 ).
+Функция getNormal возвращает нормаль, функция getLength - длину, функция getCurvature - кривизну кривой по параметру,
+а функция getCurvatureAvg - среднюю кривизну дуги.
+</p>
+<p>Пример использования этого класса можно посмотреть в приложении <a href="demo/demo.html">DEMO</a>.</p>
+<p>
+Описание класса Vector2d находится <a href="rus_vector2d.html">здесь</a>.
+<br>Описание шаблона классов Def находится <a href="def.html">здесь</a>.
+</p>
+<p>Исходники находятся в <a href="source/source.zip">approx2d.cpp</a></p>
+<a href="rus_approx.html">Наверх</a>
+</td></div>
+</table>
+<pre>
+
+</pre>
+</body>
+</html>

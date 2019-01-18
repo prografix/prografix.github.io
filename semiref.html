@@ -1,0 +1,75 @@
+<html>
+<head><title>Шаблон SemiRef</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="680" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Шаблон SemiRef</font>
+</div>
+<div align=left><td><br>
+<p>Шаблон классов SemiRef ( полу-ссылка ) ведёт себя, как ссылка, за исключением оператора присваивания.
+Поэтому эта ссылка может ссылаться на разные объекты:
+</p>
+<pre>
+template &lt;class T> struct SemiRef
+{
+    T * p;
+
+    explicit SemiRef ( T & t ) : p(&t) {} 
+};
+
+template &lt;class T> inline
+bool operator < ( const SemiRef&lt;T> & a, const SemiRef&lt;T> & b )
+{
+    return *a.p < *b.p;
+}
+
+template &lt;class T> inline
+bool operator > ( const SemiRef&lt;T> & a, const SemiRef&lt;T> & b )
+{
+    return *a.p > *b.p;
+}
+
+template &lt;class T> inline
+bool operator <= ( const SemiRef&lt;T> & a, const SemiRef&lt;T> & b )
+{
+    return *a.p <= *b.p;
+}
+
+template &lt;class T> inline
+bool operator >= ( const SemiRef&lt;T> & a, const SemiRef&lt;T> & b )
+{
+    return *a.p >= *b.p;
+}
+
+template &lt;class T> inline
+bool operator == ( const SemiRef&lt;T> & a, const SemiRef&lt;T> & b )
+{
+    return *a.p == *b.p;
+}
+
+template &lt;class T> inline
+bool operator != ( const SemiRef&lt;T> & a, const SemiRef&lt;T> & b )
+{
+    return *a.p != *b.p;
+}
+
+template &lt;class T> inline
+T operator + ( const SemiRef&lt;T> & a, const SemiRef&lt;T> & b )
+{
+    return *a.p + *b.p;
+}
+</pre>
+<p>
+Здесь определены ещё не все операторы. Они будут добавляться по мере надобности
+</p>
+<p>Исходники находятся в файле <a href="source/source.zip">template.h</a>.
+</p>
+<a href="template.html">Наверх</a>
+<pre>
+
+</pre></td></div>
+</table>
+</body>
+</html>

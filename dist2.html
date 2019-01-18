@@ -1,0 +1,59 @@
+<html>
+<head><title>Расстояния на плоскости</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Расстояния на плоскости</font>
+</div><td><br>
+<p>Во всех функциях этого раздела вычисленное расстояние будет отрицательным, если точка находится внутри фигуры,
+и положительным, если точка находится вне фигуры.
+</p>
+<p>&bull; Минимальное расстояние между точками одного множества:
+<pre>
+double closestPoints ( CArrRef&lt;Vector2d> point, Set2&lt;nat> & pp );
+</pre>
+Параметр pp содержит индексы ближайших точек.
+</p>
+<p>&bull; Расстояние от точки до границы окружности:
+<pre>
+double getDistance ( const Circle2d & circle, const Vector2d & point );
+</pre>
+</p>
+<p>&bull; Расстояние от точки до границы эллипса:
+<pre>
+double getDistanceElp ( double a, double b, const Vector2d & p, Vector2d & r );
+
+double getDistanceElp ( double a, double b, const Vector2d & p );
+</pre>
+Здесь a и b - это параметры эллипса заданного в виде ( x / a )<sup>2</sup> + ( y / b )<sup>2</sup> = 1,
+<br>p - заданная точка,
+<br>r - ближайшая точка на границе эллипса.
+</p>
+<p>&bull; Расстояние от точки до границы многоугольника:
+<pre>bool distance ( CArrRef&lt;Vector2d> vert, const Vector2d & point,
+                double & dist, unsigned int & index, bool & isBone );
+</pre>
+Обход вершин многоугольника задан против часовой стрелки.
+Здесь vert - ссылка на массив вершин, point - заданная точка,
+dist - вычисленное расстояние, index - номер ближайшей вершины или ребра, isBone -
+индикатор того, что ближе - точка на ребре или вершина.
+<br>Если к-во вершин равно нулю, то функция возвращает значение <font color=blue>false</font> и 
+переменные <font color=blue>dist</font>, <font color=blue>index</font> и <font color=blue>isBone</font> не меняются.
+</p>
+<p>
+Описание класса Vector2d находится <a href="rus_vector2d.html">здесь</a>.
+<br>Описание шаблона классов Set2 находится <a href="composition.html">здесь</a>. 
+<br>Описание шаблона CArrRef смотрите в разделе <a href="array.html">Массивы</a>.
+</p>
+<p>
+Исходники алгоритмов находятся в <a href="source/source.zip">func2d.cpp</a>
+</p>
+<a href="rus_geom.html">Наверх</a>
+<pre>
+
+</pre></td>
+</table>
+</body>
+</html>

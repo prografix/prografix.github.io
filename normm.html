@@ -1,0 +1,102 @@
+<html>
+<head><title>Матричные нормы</title>
+<link rel="stylesheet" type="text/css" href="stylle.css">
+</head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="600" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Матричные нормы</font>
+</div><br>
+<div align=left><td>
+<p>Матричная норма - это функция удовлетворяющая следующим свойствам:
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    f ( A ) &ge; 0
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    f ( A + B ) &le; f ( A ) + f ( B )
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    f ( &alpha; * A ) = | &alpha; | * f ( A )
+<br>где A и B - это матрицы, &alpha; - скаляр.</p>
+<p>Чаще всего используют норму Фробениуса:
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| A |<sub>F</sub> = &#8730;<span class=over> сумма квадратов всех элементов</span>
+<br>и p-нормы, которые определены через <a href="normv.html">векторные нормы</a>:
+<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| A |<sub>p</sub> = sup | A*x |<sub>p</sub> / | x |<sub>p</sub>, 
+&nbsp;&nbsp;&nbsp;где p &ge; 1 и вектор x &ne; 0.<br>
+<br>
+Наиболее важными из p-норм являются 1, 2 и &#8734;-нормы  ( A<sub> m, n</sub> ):
+<TABLE width="100%" border=0>
+  <TBODY>
+  <TR>
+    <TD>    
+        <TABLE cellSpacing=2 cellPadding=0 align=left border=0>
+          <TBODY>
+          <TR style="POSITION: relative; TOP: 8%" align=middle>
+            <TD colSpan=3>&nbsp;</TD>
+            <TD><FONT size=-1>m</FONT></TD>
+          </TR>
+          <TR><TD colSpan=1>&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+            <TD noWrap align=middle>| A |<sub>1</sub></TD>
+            <TD noWrap>&nbsp;= max <sub>j</sub>&nbsp;</TD>
+            <TD align=middle>&nbsp;<FONT size=+3>&#8721;</FONT>&nbsp;</TD>
+            <TD noWrap align=middle>| a<sub>ij</sub> |</TD>
+          <TR style="POSITION: relative; TOP: -10%" align=middle>
+            <TD colSpan=3>&nbsp;</TD>
+            <TD><FONT size=-1><I>i</I> = 1</FONT></TD>
+          </TR></TBODY></TABLE>
+        </TD></TR>
+  </TBODY></TABLE>
+&nbsp;&nbsp;&nbsp;&nbsp;| A |<sub>2</sub> = &#8730;<span class=over> максимальное собственное значение A<sup>T</sup>*A</span>
+<TABLE width="100%" border=0>
+  <TBODY>
+  <TR>
+    <TD>    
+        <TABLE cellSpacing=2 cellPadding=0 align=left border=0>
+          <TBODY>
+          <TR style="POSITION: relative; TOP: 8%" align=middle>
+            <TD colSpan=3>&nbsp;</TD>
+            <TD><FONT size=-1>n</FONT></TD>
+          </TR>
+          <TR><TD colSpan=1>&nbsp;&nbsp;&nbsp;&nbsp;</TD>
+            <TD noWrap align=middle>| A |<sub>&#8734;</sub></TD>
+            <TD noWrap>&nbsp;= max <sub>i</sub>&nbsp;</TD>
+            <TD align=middle>&nbsp;<FONT size=+3>&#8721;</FONT>&nbsp;</TD>
+            <TD noWrap align=middle>| a<sub>ij</sub> |</TD>
+          <TR style="POSITION: relative; TOP: -10%" align=middle>
+            <TD colSpan=3>&nbsp;</TD>
+            <TD><FONT size=-1><I>j</I> = 1</FONT></TD>
+          </TR></TBODY></TABLE>
+        </TD></TR>
+  </TBODY></TABLE>
+Некоторые свойства матричных норм:
+<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| A |<sub>2</sub> &le; | A |<sub>F</sub> &le; &#8730;<span class=over> n</span> | A |<sub>2</sub>
+<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+max | a<sub>ij</sub> | &le; | A |<sub>2</sub> &le; &#8730;<span class=over> mn</span> max | a<sub>ij</sub> |
+<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| A |<sub>1</sub> / &#8730;<span class=over> m</span> &le; | A |<sub>2</sub> &le; &#8730;<span class=over> n</span> | A |<sub>1</sub>
+<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| A |<sub>&#8734;</sub> / &#8730;<span class=over> n</span> &le; | A |<sub>2</sub> &le; &#8730;<span class=over> m</span> | A |<sub>&#8734;</sub>
+<br><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+| A |<sub>2</sub> | A |<sub>2</sub> &le; | A |<sub>1</sub> | A |<sub>&#8734;</sub>
+</p>
+Примеры вычисления этих норм находятся в разделе <a href="rus_matrix.html">Класс Matrix</a>.
+<br><a href="rus_lin_alg.html">Наверх</a>
+<pre>
+
+</pre></td></div>
+</table>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10825496-1");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
+</body>
+</html>

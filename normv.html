@@ -1,0 +1,53 @@
+<html>
+<head><title>Векторные нормы</title>
+<link rel="stylesheet" type="text/css" href="stylle.css">
+</head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="600" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Векторные нормы</font>
+</div><br>
+<div align=left><td>
+<p>Норма n-мерного вектора - это функция удовлетворяющая следующим свойствам:
+<pre>
+    f ( x ) &ge; 0
+    f ( x + y ) &le; f ( x ) + f ( y )
+    f ( a * x ) = | a | * f ( x )
+</pre>где x и y - это векторы, а - скаляр.
+<p>Полезный класс векторных норм - это p-нормы:
+<pre>
+    | x |<sub>p</sub> = ( | x<sub>1</sub> |<sup>p</sup> + ... + | x<sub>n</sub> |<sup>p</sup> )<sup>1/p</sup>
+</pre>
+где p &ge; 1.<br>
+<br>
+Наиболее важными из p-норм являются 1, 2 и &#8734;-нормы:
+<pre>
+    | x |<sub>1</sub> = | x<sub>1</sub> | + ... + | x<sub>n</sub> |
+    | x |<sub>2</sub> = ( | x<sub>1</sub> |<sup>2</sup> + ... + | x<sub>n</sub> |<sup>2</sup> )<sup>1/2</sup>
+    | x |<sub>&#8734;</sub> = max | x<sub>i</sub> |
+</pre>
+Некоторые свойства векторных норм:
+<pre>
+    | x |<sub>2</sub> &le; | x |<sub>1</sub> &le; &#8730;<span class=over>n</span> | x |<sub>2</sub>
+    | x |<sub>&#8734;</sub> &le; | x |<sub>2</sub> &le; &#8730;<span class=over>n</span> | x |<sub>&#8734;</sub>
+    | x |<sub>&#8734;</sub> &le; | x |<sub>1</sub> &le; n | x |<sub>&#8734;</sub>
+</pre></p>
+<a href="rus_lin_alg.html">Наверх</a>
+<pre>
+
+</pre></td></div>
+</table>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10825496-1");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
+</body>
+</html>

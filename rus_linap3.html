@@ -1,0 +1,60 @@
+<html>
+<head><title>Линейная аппроксимация точек в пространстве</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Линейная аппроксимация точек в пространстве</font>
+</div>
+<br>
+<div align=left><td>
+<p>Пусть задано множество точек или отрезков и нужно провести наиболее близкую к ним прямую
+( аппроксимация прямой ).
+Такой прямой может быть прямая, которая минимизирует сумму квадратов расстояний до прямой 
+( момент 2-го порядка ):
+</p>
+<pre>
+Def&lt;Line3d> getLine2 ( CArrRef&lt;Vector3d> point );
+
+Def&lt;Line3d> getLine2 ( CArrRef&lt;Vector3d> point, CArrRef&lt;double> mass );
+
+Def&lt;Line3d> getLine2 ( CArrRef&lt;Segment3d> segm );
+</pre>
+или, которая минимизирует максимальное расстояние до прямой ( r ):
+<pre>
+Def&lt;Line3d> getLineU ( CArrRef&lt;Vector3d> point, double & r );
+</pre>
+<p>Следующие функции находят такую аппроксимирующую плоскостью, которая минимизирует сумму квадратов расстояний до плоскости 
+( <a href="mom3.html">момент 2-го порядка</a> ):
+</p>
+<pre>
+Def&lt;Plane3d> getPlane2 ( CArrRef&lt;Vector3d> point );
+
+Def&lt;Plane3d> getPlane2 ( CArrRef&lt;Vector3d> point, CArrRef&lt;double> mass );
+
+Def&lt;Plane3d> getPlane2 ( CArrRef&lt;Segment3d> segm );
+</pre>
+<p>
+В случае невозможности вычисления возвращаемого объекта поле isDef равно false.
+</p>
+<p>Следующая функция находит плоскость минимизирующую максимальное расстояние до точек ( 
+<a href="normv.html">бесконечную норму</a> вектора отклонений ):
+</p>
+<pre>
+Plane3d getPlaneU ( CArrRef&lt;Vector3d> point, double & r );
+</pre>
+Описание класса Vector3d находится <a href="rus_vector.html">здесь</a>.
+<br>Описание классов Segment3d, Line3d и Plane3d находится <a href="figure3d.html">здесь</a>.
+<br>Описание шаблона классов CArrRef находится <a href=array.html>здесь</a>.
+<br>Описание шаблона классов Def находится <a href=def.html>здесь</a>.
+<p>Исходники находятся в файле <a href="source/source.zip">approx3d.cpp</a></p>
+</p>
+<a href="rus_approx.html">Наверх</a>
+<pre>
+
+</pre>
+</td></div>
+</table>
+</body>
+</html>

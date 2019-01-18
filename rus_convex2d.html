@@ -1,0 +1,73 @@
+<html>
+<head><title>Выпуклая оболочка на плоскости</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Выпуклая оболочка на плоскости</font>
+</div>
+<br>
+<div align=left><td>
+<p>Иногда приходится решать следующую задачу: дано n неупорядочных точек на плоскости,
+необходимо найти их выпуклую оболочку. Представленный ниже метод решения этой задачи 
+является вариантом алгоритма "заворачивания подарка". Время работы этого метода пропорционально m * n, 
+где m - количество точек выпуклой оболочки. Существуют более быстрые методы, но этот алгоритм 
+более прост для понимания и реализации, кроме того он эффективен в случае, когда m мало по сравнению с n.
+<pre>SuiteRef&lt;Vector2d> & convexMN ( SuiteRef&lt;Vector2d> & vert );
+</pre>
+Входной параметр - это ссылка на набор точек.
+Туда же будут записаны точки найденной выпуклой оболочки и их количество.</p>
+<p>Существует множество методов построения выпуклой оболочки за время O ( n log n ) в худшем случае.
+Вот один из них. Идея заключается в следующем. Вначале исходные точки упорядочиваются по возрастанию
+координаты X, а в случае равенства по Y. Для этой цели используется сортировка слияниями, которая
+сделает это за время O ( n log n ) в худшем случае:
+</p>
+<pre>
+void mergeSort123 ( nat n, const Vector2d ** a, const Vector2d ** b );
+</pre>
+<p>После этого проводится прямая линия проходящая через первую и последнюю точки, и строятся
+выпуклые оболочки отдельно для точек лежащих ниже линии и выше. Это займёт время O ( n ).</p>
+<pre>
+SuiteRef&lt;Vector2d> & convexNlogN ( CArrRef&lt;Vector2d> vert, SuiteRef&lt;Vector2d> & res );
+SuiteRef&lt;  nat   > & convexNlogN ( CArrRef&lt;Vector2d> vert, SuiteRef&lt;  nat   > & res );
+</pre>
+<p>Алгоритм реализован в виде двух функций.
+В первой функции res - это ссылка на набор точек, а во второй - ссылка на набор индексов точек.
+Ссылки vert и res должны указывать на разные наборы. 
+Этот алгоритм в моих экспериментах работал на случайных точках в 10 и более раз быстрее, чем предыдущий.
+</p>
+<p>Если исходные точки являются вершинами простого многоугольника, то в этом случае выпуклую
+оболочку можно построить за время O ( n ). Следующий алгоритм был взят с небольшими изменениями из книги
+"Вычислительная геометрия" (Препарата, Шеймос) пункт 4.1.4:
+</p>
+<pre>
+SuiteRef&lt;nat> & convexPolygon ( CArrRef&lt;Vector2d> vert, SuiteRef&lt;nat> & index );
+
+DynArrRef&lt;Vector2d> & convexPolygon ( CArrRef&lt;Vector2d> vert, DynArrRef&lt;Vector2d> & res );
+
+SuiteRef&lt;Vector2d> & convexPolygon ( SuiteRef&lt;Vector2d> & vert );
+</pre>
+<p>Как обычно обход вершин полагается против часовой стрелки. 
+Во втором варианте алгоритма указатели vert и res могут указывать на один массив.</p>
+<p>Описание шаблонов классов CArrRef, DynArrRef и SuiteRef находится <a href=array.html>здесь</a>.
+<br>Описание класса Vector2d находится <a href="rus_vector2d.html">здесь</a>. 
+<p>Исходники алгоритмов находятся в файле <a href="source/source.zip">func2d.cpp</a>.</p>
+<a href="rus_geom.html">Наверх</a>
+</td></div>
+</table>
+<pre>
+
+</pre>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10825496-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+</body>
+</html>

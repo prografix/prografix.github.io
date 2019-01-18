@@ -1,0 +1,60 @@
+<html>
+<head><title>Функции для многоугольников</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align=center>
+<table width="680" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Функции для многоугольников</font>
+</div><td><br>
+<p>Функция area вычисляет площадь многоугольника:
+</p>
+<pre>
+double area ( CArrRef&lt;Vector2d> vert );
+</pre>
+<p>Знак площади зависит от направления обхода вершин. Для обхода против часовой стрелки площадь положительна.
+</p>
+<p>Функция perimeter вычисляет периметр многоугольника, который всегда неотрицателен:
+<pre>
+double perimeter ( CArrRef&lt;Vector2d> vert );
+</pre>
+</p>
+<p>Функция isConvex проверяет многоугольник на выпуклость:
+</p>
+<pre>bool isConvex ( CArrRef&lt;Vector2d> vert );
+</pre>
+<p>Функция loopNumber подсчитывает количество оборотов совершаемое при обходе контура:
+</p>
+<pre>
+int loopNumber ( CArrRef&lt;Vector2d> vert );
+</pre>
+<p>Это число будет положительным, если обход контура совершается против часовой стрелки и
+отрицательным, если по часовой стрелке. 
+Если количество оборотов не равно 1 - значит на контуре есть петли.
+Обратное не всегда верно, т.к. петли могут обороты и добавлять, и убавлять.
+</p>
+<p>Функции simplify упрощают многоугольники. Полученный многоугольник res состоит из вершин исходного 
+многоугольника poly и отличается от него не более, чем на eps. Если параметр closed = false, то входной массив вершин
+считается незамкнутой ломаной. В этом случае первая и последняя точки будут сохранены:
+<pre>
+DynArrRef&lt;  nat   > & simplify ( CArrRef&lt;Vector2d> poly, double eps, bool closed, DynArrRef&lt;  nat   > & res );
+DynArrRef&lt;Vector2d> & simplify ( CArrRef&lt;Vector2d> poly, double eps, bool closed, DynArrRef&lt;Vector2d> & res );
+</pre>
+</p>
+<p>Первый параметр у всех функций - это ссылка на массив вершин многоугольника.</p>
+<p>Описание класса Vector2d находится <a href="rus_vector2d.html">здесь</a>.
+<br>Описание шаблонов классов CArrRef и DynArrRef находится <a href=array.html>здесь</a>.
+<br>Исходники алгоритмов находятся в файле <a href="source/source.zip">func2d.cpp</a>.</p>
+<a href="rus_geom.html">Наверх</a></td>
+</table>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10825496-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+</body>
+</html>

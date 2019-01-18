@@ -1,0 +1,31 @@
+<html>
+<head><title>Совмещение фигур в пространстве</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Совмещение фигур в пространстве</font>
+</div>
+<div align=left><td><br>
+<p>Пусть дан набор пар точек. Нужно найти поворот при котором первые точки пары совмещаются со вторыми.
+Следующая функция находит такой поворот. Она максимизирует сумму скалярных произведений пар точек.
+Если нужно задать разные веса для пар точек, то нужно умножить какую-то точку из пары на этот вес.
+</p>
+<pre>
+Spin3d makeSpin3d ( CArrRef&lt;Set2&lt;Vector3d> > data );
+</pre>
+Описание класса Spin3d находится <a href="transform3d.html">здесь</a>.
+<br>Описание класса Vector3d находится <a href="rus_vector.html">здесь</a>.
+<br>Описание шаблона классов Set2 находится <a href=composition.html>здесь</a>.
+<br>Описание шаблона классов CArrRef находится <a href=array.html>здесь</a>.
+<br>Исходники алгоритмов находятся в файле <a href="source/source.zip">func3d.cpp</a>.
+</p>
+<a href="rus_geom.html">Наверх</a>
+</pre>
+
+<pre>
+</td></div>
+</table>
+</body>
+</html>

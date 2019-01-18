@@ -1,0 +1,43 @@
+<html>
+<head><title>Собственные значения матрицы</title>
+<link rel="stylesheet" type="text/css" href="stylle.css">
+</head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="700" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Собственные значения матрицы</font>
+</div>
+<div align=left><td><br>
+<p>Функция hqr вычисляет собственные значения действительной матрицы заданной в верхней форме Хессенберга, 
+т.е когда все элементы матрицы h[i][j] при i > j + 1 равны нулю:
+</p>
+<pre>
+bool hqr ( unsigned int n, double * const * h, double * wr, double * wi );
+</pre>
+<p>Вещественная часть собственных значений помещается в массив wr, а мнимая в wi.
+Значения элементов матрицы h в ходе алгоритма изменяются.</p>
+Матрицу общего вида можно привести к верхней форме Хессенберга при помощи следующей функции:
+<pre>
+void orthes ( unsigned int n, double * const * a );
+</pre>
+<p>Оба алгоритма были взяты из книги "Справочник алгоритмов на языке Алгол" ( Уилкинсон, Райнш ) и переписаны на С++.
+<p>Исходники находятся в файле <a href="source/source.zip">mathem.cpp</a>.</p>
+<a href="rus_lin_alg.html">Наверх</a>
+<pre>
+
+</pre></td></div>
+</table>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10825496-1");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
+</body>
+</html>

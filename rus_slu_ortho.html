@@ -1,0 +1,56 @@
+<html>
+<head><title>Решение систем линейных уравнений методом ортогонализации</title>
+<link rel="stylesheet" type="text/css" href="stylle.css">
+</head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="680" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Решение систем линейных уравнений методом ортогонализации</font>
+</div>
+<div align=left><td><br>
+<p>Идея решения систем линейных уравнений методом ортогонализации состоит в следующим. 
+Пусть даны матрица A (n*m) и вектор b (n), где n <= m. Надо найти такой x (m), чтобы Ax = b.
+Если n < m, то такая система называется недоопределённой ( к-во уравнений меньше, чем к-во переменных ).
+Перенесём вектор b в левую часть уравнения и будем рассматривать (m+1)-мерные строки. 
+Тогда решением будет вектор x' у которого (m+1)-ая координата равна -1 и
+все скалярные произведения на строки полученной матрицы равны 0. 
+Отсюда следует, что нам нужно найти в (m+1)-мерном пространстве вектор ортогональный каждому из n векторов.
+Такой вектор всегда существует. Если у него (m+1)-ая координата не равна 0, то 
+умножая этот вектор на скаляр получим вектор x'. 
+<p>Ортогональный вектор можно находить различными способами. Вот один из вариантов.
+Добавим к матрице строку у которой все координаты, кроме последней, равны 0 и
+применим к n+1 строкам процедуру ортогонализации Грама-Шмидта. В результате получим множество ортогональных векторов. 
+Последний из них приводим к необходимому виду, если это возможно. 
+Этот алгоритм находит всегда одно решение, даже в случае недоопределённой системы:
+</p>
+<pre>bool slu_ortho ( unsigned int n, unsigned int m, const double * const * a, const double * b, double * x );
+</pre>
+Если же воспользоваться алгоритмом orthogonalizationH1 из раздела <a href=orthogonalization.html>Ортогонализация векторов</a>,
+то получим следующие две функции:
+<pre>
+bool slu_orthoH1 ( unsigned int n, unsigned int m, const double * const * a, const double * b, double * x );
+
+unsigned int slu_orthoH1 ( const Matrix & a, const double * b, Matrix & x );
+</pre>
+Первая из них находит всегда одно решение, а вторая - в зависимости от ранга матрицы А и возвращает
+к-во найденных независимых решений.
+<p>Исходники находятся в файле <a href="source/source.zip">mathem.cpp</a>.</p>
+<a href="rus_lin_alg.html">Наверх</a>
+<pre>
+
+</pre></td></div>
+</table>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10825496-1");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
+</body>
+</html>

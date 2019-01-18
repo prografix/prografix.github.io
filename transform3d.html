@@ -1,0 +1,362 @@
+<html>
+<head><title>Преобразования в пространстве</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="680" cellspacing="0" cellpadding="0">
+<div align=center>
+<br>
+<font color="" style="font-size: 20pt">Преобразования в пространстве</font>
+</div>
+<br>
+<div align=left><td>
+<p>Класс Spin3d предназначен для описания поворота ( или вращения ) в пространстве. 
+У него 5 конструкторов. 
+Первый (без параметров) соответствует повороту на 0 градусов. 
+Второй требует два параметра: направление оси поворота и угол в радианах. 
+Вектор направления необязательно должен быть единичным. 
+Третий конструктор задаётся двумя направлениями ( тоже необязательно единичными ). 
+При этом повороте первое направление переходит во второе. 
+Четвёртый конструктор требует в качестве параметров ортонормированную 
+тройку векторов и этот поворот будет соответствовать повороту при 
+котором тройка векторов осей X, Y, Z перейдёт в заданную. 
+Пятый констуктор имеет 4 параметра.
+Функция-член getReper в некотором смысле делает обратную операцию: для данного 
+поворота выдаёт тройку векторов в которые перейдут оси X, Y, Z. 
+Функции-члены rotX, rotY, rotZ поворачивают соответствующий орт.
+Функция-член getAngle возвращает угол в радианах, а функция-член getAxis - единичный вектор оси поворота. 
+Оператор ~ возвращает поворот обратный исходному.
+Оператор * является умножением в смысле теории групп и не является коммутативным. 
+Он соответствует последовательному применению преобразований. Вначале правое, затем левое. 
+</p>
+<pre>class Spin3d
+{
+    double t, x, y, z;
+public:
+    Spin3d () { t = 1.; x = y = z = 0.; }
+    Spin3d ( Vector3d, double );
+    Spin3d ( Vector3d v1, Vector3d v2 );
+    Spin3d ( const Vector3d & x, const Vector3d & y, const Vector3d & z );
+    Spin3d ( const double & a, const double & b, const double & c, const double & d );
+
+    void getReper ( Vector3d & ax, Vector3d & ay, Vector3d & az ) const;
+    Vector3d rotX () const;
+    Vector3d rotY () const;
+    Vector3d rotZ () const;
+    double getAngle () const;
+    Vector3d getAxis () const;
+
+    Spin3d operator ~ () const
+    {
+        Spin3d s = *this;
+        s.t = - t;
+        return s;
+    }
+
+    friend Spin3d operator * ( const Spin3d & l, const Spin3d & r );
+};
+</pre>
+<p>Класс Ortho3d предназначен для реализации ортогональных преобразований. 
+У него 3 открытых конструктора. 
+Первый - без параметров. Второй в качестве параметра использует объект класса Spin3d. 
+Третий требует два параметра: направление оси поворота и угол в радианах. Направление необязательно должно быть единичным. 
+Операторы () осуществляют преобразования различных геометрических объектов ( векторов, отрезков, плоскостей ).
+Функции getX, getY и getZ позволяют получить только одну координату преобразованного вектора.
+Оператор ~ возвращает преобразование обратное данному 
+( для ортогональных преобразований - это транспонированная матрица ).
+</p>
+<pre>class Ortho3d
+{
+    Vector3d x, y, z;
+public:
+    Ortho3d () : x(1,0,0), y(0,1,0), z(0,0,1) {}
+
+    explicit Ortho3d ( const Spin3d & spin )
+    {
+        spin.getReper ( x, y, z );
+    }
+
+    Ortho3d ( Vector3d a, double b );
+
+    double getX ( const Vector3d & p ) const { return x * p; }
+    double getY ( const Vector3d & p ) const { return y * p; }
+    double getZ ( const Vector3d & p ) const { return z * p; }
+
+    Vector3d operator () ( const Vector3d & p ) const
+    {
+        return Vector3d ( x * p, y * p, z * p );
+    }
+
+    Segment3d operator () ( const Segment3d & p ) const
+    {
+        return Segment3d ( (*this) ( p.a ), (*this) ( p.b ) );
+    }
+
+    Plane3d operator() ( const Plane3d & p ) const
+    {
+        return Plane3d ( Vector3d ( x * p.norm, y * p.norm, z * p.norm ), p.dist );
+    }
+
+    Ortho3d operator ~ () const;
+};
+</pre>
+<p>Класс Conform3d предназначен для реализации преобразований подобия, т.е. сохраняющих углы. 
+Вначале применяются поворот (spin) и масштабирование (magn), а затем смещение (trans). 
+Оператор ~ возвращает преобразование обратное данному. 
+Операторы () осуществляют преобразования различных геометрических объектов ( векторов, отрезков, плоскостей ).
+Эти операторы не рекомендуется применять для массовых операций, т.к. они является более медленными по сравнению 
+с аналогичными операторами класса Similar3d ( он описан ниже ). 
+</p>
+<pre>class Conform3d
+{
+public:
+    Spin3d   spin;
+    Vector3d trans;
+    double   magn;
+
+    explicit Conform3d ( const Spin3d & s ) : spin ( s ), trans (0.,0.,0.), magn ( 1.) {}
+    explicit Conform3d ( const Vector3d & t ) : trans (t), magn (1.) {}
+    explicit Conform3d ( double m = 1 ) : trans(0.,0.,0.), magn(m) {}
+
+    Conform3d ( const Spin3d & s, const Vector3d & t, double m = 1. ) : spin(s), trans(t), magn(m) {}
+
+    Def&lt;Conform3d> operator~ () const
+    {
+        Def&lt;Conform3d> res;
+        if ( magn != 0 )
+        {
+            res.spin = ~spin;
+            res.magn = 1. / magn;
+            res.trans = (-res.magn) * Ortho3d ( res.spin ) ( trans );
+            res.isDef = true;
+        }
+        return res;
+    }
+
+    Vector3d operator() ( const Vector3d & v ) const
+    {
+        return spin ( v ) * magn + trans;
+    }
+
+    Segment3d operator () ( const Segment3d & p ) const
+    {
+        return Segment3d ( (*this) ( p.a ), (*this) ( p.b ) );
+    }
+
+    Plane3d operator() ( const Plane3d & p ) const
+    {
+        const Vector3d v = Ortho3d ( spin ) ( p.norm );
+        return Plane3d ( v, magn * p.dist - v * trans );
+    }
+};
+
+inline Conform3d operator * ( const Conform3d & l, const Conform3d & r )
+{
+    return Conform3d ( l.spin * r.spin, l ( r.trans ), l.magn * r.magn );
+}
+</pre>
+Класс Similar3d делает преобразования подобия для точек и плоскостей.
+Функции getX, getY и getZ позволяют получить только одну координату преобразованного вектора.
+Операторы () осуществляют преобразования различных геометрических объектов ( векторов, отрезков, плоскостей ).
+<pre>class Similar3d
+{
+    double   magn;
+    Vector3d ox, oy, oz;
+    Vector3d ax, ay, az, trans;
+public:
+    explicit Similar3d ( const Spin3d & spin ) : magn ( 1. ), trans ( 0., 0., 0. )
+    {
+        spin.getReper ( ox, oy, oz );
+        ax = ox;
+        ay = oy;
+        az = oz;
+    }
+
+    explicit Similar3d ( const Conform3d & c ) : magn ( c.magn ), trans ( c.trans )
+    {
+        c.spin.getReper ( ox, oy, oz );
+        ax = ox * magn;
+        ay = oy * magn;
+        az = oz * magn;
+    }
+
+    double getX ( const Vector3d & p ) const { return ax * p + trans.x; }
+    double getY ( const Vector3d & p ) const { return ay * p + trans.y; }
+    double getZ ( const Vector3d & p ) const { return az * p + trans.z; }
+
+    Vector3d operator () ( const Vector3d & p ) const
+    {
+        return Vector3d ( ax * p + trans.x, ay * p + trans.y, az * p + trans.z );
+    }
+
+    Segment3d operator () ( const Segment3d & p ) const
+    {
+        return Segment3d ( (*this) ( p.a ), (*this) ( p.b ) );
+    }
+
+    Plane3d operator() ( const Plane3d & p ) const
+    {
+        const Vector3d v ( ox*p.norm, oy*p.norm, oz*p.norm );
+        return Plane3d ( v, magn * p.dist - v * trans );
+    }
+
+    void getReper ( Vector3d & x, Vector3d & y, Vector3d & z ) const
+    {
+        x = ox;
+        y = oy;
+        z = oz;
+    }
+
+    Similar3d & setTrans ( const Vector3d & v )
+    {
+        trans = v;
+        return *this;
+    }
+};
+</pre>
+<p>Класс LinTran3d осуществляет линейные преобразования, т.е. такие для которых выполняется формула 
+<br>p ( x + y ) = p ( x ) + p ( y ). 
+Функция makeIdent устанавливает тождественное преобразавание.
+Операторы () осуществляют преобразования различных геометрических объектов ( векторов, плоскостей, отрезков,
+шаров и эллипсоидов ).
+Оператор *= преднаначен для умножения преобразования на число. 
+Оператор ~ возвращает преобразование обратное данному.
+Оператор * преднаначен для композиции преобразований. 
+</p>
+<pre>class LinTran3d
+{
+public:
+    Vector3d x, y, z;
+
+    LinTran3d () {}
+
+    LinTran3d ( const Vector3d & a, const Vector3d & b, const Vector3d & c ) : 
+      x ( a ), y ( b ), z ( c ) {}
+    
+    explicit LinTran3d ( const Spin3d & spin )
+    {
+        spin.getReper ( x, y, z );
+    }
+
+    LinTran3d & makeIdent ()
+    {
+        x.x = 1; x.y = 0; x.z = 0;
+        y.x = 0; y.y = 1; y.z = 0;
+        z.x = 0; z.y = 0; z.z = 1;
+        return * this;
+    }
+
+    Vector3d operator () ( const Vector3d & p ) const
+    {
+        return Vector3d ( x * p, y * p, z * p );
+    }
+
+    Segment3d operator () ( const Segment3d & p ) const
+    {
+        return Segment3d ( (*this) ( p.a ), (*this) ( p.b ) );
+    }
+
+    Plane3d     operator() ( const Plane3d     & p ) const;
+    Ellipsoid3d operator() ( const Sphere3d    & p ) const;
+    Ellipsoid3d operator() ( const Ellipsoid3d & p ) const;
+
+    LinTran3d & operator *= ( double d )
+    {
+        x *= d; y *= d; z *= d;
+        return * this;
+    }
+
+    Def&lt;LinTran3d> operator ~ () const;
+
+    friend inline LinTran3d operator * ( const LinTran3d & l, const LinTran3d & r )
+    {
+        return LinTran3d ( l.x.x * r.x + l.x.y * r.y + l.x.z * r.z, 
+                           l.y.x * r.x + l.y.y * r.y + l.y.z * r.z, 
+                           l.z.x * r.x + l.z.y * r.y + l.z.z * r.z );
+    }
+};
+</pre>
+<p>Класс Affin3d предназначет для реализации афинных преобразований и состоит из линейного преобразования ( t ) и сдвига ( s ).
+Функция makeIdent устанавливает тождественное преобразавание.
+Операторы () осуществляют преобразования различных геометрических объектов ( векторов, отрезков, плоскостей, шаров и эллипсоидов ).
+Оператор ~ возвращает преобразование обратное данному.
+Оператор * является умножением в смысле теории групп и не является коммутативным. 
+</p>
+<pre>class Affin3d
+{
+public:
+    LinTran3d t;
+    Vector3d s;
+
+    Affin3d () {}
+
+    Affin3d ( const Vector3d & a, const Vector3d & b, const Vector3d & c, const Vector3d & d ) : 
+        t ( a, b, c ), s ( d ) {}
+
+    Affin3d ( const LinTran3d & a, const Vector3d & b ) : t ( a ), s ( b ) {}
+
+    explicit Affin3d ( const LinTran3d & a ) : t ( a ), s ( 0., 0., 0. ) {}
+    
+    explicit Affin3d ( const Spin3d & spin ) : t ( spin ), s ( 0., 0., 0. ) {}
+
+    explicit Affin3d ( const Conform3d & conf ) : t ( conf.spin ), s ( conf.trans )
+    {
+        t *= conf.magn;
+    }
+
+    Affin3d & makeIdent ()
+    {
+        t.makeIdent();
+        s.x = s.y = s.z = 0;
+        return * this;
+    }
+
+    Vector3d operator () ( const Vector3d & p ) const
+    {
+        return t ( p ) + s;
+    }
+
+    Segment3d operator () ( const Segment3d & p ) const
+    {
+        return Segment3d ( (*this) ( p.a ), (*this) ( p.b ) );
+    }
+
+    Plane3d operator() ( const Plane3d & p ) const
+    {
+        Plane3d r = t ( p );
+        r.dist -= s * r.norm;
+        return r;
+    }
+
+    Ellipsoid3d operator() ( const Sphere3d    & p ) const;
+    Ellipsoid3d operator() ( const Ellipsoid3d & p ) const;
+
+    Def&lt;Affin3d> operator ~ () const
+    {
+        const Def&lt;LinTran3d> lin ( ~t );
+        return lin.isDef ? Affin3d ( lin, lin ( -s ) ) : Def&lt;Affin3d>();
+
+    }
+
+    friend inline Affin3d operator * ( const Affin3d & l, const Affin3d & r )
+    {
+        return Affin3d ( l.t * r.t, l ( r.s ) );
+    }
+};
+</pre>
+Описание шаблона классов Def находится <a href="def.html">здесь</a>.
+<br>Описание класса Vector3d находится <a href="rus_vector.html">здесь</a>.
+<br>Описание классов Segment3d, Plane3d, Sphere3d и Ellipsoid3d находится <a href="figure3d.html">здесь</a>.
+<p>Примеры использования всех этих классов можно посмотреть в приложении <a href="demo/demo.html">DEMO</a>.
+</p>
+<p>
+Исходники находятся в файлах <a href="source/source.zip">vector3d.h, vector3d.cpp</a>. 
+</p>
+<a href="rus_geom.html">Наверх</a>
+<p>
+<br>
+</p>
+</td></div>
+</table>
+</body>
+</html>

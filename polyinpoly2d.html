@@ -1,0 +1,56 @@
+<html>
+<head><title>Максимальный многоугольник вписанный в невыпуклый многоугольник</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center">
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Максимальный многоугольник вписанный<br> в невыпуклый многоугольник</font>
+</div>
+<div align=left><td><br>
+<p>Многоугольники задаются массивами вершин. Обход вершин должен быть против часовой стрелки.
+<br>
+<br>&bull; Максимальный выпуклый многоугольник ( inner ) вписанный в другой многоугольник ( outer ):
+<pre>Def&lt;Conform2d> maxConvexPolygonInPolygon ( CCArrRef&lt;Vector2d> & inner, CCArrRef&lt;Vector2d> & outer );
+</pre>
+Ответ получатся в виде ортогонального преобразования, которое надо применить
+к вершинам внутреннего многоугольника ( inner ), чтобы получить его оптимальное положение.
+<br>Следующая функция делает то же самое, но без вращения:
+<pre>Def&lt;Conform2d> maxConvexPolygonInPolygonNR ( CCArrRef&lt;Vector2d> & inner, CCArrRef&lt;Vector2d> & outer );
+</pre>
+&bull; Максимальный по площади прямоугольник:
+<pre>
+Def&lt;Rectangle2d> maxRectangleInPolygonA ( CCArrRef&lt;Vector2d> & poly );
+</pre>
+Следующая функция делает то же самое, но без вращения:
+<pre>
+Def&lt;Rectangle2d> maxRectangleInPolygonANR ( CCArrRef&lt;Vector2d> & poly );
+</pre>
+&bull; Максимальный ромб (  A - максимум площади, P - максимум периметра ):
+<pre>
+Def&lt;Rhombus2d> maxRhombusInPolygonA ( CCArrRef&lt;Vector2d> & poly );
+Def&lt;Rhombus2d> maxRhombusInPolygonP ( CCArrRef&lt;Vector2d> & poly );
+</pre>
+Следующая функция делает то же самое, но без вращения:
+<pre>
+Def&lt;Rhombus2d> maxRhombusInPolygonANR ( CCArrRef&lt;Vector2d> & poly );
+</pre>
+</p>
+<p>
+В приложении <a href="demo/demo.html">DEMO</a> можно посмотреть примеры использования этих функций.
+</p>
+<p>
+Описание класса Vector2d смотрите в разделе <a href="rus_vector2d.html">Вектора на плоскости</a>.
+<br>Описание класса Conform2d смотрите в разделе <a href="transform2d.html">Преобразования на плоскости</a>.
+<br>Описание шаблона CCArrRef смотрите в разделе <a href="array.html">Массивы</a>.
+<br>Описание шаблона классов Def смотрите в разделе <a href="def.html">здесь</a>.
+<br>Описание классов Rhombus2d и Rectangle2d находится <a href="figure2d.html">здесь</a>.
+<br>Исходники алгоритмов находятся в файле <a href="source/source.zip">opti2d_4.cpp</a>.
+</p>
+<a href="opti2d.html">Наверх</a>
+<pre>
+
+</pre></td></div>
+</table>
+</body>
+</html>

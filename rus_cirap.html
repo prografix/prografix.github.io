@@ -1,0 +1,267 @@
+<html>
+<head><title>Аппроксимация точек окружностью</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<style type="text/css">
+ p { MARGIN-TOP: 0mm; TEXT-ALIGN: justify }
+</style>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">
+Аппроксимация точек окружностью
+</font>
+</div>
+<br>
+<div align=left><td>
+<p>Пусть на плоскости дано множество из n точек p<SUB><I>i</I></SUB> = ( x<SUB><I>i</I></SUB>, y<SUB><I>i</I></SUB> ) 
+и нужно аппроксимировать его дугой окружности.
+Рассмотрим несколько подходов к решению этой задачи.
+В первом подходе координаты центра o = ( x, y ) и радиус r будем искать, как аргументы при которых функция
+</p>
+<table>
+<TABLE cellSpacing=2 cellPadding=0 align=center border=0>
+  <TBODY>
+  <TR style="POSITION: relative; TOP: 12%" align=middle>
+    <TD><FONT size=-1><I>n</I></FONT></TD>
+  </TR>
+  <TR>
+    <TD align=middle><FONT size=+3>&#8721;</FONT></TD>
+    <TD noWrap>( r<SUP> 2</SUP> - ( x - x<SUB><I>i</I></SUB> )<SUP> 2</SUP>
+								- ( y - y<SUB><I>i</I></SUB> )<SUP> 2</SUP>
+			)<SUP> 2</SUP> <TD colSpan=3>&nbsp;<TD>&nbsp;&nbsp;&nbsp;&nbsp;(1)</TD>
+  </TR>
+  <TR style="POSITION: relative; TOP: -3%" align=middle>
+    <TD><FONT size=-1><I>i</I> = 1</FONT></TD>
+  </TR>
+ </TBODY></TABLE>
+<table width=800 cellspacing=0 cellpadding=0>
+<br>
+<p>принимает минимальное значение. 
+Сведём эту задачу к задаче наименьших квадратов. Для этого продифференцируем (1)
+по r и приравняем производную нулю. Отсюда получим выражение r<SUP> 2</SUP> через x и y:
+</p>
+<table>
+<TABLE cellSpacing=2 cellPadding=0 align=center border=0>
+  <TBODY>
+  <TR style="POSITION: relative; TOP: 12%" align=middle>
+    <TD colSpan=2>&nbsp;</TD>
+    <TD><FONT size=-1><I>n</I></FONT></TD>
+  </TR>
+  <TR>
+    <TD >r<SUP> 2</SUP> = &nbsp;</TD>
+    <TD noWrap align=middle>1 <P class=over>n</P></TD>
+    <TD align=middle><FONT size=+3>&#8721;</FONT></TD>
+    <TD noWrap>( ( x - x<SUB><I>i</I></SUB> )<SUP> 2</SUP> +
+				 ( y - y<SUB><I>i</I></SUB> )<SUP> 2</SUP>
+			)<TD colSpan=3>&nbsp;<TD>&nbsp;&nbsp;&nbsp;&nbsp;(2)</TD>
+  </TR>
+  <TR style="POSITION: relative; TOP: -3%" align=middle>
+    <TD colSpan=2>&nbsp;</TD>
+    <TD><FONT size=-1><I>i</I> = 1</FONT></TD>
+  </TR>
+ </TBODY></TABLE>
+<table width=800 cellspacing=0 cellpadding=0>
+<BR>
+<p>Подставим это выражение в (1) и приведём подобные члены. 
+Получится <a href="rus_lss.html">задача наименьших квадратов</a>:
+</p>
+</table>
+<TABLE cellSpacing=2 cellPadding=0 align=center border=0>
+  <TBODY>
+  <TR style="POSITION: relative; TOP: 12%" align=middle>
+    <TD><FONT size=-1><I>n</I></FONT></TD>
+  </TR>
+  <TR>
+    <TD align=middle><FONT size=+3>&#8721;</FONT></TD>
+    <TD noWrap>( 2 ( x<SUB><I>i</I></SUB> - <SPAN class=over>x</SPAN> ) x +
+				 2 ( y<SUB><I>i</I></SUB> - <SPAN class=over>y</SPAN> ) y +
+				 <SPAN class=over>xx</SPAN> - x<SUB><I>i</I></SUB><SUP> 2</SUP> +
+				 <SPAN class=over>yy</SPAN> - y<SUB><I>i</I></SUB><SUP> 2</SUP>
+			)<SUP> 2</SUP> <TD colSpan=3>&nbsp;<TD>&nbsp;&nbsp;&nbsp;&nbsp;(3)</TD>
+  </TR>
+  <TR style="POSITION: relative; TOP: -3%" align=middle>
+    <TD><FONT size=-1><I>i</I> = 1</FONT></TD>
+  </TR>
+ </TBODY></TABLE>
+<table width=800 cellspacing=0 cellpadding=0>
+где
+</table>
+<TABLE cellSpacing=2 cellPadding=0 align=center border=0>
+  <TBODY>
+  <TR style="POSITION: relative; TOP: 12%" align=middle>
+    <TD colSpan=2>&nbsp;</TD>
+    <TD><FONT size=-1><I>n</I></FONT></TD>
+  </TR>
+  <TR>
+    <TD noWrap><SPAN class=over>x</SPAN> =&nbsp;</TD>
+    <TD noWrap align=middle>1 <P class=over>n</P></TD>
+    <TD align=middle><FONT size=+3>&#8721;</FONT></TD><TD>x<SUB><I>i</I></TD>
+  </TR>
+  <TR style="POSITION: relative; TOP: -3%" align=middle>
+    <TD colSpan=2>&nbsp;</TD>
+    <TD><FONT size=-1><I>i</I> = 1</FONT></TD>
+  </TR>
+ </TBODY></TABLE>
+<TABLE cellSpacing=2 cellPadding=0 align=center border=0>
+  <TBODY>
+  <TR style="POSITION: relative; TOP: 12%" align=middle>
+    <TD colSpan=2>&nbsp;</TD>
+    <TD><FONT size=-1><I>n</I></FONT></TD>
+  </TR>
+  <TR>
+    <TD noWrap><SPAN class=over>y</SPAN> =&nbsp;</TD>
+    <TD noWrap align=middle>1 <P class=over>n</P></TD>
+    <TD align=middle><FONT size=+3>&#8721;</FONT></TD><TD>y<SUB><I>i</I></TD>
+  </TR>
+  <TR style="POSITION: relative; TOP: -3%" align=middle>
+    <TD colSpan=2>&nbsp;</TD>
+    <TD><FONT size=-1><I>i</I> = 1</FONT></TD>
+  </TR>
+ </TBODY></TABLE>
+<TABLE cellSpacing=2 cellPadding=0 align=center border=0>
+  <TBODY>
+  <TR style="POSITION: relative; TOP: 12%" align=middle>
+    <TD colSpan=2>&nbsp;</TD>
+    <TD><FONT size=-1><I>n</I></FONT></TD>
+  </TR>
+  <TR>
+    <TD noWrap><SPAN class=over>xx</SPAN> =&nbsp;</TD>
+    <TD noWrap align=middle>1 <P class=over>n</P></TD>
+    <TD align=middle><FONT size=+3>&#8721;</FONT></TD><TD>x<SUB><I>i</I></SUB><SUP>2</SUP></TD>
+  </TR>
+  <TR style="POSITION: relative; TOP: -3%" align=middle>
+    <TD colSpan=2>&nbsp;</TD>
+    <TD><FONT size=-1><I>i</I> = 1</FONT></TD>
+  </TR>
+ </TBODY></TABLE>
+<TABLE cellSpacing=2 cellPadding=0 align=center border=0>
+  <TBODY>
+  <TR style="POSITION: relative; TOP: 12%" align=middle>
+    <TD colSpan=2>&nbsp;</TD>
+    <TD><FONT size=-1><I>n</I></FONT></TD>
+  </TR>
+  <TR>
+    <TD noWrap><SPAN class=over>yy</SPAN> =&nbsp;</TD>
+    <TD noWrap align=middle>1 <P class=over>n</P></TD>
+    <TD align=middle><FONT size=+3>&#8721;</FONT></TD><TD>y<SUB><I>i</I></SUB><SUP>2</SUP></TD>
+  </TR>
+  <TR style="POSITION: relative; TOP: -3%" align=middle>
+    <TD colSpan=2>&nbsp;</TD>
+    <TD><FONT size=-1><I>i</I> = 1</FONT></TD>
+  </TR>
+ </TBODY></TABLE>
+<table width=800 cellspacing=0 cellpadding=0>
+<p>Следующая программа решает эту задачу:
+</p>
+<pre>Def&lt;Circle2d> getCirclePnt22 ( CArrRef&lt;Vector2d> p );
+</pre>
+<p>Основное преимущество рассмотренной задачи - это простота решения, но более интересной для практики
+является минимизация другой функции отклонений:
+<table>
+<TABLE cellSpacing=2 cellPadding=0 align=center border=0>
+  <TBODY>
+  <TR style="POSITION: relative; TOP: 12%" align=middle>
+    <TD><FONT size=-1><I>n</I></FONT></TD>
+  </TR>
+  <TR>
+    <TD align=middle><FONT size=+3>&#8721;</FONT></TD>
+    <TD noWrap> ( | o - p<SUB><I>i</I></SUB> |<SUB>2</SUB> - r )
+			<SUP> 2</SUP> <TD colSpan=3>&nbsp;<TD>&nbsp;&nbsp;&nbsp;&nbsp;(4)</TD>
+  </TR>
+  <TR style="POSITION: relative; TOP: -3%" align=middle>
+    <TD><FONT size=-1><I>i</I> = 1</FONT></TD>
+  </TR>
+ </TBODY></TABLE>
+<table width=800 cellspacing=0 cellpadding=0>
+О векторных нормах смотрите <a href=normv.html>здесь</a>.
+Эту формулу можно переписать так:
+</table>
+<TABLE cellSpacing=2 cellPadding=0 align=center border=0>
+  <TBODY>
+  <TR style="POSITION: relative; TOP: 12%" align=middle>
+    <TD><FONT size=-1><I>n</I></FONT></TD>
+  </TR>
+  <TR>
+    <TD align=middle><FONT size=+3>&#8721;</FONT></TD>
+    <TD noWrap> ( c<SUB><I>i</I></SUB> * ( х - x<SUB><I>i</I></SUB> ) + s<SUB><I>i</I></SUB> * ( y - y<SUB><I>i</I></SUB> ) - r )
+			<SUP> 2</SUP> <TD colSpan=3>&nbsp;<TD>&nbsp;&nbsp;&nbsp;&nbsp;(5)</TD>
+  </TR>
+  <TR style="POSITION: relative; TOP: -3%" align=middle>
+    <TD><FONT size=-1><I>i</I> = 1</FONT></TD>
+  </TR>
+ </TBODY></TABLE>
+<table width=800 cellspacing=0 cellpadding=0>
+где
+</table>
+<TABLE cellSpacing=2 cellPadding=0 align=center border=0>
+  <TBODY>
+  <TR>
+    <TD noWrap>c<SUB><I>i</I></SUB> = ( х - x<SUB><I>i</I></SUB> ) / | o - p<SUB><I>i</I></SUB> |<SUB>2</SUB></TD>
+  </TR>
+  <TR>
+	<TD noWrap>s<SUB><I>i</I></SUB> = ( y - y<SUB><I>i</I></SUB> ) / | o - p<SUB><I>i</I></SUB> |<SUB>2</SUB></TD>
+  </TR>
+ </TBODY></TABLE>
+<table width=800 cellspacing=0 cellpadding=0>
+Если считать в формуле (5) переменные c<SUB><I>i</I></SUB> и s<SUB><I>i</I></SUB> известными, то приходим к классической
+задаче МНК. Отсюда получается следующий итерационный алгоритм:
+<br>1) Получаем начальное приближение для x, y и r при помощи функции getCirclePnt22. 
+<br>2) Вычисляем значения c<SUB><I>i</I></SUB> и s<SUB><I>i</I></SUB>.
+<br>3) Решая задачу (5) получаем новые значения для x, y и r.
+<br>Будем повторять шаги 2 и 3 пока алгоритм не сойдётся.
+В результате получаем программу:
+<pre>Def&lt;Circle2d> getCirclePnt2 ( CArrRef&lt;Vector2d> p );
+</pre>
+</p>
+<p>В третьем подходе будем искать минимум суммы абсолютных разностей между радиусом окружности r
+и расстоянием от точки p<SUB><I>i</I></SUB> до центра окружности о:
+</table>
+<TABLE cellSpacing=2 cellPadding=0 align=center border=0>
+  <TBODY>
+  <TR style="POSITION: relative; TOP: 12%" align=middle>
+    <TD><FONT size=-1><I>n</I></FONT></TD>
+  </TR>
+  <TR>
+    <TD align=middle><FONT size=+3>&#8721;</FONT></TD>
+    <TD noWrap> | | o - p<SUB><I>i</I></SUB> |<SUB>2</SUB> - r | <TD colSpan=3>&nbsp;<TD>&nbsp;&nbsp;&nbsp;&nbsp;(6)</TD>
+  </TR>
+  <TR style="POSITION: relative; TOP: -3%" align=middle>
+    <TD><FONT size=-1><I>i</I> = 1</FONT></TD>
+  </TR>
+ </TBODY></TABLE>
+<table width=800 cellspacing=0 cellpadding=0>
+Эту задачу можно решить перебором троек точек, построении по ним окружностей и выборе
+среди них оптимальной:
+<pre>Def&lt;Circle2d> getCirclePnt1 ( CArrRef&lt;Vector2d> p, nat & ix1, nat & ix2, nat & ix3 );
+Def&lt;Circle2d> getCirclePnt1 ( CArrRef&lt;Vector2d> p );
+</pre>
+Временная сложность такого алгоритма равна O ( n<sup>4</sup> ).
+</p>
+<p>Замечу, что окружности построенными этими тремя алгоритмами могут очень сильно отличаться.
+</p>
+<p>Описание шаблона классов CArrRef находится <a href=array.html>здесь</a>.
+<br>Описание шаблона классов Def находится <a href="def.html">здесь</a>.
+<br>Описание класса Vector2d находится <a href="rus_vector2d.html">здесь</a>.
+<br>Описание класса Circle2d находится <a href="figure2d.html">здесь</a>.
+</p>
+<p>Исходники находятся в <a href="source/source.zip">approx2d.cpp</a></p>
+<a href="rus_approx.html">Наверх</a>
+<pre>
+
+</pre></td></div>
+</table>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10825496-1");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
+</body>
+</html>
+

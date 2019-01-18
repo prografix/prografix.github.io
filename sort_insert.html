@@ -1,0 +1,70 @@
+<html>
+<head><title>Сортировка вставками</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Сортировка вставками</font>
+</div>
+<div align=left><td><br>
+<p>Сортировка вставками ( insertSort ) очень проста в реализации и быстро работает для небольших массивов.
+<br>Вот её реализация в виде двух шаблонов функций:
+</p>
+<pre>
+template &ltclass T> inline
+ArrRef&lt;T> insertSort123 ( ArrRef&lt;T> a )
+{
+    for ( nat j = 1; j < a.size(); ++j )
+    {
+        const T b = a[j];
+        int i = j - 1;
+        while ( i >= 0 && a[i] > b )
+        {
+            a[i+1] = a[i];
+            --i;
+        }
+        a[i+1] = b;
+    }
+    return a;
+}
+
+template &ltclass T> inline
+ArrRef&lt;T> insertSort321 ( ArrRef&lt;T> a )
+{
+    for ( nat j = 1; j < a.size(); ++j )
+    {
+        const T b = a[j];
+        int i = j - 1;
+        while ( i >= 0 && a[i] < b )
+        {
+            a[i+1] = a[i];
+            --i;
+        }
+        a[i+1] = b;
+    }
+    return a;
+}
+</pre>
+Функции insertSort123 сортируют элементы массивов по возрастанию, а
+функции insertSort321 - по убыванию.
+<br>Описание шаблона классов ArrRef находится <a href=array.html>здесь</a>.
+<p>Исходники находятся в файле <a href="source/source.zip">func1t.h</a>.
+</p>
+<a href="rus_sort.html">Наверх</a>
+<pre>
+
+</pre></td></div>
+</table>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10825496-1");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
+</body>
+</html>

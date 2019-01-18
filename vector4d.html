@@ -1,0 +1,154 @@
+<html>
+<head><title>Четырёхмерные вектора</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="680" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Четырёхмерные вектора</font>
+</div>
+<div align=left><td><br>
+<p>Интерфейс класса Vector4d аналогичен интерфейсу <a href="rus_vector.html">класса Vector3d</a>:
+</p>
+<pre>class Vector4d
+{
+public:
+    double x1, x2, x3, x4;
+    Vector4d () {}
+    Vector4d ( double a, double b, double c, double d ) : x1(a), x2(b), x3(c), x4(d) {}
+ 
+    Vector4d operator - () const
+    {
+        return Vector4d ( - x1, - x2, - x3, - x4 );
+    }
+
+    Vector4d & operator += ( const Vector4d & v )
+    {
+        x1 += v.x1;
+        x2 += v.x2;
+        x3 += v.x3;
+        x4 += v.x4;
+        return * this;
+    }
+
+    Vector4d & operator -= ( const Vector4d & v )
+    {
+        x1 -= v.x1;
+        x2 -= v.x2;
+        x3 -= v.x3;
+        x4 -= v.x4;
+        return * this;
+    }
+
+    Vector4d & operator *= ( const double d )
+    {
+        x1 *= d;
+        x2 *= d;
+        x3 *= d;
+        x4 *= d;
+        return * this;
+    }
+
+    Vector4d & operator /= ( const double d )
+    {
+        x1 /= d;
+        x2 /= d;
+        x3 /= d;
+        x4 /= d;
+        return * this;
+    }
+
+    Vector4d & fill ( double d = 0 )
+    {
+        x1 = x2 = x3 = x4 = d;
+        return * this;
+    }
+
+    bool operator ! () const
+    {
+        return !x1 && !x2 && !x3 && !x4;
+    }
+};
+
+inline Vector4d operator + ( const Vector4d & a, const Vector4d & b )
+{
+    return Vector4d ( a.x1 + b.x1, a.x2 + b.x2, a.x3 + b.x3, a.x4 + b.x4 );
+}
+
+inline Vector4d operator - ( const Vector4d & a, const Vector4d & b )
+{
+    return Vector4d ( a.x1 - b.x1, a.x2 - b.x2, a.x3 - b.x3, a.x4 - b.x4 );
+}
+ 
+inline Vector4d operator * ( const Vector4d & a, const double d )
+{
+    return Vector4d ( a.x1 * d, a.x2 * d, a.x3 * d, a.x4 * d );
+}
+ 
+inline Vector4d operator / ( const Vector4d & a, const double d )
+{
+    return Vector4d ( a.x1 / d, a.x2 / d, a.x3 / d, a.x4 / d );
+}
+ 
+inline Vector4d operator * ( const double d, const Vector4d & a )
+{
+    return Vector4d ( a.x1 * d, a.x2 * d, a.x3 * d, a.x4 * d );
+}
+
+inline double operator * ( const Vector4d & a, const Vector4d & b )
+{
+    return a.x1 * b.x1 + a.x2 * b.x2 + a.x3 * b.x3 + a.x4 * b.x4;
+}
+
+inline double qmod ( const Vector4d & a )
+{
+    return a.x1 * a.x1 + a.x2 * a.x2 + a.x3 * a.x3 + a.x4 * a.x4;
+}
+
+inline bool operator == ( const Vector4d & a, const Vector4d & b )
+{
+    return a.x1 == b.x1 && a.x2 == b.x2 && a.x3 == b.x3 && a.x4 == b.x4;
+}
+
+inline bool operator != ( const Vector4d & a, const Vector4d & b )
+{
+    return a.x1 != b.x1 || a.x2 != b.x2 || a.x3 != b.x3 || a.x4 != b.x4;
+}
+
+class Plane4d
+{
+public:
+    Vector4d norm;
+    double   dist;
+
+    Plane4d () {}
+    Plane4d ( const Vector4d & v, const double & d ) : norm ( v ), dist ( d ) {}
+
+    double operator % ( const Vector4d & v ) const
+    {
+        return norm * v + dist;
+    }
+};
+</pre>
+<p>
+Исходники находятся в файле <a href="source/source.zip">vector4d.h</a>.
+</p>
+<a href="rus_geom.html">Наверх</a>
+</pre>
+
+<pre>
+</td></div>
+</table>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10825496-1");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
+</body>
+</html>

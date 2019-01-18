@@ -1,0 +1,58 @@
+<html>
+<head><title>Вычисление ближайшей точки к заданным плоскостям</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Вычисление ближайшей точки к заданным плоскостям</font>
+</div>
+<br><div align=left><td>
+<p>В зависимости от того какую <a href=normv.html>векторную норму</a> выбрать для определения близости получим разные задачи.
+Если выбрать 1-норму, то тогда одна из точек пересечения трёх плоскостей будет являться решением этой задачи:
+</p>
+<pre>Def&lt;Vector3d> getNearPoint1 ( CArrRef&lt;Plane3d> plane, nat & ix1, nat & ix2, nat & ix3 );
+Def&lt;Vector3d> getNearPoint1 ( CArrRef&lt;Plane3d> plane );
+</pre>
+<p>Здесь ix1, ix2, ix3 - это индексы плоскостей, пересечение которых даёт оптимальную точку.
+</p><p>
+Если выбрать 2-норму, то эта задача является задачей <a href="rus_lss.html">наименьших квадратов</a>, 
+и она может быть решена одним из описанных там методов.
+В следующей функции выбран метод ortholin:
+</p>
+<pre>Def&lt;Vector3d> getNearPoint2 ( CArrRef&lt;Plane3d> plane );</pre>
+<p>
+Если нужно задать плоскостям разный вес, то для этого надо умножить компоненты класса Plane3d на соответствующий вес.
+</p>
+<p>Если выбрать &#8734;-норму, то есть поиск минимакса расстояний до плоскостей, то следующая функция.
+находит его:
+</p>
+<pre>Def&lt;Vector3d> getNearPointU ( CArrRef&lt;Plane3d> plane );</pre>
+<p>
+В этой функции предполагается, что у всех плоскостей 2-нормы нормалей равны 1.
+<p>Следующие функции минимизируют p-норму для значений p = 4/3, 6/5, 8/7, 10/9:
+</p>
+<pre>
+Def&lt;Vector3d> getNearPoint4_3 ( CArrRef&lt;Plane3d> plane );
+Def&lt;Vector3d> getNearPoint6_5 ( CArrRef&lt;Plane3d> plane );
+Def&lt;Vector3d> getNearPoint8_7 ( CArrRef&lt;Plane3d> plane );
+Def&lt;Vector3d> getNearPoint10_9( CArrRef&lt;Plane3d> plane );
+</pre>
+Робастный метод аппроксимации предназначен для данных с выбросами. 
+Этот алгоритм также заполняет массив весов (mass) значениями от 0 до 1. 
+<pre>
+Def&lt;Vector3d> getNearPointR ( CArrRef&lt;Plane3d> plane, ArrRef&lt;double> mass );
+</pre>
+Во всех функциях в случае неудачи поле isDef возвращаемого значения равно false.
+<br>
+<br>Описание класса Plane3d находится <a href="figure3d.html">здесь</a>. 
+<br>Описание класса Vector3d находится <a href="rus_vector.html">здесь</a>.
+<br>Описание шаблона классов Def находится <a href=def.html>здесь</a>.
+<br>Описание шаблона классов CArrRef находится <a href=array.html>здесь</a>.
+</p>
+<p>Исходники находятся в <a href="source/source.zip">approx3d.cpp</a></p>
+<a href="rus_approx.html">Наверх</a>
+</td></div>
+</table>
+</body>
+</html>

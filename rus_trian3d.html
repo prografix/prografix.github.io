@@ -1,0 +1,65 @@
+<html>
+<head><title>Триангуляция многоугольников в пространстве</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Триангуляция в пространстве</font>
+</div>
+<div align=left><td><br>
+<p>Первый алгоритм предназначен для триангуляции замкнутой ломаной. 
+Он основан на полном переборе различных вариантов триангуляции и выборе из них лучшего варианта. 
+Лучшим считается тот вариант, у которого будет наименьшая суммарная площадь треугольников. 
+Этот подход имеет физический смысл. Например, мыльная плёнка, натянутая на проволочный каркас произвольной формы, 
+имеет минимальную по площади поверхность.
+<br>Этот алгоритм требует дополнительную память порядка O(n<sup>2</sup>), 
+и время работы алгоритма пропорционально n<sup>3</sup>:
+<pre>
+DynArrRef< Set3&lt;nat> > & trian ( CArrRef&lt;Vector3d> vert, DynArrRef< Set3&lt;nat> > & res );
+</pre>
+<p>Исходными данными являются: ссылка на массив вершин ломаной и ссылка на массив, куда будет записываться результат
+( эта же ссылка и возращается ).
+Треугольник описывается тремя целыми числами, которые являются индексами массива вершин.
+</p>
+<p>Иногда нужно соединить две ломаные в пространстве ( замкнутые или незамкнутые одновременно )
+треугольниками так, чтобы каждый треугольник касался обеих линий. Среди множества вариантов 
+выберем тот, у которого суммарная площадь минимальна.
+<br>Время работы алгоритма и требуемая память пропорциональны n1*n2,
+где n1 и n2 - количество точек соответственно первой и второй ломаной.
+<pre>
+DynArrRef< Set3&lt;nat> > & trian ( CArrRef&lt;Vector3d> vert1, CArrRef&lt;Vector3d> vert2, 
+                                 bool isCycle, DynArrRef< Set3&lt;nat> > & res );
+</pre>
+Здесь vert1 и vert2 - ломаные, заданные своими вершинами. 
+Если isCycle = true - ломаные считаются замкнутыми и результирующая поверхность будет замкнута в кольцо.
+res - массив результирующих треугольников, заданных индексами вершин из ломаных vert1 и vert2. 
+Номер индекса от 0 до n1-1 задает точку из vert1, а номер индекса от n1 до n1+n2-1 задает точку из vert2.
+n1 и n2 должны быть больше 1.
+Размер массива res будет равен n1 + n2, если isCycle = true и n1 + n2 - 2, если isCycle = false.
+</p>
+<p>В приложении <a href="demo/demo.html">DEMO</a> можно посмотреть на результаты этих триангуляций.
+</p>
+<p>Описание шаблонов классов CArrRef и DynArrRef находится <a href=array.html>здесь</a>.
+<br>Описание класса Vector3d находится <a href="rus_vector.html">здесь</a>. 
+<br>Описание шаблона Set3 находится <a href="composition.html">здесь</a>. 
+<br>Исходники находятся в файле <a href="source/source.zip">trian3d.cpp</a>.</p>
+<a href="rus_geom.html">Наверх</a>
+</pre>
+
+<pre>
+</td></div>
+</table>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10825496-1");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
+</body>
+</html>

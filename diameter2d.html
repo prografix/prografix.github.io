@@ -1,0 +1,122 @@
+<html>
+<head><title>Диаметры наборов точек и многоугольников</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Диаметры наборов точек и многоугольников</font>
+</div>
+<div align=left><td>
+<p><br>Пусть дан набор точек ( point ) и нужно найти его диаметр вдоль заданного направления ( dir ).
+Функция diameterPnt находит его, а также возвращает индексы самой ближней ( imin ) и
+самой дальней ( imax ) точкек:
+<pre>typedef unsigned int nat;
+
+double diameterPnt ( CArrRef&lt;Vector2d> point, const Vector2d & dir, nat & imin, nat & imax );
+inline
+double diameterPnt ( CArrRef&lt;Vector2d> point, const Vector2d & dir )
+{
+    nat imin, imax;
+    return diameterPnt ( point, dir, imin, imax );
+}
+</pre>
+Можно искать минимальный диаметр множества точек вдоль заданного сектора направлений.
+Сектор задаётся средним направлением dir и половинным углом в градусах angle.
+Также в градусах указывается точность eps.
+Ответ получаем в виде возвращаемого диаметра, минимального направления res
+и пары индексов исходных точек imin и imax:
+<pre>double minDiameterPnt ( CArrRef&lt;Vector2d> point, const Vector2d & dir, double angle,
+                        double eps, Vector2d & res, nat & imin, nat & imax );
+inline
+double minDiameterPnt ( CArrRef&lt;Vector2d> point, const Vector2d & dir, double angle,
+                        double eps, Vector2d & res )
+{
+    nat imin, imax;
+    return minDiameterPnt ( point, dir, angle, eps, res, imin, imax );
+}
+inline
+double minDiameterPnt ( CArrRef&lt;Vector2d> point, const Vector2d & dir, double angle,
+                        double eps )
+{
+    Vector2d res;
+    nat imin, imax;
+    return minDiameterPnt ( point, dir, angle, eps, res, imin, imax );
+}
+</pre>
+Аналогично находим максимальный диаметр:
+<pre>double maxDiameterPnt ( CArrRef&lt;Vector2d> point, const Vector2d & dir, double angle,
+                        double eps, Vector2d & res, nat & imin, nat & imax );
+inline
+double maxDiameterPnt ( CArrRef&lt;Vector2d> point, const Vector2d & dir, double angle,
+                        double eps, Vector2d & res )
+{
+    nat imin, imax;
+    return maxDiameterPnt ( point, dir, angle, eps, res, imin, imax );
+}
+inline
+double maxDiameterPnt ( CArrRef&lt;Vector2d> point, const Vector2d & dir, double angle,
+                        double eps )
+{
+    Vector2d res;
+    nat imin, imax;
+    return maxDiameterPnt ( point, dir, angle, eps, res, imin, imax );
+}
+</pre>
+Во всех представленных выше функциях в случае пустого массива возвращается ноль, 
+а индексы imin и imax не изменяются.
+<br><br>Следующие функции находят диаметры у многоугольников.
+<br>Функции maxConvexPolygonDiameter находят максимальный диаметр ( первая из них ещё и индексы наиболее удалённых вершин )
+для выпуклого многоугольника:
+</p>
+<pre>double maxConvexPolygonDiameter ( CArrRef&lt;Vector2d> vert, nat & ix1, nat & ix2 );
+inline
+double maxConvexPolygonDiameter ( CArrRef&lt;Vector2d> vert )
+{
+    nat ix1, ix2;
+    return maxConvexPolygonDiameter ( n, vert, ix1, ix2 );
+}
+</pre>
+<p>Функции minConvexPolygonDiameter находят минимальный диаметр ( первые две из них ещё и направление 
+вдоль которого этот дииаметр вычислялся ) для выпуклого многоугольника:
+</p>
+<pre>
+double minConvexPolygonDiameter ( CArrRef&lt;Vector2d> vert, Vector2d & dir, nat & i1, nat & i2 );
+
+inline
+double minConvexPolygonDiameter ( CArrRef&lt;Vector2d> vert, Vector2d & dir )
+{
+    nat i1, i2;
+    return minConvexPolygonDiameter ( vert, dir, i1, i2 );
+}
+
+inline
+double minConvexPolygonDiameter ( CArrRef&lt;Vector2d> vert )
+{
+    nat i1, i2;
+    Vector2d dir;
+    return minConvexPolygonDiameter ( vert, dir, i1, i2 );
+}
+</pre>
+<p>Входной параметр для всех этих функций - это ссылка на массив, где расположены вершины многоугольника. 
+Как обычно обход вершин полагается против часовой стрелки.
+Время работы всех этих фукций зависит линейно от к-ва вершин</p>
+<p>Известно, что для простого многоугольника можно построить выпуклую оболочку за время O(n)
+( смотрите раздел <a href="rus_convex2d.html">Выпуклая оболочка на плоскости</a> ).
+Отсюда следует, что диаметры простого многоугольника можно найти за время O(n).
+</p>
+<p>Для трёхмерного случая неизвестны подобные по эффективности алгоритмы, поэтому там целесообразно
+применять простой перебор вершин.
+</p>
+<p>Описание класса Vector2d находится <a href="rus_vector2d.html">здесь</a>. 
+<br>Описание шаблона классов CArrRef находится <a href=array.html>здесь</a>.
+</p>
+<p>Исходники алгоритма находятся в файле <a href="source/source.zip">func2d.cpp</a>.</p>
+<a href="rus_geom.html">Наверх</a>
+</pre>
+
+<pre>
+</td></div>
+</table>
+</body>
+</html>

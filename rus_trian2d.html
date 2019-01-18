@@ -1,0 +1,56 @@
+<html>
+<head><title>Триангуляция многоугольников на плоскости</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Триангуляция многоугольников на плоскости</font>
+</div>
+<div align=left><td><br>
+<p>В настоящее время наиболее практичные алгоритмы триангуляции многоугольников состоят из двух этапов.
+На первом этапе исходный многоугольник разбивается на монотонные многоугольники, а на втором этапе полученные
+многоугольники триангулируются за линейное время.
+</p>
+<p>Функция trianSweepLine использует на первом этапе алгоритм "заметающей прямой". 
+В книге Майкла Ласло "Вычислительная геометрия и компьютерная графика на С++" есть описание двухпроходного алгоритма,
+и сначала я сделал похожий, но в 2018 году придумал однопроходной, к тому же я обобщил его на случай многоугольников
+с дырками:
+<pre>SuiteRef&lt;Set3&lt;nat>> & trianSweepLine ( CCArrRef&lt;Vector2d> & vert, SuiteRef&lt;Set3&lt;nat> > & res );
+SuiteRef&lt;Set3&lt;nat>> & trianSweepLine ( CCArrRef&lt;nat> & cntr, 
+                                       CCArrRef&lt;Vector2d> & vert, SuiteRef&lt;Set3&lt;nat> > & res );
+</pre>
+Здесь cntr - это количества вершин многоугольников, vert - общий массив всех вершин, res - треугольники. 
+Внешний многоугольник должен иметь обход вершин против часовой стрелки, а внутренние - по часовой.
+Порядок перечисления многоугольников произвольный.
+</p>
+<p>Функция trianSeidel использует на первом этапе <a href="source/seidel.pdf">алгоритм Зейделя</a>:
+<pre>
+SuiteRef&lt;Set3&lt;nat>> & trianSeidel ( CCArrRef&lt;Vector2d> & vert, SuiteRef&lt;Set3&lt;nat> > & res );
+SuiteRef&lt;Set3&lt;nat>> & trianSeidel ( CCArrRef&lt;nat> & cntr, 
+                                    CCArrRef&lt;Vector2d> & vert, SuiteRef&lt;Set3&lt;nat> > & res );
+</pre>
+</p>
+<p>В моих экспериментах функция trianSweepLine работала быстрее функции trianSeidel в среднем в 6 раз.
+</p>
+<p>В результате построения триангуляции этими алгоритмами могут появляться очень узкие треугольники. 
+Чтобы избавится от них можно применить функцию rebuildDelauney, которая получает на входе какую-то триангуляцию 
+и переделывает её в триангуляцию Делоне для многоугольников:
+</p>
+<pre>ArrRef&lt;Set3&lt;nat>> & rebuildDelauney ( CCArrRef&lt;Vector2d> & vert, ArrRef&lt;Set3&lt;nat>> & res )
+</pre>
+<p>Эта функция использует шаблон <a href=atrian.html>maxL1</a>.
+В моих экспериментах функция rebuildDelauney работала медленее функции trianSweepLine в среднем в 3 раза.
+</p>
+<p>Описание класса Vector2d смотрите в разделе <a href="rus_vector2d.html">Вектора на плоскости</a>.
+<br>Описание шаблонов классов CCArrRef, ArrRef и SuiteRef находится <a href=array.html>здесь</a>.
+<br>Описание шаблона Set3 находится <a href="composition.html">здесь</a>.
+<br>Исходники алгоритмов находятся в файле <a href="source/source.zip">trian2d.cpp</a>.
+</p>
+<a href="rus_geom.html">Наверх</a>
+<pre>
+
+</pre></td></div>
+</table>
+</body>
+</html>

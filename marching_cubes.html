@@ -1,0 +1,58 @@
+<html>
+<head><title>Метод "марширующих кубов"</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Метод "марширующих кубов"</font>
+</div>
+<div align=left><td><br>
+<p>Классы MarchingCubes1 и MarchingCubes2 предназначены для получения пересечения аппроксимируемой поверхности и куба 
+в методе "марширующих кубов". Вершины куба кодируются восьмибитным числом, а результат выводится в виде массива 
+многоугольников, где вершинами служат номера рёбер, которые поверхность пересекает. 
+В классе MarchingCubes2 эти многоугольники триангулируются.
+Нумерация вершин и рёбер показана на рисунке:
+</p>
+<pre>
+//          Нумерация вершин и рёбер куба
+//
+//         4-----7        +-7---+        +-----+
+//        /|    /|       4|    6|       /8    /1
+//       5-----6 |      +---5-+ |      +-----+ 1
+//       | 0---|-3      | +-3-|-+      9 +---1-+
+//       |/    |/       |0    |2       |/    0/
+//       1-----2        +---1-+        +-----+
+
+class MarchingCubes1
+{
+    DynArray&lt;DynArray&lt;nat> > poly[256];
+public:
+    MarchingCubes1();
+    CArrRef&lt;DynArray&lt;nat> > operator[] ( nat8 i ) const
+    {
+        return poly[i];
+    }
+};
+
+class MarchingCubes2
+{
+    DynArray&lt;Set3&lt;nat> > poly[256];
+public:
+    MarchingCubes2();
+    CArrRef&lt;Set3&lt;nat> > operator[] ( nat8 i ) const
+    {
+        return poly[i];
+    }
+};
+</pre>
+Описание шаблонов классов CArrRef и DynArray находится <a href=array.html>здесь</a>.
+</p>
+<p>Исходники находятся <a href="source/source.zip">здесь</a></p>
+<a href="rus_approx.html">Наверх</a>
+<pre>
+
+</pre></td></div>
+</table>
+</body>
+</html>

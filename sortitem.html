@@ -1,0 +1,81 @@
+<html>
+<head><title>Шаблон SortItem</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="680" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Шаблон SortItem</font>
+</div>
+<div align=left><td><br>
+<p>Шаблон SortItem предназначен для создания типов удобных для сортировки:
+</p>
+<pre>
+template &lt;class H, class T=H> 
+struct SortItem
+{
+    H head;
+    T tail;
+
+    SortItem () {}
+	SortItem ( const H & h ) : head(h) {}
+    SortItem ( const H & h, const T & t ) : head(h), tail(t) {} 
+};
+
+template &lt;class H, class T> inline
+bool operator < ( const SortItem&lt;H,T> & a, const SortItem&lt;H,T> & b )
+{
+    return a.head < b.head;
+}
+
+template &lt;class H, class T> inline
+bool operator > ( const SortItem&lt;H,T> & a, const SortItem&lt;H,T> & b )
+{
+    return a.head > b.head;
+}
+
+template &lt;class H, class T> inline
+bool operator <= ( const SortItem&lt;H,T> & a, const SortItem&lt;H,T> & b )
+{
+    return a.head <= b.head;
+}
+
+template &lt;class H, class T> inline
+bool operator >= ( const SortItem&lt;H,T> & a, const SortItem&lt;H,T> & b )
+{
+    return a.head >= b.head;
+}
+
+template &lt;class H, class T> inline
+bool operator == ( const SortItem&lt;H,T> & a, const SortItem&lt;H,T> & b )
+{
+    return a.head == b.head;
+}
+
+template &lt;class H, class T> inline
+bool operator != ( const SortItem&lt;H,T> & a, const SortItem&lt;H,T> & b )
+{
+    return a.head != b.head;
+}
+</pre>
+<p>
+Поле head служит для сравнения элементов, а поле tail содержит связанную с ним информацию.
+</p>
+<p>Исходники находятся в файле <a href="source/source.zip">template.h</a>.
+</p>
+<a href="template.html">Наверх</a>
+<pre>
+
+</pre></td></div>
+</table>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10825496-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+</body>
+</html>

@@ -1,0 +1,251 @@
+<html>
+<head><title>Фигуры на плоскости</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="800" cellspacing="0" cellpadding="0">
+<br>
+<div align=center><font color="" style="font-size: 20pt">Фигуры на плоскости</font></div>
+<br>
+<div align=left><td>
+<p>
+&bull; Отрезок
+<pre>
+class Segment2d
+{
+public:
+    Vector2d a, b;
+
+    Segment2d () {}
+    Segment2d ( const Vector2d & va, const Vector2d & vb ) : a(va), b(vb) {}
+
+    Vector2d nearPoint ( const Vector2d & p ) const; // ближайшая точка отрезка к данной
+
+    double qdis ( const Vector2d & p ) const // квадрат расстояния до точки p
+    {
+        return ::qmod ( p - nearPoint ( p ) );
+    }
+    double qmod () const { return ::qmod ( b - a ); } // квадрат длины отрезка
+
+    template &lt;typename T> Segment2d & operator *= ( const T & t )
+    {
+        a *= t, b *= t;
+        return * this;
+    }
+};
+
+inline bool operator != ( const Segment2d & s1, const Segment2d & s2 )
+{
+    return s1.a != s2.a || s1.b != s2.b;
+}
+
+inline bool operator == ( const Segment2d & s1, const Segment2d & s2 )
+{
+    return s1.a == s2.a && s1.b == s2.b;
+}
+
+inline double norm1 ( const Segment2d & s ) { return norm1 ( s.b - s.a ); } // единичная норма
+inline double norm2 ( const Segment2d & s ) { return norm2 ( s.b - s.a ); } // квадратичная норма
+inline double normU ( const Segment2d & s ) { return normU ( s.b - s.a ); } // бесконечная норма
+</pre>
+</p>
+<p>
+&bull; Прямая
+<pre>class Line2d
+{
+public:
+    Vector2d norm;
+    double  dist;
+
+    Line2d () {}
+    Line2d ( const Vector2d & v, const double & d ) : norm ( v ), dist ( d ) {}
+    Line2d ( const Vector2d & a, const Vector2d & b );
+
+    double operator % ( const Vector2d & v ) const
+    {
+        return norm.x * v.x + norm.y * v.y + dist;
+    }
+
+    Line2d operator - () const
+    {
+        return Line2d ( - norm, - dist );
+    }
+
+    template&lt;class T> Line2d & operator *= ( const T & t )
+    {
+        return *this = t ( *this );
+    }
+
+    Vector2d project ( const Vector2d & v ) const
+    {
+        return v - ( *this % v ) * norm;
+    }
+
+    Segment2d project ( const Segment2d & s ) const
+    {
+        return Segment2d ( project ( s.a ), project ( s.b ) );
+    }
+
+    Vector2d mirror ( const Vector2d & v ) const
+    {
+        return v - 2 * ( *this % v ) * norm;
+    }
+
+    Segment2d mirror ( const Segment2d & s ) const
+    {
+        return Segment2d ( mirror ( s.a ), mirror ( s.b ) );
+    }
+};
+
+inline bool operator != ( const Line2d & a, const Line2d & b )
+{
+    return a.norm != b.norm || a.dist != b.dist;
+}
+
+inline bool operator == ( const Line2d & a, const Line2d & b )
+{
+    return a.norm == b.norm && a.dist == b.dist;
+}
+
+inline double operator % ( const Vector2d & a, const Line2d & b )
+{
+    return b.norm.x * a.x + b.norm.y * a.y + b.dist;
+}
+</pre>
+Класс Line2d предназначен для представления прямой линии на плоскости. Эта линия делит плоскость
+на две полуплоскости. Для одной из них расстояния до линии будут положительные, для другой -
+отрицательные.
+В классе есть два члена.
+Нормаль norm указывает в сторону положительной полуплоскости.
+Член dist равен расстоянию от линии до центра координат с учётом знака.
+В результате уравнение прямой имеет вид: norm.x * x + norm.y * y + dist = 0.
+Класс имеет три конструктора. Первый - пустой. Второй задаётся нормалью и расстоянием до центра
+координат. Третий - двумя точками через которые проходит прямая.
+Имеются операторы % и унарный минус. Оператор % вычисляет расстояние от точки до прямой. 
+Унарный минус меняет местами положительную и отрицательную полуплоскости.
+Шаблон функций operator *= предназначен для преобразования прямых при помощи объектов разных типов.
+Функции-члены project возвращают проекцию точки или отрезка на прямую, а
+функции-члены mirror возвращают зеркальное отображённие точки или отрезка относительно прямой.
+</p>
+<p>
+&bull; Круг
+<pre>class Circle2d
+{
+public:
+    Vector2d o; // центр
+    double   r; // радиус
+
+    Circle2d () {}
+    Circle2d ( const Vector2d & a, double b ) : o ( a ), r ( b ) {}
+
+    Circle2d & operator *= ( const Conform2d & c )
+    {
+        o *= c; r *= c.magn; return *this;
+    }
+    // Площадь
+    double getArea () const;
+    // Периметр
+    double getPerimeter () const;
+};
+</pre>
+</p>
+<p>
+&bull; Эллипс
+<pre>class Ellipse2d
+{
+public:
+    Vector2d o;  // центр
+    double a, b; // полуоси
+    Spin2d spin; // поворот
+    // Преобразование окружности в эллипс
+    Affin2d getAffin2d() const;
+    // Вычисление фокусов
+    void getFoci ( Vector2d & f1, Vector2d & f2 ) const;
+    // Площадь
+    double getArea () const;
+    // Периметр
+    double getPerimeter () const;
+};
+</pre>
+Функция-член getAffin2d возвращает аффинное преобразование, которое отображает
+единичный круг в данный эллипс.
+</p>
+<p>&bull; Треугольник
+<pre>
+class Triangle2d
+{
+public:
+    Vector2d a, b, c;
+
+    Triangle2d () {}
+    Triangle2d ( const Vector2d & pa, const Vector2d & pb, const Vector2d & pc ) : a ( pa ), b ( pb ), c ( pc ) {}
+    // Площадь
+    double getArea () const;
+    // Периметр
+    double getPerimeter () const;
+};
+</pre>
+</p>
+<p>&bull; Прямоугольник
+<pre>
+class Rectangle2d
+{
+public:
+    Vector2d o;  // центр
+    double a, b; // полуоси
+    Spin2d spin; // поворот
+    // Площадь
+    double getArea () const;
+    // Периметр
+    double getPerimeter () const;
+};
+</pre>
+</p>
+<p>&bull; Ромб
+<pre>
+class Rhombus2d
+{
+public:
+    Vector2d o;  // центр
+    double a, b; // полуоси
+    Spin2d spin; // поворот
+    // Площадь
+    double getArea () const;
+    // Периметр
+    double getPerimeter () const;
+};
+</pre>
+</p>
+<p>&bull; Параллелограмм
+<pre>
+class Parallelogram2d
+{
+    Vector2d o, a, b; 
+public:
+    Parallelogram2d () {}
+    Parallelogram2d ( const Vector2d & v1, const Vector2d & v2, const Vector2d & v3 ) :
+        o ( v2 ), a ( v3 - v2 ), b ( v1 - v2 ) {}
+    // Вершины
+    void getVerts ( Vector2d vert[4] ) const;
+    // Площадь
+    double getArea () const;
+    // Периметр
+    double getPerimeter () const;
+};
+</pre>
+Параллелограмм задаётся любыми тремя последовательными вершинами.
+</p>
+<p>Примеры использования всех этих классов можно посмотреть в приложении <a href="demo/demo.html">DEMO</a>.
+</p>
+<p>Описание классов Spin2d, Conform2d и Affin2d смотрите в разделе <a href="transform2d.html">Преобразования на плоскости</a>.
+<br>Описание класса Vector2d смотрите в разделе <a href="rus_vector2d.html">Вектора на плоскости</a>.
+<br>Исходники находятся в файлах <a href="source/source.zip">vector2d.h, vector2d.cpp</a>. 
+</p>
+<a href="rus_geom.html">Наверх</a>
+<p>
+<br>
+</p>
+</td></div>
+</table>
+</body>
+</html>

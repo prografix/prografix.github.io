@@ -1,0 +1,59 @@
+<html>
+<head><title>Линейная аппроксимация точек на плоскости</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Линейная аппроксимация точек на плоскости</font>
+</div>
+<br>
+<div align=left><td>
+<p>Пусть задано дискретное множество точек на плоскости и надо найти прямую наиболее близкую к ним.
+В качестве критерия близости будем рассматривать некоторую <a href="normv.html">норму вектора</a> расстояний от точек до прямой.
+В этом случае нужно найти прямую, которая минимизирует выбранную норму.
+<br><br>Для 1-нормы это будет минимум суммы расстояний от точек до прямой ( абсолютный момент 1-го порядка ).
+Следующие функции находят такую прямую ( вторая функция учитывает массу каждой точки ):
+<pre>
+Def&lt;Line2d> getLine1 ( CArrRef&lt;Vector2d> point );
+
+Def&lt;Line2d> getLine1 ( CArrRef&lt;Vector2d> point, CArrRef&lt;double> mass );
+</pre>
+Для 2-нормы это будет минимум сумма квадратов расстояний точек до прямой 
+( <a href="mom2.html">момент 2-го порядка</a> ):
+<pre>
+Def&lt;Line2d> getLine2 ( CArrRef&lt;Vector2d> point );
+
+Def&lt;Line2d> getLine2 ( CArrRef&lt;Vector2d> point, CArrRef&lt;double> mass );
+</pre>
+<p>
+Временная сложность этих функций равна O ( n ).
+</p>
+<p>Для бесконечной нормы это будет минимакс расстояний от точек до прямой:
+</p>
+<pre>
+Def&lt;Line2d> getLineU ( CArrRef&lt;Vector2d> point );
+</pre>
+<p>
+Робастный метод аппроксимации предназначен для данных с выбросами.
+Этот алгоритм также заполняет массив весов (mass) значениями от 0 до 1.
+</p>
+<pre>
+Def&lt;Line2d> getLineR ( CArrRef&lt;Vector2d> point, ArrRef&lt;double> mass );
+</pre>
+<p>Примеры использования этих функций можно посмотреть в приложении <a href="demo/demo.html">DEMO</a>.
+</p>
+<p>Описание шаблона классов CArrRef находится <a href=array.html>здесь</a>.
+<br>Описание шаблона классов Def находится <a href="def.html">здесь</a>.
+<br>Описание класса Vector2d находится <a href="rus_vector2d.html">здесь</a>. 
+<br>Описание класса Line2d находится <a href="figure2d.html">здесь</a>.
+</p>
+<p>Исходники находятся в файле <a href="source/source.zip">approx2d.cpp</a></p>
+<a href="rus_approx.html">Наверх</a>
+<pre>
+
+</pre>
+</td></div>
+</table>
+</body>
+</html>

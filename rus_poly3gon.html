@@ -1,0 +1,65 @@
+<html>
+<head><title>Шаблон Poly3gon</title><link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="680" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Шаблон Poly3gon</font>
+</div>
+<div align=left><td>
+<p><br>
+Шаблон Poly3gon состоит из двух массивов: vertex для вершин и side для треугольных граней.
+Параметр шаблона V задаёт тип вершины ( например, это могут быть классы Vector3d, Vector3f, Vector3i ),
+ а параметр I тип дополнительной информации грани ( тип void означает её отсутствие ).
+</p>
+<pre>
+template &lt;class I> class Trigon
+{
+public:
+    unsigned int a, b, c; // Номера вершин 
+    I info;
+};
+
+template <> class Trigon&lt;void>
+{
+public:
+    unsigned int a, b, c; // Номера вершин 
+};
+
+template &lt;class V, class I> class Poly3gon
+{
+    Poly3gon ( Poly3gon & );
+public:
+    DynArray&lt;V> vertex;         // массив вершин
+    DynArray&lt; Trigon&lt;I> > side; // массив треугольников
+
+    Poly3gon () {}
+    Poly3gon ( unsigned int nv, unsigned int ns ) : vertex(nv), side(ns) {}
+
+    Poly3gon & resize ( unsigned int nv, unsigned int ns )
+    {
+        vertex.resize ( nv );
+        side.resize ( ns );
+        return *this;
+    }
+};
+
+template &lt;class T, class I> inline
+void swap ( Poly3gon&lt;T,I> & p1, Poly3gon&lt;T,I> & p2 )
+{
+    p1.vertex.swap ( p2.vertex );
+    p1.side.swap ( p2.side );
+}
+</pre>
+<p>О векторах на плоскости смотрите <a href="rus_vector2d.html">здесь</a>.
+<br>О векторах в пространстве смотрите <a href="rus_vector.html">здесь</a>.
+<br>Описание шаблона классов DynArray находится <a href=array.html>здесь</a>.
+<br>Исходники находятся <a href="source/source.zip">здесь</a>.
+</p>
+<a href="template.html">Наверх</a>
+<pre>
+
+</pre></td></div>
+</table>
+</body>
+</html>

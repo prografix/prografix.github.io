@@ -1,0 +1,231 @@
+<html>
+<head><title>Матрицы</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="680" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Матрицы</font>
+</div><br><td>
+<p>В этот разделе описаны шаблоны классов предназначенные для представления математических матриц.
+<br>Шаблон IMatrix является интерфейсным, и его классы не выделяют память для элементов матриц:
+<pre>
+template &lt;class Type>
+class IMatrix
+{
+    Type * const * const data;
+// Запрет оператора присваивания и конструктора копии
+    void operator = ( const IMatrix & );
+    IMatrix ( const IMatrix & );
+public:
+    const nat nRow; // к-во строк
+    const nat nCol; // к-во столбцов
+
+    IMatrix ( nat r, nat c, Type * const * const p ) : nRow(r), nCol(c), data(p) {}
+
+    IMatrix & fill ( const Type & p )
+    {
+        for ( nat i = 0; i < nRow; ++i )
+        {
+            Type * t = data[i];
+            for ( nat j = 0; j < nCol; ++j ) t[j] = p;
+        }
+        return *this;
+    }
+    IMatrix & operator *= ( const Type & p )
+    {
+        for ( nat i = 0; i < nRow; ++i )
+        {
+            Type * t = data[i];
+            for ( nat j = 0; j < nCol; ++j ) t[j] *= p;
+        }
+        return *this;
+    }
+    operator       Type * const * ()       { return data; }
+    operator const Type * const * () const { return data; }
+};
+</pre>
+Имеются: 1) конструктор, 2) функция-член fill, которая заполняет матрицу указанным значением,
+3) оператор *=, который умножает матрицу на число, и 4) два оператора пребразования типа.
+</p>
+<p>Шаблон SMatrix может создавать матрицу в стеке и применяется, когда размер матрицы
+известен на этапе компиляции:
+<pre>template &lt;class Type, nat R, nat C>
+class SMatrix : public IMatrix&lt;Type>
+{
+    Type * p[R];
+    Type stor[R*C];
+public:
+    SMatrix () : IMatrix&lt;Type> ( R, C, p )
+    {
+        p[0] = stor;
+        for ( nat i = 1; i < R; ++i ) p[i] = p[i-1] + C;
+    }
+
+    SMatrix ( const SMatrix & m ) : IMatrix&lt;Type> ( R, C, p )
+    {
+        nat i;
+        p[0] = stor;
+        for ( i = 1; i < R; ++i ) p[i] = p[i-1] + C;
+        for ( i = 0; i < R*C; ++i ) stor[i] = m.stor[i];
+    }
+
+    SMatrix & operator = ( const SMatrix & m )
+    {
+        for ( nat i = 0; i < R*C; ++i ) stor[i] = m.stor[i];
+        return *this;
+    }
+};
+</pre>
+Шаблон HMatrix располагает элементы матрицы в динамической памяти ( куче ):
+<pre>template &lt;class Type, nat R, nat C>
+class HMatrix : public IMatrix&lt;Type>
+{
+    Type ** p;
+// Запрет оператора присваивания
+    HMatrix & operator = ( const HMatrix & m );
+public:
+    HMatrix ( nat r, nat c ) : IMatrix&lt;Type> ( r, c, p = r > 0 ? new Type*[r] : 0 )
+    {
+        if ( ! nRow ) return;
+        p[0] = new Type[nRow*nCol];
+        for ( nat i = 1; i < nRow; ++i ) p[i] = p[i-1] + nCol;
+    }
+
+    explicit HMatrix ( const IMatrix&lt;Type> & m ) : 
+		IMatrix&lt;Type> ( m.nRow, m.nCol, p = m.nRow > 0 ? new Type*[m.nRow] : 0 )
+    {
+        if ( ! nRow ) return;
+        const nat n = nRow * nCol;
+        Type * t = p[0] = new Type[n];
+        for ( nat i = 1; i < nRow; ++i ) p[i] = p[i-1] + nCol;
+        const Type * s = m[0];
+        for ( nat j = 0; j < n; ++j ) t[j] = s[j];
+    }
+
+    explicit HMatrix ( const HMatrix&lt;Type> & m ) : 
+		IMatrix&lt;Type> ( m.nRow, m.nCol, p = m.nRow > 0 ? new Type*[m.nRow] : 0 )
+    {
+        if ( ! nRow ) return;
+        const nat n = nRow * nCol;
+        Type * t = p[0] = new Type[n];
+        for ( nat i = 1; i < nRow; ++i ) p[i] = p[i-1] + nCol;
+        const Type * s = m[0];
+        for ( nat j = 0; j < n; ++j ) t[j] = s[j];
+    }
+
+    ~HMatrix()
+    {
+        if ( p != 0 )
+        {
+            delete[] p[0];
+            delete[] p;
+        }
+    }
+};
+</pre>
+Шаблон CmbMatrix является комбинацией двух предыдущих:
+<pre>template &lt;class Type, nat R, nat C>
+class CmbMatrix : public IMatrix&lt;Type>
+{
+    Type ** p;
+    Type * pa[R];
+    Type stor[R*C];
+// Запрет оператора присваивания
+    CmbMatrix & operator = ( const CmbMatrix & m );
+public:
+    CmbMatrix ( nat r, nat c ) : IMatrix&lt;Type> ( r, c, p = r > R ? new Type*[r] : pa )
+    {
+        const nat n = nRow * nCol;
+        p[0] = n > R*C ? new Type[n] : stor;
+        for ( nat i = 1; i < nRow; ++i ) p[i] = p[i-1] + nCol;
+    }
+
+    explicit CmbMatrix ( const IMatrix&lt;Type> & m ) : 
+		IMatrix&lt;Type> ( m.nRow, m.nCol, p = m.nRow > R ? new Type*[m.nRow] : pa )
+    {
+        const nat n = nRow * nCol;
+        Type * t = p[0] = n > R*C ? new Type[n] : stor;
+        for ( nat i = 1; i < nRow; ++i ) p[i] = p[i-1] + nCol;
+        const Type * s = m[0];
+        for ( nat j = 0; j < n; ++j ) t[j] = s[j];
+    }
+
+    explicit CmbMatrix ( const CmbMatrix&lt;Type, R, C> & m ) : 
+		IMatrix&lt;Type> ( m.nRow, m.nCol, p = m.nRow > R ? new Type*[m.nRow] : pa )
+    {
+        const nat n = nRow * nCol;
+        Type * t = p[0] = n > R*C ? new Type[n] : stor;
+        for ( nat i = 1; i < nRow; ++i ) p[i] = p[i-1] + nCol;
+        const Type * s = m[0];
+        for ( nat j = 0; j < n; ++j ) t[j] = s[j];
+    }
+
+    ~CmbMatrix()
+    {
+        if ( p[0] != stor ) delete[] p[0];
+        if ( p != pa ) delete[] p;
+    }
+};
+</pre>
+Следующая группа функций-шаблонов выполняет копирование, сложение, отнимание и умножение матриц,
+если размеры матриц согласованы:
+<pre>
+template &lt;class Type>
+bool copy ( const IMatrix&lt;Type> & a, IMatrix&lt;Type> & b ) // b = a
+
+template &lt;class Type>
+bool plus ( const IMatrix&lt;Type> & a, const IMatrix&lt;Type> & b, IMatrix&lt;Type> & c ) // c = a + b
+
+template &lt;class Type>
+bool minus ( const IMatrix&lt;Type> & a, const IMatrix&lt;Type> & b, IMatrix&lt;Type> & c ) // c = a - b
+
+template &lt;class Type>
+bool multi ( const IMatrix&lt;Type> & a, const IMatrix&lt;Type> & b, IMatrix&lt;Type> & c ) // c = a * b
+</pre>
+Следующая группа функций определена для вещественных матриц
+( исходники находятся в файле <a href="source/source.zip">matrix.cpp</a> ):
+<pre>
+bool determinant ( const IMatrix&lt;double> & m, double & d );
+bool trans  ( const IMatrix&lt;double> & a, IMatrix&lt;double> & b ); // b = aT
+bool inverse( const IMatrix&lt;double> & a, IMatrix&lt;double> & b ); // a * b = 1
+
+// Матричные нормы
+
+double norm1 ( const IMatrix&lt;double> & ); // 1-норма
+double norm2 ( const IMatrix&lt;double> & ); // 2-норма
+double normF ( const IMatrix&lt;double> & ); // норма Фробениуса
+double normU ( const IMatrix&lt;double> & ); // бесконечная норма
+
+// Cингулярное разложение: A = U * W * V
+
+bool svd ( const IMatrix&lt;double> & A, IMatrix&lt;double> & U, IMatrix&lt;double> & W, IMatrix&lt;double> & V ); 
+</pre>
+Следующая группа функций определена для <a href="rus_complex.html">комплексных</a> матриц
+( исходники находятся в файле <a href="source/source.zip">cmatrix.cpp</a> ):
+<pre>
+// Транспонирование
+
+bool trans  ( const IMatrix&lt;Complex> & a, IMatrix&lt;Complex> & b ); // b = aT
+
+// Решение задачи наименьших квадратов при помощи преобразований Хаусхолдера
+
+bool lss_h ( IMatrix&lt;Complex> & a, const Complex * b, Complex * x ); // b[a.nRow], x[a.nCol]
+</pre>
+<a href="template.html">Наверх</a>
+<p>
+<br>
+</p></td>
+</table>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10825496-1");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
+</body>
+</html>

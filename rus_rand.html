@@ -1,0 +1,282 @@
+<html>
+<head><title>Псевдо- и квазислучайные числа</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Псевдо- и квазислучайные числа</font>
+</div>
+<br>
+<div align=left><td>
+<p>Для начала дадим определения. Последовательность неслучайных чисел называется псевдослучайной, 
+если она обладает всеми свойствами случайной последовательности. 
+Последовательность неслучайных чисел называется квазислучайной, если её можно использовать в методах Монте-Карло 
+вместо случайной. При этом метод может работать лучше, чем со случайной последовательностью. 
+</p>
+<pre>class PRand
+{
+    nat32 next;
+public:
+    explicit PRand ( nat32 u = 0 ) : next ( u ) {}
+    double operator() ()
+    {
+        next = next * 1103515245 + 12345;
+        return next / 4294967296.;
+    }
+    nat32 number ( nat32 n )
+    {
+        next = next * 1103515245 + 12345;
+        return nat32 ( next * nat64(n) >> 32 );
+    }
+};
+</pre>
+<p>
+Генератор псевдослучайных чисел PRand имеет две функции-члена:
+функция operator() моделирует действительное случайное число равномерно-распределённое на интервале [0,1], 
+а функция number - целое случайное число равномерно-распределённое на интервале [0, n-1].
+Здесь используются некоторые типы определённые в файле <a href="typedef.html">typedef.h</a>.
+</p>
+<p>В качестве квазислучайной последовательности можно использовать последовательности Холтона. 
+Они определяются следующим образом. Пусть имеется представление целого числа i в числовой системе с основанием k. 
+Сделаем зеркальное отображение относительно точки разделяющей целую и дробную части числа. 
+Тогда получим действительное число на отрезке (0,1). 
+Последовательность таких чисел соответствующих натуральному ряду называется последовательностью Холтона. 
+В зависимости от k можно получать разные последовательности, но все они равномерно распределены на отрезке (0,1). 
+Для того, чтобы получить множество точек равномерно-распределённых в n-мерном кубе поступают следующим образом. 
+Возьмём n первых простых чисел в качестве k ( для того чтобы последовательности Холтона были независимыми надо, 
+чтобы основания их систем были взамно простыми ) и каждой координате поставим в соответствие свою последовательность Холтона. 
+Такие n-мерные точки будут равномерно распределены в кубе. 
+Подробнее о квазислучайных числах можно прочитать в книге "Численные методы Монте-Карло" (Соболь И.М.).
+</p>
+<pre>
+const nat32 qrand_size = 20;
+
+class QRand
+{
+    nat32 n;
+    nat32 a[qrand_size];
+public:
+    explicit QRand ( nat32 i );
+    double operator() ()
+    nat32 number ( nat32 m )
+    {
+        return nat32 ( m * (*this)() );
+    }
+};
+</pre>
+<p>
+Класс QRand реализует последовательность Холтона. Сразу замечу, что он довольно медленный. 
+Но если это некритично, то он даёт очень равномерную на (0,1) последовательность чисел.
+Оба генератора никогда не возвращают значение строго равное 1, и это можно использовать,
+например, брать логарифм от 1 - х. Дополнительно QRand не возвращает значение строго равное 0,
+а вот PRand иногда возвращает.
+</p>
+<p>
+Шаблон функций shuffle предназначен перемешивания ( перетасовки ) массивов случайным образом:
+</p>
+<pre>
+template&lt;class A, class B> inline 
+A & shuffle ( A & a, B & b )
+{
+    for ( nat32 n = a.size(); n > 1; --n ) _swap ( a[n-1], a[b.number(n)] ); 
+    return a;
+}</pre></p>
+<p>
+Следующие два класса PNormalRand и QNormalRand предназначены для получения случайных чисел 
+распределённых по нормальному закону с математическим ожиданием 0 и дисперсией 1:
+</p>
+<pre>class NormalRand
+{
+public:
+    virtual double operator() () = 0;
+};
+
+class PNormalRand : public NormalRand
+{
+    PRand rand;
+public:
+    explicit PNormalRand ( nat32 u = 0 ) : rand ( u ) {}
+    double operator() ();
+};
+
+class QNormalRand : public NormalRand
+{
+    QRand q1, q2;
+public:
+    explicit QNormalRand ( nat32 p1 = 2, nat32 p2 = 3 ) : q1(p1), q2(p2) {}
+    double operator() ();
+};
+</pre>
+<p>
+Теперь рассмотрим генераторы равномерных случайных направлений. В двухмерном случае можно 
+получить угол а равномерно-распределённый на отрезке (0,360), и
+тогда координаты случайного вектора единичной длины будут равны cos(a) и sin(a).
+<pre>class Vector2d;
+
+class RandVector2d
+{
+public:
+    virtual Vector2d operator() () = 0;
+};
+
+class PRandVector2d : public RandVector2d
+{
+    PRand rand;
+public:
+    explicit PRandVector2d ( nat32 i = 0 ) : rand ( i ) {}
+    Vector2d operator() ();
+};
+
+class QRandVector2d : public RandVector2d
+{
+    QRand rand;
+public:
+    explicit QRandVector2d ( nat32 i = 2 ) : rand ( i ) {}
+    Vector2d operator() ();
+};
+</pre>
+Следующие классы позволяют получить точки равномерно-распределённые в квадрате 
+с габаритами [-1,1]:
+<pre>class RandPoint2d
+{
+public:
+    virtual Vector2d operator() () = 0;
+};
+
+class PRandPoint2d : public RandPoint2d
+{
+    PRand randX, randY;
+public:
+    explicit PRandPoint2d ( nat32 x = 0, nat32 y = 1 ) : randX(x), randY(y) {}
+    Vector2d operator() ();
+};
+
+class QRandPoint2d : public RandPoint2d
+{
+    QRand randX, randY;
+public:
+    explicit QRandPoint2d ( nat32 x = 2, nat32 y = 3 ) : randX(x), randY(y) {}
+    Vector2d operator() ();
+};
+</pre>
+Следующие классы позволяют получить двухмерное нормальное распределение, т.е. каждая координата
+полученной точки распределена нормально:
+<pre>class NormalRandPoint2d
+{
+public:
+    virtual Vector2d operator() () = 0;
+};
+
+class PNormalRandPoint2d : public NormalRandPoint2d
+{
+    PRand rand;
+public:
+    explicit PNormalRandPoint2d ( nat32 u = 0 ) : rand ( u ) {}
+    Vector2d operator() ();
+};
+
+class QNormalRandPoint2d : public NormalRandPoint2d
+{
+    QRand q1, q2;
+public:
+    explicit QNormalRandPoint2d ( nat32 p1 = 2, nat32 p2 = 3 ) : q1(p1), q2(p2) {}
+    Vector2d operator() ();
+};
+</pre>
+Функция getRandSpin2d предназначена для получения равномерного случайного поворота на плоскости:
+<pre>
+class Spin2d getRandSpin2d ( double p ); 
+// p - случайное число равномерно-распределённое на интервале [0,1]
+</pre>
+Известно, что проекция точки с координатами случайного трёхмерного вектора на любую прямую 
+будет распределена равномерно. Пусть такой прямой у нас будет ось Z. Тогда получив случайным 
+образом на (-1,1) координату z мы сводим задачу получения случайного направления в трёхмерном 
+пространстве к двухмерному случаю.  
+</p>
+<pre>class Vector3d;
+
+class RandVector3d
+{
+public:
+    virtual Vector3d operator() () = 0;
+};
+
+class PRandVector3d : public RandVector3d
+{
+    PRand prand;
+public:
+    explicit PRandVector3d ( nat32 i = 0 ) : prand ( i ) {}
+    Vector3d operator() ();
+};
+
+class QRandVector3d : public RandVector3d
+{
+    QRand q2, q3;
+public:
+    explicit QRandVector3d ( nat32 a = 2, nat32 b = 3 ) : q2(a), q3(b) {}
+    Vector3d operator() ();
+};
+</pre>
+О равномерных случайных вращениях в пространстве можно прочитать в книге "Геометрические вероятности" 
+( М. Кендалл, П. Моран ).
+Функция getRandOrtho3d реализует метод описанный в книге:
+<pre>
+class Ortho3d getRandOrtho3d ( double a, double b, double c ); 
+// a, b, c - независимые случайные числа равномерно-распределённые на интервале [0,1]
+</pre>
+<p>
+Случайные четырёхмерные направления можно получить по такому алгоритму: 
+<br>1) получаем четырёхмерную случайную точку равномерно-распределённую в кубе с габаритами [-1,1]
+<br>2) проверяем попадает ли она внутрь шара с радиусом 1, если нет, то повторяем пункт 1
+<br>3) нормируем полученный вектор. 
+<br>Таким образом можно получать вектора любой размерности, но описанные выше алгоритмы для двух- и
+трёхмерных векторов используют меньше вызовов случайных чисел и дают более равномерное распределение. 
+</p>
+<pre>class Vector4d;
+
+class RandVector4d
+{
+public:
+    virtual Vector4d operator() () = 0;
+};
+
+class PRandVector4d : public RandVector4d
+{
+    PRand prand;
+public:
+    explicit PRandVector4d ( nat32 i = 0 ) : prand ( i ) {}
+    Vector4d operator() ();
+};
+
+class QRandVector4d : public RandVector4d
+{
+    QRand q1, q2, q3, q4;
+public:
+    explicit QRandVector4d ( nat32 p1=2, nat32 p2=3, nat32 p3=5, nat32 p4=7 ) : 
+		q1(p1), q2(p2), q3(p3), q4(p4) {}
+    Vector4d operator() ();
+};
+</pre>
+В приложении <a href="demo/demo.html">DEMO</a> можно оценить равномерность трёхмерных случайных векторов.
+<p>
+Описание класса Vector2d находится <a href="rus_vector2d.html">здесь</a>.
+<br>
+Описание класса Spin2d находится <a href="transform2d.html">здесь</a>.
+<br>
+Описание класса Vector3d находится <a href="rus_vector.html">здесь</a>.
+<br>
+Описание класса Ortho3d находится <a href="transform3d.html">здесь</a>.
+<br>
+Описание класса Vector4d находится <a href="vector4d.html">здесь</a>.
+<br>
+Исходники находятся в файле <a href="source/source.zip">rand.cpp</a>.
+</p>
+<a href="rus_pro.html">Наверх</a>
+<pre>
+
+</pre>
+</td></div>
+</table>
+</body>
+</html>

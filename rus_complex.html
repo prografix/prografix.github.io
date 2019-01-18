@@ -1,0 +1,242 @@
+<html>
+<head><title>Класс Complex</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="680" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Класс Complex</font>
+</div><br><td>
+<p>
+Несмотря на то, что в С++ есть стандартный шаблон complex для представления комплекных чисел, 
+я решил сделать свой класс для того, чтобы было проще и понятнее. 
+В результате получилось следующее:</p>
+<pre>
+class Complex
+{
+public:
+    double re, im;
+
+    Complex () {}
+    Complex ( double r           ) : re(r), im(0) {}
+    Complex ( double r, double i ) : re(r), im(i) {}
+
+    bool operator ! () const
+    {
+        return ! re && ! im;
+    }
+
+    Complex operator ~ () const
+    {
+        return Complex ( re, -im );
+    }
+
+    Complex operator - () const
+    {
+        return Complex ( -re, -im );
+    }
+
+    Complex & operator = ( const double & b )
+    {
+        re = b;
+        im = 0.;
+        return *this;
+    }
+
+    Complex & operator += ( const double & b )
+    {
+        re += b;
+        return *this;
+    }
+
+    Complex & operator -= ( const double & b )
+    {
+        re -= b;
+        return *this;
+    }
+
+    Complex & operator *= ( const double b )
+    {
+        re *= b;
+        im *= b;
+        return *this;
+    }
+
+    Complex & operator /= ( const double b )
+    {
+        re /= b;
+        im /= b;
+        return *this;
+    }
+
+    Complex & operator += ( const Complex & b )
+    {
+        re += b.re;
+        im += b.im;
+        return *this;
+    }
+
+    Complex & operator -= ( const Complex & b )
+    {
+        re -= b.re;
+        im -= b.im;
+        return *this;
+    }
+
+    Complex & operator *= ( const Complex & b )
+    {
+        const double rr = re * b.re - im * b.im;
+        const double ii = re * b.im + im * b.re;
+        re = rr;
+        im = ii;
+        return *this;
+    }
+
+    Complex & operator /= ( const Complex & b )
+    {
+        const double rr = re * b.re + im * b.im;
+        const double ii = im * b.re - re * b.im;
+        const double sq = b.re * b.re + b.im * b.im;
+        re = rr / sq;
+        im = ii / sq;
+        return *this;
+    }
+};
+
+////////////////////////////////////////////////////////////////////////
+
+inline Complex operator + ( const double & a, const Complex & b )
+{
+    return Complex ( a + b.re, b.im );
+}
+
+inline Complex operator - ( const double & a, const Complex & b )
+{
+    return Complex ( a - b.re, - b.im );
+}
+
+inline Complex operator * ( const double & a, const Complex & b )
+{
+    return Complex ( a * b.re, a * b.im );
+}
+
+inline Complex operator / ( const double & a, const Complex & b )
+{
+    const double sq = b.re * b.re + b.im * b.im;
+    return Complex ( a * b.re / sq, - a * b.im / sq );
+}
+
+////////////////////////////////////////////////////////////////////////
+
+inline Complex operator + ( const Complex & a, const double & b )
+{
+    return Complex ( a.re + b, a.im );
+}
+
+inline Complex operator - ( const Complex & a, const double & b )
+{
+    return Complex ( a.re - b, a.im );
+}
+
+inline Complex operator * ( const Complex & a, const double & b )
+{
+    return Complex ( a.re * b, a.im * b );
+}
+
+inline Complex operator / ( const Complex & a, const double & b )
+{
+    return Complex ( a.re / b, a.im / b );
+}
+
+////////////////////////////////////////////////////////////////////////
+
+inline Complex operator + ( const Complex & a, const Complex & b )
+{
+    return Complex ( a.re + b.re, a.im + b.im );
+}
+
+inline Complex operator - ( const Complex & a, const Complex & b )
+{
+    return Complex ( a.re - b.re, a.im - b.im );
+}
+
+inline Complex operator * ( const Complex & a, const Complex & b )
+{
+    return Complex ( a.re * b.re - a.im * b.im, a.re * b.im + a.im * b.re );
+}
+
+inline Complex operator / ( const Complex & a, const Complex & b )
+{
+    const double re = a.re * b.re + a.im * b.im;
+    const double im = a.im * b.re - a.re * b.im;
+    const double sq = b.re * b.re + b.im * b.im;
+    return Complex ( re / sq, im / sq );
+}
+
+////////////////////////////////////////////////////////////////////////
+
+inline bool operator == ( const Complex & a, const Complex & b )
+{
+    return ( a.re == b.re ) && ( a.im == b.im );
+}
+
+inline bool operator != ( const Complex & a, const Complex & b )
+{
+    return ( a.re != b.re ) || ( a.im != b.im );
+}
+
+//************************ 08.04.2006 *************************//
+//
+//                    Квадрат модуля числа
+//
+//************************ 08.04.2006 *************************//
+
+inline double qmod ( const Complex & c )
+{
+    return c.re * c.re + c.im * c.im;
+}
+
+//************************ 08.04.2006 *************************//
+//
+//             Абсолютное значение ( модуль числа )
+//
+//************************ 08.04.2006 *************************//
+
+double abs ( const Complex & );
+
+
+//************************ 18.11.2018 *************************//
+//
+//                         Экспонента
+//
+//************************ 18.11.2018 *************************//
+
+Complex exp ( const Complex & );
+
+
+//************************ 08.04.2006 *************************//
+//
+//                     Квадратный корень
+//
+//************************ 08.04.2006 *************************//
+
+Complex sqrt ( const Complex & );
+
+
+//************************ 24.12.2011 *************************//
+//
+//                     Кубические корни
+//
+//************************ 24.12.2011 *************************//
+
+void root3 ( Complex x, Complex & r1, Complex & r2, Complex & r3 );
+</pre>
+<p>Исходники находятся в файле <a href="source/source.zip">complex.cpp</a>.
+</p>
+<a href="rus_pro.html">Наверх</a>
+<p>
+<br>
+</p></td>
+</table>
+</body>
+</html>

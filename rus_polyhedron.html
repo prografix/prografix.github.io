@@ -1,0 +1,216 @@
+<html>
+<head><title>Класс Polyhedron</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="680" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Класс Polyhedron</font>
+</div>
+<div align=left><td>
+<p><br>
+Этот класс предназначен для представления многогранника в трёхмерном пространстве.
+В него входят два массива - вершин и граней. Вершины представлены классом Vector3d,
+грани - классом Facet, в который входят: плоскость plane, к-во вершин грани nv, массив индексов
+index и поле info для записи дополнительной информации. Размер массива index равен 3 * nv + 1. 
+Вначале идут индексы вершин и индекс первой вершины записывается ещё раз в конце (nv+1).
+Это сделано для удобства записи некоторых циклов. 
+Затем идут индексы соседних граней для каждого ребра, а дальше номера рёбер соседних граней. 
+Если какие-то индексы неопределены, то они равны undef_index.
+Функция-член initPlane вычисляет параметры плоскости, получая на вход ссылку на массив вершин.
+</p>
+<pre>namespace Shev
+{
+    const nat undef_index = 0xFFFFFFFF;
+
+    class Facet
+    {
+        Facet ( const Facet & );
+    public:
+        Plane3d plane;
+        nat nv;
+        DynArray&lt;nat> index;
+        int info;
+
+        Facet () : plane ( Vector3d ( 0., 0., 0. ), 0. ), nv(0), info(-123456789) {}
+
+        Facet & operator = ( const Facet & );
+
+        Facet & operator += ( const Vector3d & v )
+        {
+            plane += v;
+            return *this;
+        }
+
+        template &lt;class T> Facet & operator *= ( const T & t )
+        {
+            plane *= t;
+            return *this;
+        }
+
+        Facet & resize ( nat n )
+        {
+            index.resize ( ( nv = n ) > 0 ? 3 * nv + 1 : 0 );
+            return *this;
+        }
+
+        Facet & initPlane ( CArrRef&lt;Vector3d> vertex );
+
+        double getArea ( CArrRef&lt;Vector3d> vertex ) const; // Площадь грани
+
+        double perimeter ( CArrRef&lt;Vector3d> vertex ) const; // Периметр грани
+
+        Def&lt;Vector3d> centerOfMass ( CArrRef&lt;Vector3d> vertex ) const; // Центр масс грани
+    };
+
+    class Polyhedron
+    {
+        Polyhedron ( const Polyhedron & );
+    public:
+        DynArray&lt;Vector3d> vertex;
+        DynArray&lt;Facet> facet;
+
+        Polyhedron () {}
+        Polyhedron ( nat nv, nat nf ) : vertex(nv), facet(nf) {}
+        explicit Polyhedron ( const Cuboid3d & fig ) { *this = fig; }
+
+        Polyhedron & linkFacets (); // Связать грани
+        Polyhedron & initPlanes (); // Заполнить плоскости
+
+        Polyhedron & operator = ( const Polyhedron & poly )
+        {
+            if ( this != & poly )
+            {
+                vertex = poly.vertex;
+                facet = poly.facet;
+            }
+            return *this;
+        }
+
+        Polyhedron & operator = ( const Cuboid3d & fig )
+        {
+            return makeCuboid ( fig.a, fig.b, fig.c ) *= Conform3d ( fig.spin, fig.o, 1 );
+        }
+
+        Polyhedron & operator += ( const Vector3d & v )
+        {
+            for012 ( vertex ) += v;
+            for012 ( facet ) += v;
+            return *this;
+        }
+
+        template &lt;class T> Polyhedron & operator *= ( const T & t )
+        {
+            for012 ( vertex ) *= t;
+            for012 ( facet ) *= t;
+            return *this;
+        }
+
+        Polyhedron & operator *= ( const Conform3d & conf )
+        {
+            return *this *= Similar3d ( conf );
+        }
+
+        Polyhedron & operator *= ( const Spin3d & spin )
+        {
+            return *this *= Ortho3d ( spin );
+        }
+        // Пустой многогранник
+        Polyhedron & makeVoid ()  
+        {
+            vertex.resize ( 0 ); facet.resize ( 0 ); return *this;
+        }
+        // Тетраэдр ( r - макс. значение координат вершин )
+        Polyhedron & makeTetrahedron ( double r ); 
+        // Октаэдр  ( r - макс. значение координат вершин ) 
+        Polyhedron & makeOctahedron  ( double r ); 
+        // Прямоугольный параллелепипед ( x, y, z - половины сторон )
+        Polyhedron & makeCuboid ( double x, double y, double z );
+        // Куб ( r - половина стороны )
+        Polyhedron & makeCube ( double r )
+        {
+            return makeCuboid ( r, r, r );
+        }
+        // Эллипсоид ( x, y, z - половины осей )
+        Polyhedron & makeEllipsoid ( nat n, double x, double y, double z, RandVector3d & qrv );
+        Polyhedron & makeEllipsoid ( nat n, double x, double y, double z );
+		Polyhedron & makeModel ( nat n, const Ellipsoid3d & fig )
+        {
+            return makeEllipsoid ( n, fig.a, fig.b, fig.c ) *= Conform3d ( fig.spin, fig.o, 1 );
+        }
+        // Сфера ( r - радиус )
+        Polyhedron & makeSphere ( nat n, double r )
+        {
+            return makeEllipsoid ( n, r, r, r );
+        }
+        Polyhedron & makeModel ( nat n, const Sphere3d & fig )
+        {
+            return makeSphere ( n, fig.r ) += fig.o;
+        }
+        // Цилиндр
+        Polyhedron & makeModel ( nat n, const Cylinder3d & fig );
+        // Конус
+        Polyhedron & makeModel ( nat n, const Cone3d & fig );
+        // Площадь поверхности многогранника
+        double area () const;
+        // Объём многогранника
+        double volume () const;
+        // Центр масс многогранника
+        Def&lt;Vector3d> centerOfMass () const;
+    };
+
+} // namespace Shev
+</pre>
+<p>
+Функция-член linkFacets ищет соседние грани и проставляет соответствующие индексы.
+<br>Функция-член initPlanes вычисляет значения поля plane для всех граней.
+<br>Оператор += предназначен для сдвига многогранника. 
+<br>Шаблон оператора *= предназначен для преобразования многогранника при помощи объектов разных типов 
+( double, Similar3d, Affin3d и т.д. ). Для типов Conform3d и Spin3d сделаны специализации. 
+<br>Функции-члены makeModel создают указаные фигуры. Гладкие фигуры аппроксимируются.
+<pre>
+bool trianTest ( const Facet & facet, CArrRef&lt;Vector3d> vert );
+</pre>
+Функция trianTest проверяет - можно ли грань разбить на положительные треугольники.
+<pre>inline
+void _swap ( Polyhedron & poly1, Polyhedron & poly2 )
+{
+    _swap ( poly1.vertex, poly2.vertex );
+    _swap ( poly1.facet, poly2.facet );
+}
+</pre>
+Функция _swap обменивает содержимое двух многогранников.
+<pre>
+bool distance ( const Polyhedron & poly, const Vector3d & point, double & dist, 
+                nat & vi, nat & ei, nat & fi );
+
+inline bool distance ( const Polyhedron & poly, const Vector3d & point, double & dist )
+{
+    nat vi, ei, fi;
+    return distance ( poly, point, dist, vi, ei, fi );
+}
+</pre>
+<p>
+Функция distance вычисляет расстояние от заданной точки до поверхности многогранника.
+Если точка находится внутри многогранника, то расстояние будет отрицательным. 
+Также выдаются индексы ближайшего к точке геометрического объекта ( vi - индекс вершины, 
+ei - индекс ребра, fi - индекс грани ). Если ближайшей будет вершина,
+то vi != undef_index, ei == undef_index, fi == undef_index. Если ближайшем будет ребро,
+то vi == undef_index, ei != undef_index, fi != undef_index. Если ближайшей будет грань,
+то vi == undef_index, ei == undef_index, fi != undef_index.
+</p>
+<p>
+Описание класса Vector3d находится <a href="rus_vector.html">здесь</a>.
+<br>Описание классов Plane3d, Sphere3d, Ellipsoid3d, Cuboid3d, Cylinder3d и Cone3d находится <a href="figure3d.html">здесь</a>.
+<br>Описание классов Spin3d, Ortho3d, Conform3d и Similar3d находится <a href="transform3d.html">здесь</a>.
+<br>Описание шаблонов классов CArrRef и DynArray находится <a href=array.html>здесь</a>.
+<br>Исходники находятся в файле <a href="source/source.zip">polyhedron.cpp</a>. 
+</p>
+<a href="rus_pro.html">Наверх</a>
+<pre>
+
+</pre>
+</td></div>
+</table>
+</body>
+</html>

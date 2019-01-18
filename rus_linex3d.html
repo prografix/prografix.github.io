@@ -1,0 +1,57 @@
+<html>
+<head><title>¬ычисление ближайшей точки к заданным пр€мым в пространстве</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">¬ычисление ближайшей точки к заданным пр€мым в пространстве</font>
+</div>
+<br><div align=left><td>
+<p>
+≈сли считать критерием близости сумму квадратов рассто€ний от точки до каждой пр€мой, 
+то эта задача €вл€етс€ задачей <a href="rus_lss.html">наименьших квадратов</a>, и 
+она может быть решена одним из описанных там методов.
+</p>
+<p>
+ вадрат рассто€ни€ от точки до пр€мой можно представить, как
+</p>
+<pre>
+    | dir % ( v - point ) |<sup>2</sup>
+</pre>
+<p>
+«десь dir - направление вдоль пр€мой ( единичный вектор ), % - векторное произведение,
+point - точка через которую проходит пр€ма€, 
+v - координаты точки дл€ которой определ€етс€ рассто€ние.
+—ледующа€ функци€ вычисл€ет эту точку:
+</p>
+<pre>
+Def&lt;Vector3d> getNearPoint2 ( CArrRef&lt;Line3d> line );
+</pre>
+<p>
+≈сли нужно задать пр€мым разный вес, то дл€ этого надо умножить поле dir на соответствующий вес.
+</p>
+<p>
+ѕредыдущий алгоритм минимизирует <a href="normv.html">2-норму</a> вектора рассто€ний от точки до пр€мых.
+≈сли же выбрать бесконечную норму, то задача сводитс€ к поиску <a href="minfig3d.html">минимальной сферы</a>, 
+пересекающей все данные пр€мые.
+÷ентр этой сферы будет точкой у которой максимальное рассто€ние до пр€мых будет минимальным:
+</p>
+<pre>
+Def&lt;Vector3d> getNearPointU ( CArrRef&lt;Line3d> line );
+</pre>
+<p>
+ќписание класса Line3d находитс€ <a href="figure3d.html">здесь</a>. 
+<br>ќписание класса Vector3d находитс€ <a href="rus_vector.html">здесь</a>. 
+<br>ќписание шаблона классов Def находитс€ <a href=def.html>здесь</a>.
+<br>ќписание шаблона классов CArrRef находитс€ <a href=array.html>здесь</a>.
+</p>
+<p>»сходники наход€тс€ в <a href="source/source.zip">approx3d.cpp</a></p>
+<a href="rus_approx.html">Ќаверх</a>
+<pre>
+
+</pre>
+</td></div>
+</table>
+</body>
+</html>

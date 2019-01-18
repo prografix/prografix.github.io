@@ -1,0 +1,40 @@
+<html>
+<head><title>Объёмы и площади</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align=center>
+<table width="700" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Объёмы и площади</font>
+</div><td><br>
+<p>Следующие функции вычисляют объём соответствующей фигуры:
+<pre>
+double volume ( const Sphere3d         & );
+double volume ( const Ellipsoid3d      & );
+double volume ( const Cuboid3d         & );
+double volume ( const Cylinder3d       & );
+double volume ( const Cone3d           & );
+</pre>
+<p>Следующие функции вычисляют площадь поверхности:
+<pre>
+double getArea ( const Polyhedron       & );
+double getArea ( const Triangle3d       & );
+double getArea ( const Sphere3d         & );
+double getArea ( const Ellipsoid3d      & );
+double getArea ( const Cuboid3d         & );
+double getArea ( const Cylinder3d       & );
+double getArea ( const Cone3d           & );
+</pre>Площадь поверхности эллипсоида вычисляется приближённо по формуле:
+<pre>
+4&#960; [ ( a<SUP>p</SUP> b<SUP>p</SUP> + b<SUP>p</SUP> c<SUP>p</SUP> + c<SUP>p</SUP> a<SUP>p</SUP> ) / 3 ] <SUP>1/p</SUP>,
+</pre>
+где a, b, c - это полуоси эллипсоида. При p = 1.6075 ( Knud Thomsen ) максимальная относительная ошибка равна 1.061%.
+</p>
+Описание классов фигур смотрите <a href="figure3d.html">здесь</a>.
+<br>Исходники этих функций находятся <a href="source/source.zip">здесь</a>.
+</p>
+<p>
+<a href="rus_geom.html">Наверх</a></td>
+</table>
+</body>
+</html>

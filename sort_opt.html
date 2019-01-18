@@ -1,0 +1,111 @@
+<html>
+<head><title>Оптимальные сортировки</title>
+<link rel="stylesheet" type="text/css" href="stylle.css">
+</head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="680" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Оптимальные сортировки</font>
+</div>
+<div align=left><td><br>
+<p>В этом разделе находятся сортировки, которые требуют минимальное количество сравнений, 
+как в среднем, так и в наихудшем случае. В первом варианте они они сделаны в виде шаблонов функций
+для упорядочивания заданных элементов по возрастанию и убыванию:
+</p>
+<pre>
+//*********************** 14.12.2005 **************************//
+//
+//                 Сортировка двух элементов 
+//      Сравнения: 1 в худшем случае, 1 в среднем
+//
+//*********************** 14.12.2005 **************************//
+
+template &lt;class T> inline void sort123 ( T & a0, T & a1 )...
+template &lt;class T> inline void sort321 ( T & a0, T & a1 )...
+
+
+//*********************** 14.12.2005 **************************//
+//
+//                 Сортировка трёх элементов
+//      Сравнения: 3 в худшем случае, 2.667 в среднем
+//
+//*********************** 14.12.2005 **************************//
+
+template &lt;class T> inline void sort123 ( T & a0, T & a1, T & a2 )...
+template &lt;class T> inline void sort321 ( T & a0, T & a1, T & a2 )...
+
+
+//*********************** 14.12.2005 **************************//
+//
+//                 Сортировка 4-х элементов
+//      Сравнения: 5 в худшем случае, 4.778 в среднем
+//
+//*********************** 14.12.2005 **************************//
+
+template &lt;class T> inline void sort123 ( T & a0, T & a1, T & a2, T & a3 )...
+template &lt;class T> inline void sort321 ( T & a0, T & a1, T & a2, T & a3 )...
+
+
+//*********************** 15.12.2005 **************************//
+//
+//                 Сортировка пяти элементов
+//      Сравнения: 7 в худшем случае, 6.933 в среднем
+//
+//*********************** 15.12.2005 **************************//
+
+template &lt;class T> inline void sort123 ( T & a0, T & a1, T & a2, T & a3, T & a4 )...
+template &lt;class T> inline void sort321 ( T & a0, T & a1, T & a2, T & a3, T & a4 )...
+
+
+//*********************** 16.12.2005 **************************//
+//
+//                 Сортировка шести элементов
+//      Сравнения: 10 в худшем случае, 9.578 в среднем
+//
+//*********************** 19.12.2005 **************************//
+
+template &lt;class T> inline void sort123 ( T & a0, T & a1, T & a2, T & a3, T & a4, T & a5 )...
+template &lt;class T> inline void sort321 ( T & a0, T & a1, T & a2, T & a3, T & a4, T & a5 )...
+</pre>
+<p>Во втором варианте шаблоны функций сортируют массивы:
+</p>
+<pre>
+template &lt;class T> inline void sort2_123 ( T * a )...
+template &lt;class T> inline void sort2_321 ( T * a )...
+
+template &lt;class T> inline void sort3_123 ( T * a )...
+template &lt;class T> inline void sort3_321 ( T * a )...
+
+template &lt;class T> inline void sort4_123 ( T * a )...
+template &lt;class T> inline void sort4_321 ( T * a )...
+
+template &lt;class T> inline void sort5_123 ( T * a )...
+template &lt;class T> inline void sort5_321 ( T * a )...
+
+template &lt;class T> inline void sort6_123 ( T * a )...
+template &lt;class T> inline void sort6_321 ( T * a )...
+</pre>
+<p>Описание алгоритмов для пяти и шести элементов можно прочитать в книге "Искусство программирования"
+3-й том раздел 5.3.1.
+</p>
+<p>Исходники находятся в файле <a href="source/source.zip">sorting.h</a>.
+</p>
+<a href="rus_sort.html">Наверх</a>
+<pre>
+
+</pre></td></div>
+</table>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10825496-1");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
+</body>
+</html>

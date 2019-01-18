@@ -1,0 +1,46 @@
+<html>
+<head><title>Одномерная оптимизация</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center>
+<font color="" style="font-size: 20pt">
+<br>Одномерная оптимизация
+</font>
+</div>
+<br><div align=left><td>
+<p>Для того, чтобы найти минимум или максимум функции на заданном интервале [a,b]
+с точностью eps можно воспользоваться методом "золотого сечения" или комбинированным методом:
+</p>
+<pre>
+double goldenRatioMin ( double a, double b, const MathFunc1 & func, double eps );
+double goldenRatioMax ( double a, double b, const MathFunc1 & func, double eps );
+
+double fmin ( double a, double b, const MathFunc1 & func, double eps );
+double fmax ( double a, double b, const MathFunc1 & func, double eps );
+</pre>
+<p>Алгоритм fmin я взял из книги "Машинные методы математических вычислений" (Дж.Форсайт, М.Малькольм, К.Моулер) 
+и переписал с небольшими изменениями с FORTRANа на С++. Он представляет собой комбинацию метода "золотого сечения"
+и параболической интерполяции. Аналогично был сделан алгоритм fmax. В моих тестах этот алгоритм в среднем делал
+в 2 раза меньше запросов вычисления значений функции, чем метод "золотого сечения". Для разных функций этот показатель
+у меня колебался от 10 до 90%.
+</p>
+<p>
+Следующая функция находит минимакс на множестве парабол вида x*x + a*x + b:
+</p>
+<pre>
+Def&lt;double> getMinMaxParabola1d ( CArrRef&lt;Set2&lt;double> > arr );
+</pre>
+Описание шаблона классов Def находится <a href=def.html>здесь</a>.
+<br>Описание шаблона классов Set2 находится <a href="composition.html">здесь</a>. 
+<br>Описание шаблона классов CArrRef находится <a href=array.html>здесь</a>.
+<p>Исходники находятся в файле <a href="source/source.zip">opti1d.cpp</a>.</p>
+<a href="rus_alg_ur.html">Наверх</a>
+<pre>
+
+</pre>
+</td></div>
+</table>
+</body>
+</html>

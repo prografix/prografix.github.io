@@ -1,0 +1,141 @@
+<html>
+<head>
+    <title>The Graphics and OpenGL</title>
+</head>
+<style type="text/css">
+ pre {color: blue;}
+<!-- 
+a:hover {text-decoration: underline; color: #ff6600 }
+-->
+</style>
+<body bgcolor=#eeeeba MARGINWIDTH="0" MARGINHEIGHT="0" link=#0000f0 alink=#aaaaff vlink=#339900>
+<div align="center"><center>
+<table width="680" cellspacing="0" cellpadding="0">
+<div align=center>
+<font style="FONT-SIZE: 20pt" 
+ >
+The Graphics and OpenGL.
+</font>
+</div>
+<p>This page contains two applications written on Visual C++ 6.0 as well as some samples 
+of graphic files.
+</p>
+<p>
+<A href="graphviewer3_2.zip" > GraphViewer</a> is an application for viewing graphic 
+files written in a special format (*.gra) for OpenGL. 
+<br>Version history:
+<br>10 Nov 2002 GraphViewer 2.0 - first public version,
+<br>22 Mar 2003 GraphViewer 3.0 - added control buttons,
+<br>21 Jun 2003 GraphViewer 3.1 - added saving to C++ file.
+<br>24 Jan 2004 GraphViewer 3.2 - for dynamic files the opportunity of advance, back and a pause has appeared.
+<br>Also you could download an <A href="graphviewer3_2exe.zip" >exe-file</a> of the program. 
+</p>
+<p>
+<A href="graphmaker2.zip" >GraphMaker</a> is not a real "maker", 
+but only an application by means of which I created the samples below. 
+The GraphMaker itself doesn’t have any value here, and serves as a model 
+to create gra-files. 
+There is FileWriter class, which performs record files on a disk in a gra-format.
+</p>
+<div align=center>
+<font style="FONT-SIZE: 20pt">
+Samples.
+<br>
+</font>
+</div>
+<TR>
+<td>
+<table>
+<tr>
+<td>
+<IMG src="diamond.jpg">
+</td>
+<td><A href="diamond.gra" >Diamond.gra</a> - This sample has been invented by myself. 
+<br>It is possible to rotate and to move object by mouse ( left and right buttons )
+and buttons on toolbar.
+</td>
+</tr>
+<tr>
+<td>
+<IMG src="bounceball.jpg">
+</td>
+<td><A href="bounceball.gra" >BounceBall.gra</a> - This sample has been borrowed from  
+<a href=http://www.sulaco.co.za>Jan Horn</a> who, in his turn, had reworked the original version belonging to 
+<a href=http://www.lysator.liu.se/~sdw/>Andreas Gustafsson</a>.
+</td>
+</tr>
+<tr>
+<td>
+<IMG src="idea.jpg">
+</td>
+<td><A href="idea.gra" >Idea.gra</a> - This is a little bit simplified variant of 
+the "Ideas in motion" program written by Mark J. Kilgard.
+</td>
+</tr>
+<tr>
+<td>
+<IMG src="cow.jpg">
+</td>
+<td><A href="cow.gra" >Cow.gra</a> - Data for this sample were obtained from a file 
+created by Scott R. Nelson from Sun Microsystems. 
+It is possible to rotate and to move object by mouse and buttons.
+</td>
+</tr>
+<tr>
+<td>
+<img src="pocket.jpg">
+</td>
+<td><a href=pocketwatch.zip>PocketWatch.gra</a> - - This sample has been borrowed from  
+<a href=http://www.sulaco.co.za>Jan Horn</a> too.
+It is possible to rotate and to move object by mouse and buttons.
+</td>
+</tr>
+</table>
+</td></TR>
+</table>
+<table width="680" cellspacing="0" cellpadding="0">
+<p>Zooming is available for all samples listed above. 
+</p>
+<p><A href="samples.zip" >Download all samples.</a>
+</p>
+<div align=center>
+<font style="FONT-SIZE: 20pt">
+The description of a gra-format.
+</font>
+</div>
+<p>By using conventional notation this format could be represented as the following:
+</p>
+<pre>
+struct GraFormat
+{
+    unsigned int flags;
+    unsigned int size;
+    char comment[size];
+    unsigned int version;
+    unsigned int data[];
+};
+</pre>
+<p>
+<font color=blue>flags</font> declares a 4-byte integer intended for 32 one-bit flags. 
+While only the zero bit is involved which informs, that one byte stands for symbol (0) 
+or two bytes are for symbol (1) in the commentary. 
+Other flags must be equal to zero.</p>
+<p>
+<font color=blue>size</font> declares a 4-byte integer and is equal to the quantity 
+of bytes in the commentary. 
+If the commentary is absent the integer is equal to 0.</p>
+<p>
+<font color=blue>comment</font> declares the commentary itself. </p>
+<p>
+<font color=blue>version</font> declares the 4-byte integer equal to the version of 
+GraphicInterface class. </p>
+<p>
+<font color=blue>data</font> declares the data which represent coded OpenGL commands 
+and some others.
+</p>
+<p><a href=eng.html>Get back.</a> 
+</p>
+</p></table></center>
+</div>
+</body>
+</html>

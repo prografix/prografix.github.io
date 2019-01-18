@@ -1,0 +1,104 @@
+<html>
+<head>
+<title>Максимальная фигура вписанная в многогранник</title>
+<link rel="stylesheet" type="text/css" href="stylle.css">
+</head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Максимальная фигура вписанная в многогранник</font>
+</div>
+<div align=left><td><br>
+В этом разделе представлены функции, которые вписывают максимальную по размеру фигуру 
+( чаще всего в этом качестве используется объём ) в выпуклый многогранник:
+<p>
+&bull; Сфера.
+</p>
+<pre>Def&lt;Sphere3d> maxSphereInConvexPolyhedron ( const Polyhedron & poly );
+</pre>
+<p>
+&bull; Фиксированный цилиндр.
+</p>
+<pre>Def&lt;Cylinder3d> maxFixCylinderInConvexPolyhedron ( const Polyhedron & poly, double ext );
+</pre>
+<p>Параметр ext задаёт отношение высоты цилиндра к его диаметру.
+</p>
+<p>
+&bull; Фиксированный конус.
+</p>
+<pre>Def&lt;Cone3d> maxFixConeInConvexPolyhedron ( const Polyhedron & poly, double ext );
+</pre>
+<p>Параметр ext задаёт отношение высоты конуса к его диаметру.
+</p>
+<p>
+&bull; Фиксированный сфероид ( эллипсоид у которого две оси равны ).
+</p>
+<pre>Def&lt;Ellipsoid3d> maxFixSpheroidInConvexPolyhedron ( const Polyhedron & poly, double ext );
+</pre>
+<p>Параметр ext задаёт удлиннение. Для ext близкого к 1 ( 0.9 - 1.1 ) этот алгоритм требует больших ресурсов
+по времени и памяти. На этот случай имеются ограничения и при превышении их в результате возвращается
+неопределённый эллипсоид ( поле isDef равно false ).</p>
+<p>Для трёх последних функций параметр ext может быть равен нулю ( тогда будет вписан диск нулевой толщины )
+или быть очень большим ( тогда будет вписан отрезок практически нулевой толщины ).
+</p>
+&bull; Цилиндр.
+</p>
+<pre>Def&lt;Cylinder3d> maxCylinderInConvexPolyhedronV ( const Polyhedron & poly );
+</pre>
+<p>
+&bull; Конус.
+</p>
+<pre>Def&lt;Cone3d> maxConeInConvexPolyhedronV ( const Polyhedron & poly );
+</pre>
+<p>
+&bull; Сфероид.
+</p>
+<pre>Def&lt;Ellipsoid3d> maxSpheroidInConvexPolyhedronV ( const Polyhedron & poly );
+</pre>
+<p>
+&bull; Эллипсоид вписанный в тетраэдр.
+</p>
+<pre>Ellipsoid3d maxEllipsoidInTetrahedronV ( Vector3d v1, Vector3d v2, Vector3d v3, Vector3d v4 );
+</pre>
+&bull; Эллипсоид.
+</p>
+<pre>Def&lt;Ellipsoid3d> maxEllipsoidInConvexPolyhedronV ( const Polyhedron & poly );
+</pre>
+<p>
+&bull; Многогранник без вращения.
+</p>
+<pre>
+Def&lt;Conform3d> maxPolyhedronInConvexPolyhedronNR ( const Polyhedron & inner, 
+                                                   const Polyhedron & outer );
+</pre>
+Здесь inner - это внутренний многогранник, outer - внешний выпуклый многогранник.
+Функция возвращает преобразование ( сдвиг и масштаб ), которое вписывает inner в outer.
+<p>
+&bull; Многогранник с вращением вокруг заданной оси.
+</p>
+<pre>
+Def&lt;Conform3d> maxPolyhedronInConvexPolyhedron1R ( const Polyhedron & inner, 
+                                                   const Vector3d & az, nat sym,
+                                                   const Polyhedron & outer );
+</pre>
+Здесь inner - это внутренний многогранник, az - направление оси вращения, sym - коэффициент вращения
+( к-во переходов фигуры в себя при вращении на 360 градусов ), outer - внешний выпуклый многогранник.
+Функция возвращает пребразование, которое вписывает inner в outer.
+
+<p>Примеры использования всех этих функций можно посмотреть в приложении <a href="demo/demo.html">DEMO</a>.
+</p>
+<p>Описание классов Sphere3d, Cylinder3d, Cone3d и Ellipsoid3d находится <a href="figure3d.html">здесь</a>.
+<br>Описание шаблона классов Def находится <a href="def.html">здесь</a>.
+<br>Описание класса Polyhedron находится <a href="rus_polyhedron.html">здесь</a>.
+<br>Описание класса Conform3d находится <a href="transform3d.html">здесь</a>.
+<br>Исходники находятся в файле <a href="source/source.zip">opti3d_2.cpp</a>.
+</p>
+<a href="rus_geom.html">Наверх</a>
+</pre>
+
+<pre>
+</td></div>
+</table>
+</body>
+</html>

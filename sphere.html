@@ -1,0 +1,38 @@
+<html>
+<head><title>Построение сферы</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Построение сферы</font>
+</div>
+<div align=left><td><br>
+<p>Две функции getSphere строят сферу по трём и четырём точкам. При этом находятся центр o и квадрат радиуса q:
+</p>
+<pre>
+bool getSphere ( Vector3d a, Vector3d b, const Vector3d & c, Vector3d & o, double & q );
+bool getSphere ( Vector3d a, Vector3d b, Vector3d c, const Vector3d & d, Vector3d & o, double & q );
+</pre>
+<p>Функция spherePPPP строит сферу по четырём плоскостям:
+</p>
+<pre>
+Def&lt;Sphere3d> spherePPPP ( const Plane3d & a, const Plane3d & b, const Plane3d & c, const Plane3d & d );
+</pre>
+<p>Центр сферы <font color="blue">о</font> должен находится в отрицательных полупространствах для всех плоскостей.
+Если это сделать невозможно, то тогда сфера не строится ( <font color="blue">isDef = false</font> ).
+Нормали плоскостей должны быть единичными.
+</p>
+<p>Описание шаблона классов Def находится <a href="def.html">здесь</a>.
+<br>Описание класса Vector3d смотрите в разделе <a href="rus_vector.html">Вектора в пространстве</a>.
+<br>Описание классов Plane3d и Sphere3d смотрите в разделе <a href="figure3d.html">Фигуры в пространстве</a>.
+<br>Исходники алгоритмов находятся в файле <a href="source/source.zip">func3d.cpp</a>.
+</p>
+<a href="rus_geom.html">Наверх</a>
+</pre>
+
+<pre>
+</td></div>
+</table>
+</body>
+</html>

@@ -1,0 +1,117 @@
+<html>
+<head><title>"Быстрая" сортировка</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">"Быстрая" сортировка</font>
+</div>
+<div align=left><td><br>
+<p>"Быстрая" сортировка работает в среднем за время O ( n*log(n) ), а в худшем случае за O ( n<sup>2</sup> ),
+но в отличии от <a href="sort_merge.html">сортировки слиянием</a> не требует дополнительного массива. 
+Здесь эта сортировка представлена в виде двух шаблонов.
+Первый шаблон quickSort123 сортируют элементы массивов по возрастанию: 
+</p>
+<pre>template &lt;class T>
+ArrRef&lt;T> quickSort123 ( ArrRef&lt;T> a )
+{
+    const nat n = a.size();
+    if ( n < 2 ) return a;
+    const nat small_size = sizeof(T) > 8 ? 24 : sizeof(T) > 4 ? 40 : 48;
+    CmbSuite&lt;T*, 64> buf;
+    T * lo = a();
+    T * hi = lo + ( n - 1 );
+m1:
+    nat size = ( hi - lo ) + 1;
+    if ( size <= small_size )
+    {
+        insertSort123 ( ArrRef&lt;T> ( a, lo - a(), size ) );
+    }
+    else
+    {
+        T * mid = lo + ( size / 2 );
+        _swap ( *mid, *lo );
+        T * lo1 = lo;
+        T * hi1 = hi + 1;
+        for (;;)
+        {
+            do
+            {
+                lo1 += 1;
+            }
+            while (lo1 <= hi && *lo1 <= *lo );
+
+            do
+            {
+                hi1 -= 1;
+            }
+            while ( hi1 > lo && *hi1 >= *lo );
+
+            if ( hi1 < lo1 )
+                break;
+
+            _swap ( *lo1, *hi1 );
+        }
+        _swap ( *lo, *hi1 );
+        if ( hi1 - 1 - lo >= hi - lo1 )
+        {
+            if ( lo + 1 < hi1 )
+            {
+                buf.inc() = lo;
+                buf.inc() = hi1 - 1;
+            }
+
+            if ( lo1 < hi )
+            {
+                lo = lo1;
+                goto m1;
+            }
+        }
+        else
+        {
+            if ( lo1 < hi )
+            {
+                buf.inc() = lo1;
+                buf.inc() = hi;
+            }
+
+            if ( lo + 1 < hi1 )
+            {
+                hi = hi1 - 1;
+                goto m1;
+            }
+        }
+    }
+    if ( buf.size() > 0 )
+    {
+        lo = buf.las(1);
+        hi = buf.las(0);
+        buf.dec(2);
+        goto m1;
+    }
+    return a;
+}
+</pre>
+<p>
+Второй шаблон quickSort321 сортируют элементы массивов по убыванию и устроен аналогично.
+<br>Описание шаблонов классов ArrRef и CmbSuite находится <a href=array.html>здесь</a>.
+<p>Исходники находятся в файле <a href="source/source.zip">func1t.h</a>.
+</p>
+<a href="rus_sort.html">Наверх</a>
+<pre>
+
+</pre></td></div>
+</table>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10825496-1");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
+</body>
+</html>

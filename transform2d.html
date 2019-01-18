@@ -1,0 +1,253 @@
+<html>
+<head><title>Преобразования на плоскости</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="680" cellspacing="0" cellpadding="0">
+<br>
+<div align=center>
+<font color="" style="font-size: 20pt">Преобразования на плоскости</font>
+</div>
+<br>
+<div align=left><td>
+<p>
+Класс Spin2d предназначен для задания вращений.
+В первом конструкторе указывается угол вращения и логическая переменная degree, которая показывает в каких единицах
+задан угол: в радианах (false) или градусах (true).
+Во втором конструкторе указываются два направления: из которого ( a ) в который ( b ) делается поворот. 
+Вектора могут иметь произвольную длину. В случае, когда хотя бы один из них нулевой, поворот будет неподвижный.
+Функция-член getAngle возвращает угол в радианах данного преобразования.
+Функция-член getReper показывает два вектора в которые перейдут вектора (1,0) и (0,1) после вращения.
+Оператор () делает преобразование для данного вектора. 
+Оператор ~ возвращает преобразование обратное текущему.
+Оператор * осуществляет композицию двух преобразований ( вначале применяется правое, а потом - левое ).
+Имеется набор поворотов на фиксированные углы: Spin2d::d030 и т.д.
+</p>
+<pre>class Spin2d
+{
+    double x, y;
+
+    Spin2d ( double a, double b ) : x(a), y(b) {}
+public:
+    Spin2d () : x(1.), y(0.) {}
+
+    explicit Spin2d ( double a, bool degree = false );
+
+    Spin2d ( const Vector2d & a, const Vector2d & b );
+
+    double getAngle () const;
+
+    void getReper ( Vector2d & ax, Vector2d & ay ) const
+    {
+        ax.x =  x; ax.y = y;
+        ay.x = -y; ay.y = x;
+    }
+
+    Vector2d operator () ( const Vector2d & v ) const
+    {
+        return Vector2d ( v.x * x + v.y * y, v.y * x - v.x * y );
+    }
+
+    Spin2d operator ~ () const
+    {
+        return Spin2d ( x, -y );
+    }
+
+    friend Spin2d operator * ( const Spin2d & l, const Spin2d & r );
+
+    static const Spin2d d030;
+    static const Spin2d d045;
+    static const Spin2d d060;
+    static const Spin2d d090;
+    static const Spin2d d120;
+    static const Spin2d d135;
+    static const Spin2d d150;
+    static const Spin2d d180;
+    static const Spin2d d210;
+    static const Spin2d d225;
+    static const Spin2d d240;
+    static const Spin2d d270;
+    static const Spin2d d300;
+    static const Spin2d d315;
+    static const Spin2d d330;
+};</pre>
+<p>
+Класс Conform2d предназначен для осуществления преобразований подобия
+( перенос, вращение, увеличение-уменьшение ).
+Он содержит три члена: коэффициент увеличения magn, объект spin для вращений и вектор trans для переноса.
+Операторы () делают преобразование для данной точки или прямой - вначале применяется вращение, потом увеличение,
+а затем добавляется вектор переноса. 
+Оператор ~ возвращает преобразование обратное текущему.
+Оператор * осуществляет композицию двух преобразований ( вначале применяется правое, а потом - левое ).
+</p>
+<pre>
+class Conform2d
+{
+public:
+    double   magn;
+    Spin2d   spin;
+    Vector2d trans;
+
+    Conform2d () : trans (0.,0.), magn (1.) {}
+
+    explicit Conform2d ( const Spin2d & s ) : spin ( s ), trans (0.,0.), magn (1.) {}
+
+    Conform2d ( const Spin2d & s, const Vector2d & t, double m = 1. ) : spin(s), trans(t), magn(m) {}
+
+    Def&lt;Conform2d> operator~ () const
+    {
+        Def&lt;Conform2d> res;
+        if ( magn != 0 )
+        {
+            res.spin = ~spin;
+            res.magn = 1. / magn;
+            res.trans = (-res.magn) * res.spin ( trans );
+            res.isDef = true;
+        }
+        return res;
+    }
+
+    Line2d operator() ( const Line2d & p ) const
+    {
+        const Vector2d v = spin ( p.norm );
+        return Line2d ( v, magn * p.dist - v * trans );
+    }
+
+    Vector2d operator() ( const Vector2d & v ) const
+    {
+        return spin ( v ) * magn + trans;
+    }
+
+    Segment2d operator () ( const Segment2d & p ) const
+    {
+        return Segment2d ( (*this) ( p.a ), (*this) ( p.b ) );
+    }
+};
+
+inline Conform2d operator * ( const Conform2d & l, const Conform2d & r )
+{
+    return Conform2d ( l.spin * r.spin, l ( r.trans ), l.magn * r.magn );
+}
+</pre>
+<p>Класс LinTran2d осуществляет линейные преобразования, т.е. такие для которых выполняется формула 
+<br>p ( x + y ) = p ( x ) + p ( y ). 
+Операторы () делают преобразование вектора и отрезка.
+Оператор *= предназначен для умножения преобразования на число. 
+Оператор ~ возвращает преобразование обратное данному.
+Оператор * преднаначен для композиции преобразований. 
+</p>
+<pre>class LinTran2d
+{
+public:
+    Vector2d x, y;
+
+    LinTran2d () {}
+
+    LinTran2d ( const Vector2d & a, const Vector2d & b ) : x ( a ), y ( b ) {}
+    
+    explicit LinTran2d ( const Spin2d & spin )
+    {
+        spin.getReper ( x, y );
+    }
+
+    Vector2d operator () ( const Vector2d & p ) const
+    {
+        return Vector2d ( x * p, y * p );
+    }
+
+    Segment2d operator () ( const Segment2d & p ) const
+    {
+        return Segment2d ( (*this) ( p.a ), (*this) ( p.b ) );
+    }
+
+    LinTran2d & operator *= ( double d )
+    {
+        x *= d; y *= d; return *this;
+    }
+
+    Def&lt;LinTran2d> operator ~ () const
+    {
+        Def&lt;LinTran2d> res;
+        double d = x % y;
+        if ( d != 0 )
+        {
+            d = 1 / d;
+            res.x.x =   y.y * d;
+            res.x.y = - x.y * d;
+            res.y.x = - y.x * d;
+            res.y.y =   x.x * d;
+            res.isDef = true;
+        }
+        return res;
+    }
+
+    friend inline LinTran2d operator * ( const LinTran2d & l, const LinTran2d & r )
+    {
+        return LinTran2d ( l.x.x * r.x + l.x.y * r.y, l.y.x * r.x + l.y.y * r.y );
+    }
+};
+</pre>
+<p>
+<p>Класс Affin2d предназначет для реализации афинных преобразований и состоит 
+из линейного преобразования ( t ) и сдвига ( s ).
+Операторы () делают преобразование вектора и отрезка.
+Оператор ~ возвращает преобразование обратное данному.
+Оператор * является умножением в смысле теории групп и не является коммутативным.
+</p>
+<pre>class Affin2d
+{
+public:
+    LinTran2d t;
+    Vector2d s;
+
+    Affin2d () {}
+
+    Affin2d ( const Vector2d & a, const Vector2d & b, const Vector2d & c ) : t ( a, b ), s ( c ) {}
+
+    Affin2d ( const LinTran2d & a, const Vector2d & b ) : t ( a ), s ( b ) {}
+
+    explicit Affin2d ( const Spin2d & spin ) : t ( spin ), s ( 0., 0. ) {}
+
+    explicit Affin2d ( const Conform2d & conf ) : t ( conf.spin ), s ( conf.trans )
+    {
+        t *= conf.magn;
+    }
+
+    Vector2d operator () ( const Vector2d & p ) const
+    {
+        return t ( p ) + s;
+    }
+
+    Segment2d operator () ( const Segment2d & p ) const
+    {
+        return Segment2d ( (*this) ( p.a ), (*this) ( p.b ) );
+    }
+
+    Def&lt;Affin2d> operator ~ () const
+    {
+        const Def&lt;LinTran2d> lin ( ~t );
+        return lin.isDef ? Affin2d ( lin, lin ( -s ) ) : Def&lt;Affin2d>();
+    }
+
+    friend inline Affin2d operator * ( const Affin2d & l, const Affin2d & r )
+    {
+        return Affin2d ( l.t * r.t, l ( r.s ) );
+    }
+};
+</pre>
+Описание шаблона классов Def находится <a href="def.html">здесь</a>.
+<br>Описание класса Vector2d находится <a href="rus_vector2d.html">здесь</a>.
+<br>Описание классов Segment2d и Line2d находится <a href="figure2d.html">здесь</a>.
+<p>Примеры использования всех этих классов можно посмотреть в приложении <a href="demo/demo.html">DEMO</a>.
+</p>
+<p>
+Исходники находятся в файлах <a href="source/source.zip">vector2d.h, vector2d.cpp</a>. 
+</p>
+<a href="rus_geom.html">Наверх</a>
+<p>
+<br>
+</p>
+</td></div>
+</table>
+</body>
+</html>

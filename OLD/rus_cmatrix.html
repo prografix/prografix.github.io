@@ -1,0 +1,76 @@
+<html>
+<head><title>Класс CMatrix</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="680" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Класс CMatrix</font>
+</div><br><td>
+<p>
+Этот класс аналогичен классу <a href="rus_matrix.html">Matrix</a> и предназначен для представления комплексных матриц: 
+</p>
+<pre>
+class CMatrix
+{
+    Complex ** p;
+// Запрет оператора присваивания
+    void operator = ( const CMatrix & );
+public:
+    const unsigned int nRow; // к-во строк
+    const unsigned int nCol; // к-во столбцов
+
+    CMatrix ( unsigned int r, unsigned int c );
+    CMatrix ( unsigned int r, unsigned int c, const Complex * const * a );
+    CMatrix ( const CMatrix & );
+   ~CMatrix ();
+
+    void fill ( const Complex & );
+    CMatrix & operator *= ( Complex );
+    operator       Complex * const * ()       { return p; }
+    operator const Complex * const * () const { return p; }
+};
+
+// Разные функции
+
+bool copy   ( const CMatrix & a, CMatrix & b ); // b = a
+bool trans  ( const CMatrix & a, CMatrix & b ); // b = aT
+
+bool  plus ( const CMatrix & a, const CMatrix & b, CMatrix & c ); // c = a + b;
+bool minus ( const CMatrix & a, const CMatrix & b, CMatrix & c ); // c = a - b;
+bool multi ( const CMatrix & a, const CMatrix & b, CMatrix & c ); // c = a * b;
+</pre>
+<p>Комплексное транспонирование не только переставляет элементы матрицы, но и сопрягает их.
+</p>
+<p>Следующие две функции lss_h решают <a href="rus_lss.html">задачу наименьших квадратов</a>
+при помощи преобразований Хаусхолдера. 
+Первая из них изменяет исходные данные ( матрицу ), а вторая - нет:
+</p>
+<pre>
+bool lss_h ( CMatrix & a, const Complex * b, Complex * x ); // b[a.nRow], x[a.nCol]
+
+bool lss_h ( unsigned int r, unsigned int c, const Complex * const * a, const Complex * b, Complex * x );
+</pre>
+<p>Эти же функции решают систему линейных уравнений в случае, когда к-во строк матрицы равно к-ву столбцов. 
+</p>
+<p>Описание класса Complex смотрите <a href="rus_complex.html">здесь</a>.
+</p>
+<p>Исходники находятся в файле <a href="source/source.zip">mathem.cpp</a>.
+</p>
+<a href="rus_pro.html">Наверх</a>
+<p>
+<br>
+</p></td>
+</table>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10825496-1");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
+</body>
+</html>

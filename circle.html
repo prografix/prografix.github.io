@@ -1,0 +1,66 @@
+<html>
+<head><title>Построение окружностей</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Построение окружностей</font>
+</div>
+<div align=left><td><br>
+<p>Функции circlePPP строят окружность по трём точкам. При этом находится центр o и квадрат радиуса r2
+или окружность в виде типа Circle2d:
+</p>
+<pre>bool circlePPP ( const Vector2d & a, const Vector2d & b, const Vector2d & c, 
+                 Vector2d & o, double & r2 );
+Def&lt;Circle2d> circlePPP ( const Vector2d & a, const Vector2d & b, const Vector2d & c );
+</pre>
+<p>Программа circlePPL строит окружности по двум точкам и одной прямой. 
+К-во найденных окружностей может быть от 0 до 2.
+При этом находятся центры o и радиусы r:
+</p>
+<pre>unsigned int circlePPL ( const Vector2d & point1, const Vector2d & point2, const Line2d & line,
+                         Vector2d o[2], double r[2] );
+</pre>
+<p>Программа circlePLL строит окружности по одной точке и двум прямым.
+К-во найденных окружностей может быть от 0 до 2.
+При этом находятся центры o и радиусы r:
+</p>
+<pre>unsigned int circlePLL ( const Vector2d & point, const Line2d & line1, const Line2d & Line2d,
+                         Vector2d o[2], double r[2] );
+</pre>
+<p>Функции circleLLL строят окружность по трём прямым. При этом находится центр o и радиус r
+или окружность в виде типа Circle2d:
+</p>
+<pre>bool circleLLL ( const Line2d & line0, const Line2d & line1, const Line2d & Line2d,
+                 Vector2d & o, double & r );
+
+Def&lt;Circle2d> circleLLL ( const Line2d & line0, const Line2d & line1, const Line2d & line2 );
+</pre>
+<p>Во всех программах, где есть прямые, окружности строятся в отрицательных полуплоскостях.
+Если это сделать невозможно, то окружность не строится.
+</p>
+<p>Описание шаблона классов Def смотрите <a href="def.html">здесь</a>.
+<br>Описание класса Vector2d смотрите в разделе <a href="rus_vector2d.html">Вектора на плоскости</a>.
+<br>Описание классов Line2d и Circle2d смотрите в разделе <a href="figure2d.html">Фигуры на плоскости</a>.
+<br>Исходники алгоритмов находятся в файле <a href="source/source.zip">func2d.cpp</a>.
+</p>
+<a href="rus_geom.html">Наверх</a>
+</pre>
+
+<pre>
+</td></div>
+</table>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10825496-1");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
+</body>
+</html>

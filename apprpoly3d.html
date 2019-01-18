@@ -1,0 +1,44 @@
+<html>
+<head><title>Аппроксимация многогранника</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Аппроксимация многогранника</font>
+</div>
+<div align=left><td><br>
+<p>Если многогранник надо аппроксимировать сферой, то можно построить сферу, у которой центр масс и объём будут такие же, 
+как у многогранника:
+</p>
+<pre>
+Def&lt;Sphere3d> getSpherePlg ( const Polyhedron & poly );
+</pre>
+</p>
+<p>Если многогранник надо аппроксимировать эллипсоидом, то можно воспользоваться <a href="mom3.html">моментами 2-го порядка</a>
+и построить эллипсоид, у которого центр масс и моменты 2-го порядка будут такие же, как у многогранника:
+</p>
+<pre>
+Def&lt;Ellipsoid3d> getEllipsoidPlg ( const Polyhedron & poly );
+</pre>
+<p>Если же многогранник надо аппроксимировать параллелепипедом, то также можно воспользоваться <a href="mom3.html">
+моментами 2-го порядка</a>
+и построить параллелепипед, у которого центр масс и моменты 2-го порядка будут такие же, как у многогранника:
+</p>
+<pre>
+Def&lt;Cuboid3d> getCuboid ( const Polyhedron & poly );
+</pre>
+<p>Описание класса Polyhedron находится <a href="rus_polyhedron.html">здесь</a>.
+<br>Описание классов Sphere3d, Ellipsoid3d и Cuboid3d находится <a href="figure3d.html">здесь</a>.
+<br>Описание шаблона классов Def находится <a href=def.html>здесь</a>.
+</p>
+<p>Примеры использования всех этих функций можно посмотреть в приложении <a href="demo/demo.html">DEMO</a>.
+</p>
+<p>Исходники находятся в <a href="source/source.zip">approx3d.cpp</a></p>
+<a href="rus_approx.html">Наверх</a>
+<pre>
+
+</pre></td></div>
+</table>
+</body>
+</html>

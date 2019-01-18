@@ -1,0 +1,145 @@
+<html>
+<head><title>Сортировка слиянием</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Сортировка слиянием</font>
+</div>
+<div align=left><td><br>
+<p>Сортировка слиянием работает за время O ( n*log(n) ), как в среднем, так и в худшем случае.
+Единственным недостатком для сортировки массива является необходимость наличия дополнительной памяти (buf)
+равной по размеру исходному массиву (arr). Для сортировки <a href="rus_list.html">списков</a> дополнительная память не требуется.
+<br>Идея алгоритма следующая: на каждой итерации массив
+разбит на уже отсортированные фрагменты и эти фрагменты попарно сливаются, записывая результат в дополнительный массив. 
+После этого длина фрагмента удваивается ( переменная k ). 
+И так далее, пока длина фрагмента не станет равной длине исходного массива.
+При этом основной и дополнительный массивы после каждой итерации меняются местами.
+Переменная е отслеживает эти обмены и в конце алгоритма, если к-во обменов было нечётным,
+данные из дополнительного массива переписыватся в основной.
+Особые случаи возникают для фрагментов в конце массива. Последний фрагмент может оказаться
+непарным и тогда он просто переписывается. 
+В самом начале размер массива сравнивается с величиной small_size и если он меньше неё, то
+этот массив сортируется <a href="sort_insert.html">сортировкой вставками</a>.
+</p>
+<pre>template&lt;class T> 
+ArrRef&lt;T> mergeSort123 ( ArrRef&lt;T> arr, ArrRef&lt;T> buf )
+{
+    const nat n = arr.size();
+    const nat small_size = sizeof(T) > 8 ? 32 : sizeof(T) > 4 ? 50 : 64;
+    if ( n < small_size ) return insertSort123 ( arr );
+    nat k = small_size / 2;
+    nat m = n, s = 0;
+    for(;;)
+    {
+        if ( m > k )
+        {
+            insertSort123 ( ArrRef&lt;T> ( arr, s, k ) );
+            s += k;
+            m -= k;
+        }
+        else
+        {
+            insertSort123 ( ArrRef&lt;T> ( arr, s, m ) );
+            break;
+        }
+    }
+    bool e = false;
+    do
+    {
+        T * a, * b;
+        if ( e )
+        {
+            b = arr();
+            a = buf();
+        }
+        else
+        {
+            a = arr();
+            b = buf();
+        }
+        nat i1 = 0;
+        for (;;)
+        {
+            T * p1 = a + i1;
+            nat i2 = i1 + k;
+            if ( i2 >= n )
+            {
+                T * a2 = a + n;
+                while ( p1 < a2 )
+                {
+                    *b++ = *p1++;
+                }
+                break;
+            }
+            T * a2 = a + i2;
+            T * p2 = a2;
+            nat i3 = i2 + k;
+            if ( i3 > n ) i3 = n;
+            T * a3 = a + i3;
+            for (;;)
+            {
+                if ( *p1 <= *p2 )
+                {
+                    *b++ = *p1++;
+                    if ( p1 == a2 )
+                    {
+                        while ( p2 < a3 )
+                        {
+                            *b++ = *p2++;
+                        }
+                        break;
+                    }
+                }
+                else
+                {
+                    *b++ = *p2++;
+                    if ( p2 == a3 )
+                    {
+                        while ( p1 < a2 )
+                        {
+                            *b++ = *p1++;
+                        }
+                        break;
+                    }
+                }
+            }
+            i1 = i3;
+        }
+        e = !e;
+        k <<= 1;
+    }
+    while ( k < n );
+    if ( e )
+    {
+        for ( nat i = 0; i < n; ++i ) arr[i] = buf[i];
+    }
+    return arr;
+}
+</pre>
+<p>
+Здесь переменные i1, i2, i3 обозначают соответственно: начало первого фрагмента из пары, 
+начало второго фрагмента и начало следующей пары, если она есть.
+Аналогично устроен шаблон mergeSort321, который сортирует элементы массивов по убыванию.
+</p>
+<p>Описание шаблона классов ArrRef находится <a href=array.html>здесь</a>.
+<br>Исходники находятся в файле <a href="source/source.zip">func1t.h</a>.
+</p>
+<a href="rus_sort.html">Наверх</a>
+<pre>
+
+</pre></td></div>
+</table>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10825496-1");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
+</body>
+</html>

@@ -1,0 +1,57 @@
+<html>
+<head><title>Файл typedef.h</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center">
+<table width="680" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Файл typedef.h</font>
+</div><br><td>
+<p>В этом файле находятся определения некоторых типов фиксированного размера 
+в стиле <a href="http://almazlan.narod.ru/">языка Almaz</a>:
+</p>
+<pre>
+// Битовые наборы
+    typedef unsigned __int8   bit8;
+    typedef unsigned __int16  bit16;
+    typedef unsigned __int32  bit32;
+    typedef unsigned __int64  bit64;
+// Натуральные числа
+    typedef unsigned __int8   nat8;
+    typedef unsigned __int16  nat16;
+    typedef unsigned __int32  nat32;
+    typedef unsigned __int64  nat64;
+// Целые числа
+    typedef   signed __int8   int8;
+    typedef   signed __int16  int16;
+    typedef   signed __int32  int32;
+    typedef   signed __int64  int64;
+// Действительные числа
+    typedef float   real32;
+    typedef double  real64;
+</pre>
+Здесь под битовыми наборами подразумеваются неструктурированные группы бит.
+Остальные типы представляют собой числа.
+<br>Также здесь определено натуральное число нефиксированного размера:
+<pre>
+// Натуральное число
+    typedef unsigned int nat;
+</pre>
+Это сделано для того, чтобы имена типов были крaткими. 
+<p>
+Исходники находятся в <a href="source/source.zip">source.zip</a>.
+</p>
+<a href="rus_pro.html">Наверх</a></td>
+</table>
+</div>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10825496-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+</body>
+</html>

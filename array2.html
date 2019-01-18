@@ -1,0 +1,255 @@
+<html>
+<head><title>Операции с массивами</title>
+<link rel="stylesheet" type="text/css" href="stylle.css">
+</head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align=center>
+<table width=800 cellspacing=0 cellpadding=0>
+<div align=center>
+<br><font color="" style="font-size: 20pt">Операции с массивами</font>
+</div>
+<div align=left><td>
+<p><br>
+В этом разделе представлены некоторые операции с массивами, которые описаны <a href="array.html">здесь</a>.
+</p>
+<p>Вначале рассмотрим операции, которые не меняют массивы.
+Массивы можно сравнивать:
+<pre>template &lt;class T> inline
+bool operator == ( CCArrRef&lt;T> & a, CCArrRef&lt;T> & b )
+{
+    if ( a.size() != b.size() ) return false;
+    for ( nat i = 0; i < a.size(); ++i ) 
+        if ( a[i] != b[i] ) return false;
+    return true;
+}
+
+template &lt;class T> inline
+bool operator != ( CCArrRef&lt;T> & a, CCArrRef&lt;T> & b )
+{
+    if ( a.size() != b.size() ) return true;
+    for ( nat i = 0; i < a.size(); ++i ) 
+        if ( a[i] != b[i] ) return true;
+    return false;
+}
+</pre>
+Применять некоторую операцию поочерёдно к заданному значению:
+<pre>template &lt;class T1, class T2> inline 
+T1 & operator += ( T1 & t, CCArrRef&lt;T2> & a )
+{
+    for ( nat i = 0; i < a.size(); ++i ) t += a[i];
+    return t;
+}
+
+template &lt;class T1, class T2> inline 
+T1 & operator << ( T1 & t, CCArrRef&lt;T2> & a )
+{
+    for ( nat i = 0; i < a.size(); ++i ) t << a[i];
+    return t;
+}
+</pre>
+Можно подсчитать к-во элементов равных данному:
+<pre>template &lt;class A, class B> inline 
+nat count ( const A & a, const B & b, nat from = 0 )
+{
+    nat n = 0;
+    for ( nat i = from; i < a.size(); ++i ) if ( a[i] == b ) ++n;
+    return n;
+}
+</pre>
+Можно найти индекс первого или последнего элемента равного данному ( в случае, если такой не будет найден возвращается
+к-во элементов массива ):
+<pre>template &lt;class A, class B> inline 
+nat firEqu ( const A & a, const B & b, nat from = 0 )
+{
+    for ( nat i = from; i < a.size(); ++i ) if ( a[i] == b ) return i;
+    return a.size();
+}
+
+template &lt;class A, class B> inline 
+nat lasEqu ( const A & a, const B & b )
+{
+    for ( nat i = a.size(); i > 0; --i ) if ( a[i-1] == b ) return i-1;
+    return a.size();
+}
+</pre>
+Можно определить - есть ли в массиве элемент равный данному:
+<pre>template &lt;class A, class B> inline 
+bool hasEqu ( const A & a, const B & b )
+{
+    for ( nat i = 0; i < a.size(); ++i ) if ( a[i] == b ) return true;
+    return false;
+}
+</pre>
+Шаблон функций firMin находит индекс первого с начала минимального элемента:
+<pre>template &lt;class T> inline 
+nat firMin ( const T & a )
+{
+    nat m = 0;
+    for ( nat i = 1; i < a.size(); ++i ) if ( a[i] < a[m] ) m = i;
+    return m;
+}
+</pre>
+Шаблон функций firMax находит индекс первого с начала максимального элемента:
+<pre>template &lt;class T> inline 
+nat firMax ( const T & a )
+{
+    nat m = 0;
+    for ( nat i = 1; i < a.size(); ++i ) if ( a[i] > a[m] ) m = i;
+    return m;
+}
+</pre>
+Шаблон функций findMinMax находит минимальное и максимальное значения элементов:
+<pre>
+template &lt;class T1, class T2> inline 
+bool findMinMax ( const T1 & a, T2 & min, T2 & max )
+{
+    if ( ! a.size() ) return false;
+    max = min = a[0];
+    for ( nat i = 1; i < a.size(); ++i )
+    {
+        const T2 & t = a[i];
+        if ( min > t ) min = t; else
+        if ( max < t ) max = t;
+    }
+    return true;
+}
+</pre>
+Шаблон функций amean находит арифметическое среднее по всему массиву:
+<pre>template &lt;class T> inline 
+Def&lt;T> amean ( CCArrRef&lt;T> & a )
+{
+    if ( ! a.size() ) return Def&lt;T>();
+    T res ( a[0] );
+    for ( nat i = 1; i < a.size(); ++i ) res += a[i];
+    return res / a.size();
+}
+</pre>
+Если элементы массива упорядочены по возрастанию, 
+то при помощи функций firEqu123 и lasEqu123 можно найти индекс первого или последнего элемента равного данному,
+а при помощи функции hasEqu123 узнать - есть ли в массиве элемент равный данному:
+<pre>
+template &lt;class A, class B> inline 
+nat firEqu123 ( const A & a, const B & b )
+{
+    if ( ! a.size() ) return 0;
+    int prior = -1, last = a.size() - 1;
+    while ( prior + 1 < last )
+    {
+        const int i = ( prior + last ) / 2;
+        if ( a[i] < b ) prior = i; else last = i;
+    }
+    return a[last] == b ? last : a.size();
+}
+
+template &lt;class A, class B> inline 
+nat lasEqu123 ( const A & a, const B & b )
+{
+    if ( a.size() == 0 ) return 0;
+    nat from = 0, before = a.size();
+    while ( from + 1 < before )
+    {
+        const nat i = ( from + before ) / 2;
+        if ( a[i] > b ) before = i; else from = i;
+    }
+    return a[from] == b ? from : a.size();
+}
+
+template &lt;class A, class B> inline 
+bool hasEqu123 ( const A & a, const B & b )
+{
+    if ( ! a.size() ) return 0;
+    nat from = 0, before = a.size();
+    while ( from + 1 < before )
+    {
+        const nat i = ( from + before ) / 2;
+        if ( a[i] > b ) before = i; else from = i;
+    }
+    return a[from] == b;
+}
+</pre>
+Теперь рассмотрим операции, которые меняют массивы.
+<br>
+<br> Операторы <<= и >>= осуществляют циклический сдвиг элементов на заданное количество
+шагов в начало и в конец массива соответственно:
+<pre>
+template &lt;class T> inline 
+ArrRef&lt;T> & operator <<= ( ArrRef&lt;T> & a, nat k )
+{
+    const nat n = a.size();
+    if ( n < 2 || ! ( k %= n ) ) return a;
+    const nat m = n - k;
+    if ( m < k ) return a >>= m;
+    nat i;
+    CmbArray&lt;T, 64> b ( k );
+    for ( i = 0; i < k; ++i ) b[i] = a[i];
+    for ( i = 0; i < m; ++i ) a[i] = a[i+k];
+    for ( i = 0; i < k; ++i ) a[i+m] = b[i];
+    return a;
+}
+
+template &lt;class T> inline 
+ArrRef&lt;T> & operator >>= ( ArrRef&lt;T> & a, nat k )
+{
+    const nat n = a.size();
+    if ( n < 2 || ! ( k %= n ) ) return a;
+    const nat m = n - k;
+    if ( m < k ) return a <<= m;
+    nat i;
+    CmbArray&lt;T, 64> b ( k );
+    for ( i = 0; i < k; ++i ) b[i] = a[i+m];
+    for ( i = m; --i > 0; ) a[i+k] = a[i]; a[k] = a[0];
+    for ( i = 0; i < k; ++i ) a[i] = b[i];
+    return a;
+}
+</pre>
+Следующие функции-операторы делают арифметичекие операции с элементами массива
+поочерёдно начиная с первого:
+<pre>template &lt;class T1, class T2> inline 
+ArrRef&lt;T1> & operator += (  ArrRef&lt;T1> & a, const T2 & b )
+{
+    for ( nat i = 0; i < a.size(); ++i ) a[i] += b;
+    return a;
+}
+
+template &lt;class T1, class T2> inline 
+ArrRef&lt;T1> & operator -= (  ArrRef&lt;T1> & a, const T2 & b )
+{
+    for ( nat i = 0; i < a.size(); ++i ) a[i] -= b;
+    return a;
+}
+
+template &lt;class T1, class T2> inline 
+ArrRef&lt;T1> & operator *= (  ArrRef&lt;T1> & a, const T2 & b )
+{
+    for ( nat i = 0; i < a.size(); ++i ) a[i] *= b;
+    return a;
+}
+
+template &lt;class T1, class T2> inline 
+ArrRef&lt;T1> & operator /= (  ArrRef&lt;T1> & a, const T2 & b )
+{
+    for ( nat i = 0; i < a.size(); ++i ) a[i] /= b;
+    return a;
+}
+</pre>
+Функция sum складывает почленно элементы массивов b и c, и записывает их в массив a:
+<pre>template &lt;class A, class B, class C> inline 
+A & sum ( A & a, const B & b, const C & c )
+{
+    const nat n = _min ( a.size(), b.size(), c.size() );
+    for ( nat i = 0; i < n; ++i ) a[i] = b[i] + c[i];
+    return a;
+}
+</pre>
+Описание шаблона классов Def находится <a href="def.html">здесь</a>.
+<br>Исходники находятся в файле <a href="source/source.zip">ShevArray.h</a>.
+</p>
+<a href="template.html">Наверх</a>
+<pre>
+
+</pre></td>
+</div>
+</table>
+</div>
+</body>
+</html>

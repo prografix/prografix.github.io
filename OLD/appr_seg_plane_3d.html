@@ -1,0 +1,101 @@
+<html>
+<head>
+    <title>Аппроксимация отрезков плоскостью в пространстве</title>
+</head>
+<style type="text/css">
+ a:hover {text-decoration: underline; color: #ff6600 }
+ pre {color: blue;}
+</style>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="680" cellspacing="0" cellpadding="0">
+<div align=center>
+<font color="" style="font-size: 20pt">
+Аппроксимация отрезков плоскостью в пространстве
+</font>
+</div>
+<p>Пусть задано N отрезков в пространстве. Нужно  аппроксимировать их плоскостью так, 
+чтобы при этом достигался минимум суммы квадратов отклонений. 
+Квадрат отклонения отрезка от плоскости - это интеграл квадратов отклонения точек отрезка от плоскости.
+Следующая функция делает это:
+</p>
+<pre>
+bool getPlane ( const int n, const Segment3d * segm, Vector3d & norm, Vector3d & point )
+{
+    Vector3d o ( 0., 0., 0. );
+    double sum = 0.;
+    double * length = new double[n];
+    for ( int i = n; --i >= 0; )
+    {
+        length[i] = sqrt ( qmod ( segm[i].b - segm[i].a ) );
+        o += ( 0.5 * length[i] ) * ( segm[i].b + segm[i].a );
+        sum += length[i];
+    }
+    if ( sum == 0 )
+    {
+        delete[] length;
+        return false;
+    }
+    point = o / sum;
+    double xx, xy, xz, yy, yz, zz;
+    xx = xy = xz = yy = yz = zz = 0.;
+    for ( i = n; --i >= 0; )
+    {
+        const Vector3d a = segm[i].a - point;
+        const Vector3d b = segm[i].b - point;
+        xx += length[i] * ( a.x * ( a.x + a.x + b.x ) + b.x * ( a.x + b.x + b.x ) );
+        xy += length[i] * ( a.y * ( a.x + a.x + b.x ) + b.y * ( a.x + b.x + b.x ) );
+        xz += length[i] * ( a.z * ( a.x + a.x + b.x ) + b.z * ( a.x + b.x + b.x ) );
+        yy += length[i] * ( a.y * ( a.y + a.y + b.y ) + b.y * ( a.y + b.y + b.y ) );
+        yz += length[i] * ( a.z * ( a.y + a.y + b.y ) + b.z * ( a.y + b.y + b.y ) );
+        zz += length[i] * ( a.z * ( a.z + a.z + b.z ) + b.z * ( a.z + b.z + b.z ) );
+    }
+    double * a[3];
+    Vector3d a0 ( xx, xy, xz );
+    Vector3d a1 ( xy, yy, yz );
+    Vector3d a2 ( xz, yz, zz );
+    a[0] = &a0.x;
+    a[1] = &a1.x;
+    a[2] = &a2.x;
+    double d[3];
+    double * u[3];
+    Vector3d u0;
+    Vector3d u1;
+    Vector3d u2;
+    u[0] = &u0.x;
+    u[1] = &u1.x;
+    u[2] = &u2.x;
+    jacobi ( 3, a, d, u );
+    if ( d[0] <= d[1] )
+    {
+        if ( d[0] <= d[2] ) norm = Vector3d ( u0.x, u1.x, u2.x );
+        else                norm = Vector3d ( u0.z, u1.z, u2.z );
+    }
+    else
+    {
+        if ( d[1] <= d[2] ) norm = Vector3d ( u0.y, u1.y, u2.y );
+        else                norm = Vector3d ( u0.z, u1.z, u2.z );
+    }
+    delete[] length;
+    return true;
+}
+</pre>
+<p>
+Результатом работы являются: направление нормали плоскости norm и точка point через которую проходит плоскость. 
+Дополнительно известно, что norm - это единичный вектор, а point является центром масс исходных отрезков. 
+Функция работает даже для n = 1, если этот отрезок имеет ненулевую длину. При этом будет найдена одна из
+плоскостей проходящих через отрезок. В случае, когда функция возвращает значение false, параметры norm и point
+не меняются.
+</p>
+<p>Описание классаVector3d находится <a href="rus_vector.html">здесь</a>. 
+</p>
+<p>Описание класса Segment3d находится <a href="figure3d.html">здесь</a>. 
+</p>
+<p>Описание функции jacobi находится <a href="rus_jacobi.html">здесь</a>. 
+</p>
+<p>Исходники находятся в <a href="source/approx.zip">approx.zip</a>
+</p>
+<a href="rus_approx.html">Наверх</a>
+</table>
+</body>
+</html>

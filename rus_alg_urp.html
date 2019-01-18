@@ -1,0 +1,144 @@
+<html>
+<head><title>Произвольные уравнения</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center>
+<font color="" style="font-size: 20pt">
+<br>Произвольные уравнения
+</font>
+</div>
+<br><div align=left><td>
+<p>Этот алгоритм вычисления вещественного корня произвольной функции был взят из книги 
+"Машинные методы математических вычислений" (Дж.Форсайт, М.Малькольм, К.Моулер) 
+и переписан с небольшими изменениями с FORTRANа на С++. 
+</p>
+<pre>
+class MathFunc1
+{
+public:
+    virtual double operator () ( double ) const = 0;
+};
+
+inline int sign ( double d )
+{
+    if ( d > 0 ) return 1;
+    if ( d < 0 ) return -1;
+    return 0;
+}
+
+bool zeroin ( double ax, double bx, const MathFunc1 & func, double tol, double & res )
+{
+    double fa = func(ax);
+    double fb = func(bx);
+    if ( sign(fa) * sign(fb) > 0 ) return false;
+    if ( tol < 0 ) tol = 0.;
+// Присвоение начальных значений
+    double a = ax;
+    double b = bx;
+    for(;;)
+    {
+        double c = a;
+        double fc = fa;
+        double d = b - a;
+        double e = d;
+m30:    if ( fabs(fc) < fabs(fb) )
+        {
+            a = b;
+            b = c;
+            c = a;
+            fa = fb;
+            fb = fc;
+            fc = fa;
+
+        }
+// Проверка сходимости
+        if ( fb == 0 ) break;
+        const double tol1 = 2. * macheps * fabs(b) + 0.5 * tol;
+        const double xm = 0.5 * ( c - b );
+        if ( fabs(xm) <= tol1 ) break;
+// Необходима ли бисекция?
+        if ( fabs(e) < tol1 || fabs(fa) <= fabs(fb) ) goto m70;
+        {
+            double p, q;
+            const double s = fb / fa;
+            if ( a == c )
+            {
+// Линейная интерполяция
+                p = 2. * xm * s;
+                q = 1. - s;
+            }
+            else
+            {
+// Обратная квадратичная интерполяция
+                q = fa / fc;
+                const double r = fb / fc;
+                p = s * ( 2. * xm * q * ( q - r ) - ( b - a ) * ( r - 1. ) );
+                q = ( q - 1. ) * ( r - 1. ) * ( s - 1. );
+            }
+            if ( p > 0 ) q = -q;
+            p = fabs ( p );
+// Приемлема ли интерполяция
+            if ( p + p >= 3.*xm*q - fabs(tol1*q) ) goto m70;
+            if ( p >= fabs(0.5*e*q) ) goto m70;
+            e = d;
+            d = p / q;
+            goto m80;
+        }
+m70:    e = d = xm; // бисекция
+// Завершить шаг
+m80:    a = b;
+        fa = fb;
+        if ( fabs(d) > tol1 ) b += d;
+        else
+        {
+            if ( xm > 0 ) b += tol1;
+            else          b -= tol1;
+        }
+        fb = func(b);
+        if ( sign(fb) * sign(fc) <= 0 ) goto m30;
+
+    }
+    res = b;
+    return true;
+}
+</pre>
+<p>
+Параметры ax и bx функции zeroin задают интервал в котором ищется нуль и в них значения функции func 
+должны иметь разные знаки. Параметр tol задаёт допустимую погрешность результата res.
+Функция zeroin выполняет итерационный процесс, в котором на каждом шаге присутствуют три абсциссы a, b, c.
+b - последнее и наилучшее приближение к нулю, a - предыдущее приближение, c - предыдущее или ещё более
+раннее приближение, такое, что func(b) и func(c) имеют разные знаки. Во всех случаях b и c ограничивают нуль.
+Кроме того, |func(b)| <= |func(c)|. Если длина интервала |b - c| уменьшилась настолько, что выполняется
+условие |b - c| <= tol + 4.*macheps*|b|, то итерации прерываются. Кроме tol в проверке участвует macheps, чтобы
+подстраховаться на случай, когда заданное значение tol слишком мало. В частности, чтобы заставить zeroin
+найти наименьший возможный интервал, нужно задать tol равным нулю.
+<br>На каждом шаге zeroin выбирает очередное приближение из двух кандидатов - один получен алгоритмом 
+бисекции, а другой - алгоритмом интерполяции. Если a, b, c различны, используется обратная квадратичная
+интерполяция; в противном случае - линейная интерполяция ( метод секущих ). Если точка, полученная
+интерполяцией, "разумна", то выбирается она; иначе выбирается точка бисекции. Определение "разумности"
+довольно техническое, но по существу оно означает, что точка находится внутри текущего интервала и не
+слишком близко к его концам. Следовательно, длина интервала гарантированно убывает на каждом шаге и
+убывает быстро, если функция хорошо ведёт себя.
+</p>
+<p>Исходники находятся в файле <a href="source/source.zip">mathem.cpp</a>.</p>
+<a href="rus_alg_ur.html">Наверх</a>
+<pre>
+
+</pre>
+</td></div>
+</table>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10825496-1");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
+</body>
+</html>

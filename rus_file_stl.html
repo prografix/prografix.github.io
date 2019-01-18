@@ -1,0 +1,100 @@
+<html>
+<head><title>Формат STL</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+</head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="680" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Формат STL</font>
+</div>
+<div align=left><td>
+<p><br>
+Формат STL был разработан для нужд стереолитографии и предназначен для представления
+трёхмерных моделей. Он включает в себя описание треугольников из которых состоит поверхность объекта.
+Основное его достоинство - это простота по сравнению с другими форматами.
+Сокращение STL применяется и в других смыслах: в С++ ( стандартная библиотека шаблонов ), 
+в Windows ( список доверия сертификатов ).
+Есть два типа STL-форматов: текстовый (ASCII) и бинарный.
+Бинарный вариант файла занимает меньше места, чем текстовый. 
+В свою очередь текстовый вариант можно переносить на компьютор с другим представлением чисел
+и числа могут иметь произвольное к-во знаков.
+</p>
+<p>
+Текстовый STL-файл должен начинаться ключевым словом solid и заканчиваться endsolid. 
+После слова solid ( в этой же строке ) можно поместить комментарий ( что за объект, кто его сделал и т.д. ).
+Далее идут описания треугольников. 
+Описание каждого треугольника включает описание единичного вектора нормали и трёхмерные координаты вершин. 
+Все координаты представлены в декартовой системе координат и записаны в виде чисел с плавающей точкой:
+</p>
+<pre>
+solid < комментарий >
+...
+facet normal 0.319575 -0.175216 -0.93122
+outer loop
+vertex 2.22934 -0.992723 -0.862826
+vertex 2.41037 -0.777999 -0.841105
+vertex 2.40731 -0.97498 -0.805091
+endloop
+endfacet
+...
+endsolid
+</pre>
+Бинарный STL-файл условно можно изобразить следующим образом:
+<pre>
+struct facet
+{
+    float normal[3];     // 12 байт
+    float vertex[3][3];  // 36 байт
+    unsigned short attr; // 2 байта
+};
+
+struct stl_file
+{
+    char   head[80]; // комментарий   - 80 байт
+    unsigned long n; // к-во граней   - 4  байта
+    facet    arr[n]; // массив граней - n * 50 байт
+};
+</pre>
+<p>
+Здесь всё понятно за исключением поля attr в структуре facet. 
+В спецификации написано, что его значение не задокументировано и поэтому равно 0.
+</p>
+<p>
+В файле <a href="source/source.zip">fileSTL.cpp</a> находятся 4 функции чтения-записи в STL-файл:
+</p>
+<pre>typedef unsigned int nat;
+
+bool loadSTLA ( IReadSeekFile & file, nat & ntext, char * text, Poly3gon&lt;Vector3f, Vector3f> & poly );
+bool loadSTLB ( IReadFile & file, nat & ntext, char * text, Poly3gon&lt;Vector3f, Vector3f> & poly );
+
+bool saveSTLA ( IWriteFile & file, nat ntext, const char * text, const Poly3gon&lt;Vector3f, Vector3f> & poly, nat prec );
+bool saveSTLB ( IWriteFile & file, nat ntext, const char * text, const Poly3gon&lt;Vector3f, Vector3f> & poly );
+</pre>
+<p>
+Здесь ntext - количество знаков в текстовом сообщении, text - указатель на массив с текстовым сообщением,
+prec - количество знаков после запятой для представления чисел.
+</p>
+<p>Небольшая коллекция STL-файлов находится <a href="source/stl_files.zip">здесь</a>.
+Их можно посмотреть при помощи приложения <a href="demo/demo.html">DEMO</a> или <a href="rus_gra.html">GraphViewer</a>.
+</p>
+<p>О классах IReadFile и IWriteFile смотрите <a href="rus_file.html">здесь</a>.
+</p>
+<p>О шаблоне Poly3gon смотрите <a href="rus_poly3gon.html">здесь</a>.
+</p>
+<a href="rus_graphics.html">Наверх</a>
+<pre>
+
+</pre></td></div>
+</table>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10825496-1");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+</body>
+</html>

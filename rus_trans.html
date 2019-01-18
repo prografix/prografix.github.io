@@ -1,0 +1,111 @@
+<html>
+<head><title>Переход из пространства на плоскость и обратно</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Переход из пространства на плоскость и обратно</font>
+</div>
+<div align=left><td><br>
+<p>Если точки в трёхмерном пространстве лежат на одной плоскости часто имеет смысл
+перейти из трёхмерного пространства в двумерное и делать дальнейшие манипуляции там. 
+При необходимости можно затем вернуться обратно.
+Здесь предложены два варианта таких переходов. Первый из них не сохраняет значения углов и расстояний, 
+но является более быстрым и точным ( из трёх координат две остаются неизменными ).
+Суть его заключается в проекции на одну из шести плоскостей, нормали которых лежат
+на осях системы координат ( столько же граней в кубе ). Выбирается та плоскость,
+нормаль которой ближе всего к нормали исходной плоскости.
+</p>
+<pre>
+typedef Vector2d (* Func3to2) ( const Vector3d & );
+Func3to2 getTrans ( const Vector3d & norm );
+
+inline Vector2d trans ( const Vector3d & from, const Vector3d & norm )
+{
+    return getTrans ( norm ) ( from );
+}
+
+ArrRef&lt;Vector2d> trans ( CArrRef&lt;Vector3d> from, const Vector3d & norm, ArrRef&lt;Vector2d> to );
+
+class Func2to3
+{
+    Vector3d c; // коэффициенты преобразования
+    Vector3d (* func) ( const Vector3d &, const Vector2d & );
+public:
+    explicit Func2to3 ( const Plane3d & );
+    Vector3d operator () ( const Vector2d & v ) const { return func ( c, v ); }
+};
+
+inline Vector3d trans ( const Vector2d & from, const Plane3d & plane )
+{
+    return Func2to3 ( plane ) ( from );
+}
+
+ArrRef&lt;Vector3d> trans ( CArrRef&lt;Vector2d> from, const Plane3d & plane, ArrRef&lt;Vector3d> to );
+</pre>
+<p>Второй способ сохраняет значения углов и расстояний. Для нормали плоскости находятся два вектора таких,
+чтобы тройка образовала ортогональный базис, а затем для заданных точек определяюся
+двумерные координаты, как скалярные произведения на найденные вектора.</p>
+<pre>
+class OrthoFunc3to2
+{
+    Vector3d vx, vy;
+public:
+    explicit OrthoFunc3to2 ( const Vector3d & norm ) { reper ( norm, vx, vy ); }
+    Vector2d operator () ( const Vector3d & v ) const { return Vector2d ( vx*v, vy*v ); }
+};
+
+inline Vector2d ortho_trans ( const Vector3d & from, const Vector3d & norm )
+{
+    return OrthoFunc3to2 ( norm ) ( from );
+}
+
+ArrRef&lt;Vector2d> ortho_trans ( CArrRef&lt;Vector3d> from, const Vector3d & norm, ArrRef&lt;Vector2d> to );
+
+// Функции ортогонального преобразования двухмерных векторов в трёхмерные
+
+class OrthoFunc2to3
+{
+    Vector3d vx, vy, vz;
+public:
+    explicit OrthoFunc2to3 ( const Plane3d & plane ) : vz ( - plane.dist * plane.norm )
+    {
+        reper ( plane.norm, vx, vy );
+    }
+    Vector3d operator () ( const Vector2d & v ) const { return vx * v.x + vy * v.y + vz; }
+};
+
+inline Vector3d ortho_trans ( const Vector2d & from, const Plane3d & plane )
+{
+    return OrthoFunc2to3 ( plane ) ( from );
+}
+
+ArrRef&lt;Vector3d> ortho_trans ( CArrRef&lt;Vector2d> from, const Plane3d & plane, ArrRef&lt;Vector3d> to );
+</pre>
+<p>Описание шаблонов классов ArrRef и CArrRef находится <a href=array.html>здесь</a>.
+<br>Описание классаVector3d и функции reper находится <a href="rus_vector.html">здесь</a>. 
+<br>Описание класса Vector2d находится <a href="rus_vector2d.html">здесь</a>. 
+<br>Описание класса Plane3d находится <a href="figure3d.html">здесь</a>. 
+<br>Исходники находятся в файле <a href="source/source.zip">trans.cpp</a>.
+</p>
+<a href="rus_geom.html">Наверх</a>
+</pre>
+
+<pre>
+</td></div>
+</table>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10825496-1");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
+</body>
+</html>
+

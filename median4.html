@@ -1,0 +1,58 @@
+<html>
+<head><title>Медиана четырёх чисел</title><link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="680" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Медиана четырёх чисел</font>
+</div><td><br>
+<p>Для чётного количества чисел медианой считается среднее арифметическое двух средних чисел.
+Другими словами: здесь надо найти максимум и минимум, отбросить их и для оставшихся двух чисел получить
+среднее арифметическое. Эти операции можно сделать применив 4 сравнения:
+<pre>
+template&lt;class T> T _median4 ( const T * a )
+{
+    nat i1, i2, i3, i4;
+    if ( a[0] < a[1] )
+    {
+        i1 = 0;
+        i2 = 1;
+    }
+    else
+    {
+        i1 = 1;
+        i2 = 0;
+    }
+    if ( a[2] < a[3] )
+    {
+        i3 = 2;
+        i4 = 3;
+    }
+    else
+    {
+        i3 = 3;
+        i4 = 2;
+    }
+    return ( _max ( a[i1], a[i3] ) + _min ( a[i2], a[i4] ) ) / 2;
+}
+</pre>
+</p>
+<p>Исходники находятся в файле <a href="source/source.zip">median.h</a>.
+</p>
+<a href="rus_sort.html">Наверх</a>
+</td></table>
+<pre>
+
+</pre>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10825496-1");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+<html>
+<head><title>Медиана девяти чисел</title><link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="680" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Медиана девяти чисел</font>
+</div><td><br>
+<p>Первый алгоритм median9a в лучшем случае находит медиану за 13 сравнений, а в худшем - за 14. 
+Если рассмотреть все 9! = 362880 перестановок 9 чисел, то получим следующую статистику:
+</p>
+<pre>
+		13 - 104960
+		14 - 257920
+</pre>
+<p>В среднем получается 13.711 сравнений.
+</p>
+<p>Второй алгоритм median9b в лучшем случае находит медиану за 10 сравнений, в худшем - за 16. 
+Подробнее:
+</p>
+<pre>
+		10 -  2560
+		11 - 20480
+		12 - 63360
+		13 - 97280
+		14 - 87040
+		15 - 61440
+		16 - 30720
+</pre>
+<p>В среднем получается 13.524 сравнений.
+</p>
+<p>Вот его краткое описание. Вначале исходные 9 чисел разбиваются на 3 тройки и каждая тройка упорядочивается.
+Затем упорядочиваются средние элементы каждой тройки. После этого мы можем отбросить 4 числа ( два из них больше
+6 чисел и два меньше 6 чисел ). Остаются 5 чисел: средняя тройка и ещё два числа. С ними мы поступаем, как в
+алгоритме <a href="rus_median5.html">median5b</a>.
+</p>
+<p>В моих тестах алгоритм median9b работал на несколько процентов быстрее, чем median9a.
+</p>
+<p>Эти алгоритмы реализованы в виде шаблонов-функций:
+<pre>
+template&lt;class T> inline T _median9a ( const T * a ) ...
+template&lt;class T> inline T _median9b ( const T * a ) ...
+</pre>
+</p>
+<p>Исходники находятся в файле <a href="source/source.zip">median.h</a>.
+</p>
+<a href="rus_sort.html">Наверх</a>
+</td></table>
+<pre>
+
+</pre>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10825496-1");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
+</body>
+</html>

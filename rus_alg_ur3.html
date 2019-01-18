@@ -1,0 +1,158 @@
+<html>
+<head><title>Кубические уравнения</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center>
+<font color="" style="font-size: 20pt">
+<br>Кубические уравнения
+</font>
+</div>
+<br><div align=left><td>
+<p>Чаще всего кубические уравнения решают "тригонометрическим" методом, но там надо вычислять специальные функции, 
+которые по сути являются подпрограммами, хотя и весьма оптимизированными. 
+Я же решил обойтись для нахождения одного корня одной подпрограммой cubic, описанной ниже. 
+Затем, используя полученный корень, уравнение сводится к квадратному для поиска остальных корней.
+</p>
+<pre>
+typedef unsigned int nat;
+
+// x^3 + a * x + b = 0
+
+double cubic ( double a, double b )
+{
+    double s = 1.;
+    while ( b + a > -1. )
+    {
+        a *= 4.;
+        b *= 8.;
+        s *= 0.5;
+    }
+    while ( b + a + a < -8. )
+    {
+        a *= 0.25;
+        b *= 0.125;
+        s *= 2.;
+    }
+    double x = 1.5;
+    x -= ( x * ( x * x + a ) + b ) / ( 3. * x * x + a );
+    x -= ( x * ( x * x + a ) + b ) / ( 3. * x * x + a );
+    x -= ( x * ( x * x + a ) + b ) / ( 3. * x * x + a );
+    x -= ( x * ( x * x + a ) + b ) / ( 3. * x * x + a );
+    x -= ( x * ( x * x + a ) + b ) / ( 3. * x * x + a );
+    x -= ( x * ( x * x + a ) + b ) / ( 3. * x * x + a );
+    x -= ( x * ( x * x + a ) + b ) / ( 3. * x * x + a );
+    x -= ( x * ( x * x + a ) + b ) / ( 3. * x * x + a );
+    x -= ( x * ( x * x + a ) + b ) / ( 3. * x * x + a );
+    return x * s;
+}
+
+// x^3 + p * x + q = 0
+
+nat root3s ( double p, double q, double * x )
+{
+    if ( q < 0 )
+    {
+        *x = cubic ( p, q );
+    }
+    else
+    if ( q > 0 )
+    {
+        *x = -cubic ( p, -q );
+    }
+    else
+    {
+        *x = 0;
+    }
+    return 1 + root2 ( *x, p + (*x)*(*x), x+1 );
+}
+
+// x^3 + a * x^2 + b * x + c = 0
+
+nat root3 ( double a, double b, double c, double * x )
+{
+    if ( c == 0 )
+    {
+        *x = 0;
+    }
+    else
+    {
+        const double a3 = a / 3.;
+        const double p = b - a3 * a;
+        const double q = c - ( a3 * a3 + p ) * a3;
+        if ( q < 0 )
+        {
+            *x = cubic ( p, q );
+        }
+        else
+        if ( q > 0 )
+        {
+            *x = -cubic ( p, -q );
+        }
+        else
+        {
+            *x = 0;
+        }
+        *x -= a3;
+        const double t = *x * ( *x * 3. + a * 2. ) + b;
+        if ( fabs ( t ) > 1e-3 )
+        {
+            *x -= ( *x * ( *x * ( *x + a ) + b ) + c ) / t;
+        }
+        a += *x;
+        b += *x * a;
+    }
+    return 1 + root2 ( a, b, x+1 );
+}
+</pre>
+<p>Здесь рассматриваются два типа уравнений: общее (root3) и "неполное" (root3s). 
+Обе функции возвращают количество найденных вещественных корней, а сами корни помещаются в массив по указателю x. 
+Вначале отыскивается один корень ( а он всегда существует) методом Ньютона. 
+Перед этим параметры уравнения путём масштабирования меняются таким образом, чтобы корень лежал между 1 и 2. 
+В этом случае экспериментально (несколько миллионов испытаний) установлено, что достаточно 9 итераций. 
+На самом деле нужно даже меньше, но на всякий случай пусть будет 9. 
+После того как найден один корень кубическое уравнение сводится к <a href="rus_alg_ur2.html">квадратному</a>. 
+</p>
+<p>В первоначальном варианте функции root3 уточнения корня методом Ньютона не было. 
+Но  затем выяснилось, что в некоторых случаях ( например, когда а3 и х после cubic очень близки ) уточнение необходимо. 
+Константа 1е-3 выбрана произвольно.
+</p>
+<p>Исходники этих функций находятся в файле <a href="source/source.zip">mathem.cpp</a>.</p>
+<p>Следующие две функции, кроме вещественных корней, вычисляют также комплексные корни:
+<pre>
+void root3s ( double p, double q, double & x1, Complex & x2, Complex & x3 );
+
+void root3 ( double a, double b, double c, double & x1, Complex & x2, Complex & x3 );
+</pre>
+Они устроены аналогично предыдущим функциям.<br>
+<br>Следующие две функции вычисляют корни уравнений с комплексными параметрами:
+<pre>
+void root3s ( const Complex & p, const Complex & q, Complex & x1, Complex & x2, Complex & x3 );
+
+void root3 ( const Complex & a, const Complex & b, const Complex & c, 
+             Complex & x1, Complex & x2, Complex & x3 );
+</pre>
+Они используют метод Кардано.
+<br>Исходники этих функций находятся в файле <a href="source/source.zip">complex.cpp</a>.
+<br>Описание типа Complex смотрите в разделе <a href="rus_complex.html">Класс Complex</a>.
+</p>
+<a href="rus_alg_ur.html">Наверх</a>
+<pre>
+
+</pre>
+</td></div>
+</table>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10825496-1");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
+</body>
+</html>

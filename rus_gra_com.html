@@ -1,0 +1,58 @@
+<html>
+<head>
+<title>Описание gra-команд (продолжение)</title>
+<link rel="stylesheet" type="text/css" href="stylle.css">
+</head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align=center><br>
+<font color="" style="font-size: 20pt">Описание gra-команд (продолжение)</font>
+</div>
+<p>Дополнительные команды версии 2 
+</p>
+<table cellspacing="10" cellpadding="0">
+<tr><td>Дес. код</td><td>Мнемо-код</td><td>Параметры</td><td>Действие</td></tr>
+<tr><td>189</td><td>INT_AST_DA_ARR</td><td>GIuint i, int n, const int[]</td><td>Заполнение n значений intValue начиная с i</td></tr>
+<tr><td>190</td><td>FLOAT_AST_DA_ARR</td><td>GIuint i, int n, const float[]</td><td>Заполнение n значений floatValue начиная с i</td></tr>
+<tr><td>191</td><td>INT_AST_DA_PTR</td><td>GIuint i, int n, const int *</td><td>Заполнение n значений intValue начиная с i</td></tr>
+<tr><td>192</td><td>FLOAT_AST_DA_PTR</td><td>GIuint i, int n, const float *</td><td>Заполнение n значений floatValue начиная с i</td></tr>
+<tr><td>193</td><td>NORMAL_3V_I</td><td>GIuint index</td><td>int i = intValue[index]; glNormal3f(floatValue[i], floatValue[i+1], floatValue[i+2]);</td></tr>
+<tr><td>194</td><td>VERTEX_2V_I</td><td>GIuint index</td><td>int i = intValue[index]; glVertex2f(floatValue[i], floatValue[i+1]);</td></tr>
+<tr><td>195</td><td>VERTEX_3V_I</td><td>GIuint index</td><td>int i = intValue[index]; glVertex3f(floatValue[i], floatValue[i+1], floatValue[i+2]);</td></tr>
+<tr><td>196</td><td>INT_AST_DI</td><td>GIuint i1, GIuint i2</td><td>intValue[i1] = intValue[intValue[i2]];</td></tr>
+<tr><td>197</td><td>BUILD_2D_MIPMAPS_BGR_BTPC_ARR</td><td>int length, const unsigned char data[]</td><td>Загрузка текстуры из массива сжатого методом BTPC</td></tr>
+<tr><td>198</td><td>BUILD_2D_MIPMAPS_BGR_BTPC_PTR</td><td>int length, const unsigned char * data</td><td>Загрузка текстуры из массива сжатого методом BTPC</td></tr>
+</table>
+<p>Дополнительные команды версии 3 
+</p>
+<table cellspacing="10" cellpadding="0">
+<tr><td>Дес. код</td><td>Мнемо-код</td><td>Параметры</td><td>Действие</td></tr>
+<tr><td>199</td><td>ENABLE_COLOR_MATERIAL</td><td>Нет</td><td>glEnable(GL_COLOR_MATERIAL);</td></tr>
+<tr><td>200</td><td>DISABLE_COLOR_MATERIAL</td><td>Нет</td><td>glDisable(GL_COLOR_MATERIAL);</td></tr>
+<tr><td>201</td><td>DISK</td><td>float innerRadius, float outerRadius, int slices, int loops</td><td>gluDisk(quadObj, innerRadius, outerRadius, slices, loops);</td></tr>
+<tr><td>202</td><td>TIME</td><td>GIuint i</td><td>intValue[i++] = hour; intValue[i++] = min; intValue[i] = sec;</td></tr>
+</table>
+<p>Дополнительные команды версии 4 
+</p>
+<table cellspacing="10" cellpadding="0">
+<tr><td>Дес. код</td><td>Мнемо-код</td><td>Параметры</td><td>Действие</td></tr>
+<tr><td>203</td><td>GET_FLOAT_MODEL_VIEW_MATRIX</td><td>GIuint i</td><td>glGetFloatv ( GL_MODELVIEW_MATRIX, floatValue + i );</td></tr>
+<tr><td>204</td><td>GET_FLOAT_PROJECTION_MATRIX</td><td>GIuint i</td><td>glGetFloatv ( GL_PROJECTION_MATRIX, floatValue + i );</td></tr>
+<tr><td>205</td><td>LIGHT_QUADRATIC_ATTENUATION</td><td>Light id, float f</td><td>glLightf ( GL_LIGHT0 + id, GL_QUADRATIC_ATTENUATION, f );</td></tr>
+<tr><td>206</td><td>FRUSTUM_4V</td><td>GIuint i</td><td>glFrustum ( floatValue[i  ], floatValue[i+1], floatValue[i+2],
+	            floatValue[i+3], floatValue[i+4], floatValue[i+5] );</td></tr>
+</table>
+<p><div align=center><a href="rus_gra.html">Наверх</a></div>
+</p>
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-10825496-1");
+pageTracker._trackPageview();
+} catch(err) {}
+</script>
+</body>
+</html>

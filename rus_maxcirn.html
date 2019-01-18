@@ -1,0 +1,38 @@
+<html>
+<head><title>Максимальная окружность вписанная в невыпуклый многоугольник</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Максимальная окружность вписанная в невыпуклый многоугольник</font>
+</div>
+<div align=left><td><br>
+<p>
+В представленном здесь алгоритме для всех сторон и невыпуклых вершин многоугольника
+строятся границы областей близости по типу диаграммы Вороного.
+Узлы этих областей являются центрами вписанных окружностей. 
+После того, как все эти окружности найдены из них выбирается одна с максимальным радиусом:
+</p>
+<pre>
+Def&lt;Circle2d> maxCircleInPolygon ( CCArrRef&lt;Vector2d> & vert );
+</pre>
+<p>
+Мои тесты показали, что временная сложность этого алгоритма приблизительно равна O ( n<sup>1,5</sup> ), 
+где n - это количество вершин многоугольника.
+<br>
+<br>В приложении <a href="demo/demo.html">DEMO</a> можно посмотреть результат вписания.
+<br>
+<br>Описание класса Circle2d находится <a href="figure2d.html">здесь</a>.
+<br>Описание шаблона классов CArrRef находится <a href=array.html>здесь</a>.
+<br>Описание шаблона классов Def находится <a href="def.html">здесь</a>.
+<br>Описание класса Vector2d находится <a href="rus_vector2d.html">здесь</a>.
+<br>Исходники алгоритма находятся в файле <a href="source/source.zip">opti2d.cpp</a>.
+</p>
+<a href="opti2d.html">Наверх</a>
+<pre>
+
+</pre></td></div>
+</table>
+</body>
+</html>

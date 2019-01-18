@@ -1,0 +1,293 @@
+<html>
+<head><title>Класс IFile</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="800" cellspacing="0" cellpadding="0">
+<div align=center><br>
+<font color="" style="font-size: 20pt">Класс IFile</font>
+</div>
+<br><div align=left><td>
+<p>
+В этом разделе представлены классы, которые предназначены для работы с абстрактными файлами.
+Методы этих классов аналогичны соответствующим функциям из библиотеки stdio.
+</p>
+<pre>
+class IReadFile
+{
+public:
+    virtual nat  read ( void * p, const nat size, const nat count ) = 0;
+    virtual bool getc ( void * p ) = 0;
+    virtual ~IReadFile() {}
+};
+</pre>
+<p>
+Класс IReadFile предназначен для чтения данных. Метод read считывает информацию блоками
+размером size и количеством count в память с адресом p. Возращаемое значение - это реальное
+количество прочитанных блоков. Метод getc пытается прочитать один байт и возращает true 
+в случае успеха.
+</p>
+<pre>
+class IWriteFile
+{
+public:
+    virtual nat write ( const void * p, const nat size, const nat count ) = 0;
+    virtual bool putc ( const void * p ) = 0;
+    virtual void flush() = 0;
+    virtual ~IWriteFile() {}
+};
+</pre>
+<p>
+Класс IWriteFile предназначен для записи данных. Метод write записывает информацию блоками
+размером size и количеством count из памяти с адресом p. Возращаемое значение - это реальное 
+количество записанных блоков. Метод putc пытается записать один байт и возращает true 
+в случае успеха. Метод flush сбрасывает буфер, если это было предусмотрено.
+</p>
+<pre>
+class ISeekFile
+{
+public:
+    virtual bool seek_set ( long offset ) = 0;
+    virtual bool seek_end ( long offset ) = 0;
+    virtual bool seek_cur ( long offset ) = 0;
+    virtual void rewind() = 0;
+    virtual long tell() = 0;
+    virtual ~ISeekFile() {}
+};
+</pre>
+<p>
+Класс ISeekFile осуществляет перемещение по файлу. Методы seek_set, seek_end и seek_cur
+пытаются сместиться соответственно относительно начала, конца или текущей позиции на offset байт
+и возращают true в случае успеха. Метод rewind осуществляет переход на начало файла. 
+Метод tell возращает текущее положение ( 0 - это начало файла ) или -1 в случае ошибки.
+</p>
+<pre>
+class IReadSeekFile : public IReadFile, public virtual ISeekFile {};
+
+class IWriteSeekFile : public IWriteFile, public virtual ISeekFile {};
+
+class IFile : public IReadSeekFile, public IWriteSeekFile {};
+</pre>
+<p>
+Не все файлы могут поддерживать навигацию по файлу. Те, которые это делают, должны быть
+производными от классов IReadSeekFile, IWriteSeekFile или IFile. Первый работает только на
+чтение, второй - только на запись, третий ( самый общий ) - и на чтение, и на запись.
+Обратите внимание, что здесь есть и множественное наследование, и виртуальные классы.
+</p>
+<p>
+Теперь рассмотрим конкретные реализации этих абстрактных классов.
+</p>
+<p>
+Класс RealFile, производный от класса IFile, является "настоящим" файлом в том смысле, 
+что он ведёт себя точно также, как и файл из библиотеки stdio, и все его методы вызывают
+соответствующие функции из этой библиотеки. Вначале ( версия 2 ) я полагал, что эти функции 
+корректно обрабатывают ситуацию, когда указатель file равен нулю, но позже я выяснил, что это не так.
+Поэтому в версии 2.1 во всех методах есть проверка указателя на ноль. Кроме того в классе
+появился метод isValid для проверки работоспособности файла.
+</p>
+<pre>
+class RealFile : public IFile
+{
+    struct _iobuf * file;
+// Запрет конструктора копии и оператора присваивания:
+    RealFile ( RealFile & );
+    void operator = ( RealFile & );
+public:
+    RealFile(const char * filename, const char * mode);
+    bool isValid() const { return file != 0; }
+    unsigned int read (void * p, const unsigned int size, const unsigned int count);
+    unsigned int write(const void * p, const unsigned int size, const unsigned int count);
+    bool getc(void * p);
+    bool putc(const void * p);
+    bool seek_set(long offset);
+    bool seek_end(long offset);
+    bool seek_cur(long offset);
+    long tell();
+    void rewind();
+    void flush();
+    ~RealFile();
+};
+</pre>
+<p>
+Класс PseudoReadFile производный от класса IReadFile называется псевдофайлом, 
+потому-что он читает данные не из файла, а из памяти, заданной указателем на массив p:
+</p>
+<pre>
+class PseudoReadFile : public IReadFile
+{
+    const bit8 * pos;
+public:
+    explicit PseudoReadFile ( const bit8 * p ) : pos(p) {}
+    nat read ( void * p, const nat size, const nat count );
+    bool getc ( void * p );
+};
+</pre>
+<p>
+Класс PseudoReadSeekFile производный от класса IReadSeekFile помимо чтения имеет навигацию:
+</p>
+<pre>
+class PseudoReadSeekFile : public IReadSeekFile
+{
+    CArrRef&lt;bit8> buf;
+    nat pos;
+public:
+    explicit PseudoReadSeekFile ( CArrRef&lt;bit8> p ) : buf(p), pos(0) {}
+    nat read(void * p, const nat size, const nat count);
+    bool getc(void * p);
+    bool seek_set(long offset);
+    bool seek_end(long offset);
+    bool seek_cur(long offset);
+    long tell() { return pos; }
+    void rewind () { pos = 0; }
+};
+</pre>
+<p>
+Класс PseudoWriteFile производный от класса IWriteFile осуществляет запись в контейнер
+Suite&lt;bit8> и лишён навигации.
+</p>
+<pre>
+class PseudoWriteFile : public IWriteFile
+{
+    Suite&lt;bit8> & suite;
+// Запрет конструктора копии и оператора присваивания:
+    PseudoWriteFile ( PseudoWriteFile & );
+    void operator = ( PseudoWriteFile & );
+public:
+    explicit PseudoWriteFile ( Suite&lt;bit8> & p ) : suite(p) {}
+    nat write(const void * p, const nat size, const nat count);
+    bool putc(const void * p);
+    void flush() {}
+    long tell() { return pos; }
+};
+</pre>
+<p>
+Класс PseudoFile может использоваться вместо трёх предыдущих.
+</p>
+<pre>
+class PseudoFile : public IFile
+{
+    DynArray&lt;bit8> & buf;
+    nat length, pos;
+// Запрет конструктора копии и оператора присваивания:
+    PseudoFile ( PseudoFile & );
+    void operator = ( PseudoFile & );
+public:
+    PseudoFile ( nat n, DynArray&lt;bit8> & p );
+    nat read(void * p, const nat size, const nat count);
+    bool getc(void * p);
+    nat write(const void * p, const nat size, const nat count);
+    bool putc(const void * p);
+    void flush() {}
+    bool seek_set(long offset);
+    bool seek_end(long offset);
+    bool seek_cur(long offset);
+    void rewind() { pos = 0; }
+    long tell() { return pos; }
+};
+</pre>
+<p>
+Класс StringWriteFile предназначен для записи данных в строку:
+</p>
+<pre>
+class StringWriteFile : public IWriteFile
+{
+    Suite&lt;char> suite;
+// Запрет конструктора копии и оператора присваивания:
+    StringWriteFile ( StringWriteFile & );
+    void operator = ( StringWriteFile & );
+public:
+    StringWriteFile () { suite.inc() = 0; }
+
+    nat write ( const void * p, const nat size, const nat count )
+    {
+        const nat n = size * count;
+        const nat k = suite.size() - 1;
+        suite.inc ( n );
+        const char * s = (const char *) p;
+        for ( nat i = 0; i < n; ++i ) suite[i+k] = s[i];
+        suite.las() = 0;
+        return count;
+    }
+
+    bool putc ( const void * p )
+    {
+        suite.las() = *(const char *) p;
+        suite.inc() = 0;
+        return true;
+    }
+
+    void flush() {}
+
+    const char * operator () () const
+    {
+        return suite();
+    }
+
+    nat size () const
+    {
+        return suite.size() - 1;
+    }
+
+    void clear()
+    {
+        suite.resize(1).las() = 0;
+    }
+};
+</pre>
+<p>
+Если нужно прочитать из файла десятичное число заданное в виде текста, то можно воспользоваться следующими функциями: 
+</p>
+<pre>bool readIntDec ( IReadFile & file, char & c, int32 & i );
+
+inline bool readIntDec ( IReadFile & file, int32 & i )
+{
+    char c;
+    return readIntDec ( file, c, i );
+}
+
+bool readIntDec ( IReadFile & file, char & c, nat32 & i );
+
+inline bool readIntDec ( IReadFile & file, nat32 & i )
+{
+    char c;
+    return readIntDec ( file, c, i );
+}
+
+bool readFltDec ( IReadFile & file, char & c, real32  & f );
+
+inline bool readFltDec ( IReadFile & file, real32 & f )
+{
+    char c;
+    return readFltDec ( file, c, f );
+}
+
+bool readFltDec ( IReadFile & file, char & c, real64 & d );
+
+inline bool readFltDec ( IReadFile & file, real64 & d )
+{
+    char c;
+    return readFltDec ( file, c, d );
+}
+</pre>
+<p>с - это последний прочитанный символ.
+</p>
+Функция printf записывает данные в файл при помощи заданного формата.
+Он аналогичен стандартному, но пока ещё не все его свойства реализованы.
+</p>
+<pre>
+bool printf ( IWriteFile & file, const char * format, ... );
+</pre>
+<p>Описание шаблонов CArrRef, Suite и DynArray находится <a href="array.html">здесь</a>.
+<br>Описание типов bit8, int32 и nat32 находится <a href="typedef.html">здесь</a>.
+</p>
+<p>
+Исходники находятся в <a href="source/source.zip">source.zip</a>.
+</p>
+<a href="rus_pro.html">Наверх</a>
+<pre>
+
+</pre>
+</td></div>
+</table>
+</body>
+</html>
