@@ -133,7 +133,12 @@ public:
         return *this;
     }
 
-    Vector3d project ( const Vector3d & v ) const; // Проекция точки на плоскость
+    Vector3d project ( const Vector3d & v ) const; // Проекция точки на плоскость    
+
+    Segment3d project ( const Segment3d & s ) const // Проекция отрезка на плоскость
+    {
+        return Segment3d ( project ( s.a ), project ( s.b ) );
+    }
 
     Vector3d mirror ( const Vector3d & v ) const; // Отражение точки 
     Plane3d  mirror ( const Plane3d  & p ) const; // Отражение плоскости

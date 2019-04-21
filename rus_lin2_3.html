@@ -10,27 +10,23 @@
 </font>
 </div>
 <div align=left><td><br>
-<p>Здесь представлены два шаблона классов: SLU2 и SLU3, предназначенные для решения систем линейных уравнений 
-второго и третьего порядка:
+<p>Здесь представлены шаблоны классов SLU2, SLU3 и SLU4, предназначенные для решения систем линейных уравнений 
+второго, третьего и четвёртого порядка:
 <pre>
 inline float qmod ( const float & x ) { return x * x; }
-
 inline double qmod ( const double & x ) { return x * x; }
-
 //************************ 20.11.2002 *************************//
 //
 // Решение систем линейных уравнений 2-го порядка методом Гаусса
 //         Выбор ведущего элемента по столбцам
 //
 //************************ 10.04.2015 *************************//
-
 template &lt;class T1, class T2 = T1> class SLU2
 {
 public:
     T1 aa, ab, // aa * x + ab * y = ac
        ba, bb; // ba * x + bb * y = bc
     T2 ac, bc;
-
 // Решение системы линейных уравнений 2-го порядка методом Гаусса
     bool gauss ( T2 & x, T2 & y ) const
     {
@@ -61,7 +57,6 @@ public:
         ( x = v1 ) -= v2;
         return true;
     }
-
     SLU2 & fill ( const T1 & v1, const T2 & v2 )
     {
         aa = ab =
@@ -70,14 +65,12 @@ public:
         return *this;
     }
 };
-
 //************************ 20.11.2002 *************************//
 //
 // Решение систем линейных уравнений 3-го порядка методом Гаусса
 //         Выбор ведущего элемента по столбцам
 //
 //************************ 08.11.2014 *************************//
-
 template &lt;class T1, class T2 = T1> class SLU3
 {
 public:
@@ -85,7 +78,6 @@ public:
        ba, bb, bc, // ba * x + bb * y + bc * z = bd
        ca, cb, cc; // ca * x + cb * y + cc * z = cd
     T2 ad, bd, cd;
-
 // Решение системы линейных уравнений 3-го порядка методом Гаусса
     bool gauss ( T2 & x, T2 & y, T2 & z ) const
     {
@@ -127,13 +119,108 @@ public:
         ( e = y ) *= b; z -= e;
         return true;
     }
-
     SLU3 & fill ( const T1 & v1, const T2 & v2 )
     {
         aa = ab = ac = 
         ba = bb = bc = 
         ca = cb = cc = v1;
         ad = bd = cd = v2;
+        return *this;
+    }
+};
+//************************ 12.05.2012 *************************//
+//
+// Решение систем линейных уравнений 4-го порядка методом Гаусса
+//         Выбор ведущего элемента по столбцам
+//
+//************************ 08.11.2014 *************************//
+template &lt;class T1, class T2=T1> class SLU4
+{
+public:
+    T1 aa, ab, ac, ad, // aa * xa + ab * xb + ac * xc + ad * xd = ae
+       ba, bb, bc, bd, // ba * xa + bb * xb + bc * xc + bd * xd = be
+       ca, cb, cc, cd, // ca * xa + cb * xb + cc * xc + cd * xd = ce
+       da, db, dc, dd; // da * xa + db * xb + dc * xc + dd * xd = de
+    T2 ae, be, ce, de;
+// Решение системы линейных уравнений 4-го порядка методом Гаусса
+    bool gauss ( T2 & xa, T2 & xb, T2 & xc, T2 & xd ) const
+    {
+        SLU3&lt;T1, T2> slu;
+        T1 a, b, c;
+        T2 e, f;
+        const double ma = qmod ( ad );
+        const double mb = qmod ( bd );
+        const double mc = qmod ( cd );
+        const double md = qmod ( dd );
+        if ( md >= mc && md >= mb && md >= ma )
+        {
+            if ( dd == 0 ) return false;
+            a = da / dd;
+            b = db / dd;
+            c = dc / dd;
+            e = de; e /= dd;
+            f = e;  f *= ad;
+            slu.aa = aa - a * ad;   slu.ab = ab - b * ad;   slu.ac = ac - c * ad;   slu.ad = ae;    slu.ad -= f;
+            f = e;  f *= bd;
+            slu.ba = ba - a * bd;   slu.bb = bb - b * bd;   slu.bc = bc - c * bd;   slu.bd = be;    slu.bd -= f;
+            f = e;  f *= cd;
+            slu.ca = ca - a * cd;   slu.cb = cb - b * cd;   slu.cc = cc - c * cd;   slu.cd = ce;    slu.cd -= f;
+        }
+        else
+        if ( mc >= mb && mc >= ma )
+        {
+            a = ca / cd;
+            b = cb / cd;
+            c = cc / cd;
+            e = ce; e /= cd;
+            f = e;  f *= ad;
+            slu.aa = aa - a * ad;   slu.ab = ab - b * ad;   slu.ac = ac - c * ad;   slu.ad = ae;    slu.ad -= f;
+            f = e;  f *= bd;
+            slu.ba = ba - a * bd;   slu.bb = bb - b * bd;   slu.bc = bc - c * bd;   slu.bd = be;    slu.bd -= f;
+            f = e;  f *= dd;
+            slu.ca = da - a * dd;   slu.cb = db - b * dd;   slu.cc = dc - c * dd;   slu.cd = de;    slu.cd -= f;
+        }
+        else
+        if ( mb >= ma )
+        {
+            a = ba / bd;
+            b = bb / bd;
+            c = bc / bd;
+            e = be; e /= bd;
+            f = e;  f *= ad;
+            slu.aa = aa - a * ad;   slu.ab = ab - b * ad;   slu.ac = ac - c * ad;   slu.ad = ae;    slu.ad -= f;
+            f = e;  f *= cd;
+            slu.ba = ca - a * cd;   slu.bb = cb - b * cd;   slu.bc = cc - c * cd;   slu.bd = ce;    slu.bd -= f;
+            f = e;  f *= dd;
+            slu.ca = da - a * dd;   slu.cb = db - b * dd;   slu.cc = dc - c * dd;   slu.cd = de;    slu.cd -= f;
+        }
+        else
+        {
+            a = aa / ad;
+            b = ab / ad;
+            c = ac / ad;
+            e = ae; e /= ad;
+            f = e;  f *= bd;
+            slu.aa = ba - a * bd;   slu.ab = bb - b * bd;   slu.ac = bc - c * bd;   slu.ad = be;    slu.ad -= f;
+            f = e;  f *= cd;
+            slu.ba = ca - a * cd;   slu.bb = cb - b * cd;   slu.bc = cc - c * cd;   slu.bd = ce;    slu.bd -= f;
+            f = e;  f *= dd;
+            slu.ca = da - a * dd;   slu.cb = db - b * dd;   slu.cc = dc - c * dd;   slu.cd = de;    slu.cd -= f;
+        }
+        if ( ! slu.gauss ( xa, xb, xc ) ) return false;
+        xd = e;
+        f = xa; f *= a; xd -= f;
+        f = xb; f *= b; xd -= f;
+        f = xc; f *= c; xd -= f;
+        return true;
+    }
+    SLU4 & fill ( const T1 & v1, const T2 & v2 )
+    {
+        aa = ab = ac = ad =
+        ba = bb = bc = bd =
+        ca = cb = cc = cd =
+        da = db = dc = dd = v1;
+        ae = be = ce = de = v2;
         return *this;
     }
 };
