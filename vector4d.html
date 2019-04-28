@@ -128,14 +128,25 @@ public:
     {
         return norm * v + dist;
     }
+
+    Plane4d operator - () const
+    {
+        return Plane4d ( - norm, - dist );
+    }
 };
 </pre>
-Следующая функция находит пересечение четырёх гиперплоскостей:
+&bull; Пересечение четырёх гиперплоскостей
 <pre>
 Def&lt;Vector4d> intersection ( const Plane4d & plane1, const Plane4d & plane2, const Plane4d & plane3, const Plane4d & plane4 );
 </pre>
+&bull; Вычисление ближайшей точки к заданным плоскостям
+<br>Минимум максимального расстояния ( бесконечная норма )
+<pre>
+Def&lt;Vector4d> getNearPointU ( CCArrRef&lt;Plane4d> & plane );
+</pre>
 <p>
 Описание шаблона классов Def находится <a href="def.html">здесь</a>.
+<br>Описание шаблона классов CCArrRef находится <a href="array.html">здесь</a>.
 <br>Исходники находятся в файлах <a href="source/source.zip">vector4d.h и vector4d.cpp</a>.
 </p>
 <a href="rus_geom.html">Наверх</a>
