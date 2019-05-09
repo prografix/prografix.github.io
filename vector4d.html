@@ -140,7 +140,11 @@ public:
 Def&lt;Vector4d> intersection ( const Plane4d & plane1, const Plane4d & plane2, const Plane4d & plane3, const Plane4d & plane4 );
 </pre>
 &bull; Вычисление ближайшей точки к заданным плоскостям
-<br>Минимум максимального расстояния ( бесконечная норма )
+<br><br>Минимум суммы квадратов расстояний ( 2-норма )
+<pre>
+Def&lt;Vector4d> getNearPoint2 ( CCArrRef&lt;Plane4d> & plane );
+</pre>
+Минимум максимального расстояния ( бесконечная норма )
 <pre>
 Def&lt;Vector4d> getNearPointU ( CCArrRef&lt;Plane4d> & plane );
 </pre>
