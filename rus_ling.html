@@ -10,7 +10,7 @@
 Решение систем линейных уравнений методом Гаусса</font>
 </div>
 <div align=left><td><br>
-<p>Наиболее рапространённым методом решения систем линейных уравнений является
+<p>Наиболее распространённым методом решения систем линейных уравнений является
 метод Гаусса с частичным выбором ведущего элемента по столбцам. 
 Первый вариант этого метода здесь реализован в виде класса SLU_Gauss, написанного 
 на основе двух фортран-программ DECOMP и SOLVE из книги "Машинные методы математических вычислений" 
@@ -59,8 +59,22 @@ bool slu_gauss ( ArrRef2&lt;double> data, double * x ); // один правый
 <p>Здесь квадратная матрица и столбцы свободных членов записаны в один <a href=array2d.html>двухмерный массив</a> data, 
 который в процессе вычислений изменяется, и на месте правых столбцов будут находится столбцы с решениями.
 </p>
+<p>Следущий вариант метода Гаусса выбирает ведущие элементы по всей указанной подматрице:
+</p>
+<pre>
+//*************************** 24.03.2011 ******************************//
+//
+//      Решение систем линейных уравнений методом Гаусса
+//      Общий выбор ведущего элемента
+//      nc - к-во столбцов в левой части системы уравнений
+//      col - массив индексов столбцов
+//
+//*************************** 24.03.2011 ******************************//
+
+bool slu_gauss ( ArrRef2&lt;double> data, const nat nc, ArrRef&lt;nat> col );
+</pre>
 <p>Исходники находятся в файле <a href="source/source.zip">mathem.cpp</a>.</p>
-<p>Следущий вариант метода Гаусса реализован в виде шаблонов:
+<p>Следущий вариант метода Гаусса выбирает ведущие элементы по строкам:
 </p>
 <pre>
 //*************************** 19.02.2017 ******************************//
@@ -68,77 +82,13 @@ bool slu_gauss ( ArrRef2&lt;double> data, double * x ); // один правый
 //      Метод исключений Гаусса.
 //      Выбор ведущего элемента по строкам.
 //      nRow, nCol - размеры матрицы.
-//      index - массив для индексов выбранных столбцов.
-//      mRow, mCol - размеры подматрицы, где выбираются ведущие элементы.
+//      index - массив для индексов выбранных столбцов (nCol).
+//      mCol - размер подматрицы, где выбираются ведущие элементы.
 //
-//*************************** 19.02.2017 ******************************//
+//*************************** 02.06.2019 ******************************//
 
-template &lt;class Matrix>
-bool _doGaussRow ( Matrix & data, nat nRow, nat nCol, nat index[], nat mRow, nat mCol )
-{
-    if ( nRow == 0 || nCol <= nRow ) return false;
-    if ( mRow > nRow ) mRow = nRow;
-    if ( mCol > nCol ) mCol = nCol;
-    if ( mRow > mCol ) return false;
-// Прямой ход
-    nat i, j, k;
-    for ( k = 0; k < mRow; ++k )
-    {
-// Поиск максимального по модулю члена в k-ой строке
-        nat m = 0;
-        double * rk = & data[k][0];
-        double max = fabs ( rk[0] );
-        for ( i = 1; i < mCol; ++i )
-        {
-            const double t = fabs ( rk[i] );
-            if ( max < t ) max = t, m = i;
-        }
-        if ( max == 0 ) return false;
-        index[k] = m;
-// Нормализация строки
-        const double p = 1. / rk[m];
-        for ( i = 0; i < nCol; ++i ) rk[i] *= p;
-        rk[m] = 1;
-// Вычитание строк
-        for ( j = k+1; j < nRow; ++j )
-        {
-            double * rj = & data[j][0];
-            const double t = rj[m];
-            for ( i = 0; i < nCol; ++i )
-            {
-                if ( fabs ( rj[i] -= rk[i] * t ) < 1e-290 ) rj[i] = 0;
-            }
-        }
-    }
-// Обратная подстановка
-    for ( j = mRow; --j > 0; )
-    {
-        const double * rj = & data[j][0];
-        for ( i = 0; i < j; ++i )
-        {
-            double * ri = & data[i][0];
-            const double t = ri[index[j]];
-            for ( k = 0; k < nCol; ++k ) ri[k] -= rj[k] * t;
-        }
-    }
-    return true;
-}
-
-template &lt;class T> class IMatrix;
-
-template &lt;class T> inline
-bool doGaussRow ( IMatrix&lt;T> & data, nat nRow, nat nCol, nat * index, nat mRow, nat mCol )
-{
-    return _doGaussRow ( data, nRow, nCol, index, mRow, mCol );
-}
-
-template &lt;class T> class ArrRef2;
-
-template &lt;class T> inline
-bool doGaussRow ( ArrRef2&lt;T> & data, nat nRow, nat nCol, nat * index, nat mRow, nat mCol )
-{
-    return _doGaussRow ( data, nRow, nCol, index, mRow, mCol );
-}
+bool sluGaussRow ( IMatrix&lt;T> & data, nat nRow, nat nCol, unsigned * index, nat mCol );
+bool sluGaussRow ( ArrRef2&lt;T> & data, nat nRow, nat nCol, unsigned * index, nat mCol );
 </pre>
 <p>Исходники находятся в файле <a href="source/source.zip">LinAlg.h</a>.</p>
 <a href="rus_lin_alg.html">Наверх</a>
