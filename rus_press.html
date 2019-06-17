@@ -28,7 +28,7 @@ void asc_unpack ( class IReadFile & infile, class WriteFile & outfile );
 В архиваторе HA используется два алгоритма сжатия: более быстрый ASC и медленный HSC, который во многих случаях,
 но не всегда, даёт более сильное сжатие, чем ASC. Я переписал на С++ только ASC. Если же сравнивать 
 LZH и ASC, то LZH работает быстрее, а ASC лучше сжимает. LZH использует кодирование Хафмана, а ASC - 
-арифметическое, которое лучше сжимает, но забирает большую часть времени.
+арифметическое кодирование, которое лучше сжимает, но забирает большую часть времени.
 </p>
 <p>
 Исходники находятся в <a href="source/press.zip">press.zip</a>. Вы можете сравнить их с оригиналами
@@ -40,15 +40,5 @@ LZH и ASC, то LZH работает быстрее, а ASC лучше сжим
 </pre>
 </td></div>
 </table>
-<script type="text/javascript">
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
-<script type="text/javascript">
-try {
-var pageTracker = _gat._getTracker("UA-10825496-1");
-pageTracker._trackPageview();
-} catch(err) {}
-</script>
 </body>
 </html>
