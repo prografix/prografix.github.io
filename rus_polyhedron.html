@@ -133,24 +133,24 @@ index и поле info для записи дополнительной инфо
         }
         // Эллипсоид ( x, y, z - половины осей )
         Polyhedron & makeEllipsoid ( nat n, double x, double y, double z, RandVector3d & qrv );
-        Polyhedron & makeEllipsoid ( nat n, double x, double y, double z );
-		Polyhedron & makeModel ( nat n, const Ellipsoid3d & fig )
+        Polyhedron & makeEllipsoid ( double x, double y, double z, nat n = 1095 );
+        Polyhedron & makeModel ( const Ellipsoid3d & fig, nat n = 1095 )
         {
-            return makeEllipsoid ( n, fig.a, fig.b, fig.c ) *= Conform3d ( fig.spin, fig.o, 1 );
+            return makeEllipsoid ( fig.a, fig.b, fig.c, n ) *= Conform3d ( fig.spin, fig.o, 1 );
         }
         // Сфера ( r - радиус )
-        Polyhedron & makeSphere ( nat n, double r )
+        Polyhedron & makeSphere ( double r, nat n = 1095 )
         {
-            return makeEllipsoid ( n, r, r, r );
+            return makeEllipsoid ( r, r, r, n );
         }
-        Polyhedron & makeModel ( nat n, const Sphere3d & fig )
+        Polyhedron & makeModel ( const Sphere3d & fig, nat n = 1095 )
         {
-            return makeSphere ( n, fig.r ) += fig.o;
+            return makeSphere ( fig.r, n ) += fig.o;
         }
         // Цилиндр
-        Polyhedron & makeModel ( nat n, const Cylinder3d & fig );
+        Polyhedron & makeModel ( const Cylinder3d & fig, nat n );
         // Конус
-        Polyhedron & makeModel ( nat n, const Cone3d & fig );
+        Polyhedron & makeModel ( const Cone3d & fig, nat n );
         // Площадь поверхности многогранника
         double area () const;
         // Объём многогранника

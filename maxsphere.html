@@ -85,6 +85,12 @@ Def&lt;Conform3d> maxPolyhedronInConvexPolyhedron1R ( const Polyhedron & inner,
 Здесь inner - это внутренний многогранник, az - направление оси вращения, sym - коэффициент вращения
 ( к-во переходов фигуры в себя при вращении на 360 градусов ), outer - внешний выпуклый многогранник.
 Функция возвращает пребразование, которое вписывает inner в outer.
+<p>
+&bull; Многогранник с произвольным вращением.
+</p>
+<pre>
+Def&lt;Conform3d> maxPolyhedronInConvexPolyhedron ( const Polyhedron & inner, const Polyhedron & outer );
+</pre>
 
 <p>Примеры использования всех этих функций можно посмотреть в приложении <a href="demo/demo.html">DEMO</a>.
 </p>

@@ -97,6 +97,11 @@ public:
         return Plane3d ( Vector3d ( x * p.norm, y * p.norm, z * p.norm ), p.dist );
     }
 
+    const LinTran3d & operator* () const
+    {
+        return *(const LinTran3d *) this;
+    }
+
     Ortho3d operator ~ () const;
 };
 </pre>
