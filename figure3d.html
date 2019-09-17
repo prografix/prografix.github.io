@@ -177,25 +177,6 @@ dist - расстоянием от плоскости до центра коор
 По поводу операторов ==, != и *= можно сказать то же, что и для векторов.
 </p>
 <p>
-&bull; Треугольник
-<pre>
-class Triangle3d
-{
-public:
-    Vector3d a, b, c;
-
-    Triangle3d () {}
-    Triangle3d ( const Vector3d & pa, const Vector3d & pb, const Vector3d & pc ) : 
-		a ( pa ), b ( pb ), c ( pc ) {}
-
-    double getArea () const // Площадь поверхности треугольника с двух сторон
-    {
-        return norm2 ( ( a - b ) % ( b - c ) );
-    }
-};
-</pre>
-</p>
-<p>
 &bull; Круг
 <pre>
 class Circle3d
@@ -221,6 +202,64 @@ public:
     Circle3d & operator *= ( const double & d )
     {
         o *= d; r *= d; return *this;
+    }
+};
+</pre>
+</p>
+<p>
+&bull; Эллипс
+<pre>
+class Ellipse3d
+{
+public:
+    Vector3d o;  // центр
+    double a, b; // полуоси
+    Spin3d spin; // поворот
+
+    Ellipse3d () {}
+    Ellipse3d ( const Vector3d & o1, double a1, double b1 ) : o ( o1 ), a ( a1 ), b ( b1 ) {}
+
+    Vector3d getNorm () const
+    {
+        return spin.rotZ();
+    }
+
+    double getArea () const;
+
+    double getPerimeter () const;
+
+    Ellipse3d & operator *= ( const Conform3d & c )
+    {
+        o *= c; a *= c.magn; b *= c.magn; spin = c.spin * spin; return *this;
+    }
+
+    Ellipse3d & operator *= ( const Spin3d & s )
+    {
+        o *= Ortho3d ( s ); spin = s * spin; return *this;
+    }
+
+    Ellipse3d & operator *= ( const double & d )
+    {
+        o *= d; a *= d; b *= d; return *this;
+    }
+};
+</pre>
+</p>
+<p>
+&bull; Треугольник
+<pre>
+class Triangle3d
+{
+public:
+    Vector3d a, b, c;
+
+    Triangle3d () {}
+    Triangle3d ( const Vector3d & pa, const Vector3d & pb, const Vector3d & pc ) : 
+		a ( pa ), b ( pb ), c ( pc ) {}
+
+    double getArea () const // Площадь поверхности треугольника с двух сторон
+    {
+        return norm2 ( ( a - b ) % ( b - c ) );
     }
 };
 </pre>
