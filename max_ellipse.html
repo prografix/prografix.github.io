@@ -12,25 +12,27 @@
 <p>
 <br>
 Во всех алгоритмах этого раздела обход вершин многоугольника должен быть против часовой стрелки.
-<br><br>Функция maxFixEllipseInConvexPolygon вписывает эллипс с заданным удлинением в выпуклый многоуольник:
+<br><br>&bull; Функция maxFixEllipseInConvexPolygon вписывает эллипс с заданным удлинением в выпуклый многоуольник:
 <pre>Def&lt;Ellipse2d> maxFixEllipseInConvexPolygon ( double ext, CCArrRef&lt;Vector2d> & poly );
 </pre>
 Входные параметры: ext - удлинение эллипса ( 1e-6 <= ext <= 0.99 ) и poly - массив вершин многоугольника.
-<br><br>Функция maxFixEllipseInConvexPolygonNR делает то же самое, но без вращения:
+<br><br>&bull; Функция maxFixEllipseInConvexPolygonNR делает то же самое, но без вращения:
 <pre>
 Def&lt;Ellipse2d> maxFixEllipseInConvexPolygonNR ( double ext, CCArrRef&lt;Vector2d> & poly );
 </pre>
 Входные параметры: ext - удлинение эллипса ( 1e-6 <= ext <= 1e6 ).
-<br>
-<br>Функция maxFixEllipseInPolygon вписывает эллипс с заданным удлинением в невыпуклый многоугольник:
+<br><br>&bull; Функция maxFixEllipseInPolygon вписывает эллипс с заданным удлинением в невыпуклый многоугольник:
 <pre>Def&lt;Ellipse2d> maxFixEllipseInPolygon ( double ext, CCArrRef&lt;Vector2d> & poly );
 </pre>
 Входные параметры: ext - удлинение эллипса ( 1/64 <= ext <= 64 ) и poly - массив вершин многоугольника.
-<br><br>Функция maxFixEllipseInPolygonNR делает то же самое, но без вращения:
+<br><br>&bull; Функция maxFixEllipseInPolygonNR делает то же самое, но без вращения:
 <pre>
 Def&lt;Ellipse2d> maxFixEllipseInPolygonNR ( double ext, CCArrRef&lt;Vector2d> & poly );
 </pre>
-Функция maxEllipseInConvexPolygonA находит эллипс максимальной площади вписанный в выпуклый многоугольник:
+&bull; Функция maxEllipseInTriangleA находит эллипс максимальной площади вписанный в треугольник:
+<pre>Def&lt;Ellipse2d> maxEllipseInTriangleA ( Vector2d v1, Vector2d v2, Vector2d v3 );
+</pre>
+&bull; Функция maxEllipseInConvexPolygonA находит эллипс максимальной площади вписанный в выпуклый многоугольник:
 <pre>Def&lt;Ellipse2d> maxEllipseInConvexPolygonA ( CCArrRef&lt;Vector2d> & poly );
 </pre>
 Краткое описание этого алгоритма:
@@ -45,13 +47,13 @@ Def&lt;Ellipse2d> maxFixEllipseInPolygonNR ( double ext, CCArrRef&lt;Vector2d> &
 К-во новых опорных прямых будет от трёх до пяти ( к-во степеней свободы для эллипса ).
 <br>8. Идём в начало цикла.
 </p>
-Функция maxEllipseInConvexPolygonANR делает то же самое, но без вращения:
+&bull; Функция maxEllipseInConvexPolygonANR делает то же самое, но без вращения:
 <pre>Def&lt;Ellipse2d> maxEllipseInConvexPolygonANR ( CCArrRef&lt;Vector2d> & poly );
 </pre>
-Функция maxEllipseInPolygonA находит эллипс максимальной площади вписанный в невыпуклый многоугольник:
+&bull; Функция maxEllipseInPolygonA находит эллипс максимальной площади вписанный в невыпуклый многоугольник:
 <pre>Def&lt;Ellipse2d> maxEllipseInPolygonA ( CCArrRef&lt;Vector2d> & poly );
 </pre>
-Функция maxEllipseInPolygonANR делает то же самое, но без вращения:
+&bull; Функция maxEllipseInPolygonANR делает то же самое, но без вращения:
 <pre>Def&lt;Ellipse2d> maxEllipseInPolygonANR ( CCArrRef&lt;Vector2d> & poly );
 </pre>
 <p>В приложении <a href="demo/demo.html">DEMO</a> показано, как применять эти функции.
