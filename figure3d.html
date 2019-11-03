@@ -257,6 +257,11 @@ public:
     Triangle3d ( const Vector3d & pa, const Vector3d & pb, const Vector3d & pc ) : 
 		a ( pa ), b ( pb ), c ( pc ) {}
 
+    Vector3d getNormal () const
+    {
+        return ( ( a - b ) % ( b - c ) ).setNorm2();
+    }
+
     double getArea () const // Площадь поверхности треугольника с двух сторон
     {
         return norm2 ( ( a - b ) % ( b - c ) );
