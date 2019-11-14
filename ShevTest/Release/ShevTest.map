@@ -1,0 +1,1261 @@
+ ShevTest
+
+ Timestamp is 5dc84aff (Sun Nov 10 20:38:07 2019)
+
+ Preferred load address is 00400000
+
+ Start         Length     Name                   Class
+ 0001:00000000 0000deb0H .text                   CODE
+ 0001:0000deb0 000003d7H .text$x                 CODE
+ 0002:00000000 00001034H .rdata                  DATA
+ 0002:00001038 000004d0H .xdata$x                DATA
+ 0002:00001508 00000000H .edata                  DATA
+ 0003:00000000 00000004H .CRT$XCA                DATA
+ 0003:00000004 00000004H .CRT$XCL                DATA
+ 0003:00000008 00000204H .CRT$XCU                DATA
+ 0003:0000020c 00000004H .CRT$XCZ                DATA
+ 0003:00000210 00000004H .CRT$XIA                DATA
+ 0003:00000214 00000004H .CRT$XIZ                DATA
+ 0003:00000220 00000194H .data                   DATA
+ 0003:000003b8 00001eb0H .bss                    DATA
+ 0004:00000000 00000078H .idata$2                DATA
+ 0004:00000078 00000014H .idata$3                DATA
+ 0004:0000008c 00000460H .idata$4                DATA
+ 0004:000004ec 00000460H .idata$5                DATA
+ 0004:0000094c 0000042cH .idata$6                DATA
+ 0005:00000000 000005c8H .rsrc$01                DATA
+ 0005:000005d0 00002890H .rsrc$02                DATA
+
+  Address         Publics by Value              Rva+Base     Lib:Object
+
+ 0001:00000000       ??0DisplayPanel@@QAE@PAVCWnd@@@Z 00401000 f   DisplayPanel.obj
+ 0001:00000090       ?AssertValid@CObject@@UBEXXZ 00401090 f i DisplayPanel.obj
+ 0001:000000a0       ?Dump@CObject@@UBEXAAVCDumpContext@@@Z 004010a0 f i DisplayPanel.obj
+ 0001:000000a0       ?DoDataExchange@CWnd@@MAEXPAVCDataExchange@@@Z 004010a0 f i DisplayPanel.obj
+ 0001:000000a0       ?Serialize@CObject@@UAEXAAVCArchive@@@Z 004010a0 f i DisplayPanel.obj
+ 0001:000000b0       ?BeginModalState@CWnd@@UAEXXZ 004010b0 f i DisplayPanel.obj
+ 0001:000000c0       ?EndModalState@CWnd@@UAEXXZ 004010c0 f i DisplayPanel.obj
+ 0001:000000d0       ??_GCEdit@@UAEPAXI@Z       004010d0 f i DisplayPanel.obj
+ 0001:000000d0       ??_ECEdit@@UAEPAXI@Z       004010d0 f i DisplayPanel.obj
+ 0001:000000f0       ??_EDisplayPanel@@UAEPAXI@Z 004010f0 f i DisplayPanel.obj
+ 0001:000000f0       ??_GDisplayPanel@@UAEPAXI@Z 004010f0 f i DisplayPanel.obj
+ 0001:00000110       ??1DisplayPanel@@UAE@XZ    00401110 f i DisplayPanel.obj
+ 0001:00000170       ?DoDataExchange@DisplayPanel@@MAEXPAVCDataExchange@@@Z 00401170 f   DisplayPanel.obj
+ 0001:000001a0       ?GetMessageMap@DisplayPanel@@MBEPBUAFX_MSGMAP@@XZ 004011a0 f   DisplayPanel.obj
+ 0001:000001b0       ?OnClose@DisplayPanel@@IAEXXZ 004011b0 f   DisplayPanel.obj
+ 0001:000001d0       ?OnSize@DisplayPanel@@IAEXIHH@Z 004011d0 f   DisplayPanel.obj
+ 0001:00000240       ?write@DisplayFile@@UAEIPBXII@Z 00401240 f   DisplayPanel.obj
+ 0001:00000290       ?putc@DisplayFile@@UAE_NPBX@Z 00401290 f   DisplayPanel.obj
+ 0001:00000310       ?flush@DisplayFile@@UAEXXZ 00401310 f   DisplayPanel.obj
+ 0001:00000410       ??1DisplayFile@@UAE@XZ     00401410 f i DisplayPanel.obj
+ 0001:00000460       ??1IWriteFile@@UAE@XZ      00401460 f i DisplayPanel.obj
+ 0001:00000470       ??_GIWriteFile@@UAEPAXI@Z  00401470 f i DisplayPanel.obj
+ 0001:00000470       ??_EIWriteFile@@UAEPAXI@Z  00401470 f i DisplayPanel.obj
+ 0001:00000490       ??0DisplayFile@@QAE@XZ     00401490 f i DisplayPanel.obj
+ 0001:000004b0       ??_GDisplayFile@@UAEPAXI@Z 004014b0 f i DisplayPanel.obj
+ 0001:000004b0       ??_EDisplayFile@@UAEPAXI@Z 004014b0 f i DisplayPanel.obj
+ 0001:000004f0       ?resizeAndCopy@?$Suite@D@@EAEXI@Z 004014f0 f i DisplayPanel.obj
+ 0001:000005f0       ?draw@@YAXABVPolyhedron@Shev@@MMMMW4ViewMode@@@Z 004015f0 f   draw.obj
+ 0001:00000c00       ?drawNewList2d@@YAXXZ      00401c00 f   draw.obj
+ 0001:00000c40       ?endNewList@@YAXXZ         00401c40 f   draw.obj
+ 0001:00000c90       ?draw@@YAXABU?$Def@VCuboid3d@@@@MMMMW4ViewMode@@@Z 00401c90 f   draw.obj
+ 0001:00000f10       ??0Vector3d@@QAE@NNN@Z     00401f10 f i draw.obj
+ 0001:00000f40       ??D@YA?AVVector3d@@ABV0@N@Z 00401f40 f i draw.obj
+ 0001:00000f70       ??1Polyhedron@Shev@@QAE@XZ 00401f70 f i draw.obj
+ 0001:00000ff0       ??0?$DynArray@VVector3d@@@@QAE@I@Z 00401ff0 f i draw.obj
+ 0001:00001040       ??1?$DynArray@VVector3d@@@@QAE@XZ 00402040 f i draw.obj
+ 0001:00001060       ?resize@?$DynArray@VVector3d@@@@UAEAAV?$DynArrRef@VVector3d@@@@I@Z 00402060 f i draw.obj
+ 0001:000010b0       ??0?$DynArray@VFacet@Shev@@@@QAE@I@Z 004020b0 f i draw.obj
+ 0001:00001140       ??0Facet@Shev@@QAE@XZ      00402140 f i draw.obj
+ 0001:000011b0       ?resize@?$DynArray@I@@UAEAAV?$DynArrRef@I@@I@Z 004021b0 f i draw.obj
+ 0001:000011f0       ??1?$DynArray@VFacet@Shev@@@@QAE@XZ 004021f0 f i draw.obj
+ 0001:00001220       ?resize@?$DynArray@VFacet@Shev@@@@UAEAAV?$DynArrRef@VFacet@Shev@@@@I@Z 00402220 f i draw.obj
+ 0001:000012d0       ??_EFacet@Shev@@QAEPAXI@Z  004022d0 f i draw.obj
+ 0001:00001330       ??1Facet@Shev@@QAE@XZ      00402330 f i draw.obj
+ 0001:00001350       ??X@YAAAV?$ArrRef@VVector3d@@@@AAV0@ABVSimilar3d@@@Z 00402350 f i draw.obj
+ 0001:000013b0       ?mul@Vector3d@@AAAXABVSimilar3d@@ZZ 004023b0 f i draw.obj
+ 0001:00001440       ??X@YAAAV?$ArrRef@VFacet@Shev@@@@AAV0@ABVSimilar3d@@@Z 00402440 f i draw.obj
+ 0001:000014a0       ?mul@Plane3d@@AAAXABVSimilar3d@@ZZ 004024a0 f i draw.obj
+ 0001:00001550       ?CreateObject@CMainFrame@@SGPAVCObject@@XZ 00402550 f   MainFrm.obj
+ 0001:000015b0       ??3CObject@@SGXPAX@Z       004025b0 f i MainFrm.obj
+ 0001:000015c0       ?_GetBaseClass@CMainFrame@@KGPAUCRuntimeClass@@XZ 004025c0 f   MainFrm.obj
+ 0001:000015d0       ?GetRuntimeClass@CMainFrame@@UBEPAUCRuntimeClass@@XZ 004025d0 f   MainFrm.obj
+ 0001:000015e0       ?_GetBaseMessageMap@CMainFrame@@KGPBUAFX_MSGMAP@@XZ 004025e0 f   MainFrm.obj
+ 0001:000015f0       ?GetMessageMap@CMainFrame@@MBEPBUAFX_MSGMAP@@XZ 004025f0 f   MainFrm.obj
+ 0001:00001600       ??0CMainFrame@@IAE@XZ      00402600 f   MainFrm.obj
+ 0001:000016a0       ??_ECMainFrame@@UAEPAXI@Z  004026a0 f i MainFrm.obj
+ 0001:000016a0       ??_GCMainFrame@@UAEPAXI@Z  004026a0 f i MainFrm.obj
+ 0001:000016c0       ??1CMainFrame@@UAE@XZ      004026c0 f   MainFrm.obj
+ 0001:00001730       ?OnCreate@CMainFrame@@IAEHPAUtagCREATESTRUCTA@@@Z 00402730 f   MainFrm.obj
+ 0001:00001800       ?PreCreateWindow@CMainFrame@@UAEHAAUtagCREATESTRUCTA@@@Z 00402800 f   MainFrm.obj
+ 0001:00001820       ?OnReset@CMainFrame@@IAEXXZ 00402820 f   MainFrm.obj
+ 0001:00001830       ?OnRotXCcw@CMainFrame@@IAEXXZ 00402830 f   MainFrm.obj
+ 0001:00001860       ?OnRotXCw@CMainFrame@@IAEXXZ 00402860 f   MainFrm.obj
+ 0001:00001890       ?OnRotYCcw@CMainFrame@@IAEXXZ 00402890 f   MainFrm.obj
+ 0001:000018c0       ?OnRotYCw@CMainFrame@@IAEXXZ 004028c0 f   MainFrm.obj
+ 0001:000018f0       ?OnRotZCcw@CMainFrame@@IAEXXZ 004028f0 f   MainFrm.obj
+ 0001:00001920       ?OnRotZCw@CMainFrame@@IAEXXZ 00402920 f   MainFrm.obj
+ 0001:00001950       ?OnZoomIn@CMainFrame@@IAEXXZ 00402950 f   MainFrm.obj
+ 0001:00001970       ?OnZoomOut@CMainFrame@@IAEXXZ 00402970 f   MainFrm.obj
+ 0001:00001990       ?OnMovXm@CMainFrame@@IAEXXZ 00402990 f   MainFrm.obj
+ 0001:000019c0       ?OnMovXp@CMainFrame@@IAEXXZ 004029c0 f   MainFrm.obj
+ 0001:000019f0       ?OnMovYm@CMainFrame@@IAEXXZ 004029f0 f   MainFrm.obj
+ 0001:00001a20       ?OnMovYp@CMainFrame@@IAEXXZ 00402a20 f   MainFrm.obj
+ 0001:00001a50       ?OnMovZm@CMainFrame@@IAEXXZ 00402a50 f   MainFrm.obj
+ 0001:00001a80       ?OnMovZp@CMainFrame@@IAEXXZ 00402a80 f   MainFrm.obj
+ 0001:00001ab0       ?OnTest@CMainFrame@@IAEXXZ 00402ab0 f   MainFrm.obj
+ 0001:00001ac0       ?_GetBaseMessageMap@CShevTestApp@@KGPBUAFX_MSGMAP@@XZ 00402ac0 f   ShevTest.obj
+ 0001:00001ad0       ?GetMessageMap@CShevTestApp@@MBEPBUAFX_MSGMAP@@XZ 00402ad0 f   ShevTest.obj
+ 0001:00001ae0       ??0CShevTestApp@@QAE@XZ    00402ae0 f   ShevTest.obj
+ 0001:00001b00       ??_ECShevTestApp@@UAEPAXI@Z 00402b00 f i ShevTest.obj
+ 0001:00001b00       ??_GCShevTestApp@@UAEPAXI@Z 00402b00 f i ShevTest.obj
+ 0001:00001b20       ??1CShevTestApp@@UAE@XZ    00402b20 f i ShevTest.obj
+ 0001:00001b70       ?InitInstance@CShevTestApp@@UAEHXZ 00402b70 f   ShevTest.obj
+ 0001:00001c80       ??0CAboutDlg@@QAE@XZ       00402c80 f   ShevTest.obj
+ 0001:00001ca0       ??_ECAboutDlg@@UAEPAXI@Z   00402ca0 f i ShevTest.obj
+ 0001:00001ca0       ??_GCAboutDlg@@UAEPAXI@Z   00402ca0 f i ShevTest.obj
+ 0001:00001cc0       ??1CAboutDlg@@UAE@XZ       00402cc0 f i ShevTest.obj
+ 0001:00001cd0       ?_GetBaseMessageMap@CAboutDlg@@KGPBUAFX_MSGMAP@@XZ 00402cd0 f   ShevTest.obj
+ 0001:00001cd0       ?_GetBaseMessageMap@DisplayPanel@@KGPBUAFX_MSGMAP@@XZ 00402cd0 f   ShevTest.obj
+ 0001:00001ce0       ?GetMessageMap@CAboutDlg@@MBEPBUAFX_MSGMAP@@XZ 00402ce0 f   ShevTest.obj
+ 0001:00001cf0       ?OnAppAbout@CShevTestApp@@QAEXXZ 00402cf0 f   ShevTest.obj
+ 0001:00001d50       ?CreateObject@CShevTestDoc@@SGPAVCObject@@XZ 00402d50 f   ShevTestDoc.obj
+ 0001:00001db0       ?_GetBaseClass@CShevTestDoc@@KGPAUCRuntimeClass@@XZ 00402db0 f   ShevTestDoc.obj
+ 0001:00001dc0       ?GetRuntimeClass@CShevTestDoc@@UBEPAUCRuntimeClass@@XZ 00402dc0 f   ShevTestDoc.obj
+ 0001:00001dd0       ?_GetBaseMessageMap@CShevTestDoc@@KGPBUAFX_MSGMAP@@XZ 00402dd0 f   ShevTestDoc.obj
+ 0001:00001de0       ?GetMessageMap@CShevTestDoc@@MBEPBUAFX_MSGMAP@@XZ 00402de0 f   ShevTestDoc.obj
+ 0001:00001df0       ??0CShevTestDoc@@IAE@XZ    00402df0 f   ShevTestDoc.obj
+ 0001:00001e10       ?IsModified@CDocument@@UAEHXZ 00402e10 f i ShevTestDoc.obj
+ 0001:00001e20       ?SetModifiedFlag@CDocument@@UAEXH@Z 00402e20 f i ShevTestDoc.obj
+ 0001:00001e30       ??_GCShevTestDoc@@UAEPAXI@Z 00402e30 f i ShevTestDoc.obj
+ 0001:00001e30       ??_ECShevTestDoc@@UAEPAXI@Z 00402e30 f i ShevTestDoc.obj
+ 0001:00001e50       ??1CShevTestDoc@@UAE@XZ    00402e50 f   ShevTestDoc.obj
+ 0001:00001e60       ?OnNewDocument@CShevTestDoc@@UAEHXZ 00402e60 f   ShevTestDoc.obj
+ 0001:00001e70       ?CreateObject@CShevTestView@@SGPAVCObject@@XZ 00402e70 f   ShevTestView.obj
+ 0001:00001ed0       ?_GetBaseClass@CShevTestView@@KGPAUCRuntimeClass@@XZ 00402ed0 f   ShevTestView.obj
+ 0001:00001ee0       ?GetRuntimeClass@CShevTestView@@UBEPAUCRuntimeClass@@XZ 00402ee0 f   ShevTestView.obj
+ 0001:00001ef0       ?_GetBaseMessageMap@CShevTestView@@KGPBUAFX_MSGMAP@@XZ 00402ef0 f   ShevTestView.obj
+ 0001:00001f00       ?GetMessageMap@CShevTestView@@MBEPBUAFX_MSGMAP@@XZ 00402f00 f   ShevTestView.obj
+ 0001:00001f10       ??0CShevTestView@@IAE@XZ   00402f10 f   ShevTestView.obj
+ 0001:00001f30       ??_ECShevTestView@@UAEPAXI@Z 00402f30 f i ShevTestView.obj
+ 0001:00001f30       ??_GCShevTestView@@UAEPAXI@Z 00402f30 f i ShevTestView.obj
+ 0001:00001f50       ??1CShevTestView@@UAE@XZ   00402f50 f   ShevTestView.obj
+ 0001:00001fb0       ?PreCreateWindow@CShevTestView@@UAEHAAUtagCREATESTRUCTA@@@Z 00402fb0 f   ShevTestView.obj
+ 0001:00001fd0       ?OnCreate@CShevTestView@@IAEHPAUtagCREATESTRUCTA@@@Z 00402fd0 f   ShevTestView.obj
+ 0001:000021b0       ?OnDraw@CShevTestView@@UAEXPAVCDC@@@Z 004031b0 f   ShevTestView.obj
+ 0001:000021f0       ?OnPreparePrinting@CShevTestView@@MAEHPAUCPrintInfo@@@Z 004031f0 f   ShevTestView.obj
+ 0001:00002200       ?OnEndPrinting@CShevTestView@@MAEXPAVCDC@@PAUCPrintInfo@@@Z 00403200 f   ShevTestView.obj
+ 0001:00002200       ?OnBeginPrinting@CShevTestView@@MAEXPAVCDC@@PAUCPrintInfo@@@Z 00403200 f   ShevTestView.obj
+ 0001:00002210       ?OnSize@CShevTestView@@IAEXIHH@Z 00403210 f   ShevTestView.obj
+ 0001:000022b0       ?OnEraseBkgnd@CShevTestView@@IAEHPAVCDC@@@Z 004032b0 f   ShevTestView.obj
+ 0001:000022c0       ?OnLButtonDown@CShevTestView@@IAEXIVCPoint@@@Z 004032c0 f   ShevTestView.obj
+ 0001:000022c0       ?OnRButtonDown@CShevTestView@@IAEXIVCPoint@@@Z 004032c0 f   ShevTestView.obj
+ 0001:000022e0       ?OnLButtonUp@CShevTestView@@IAEXIVCPoint@@@Z 004032e0 f   ShevTestView.obj
+ 0001:000022e0       ?OnRButtonUp@CShevTestView@@IAEXIVCPoint@@@Z 004032e0 f   ShevTestView.obj
+ 0001:000022f0       ?OnMouseMove@CShevTestView@@IAEXIVCPoint@@@Z 004032f0 f   ShevTestView.obj
+ 0001:000023f0       ?reset@CShevTestView@@QAEXXZ 004033f0 f   ShevTestView.obj
+ 0001:00002420       ?scale@CShevTestView@@QAEXN@Z 00403420 f   ShevTestView.obj
+ 0001:00002490       ?rotate@CShevTestView@@QAEXNNNN@Z 00403490 f   ShevTestView.obj
+ 0001:00002530       ?move@CShevTestView@@QAEXNNN@Z 00403530 f   ShevTestView.obj
+ 0001:00002690       ??G@YA?AVVector3d@@ABV0@0@Z 00403690 f i approx3d.obj
+ 0001:000026c0       ?_max@@YAABNABN00@Z        004036c0 f i approx3d.obj
+ 0001:00002790       ?resizeAndCopy@?$Suite@I@@EAEXI@Z 00403790 f i func2d.obj
+ 0001:00002790       ?resizeAndCopy@?$Suite@_I@@EAEXI@Z 00403790 f i func2d.obj
+ 0001:00002810       ??1?$Suite@I@@QAE@XZ       00403810 f i func2d.obj
+ 0001:00002830       ??0?$DynArrRef@I@@IAE@PAII@Z 00403830 f i func2d.obj
+ 0001:000028e0       ?dimensions@@YA?AU?$Def@VSegment3d@@@@V?$CArrRef@VVector3d@@@@@Z 004038e0 f   func3d.obj
+ 0001:000029f0       ?convexHull@@YA_NV?$CArrRef@VVector3d@@@@AAIAAV?$ArrRef@I@@1AAV?$ArrRef@VTrianFacet@@@@@Z 004039f0 f   func3d.obj
+ 0001:000040d0       ?_swap@@YAXAAU?$SortItem@NPAVTrianFacet@@@@0@Z 004050d0 f i func3d.obj
+ 0001:00004ab0       ??1?$MaxHeap@U?$SortItem@NPAVTrianFacet@@@@@@QAE@XZ 00405ab0 f i func3d.obj
+ 0001:00004ac0       ?convexHull@@YAAAVPolyhedron@Shev@@V?$CArrRef@VVector3d@@@@AAV12@@Z 00405ac0 f   func3d.obj
+ 0001:00004d60       ??A?$ArrRef@I@@QAEAAII@Z   00405d60 f i func3d.obj
+ 0001:00004d70       ??1?$DynArray@I@@QAE@XZ    00405d70 f i func3d.obj
+ 0001:00004d90       ??A?$ArrRef@VTrianFacet@@@@QAEAAVTrianFacet@@I@Z 00405d90 f i func3d.obj
+ 0001:00004db0       ?resizeAndCopy@?$Suite@U?$Set2@II@@@@EAEXI@Z 00405db0 f i func3d.obj
+ 0001:00004e40       ??1?$Suite@U?$Set2@II@@@@QAE@XZ 00405e40 f i func3d.obj
+ 0001:00004e60       ?resize@?$SuiteRef@D@@UAEAAV?$DynArrRef@D@@I@Z 00405e60 f i func3d.obj
+ 0001:00004e60       ?resize@?$SuiteRef@I@@UAEAAV?$DynArrRef@I@@I@Z 00405e60 f i func3d.obj
+ 0001:00004e60       ?resize@?$SuiteRef@PAU?$SortItem@U?$Set2@II@@U1@@@@@UAEAAV?$DynArrRef@PAU?$SortItem@U?$Set2@II@@U1@@@@@I@Z 00405e60 f i func3d.obj
+ 0001:00004e60       ?resize@?$SuiteRef@U?$Set2@II@@@@UAEAAV?$DynArrRef@U?$Set2@II@@@@I@Z 00405e60 f i func3d.obj
+ 0001:00004e60       ?resize@?$SuiteRef@U?$SortItem@U?$Set2@II@@U1@@@@@UAEAAV?$DynArrRef@U?$SortItem@U?$Set2@II@@U1@@@@@I@Z 00405e60 f i func3d.obj
+ 0001:00004e60       ?resize@?$SuiteRef@_I@@UAEAAV?$DynArrRef@_I@@I@Z 00405e60 f i func3d.obj
+ 0001:00004e90       ??0?$DynArray@VTrianFacet@@@@QAE@I@Z 00405e90 f i func3d.obj
+ 0001:00004f10       ??1?$DynArray@VTrianFacet@@@@QAE@XZ 00405f10 f i func3d.obj
+ 0001:00004f40       ?resize@?$DynArray@VTrianFacet@@@@UAEAAV?$DynArrRef@VTrianFacet@@@@I@Z 00405f40 f i func3d.obj
+ 0001:00004ff0       ??_E?$ListItemA@N@SL@@UAEPAXI@Z 00405ff0 f i func3d.obj
+ 0001:00004ff0       ??_G?$ListItemA@N@SL@@UAEPAXI@Z 00405ff0 f i func3d.obj
+ 0001:00005010       ??_ETrianFacet@@QAEPAXI@Z  00406010 f i func3d.obj
+ 0001:00005070       ??0TrianFacet@@QAE@XZ      00406070 f i func3d.obj
+ 0001:00005090       ??1TrianFacet@@QAE@XZ      00406090 f i func3d.obj
+ 0001:000050a0       ??1?$ListItemA@N@SL@@UAE@XZ 004060a0 f i func3d.obj
+ 0001:000050b0       ?raise@?$MaxHeap@U?$SortItem@NPAVTrianFacet@@@@@@QAEXI@Z 004060b0 f i func3d.obj
+ 0001:00005180       ?down@?$MaxHeap@U?$SortItem@NPAVTrianFacet@@@@@@QAEXI@Z 00406180 f i func3d.obj
+ 0001:00005280       ??0?$BaseHeap@U?$SortItem@NPAVTrianFacet@@@@@@QAE@I@Z 00406280 f i func3d.obj
+ 0001:000052d0       ?gauss@?$SLU2@NN@@QBE_NAAN0@Z 004062d0 f i func3d.obj
+ 0001:000053c0       ??0?$DynArrRef@U?$Set2@II@@@@IAE@PAU?$Set2@II@@I@Z 004063c0 f i func3d.obj
+ 0001:000053e0       ??O@YA_NABU?$Set2@II@@0@Z  004063e0 f i func3d.obj
+ 0001:00005400       ??N@YA_NABU?$Set2@II@@0@Z  00406400 f i func3d.obj
+ 0001:00005430       ??P@YA_NABU?$Set2@II@@0@Z  00406430 f i func3d.obj
+ 0001:000054a0       ??_EShevItem@SL@@MAEPAXI@Z 004064a0 f i intersect2d.obj
+ 0001:000054a0       ??_GShevItem@SL@@MAEPAXI@Z 004064a0 f i intersect2d.obj
+ 0001:00005550       ??L@YA?AVVector3d@@ABV0@0@Z 00406550 f i intersect3d.obj
+ 0001:00005670       ?root3@@YANN@Z             00406670 f   Mathem.obj
+ 0001:000057a0       ?getEps@?%D:\PROJECTS\ShevTest\Shev\opti1d.cpp2695622875@@YANXZ 004067a0 f   Mathem.obj
+ 0001:000057a0       ?getEps@?%D:\PROJECTS\ShevTest\Shev\Mathem.cpp618327658@@YANXZ 004067a0 f   Mathem.obj
+ 0001:00005b40       ??0Conform3d@@QAE@N@Z      00406b40 f i opti2d_3d.obj
+ 0001:00005b90       ??0Spin3d@@QAE@XZ          00406b90 f i opti2d_3d.obj
+ 0001:00005bb0       ??0Similar3d@@QAE@ABVConform3d@@@Z 00406bb0 f i opti2d_3d.obj
+ 0001:00005df0       ?maxPolyhedronInConvexPolyhedronNR@@YA?AU?$Def@VConform3d@@@@ABVVector4d@@NV?$CArrRef@VPlane4d@@@@@Z 00406df0 f   opti3d_2.obj
+ 0001:000062e0       ?maxPolyhedronInConvexPolyhedronNR@@YA?AU?$Def@VConform3d@@@@ABVPolyhedron@Shev@@0@Z 004072e0 f   opti3d_2.obj
+ 0001:000065e0       ??0?$DynArray@VPlane4d@@@@QAE@I@Z 004075e0 f i opti3d_2.obj
+ 0001:00006630       ?resize@?$DynArray@VPlane4d@@@@UAEAAV?$DynArrRef@VPlane4d@@@@I@Z 00407630 f i opti3d_2.obj
+ 0001:00006760       ?linkFacets@Polyhedron@Shev@@QAEAAV12@XZ 00407760 f   Polyhedron.obj
+ 0001:00006a80       ?makeCuboid@Polyhedron@Shev@@QAEAAV12@NNN@Z 00407a80 f   Polyhedron.obj
+ 0001:00006fe0       ?resizeAndCopy@?$Suite@U?$SortItem@U?$Set2@II@@U1@@@@@EAEXI@Z 00407fe0 f i Polyhedron.obj
+ 0001:00007080       ??0?$Suite@U?$SortItem@U?$Set2@II@@U1@@@@@QAE@II@Z 00408080 f i Polyhedron.obj
+ 0001:000070f0       ??1?$Suite@U?$SortItem@U?$Set2@II@@U1@@@@@QAE@XZ 004080f0 f i Polyhedron.obj
+ 0001:00007110       ?quickSort123@@YA?AV?$ArrRef@U?$SortItem@U?$Set2@II@@U1@@@@@AAV1@@Z 00408110 f i Polyhedron.obj
+ 0001:00007550       ??0?$ArrRef@U?$SortItem@U?$Set2@II@@U1@@@@@QAE@V0@II@Z 00408550 f i Polyhedron.obj
+ 0001:00007580       ?resizeAndCopy@?$CmbSuite@PAU?$SortItem@U?$Set2@II@@U1@@@$0EA@@@EAEXI@Z 00408580 f i Polyhedron.obj
+ 0001:00007600       ??1?$CmbSuite@PAU?$SortItem@U?$Set2@II@@U1@@@$0EA@@@QAE@XZ 00408600 f i Polyhedron.obj
+ 0001:00007620       ??0?$DynArrRef@PAU?$SortItem@U?$Set2@II@@U1@@@@@IAE@PAPAU?$SortItem@U?$Set2@II@@U1@@@I@Z 00408620 f i Polyhedron.obj
+ 0001:00007640       ?writeInt@@YAXAAV?$SuiteRef@D@@_H1_N2@Z 00408640 f   printf.obj
+ 0001:000078d0       ??0?$CArrRef@VVector3d@@@@QAE@ABV0@@Z 004088d0 f i printf.obj
+ 0001:000078d0       ??0?$ArrRef@U?$SortItem@U?$Set2@II@@U1@@@@@QAE@ABV0@@Z 004088d0 f i printf.obj
+ 0001:000078d0       ??0?$CArrRef@I@@QAE@ABV0@@Z 004088d0 f i printf.obj
+ 0001:000078d0       ??0?$ArrRef@VTrianFacet@@@@QAE@ABV0@@Z 004088d0 f i printf.obj
+ 0001:000078d0       ??0?$ArrRef@D@@QAE@ABV0@@Z 004088d0 f i printf.obj
+ 0001:000078f0       ?writeInt@@YAXAAV?$SuiteRef@D@@_I_H_N3@Z 004088f0 f   printf.obj
+ 0001:00007ab0       ?writeHex@@YAXAAV?$SuiteRef@D@@_I_HD_N@Z 00408ab0 f   printf.obj
+ 0001:00007bf0       ?copy@@YAXNAAV?$Suite@_I@@@Z 00408bf0 f   printf.obj
+ 0001:00007d60       ?divide10@@YA_IV?$ArrRef@_I@@@Z 00408d60 f   printf.obj
+ 0001:00007db0       ?writeFltDec_@@YAXAAV?$SuiteRef@D@@N_I_N2@Z 00408db0 f   printf.obj
+ 0001:00008150       ?fpclass@@YA?AW4FPCLASS@@ABN@Z 00409150 f   printf.obj
+ 0001:000081b0       ?writeFltDec@@YAXAAV?$SuiteRef@D@@N_I_N@Z 004091b0 f   printf.obj
+ 0001:00008260       ?writeExpDec@@YAXAAV?$SuiteRef@D@@N_I_N@Z 00409260 f   printf.obj
+ 0001:00008490       ?printf@@YA_NAAVIWriteFile@@PBDZZ 00409490 f   printf.obj
+ 0001:00008e70       ??0?$ArrRef@D@@QAE@V0@II@Z 00409e70 f i printf.obj
+ 0001:00008ea0       ??1?$Suite@_I@@QAE@XZ      00409ea0 f i printf.obj
+ 0001:00008ec0       ?resizeAndCopy@?$CmbSuite@D$08@@EAEXI@Z 00409ec0 f i printf.obj
+ 0001:00008f40       ??1?$CmbSuite@D$08@@QAE@XZ 00409f40 f i printf.obj
+ 0001:00008f60       ?inc@?$SuiteRef@D@@QAEAAV1@I@Z 00409f60 f i printf.obj
+ 0001:00008f90       ??0?$DynArrRef@D@@IAE@PADI@Z 00409f90 f i printf.obj
+ 0001:00008fb0       ??0?$DynArrRef@_I@@IAE@PA_II@Z 00409fb0 f i printf.obj
+ 0001:00008fd0       ??_3@YAAAV?$ArrRef@_I@@AAV0@I@Z 00409fd0 f i printf.obj
+ 0001:000091b0       ??_2@YAAAV?$ArrRef@D@@AAV0@I@Z 0040a1b0 f i printf.obj
+ 0001:00009330       ??1?$CmbArray@_I$0EA@@@QAE@XZ 0040a330 f i printf.obj
+ 0001:00009350       ?resize@?$CmbArray@_I$0EA@@@UAEAAV?$DynArrRef@_I@@I@Z 0040a350 f i printf.obj
+ 0001:000093a0       ??0?$CmbArray@D$0EA@@@QAE@I@Z 0040a3a0 f i printf.obj
+ 0001:000093e0       ??1?$CmbArray@D$0EA@@@QAE@XZ 0040a3e0 f i printf.obj
+ 0001:00009400       ?resize@?$CmbArray@D$0EA@@@UAEAAV?$DynArrRef@D@@I@Z 0040a400 f i printf.obj
+ 0001:00009440       ??_3@YAAAV?$ArrRef@D@@AAV0@I@Z 0040a440 f i printf.obj
+ 0001:00009690       ??RPRandVector3d@@UAE?AVVector3d@@XZ 0040a690 f   Rand.obj
+ 0001:00009710       ??1ShevItem@SL@@MAE@XZ     0040a710 f   ShevList.obj
+ 0001:00009720       ??RAlter@SL@@UAEXPAVShevItem@1@@Z 0040a720 f   ShevList.obj
+ 0001:00009720       ?DoDataExchange@CAboutDlg@@MAEXPAVCDataExchange@@@Z 0040a720 f   ShevList.obj
+ 0001:00009720       ?Serialize@CShevTestDoc@@UAEXAAVCArchive@@@Z 0040a720 f   ShevList.obj
+ 0001:00009750       ??1ShevList@SL@@QAE@XZ     0040a750 f   ShevList.obj
+ 0001:00009780       ?addAftLas@ShevList@SL@@QAEAAV12@PAVShevItem@2@@Z 0040a780 f   ShevList.obj
+ 0001:000097d0       ?addAllAftLas@ShevList@SL@@QAEAAV12@AAV12@@Z 0040a7d0 f   ShevList.obj
+ 0001:00009840       ?movCurAftLas@ShevList@SL@@QAEAAV12@AAV12@@Z 0040a840 f   ShevList.obj
+ 0001:000098d0       ?outFir@ShevList@SL@@IAEPAVShevItem@2@XZ 0040a8d0 f   ShevList.obj
+ 0001:00009920       ?outCur@ShevList@SL@@IAEPAVShevItem@2@XZ 0040a920 f   ShevList.obj
+ 0001:00009970       ?makeFir@ShevList@SL@@QAEAAV12@PAVShevItem@2@@Z 0040a970 f   ShevList.obj
+ 0001:000099f0       ?timeInSec@@YANXZ          0040a9f0 f   Timer.obj
+ 0001:00009f80       ?perpendicular@Vector3d@@QBE?AV1@XZ 0040af80 f   Vector3d.obj
+ 0001:0000a0b0       ?setNorm2@Vector3d@@QAEAAV1@N@Z 0040b0b0 f   Vector3d.obj
+ 0001:0000a110       ?norm1@@YANABVVector3d@@@Z 0040b110 f   Vector3d.obj
+ 0001:0000a130       ?normU@@YANABVVector3d@@@Z 0040b130 f   Vector3d.obj
+ 0001:0000a190       ??0Plane3d@@QAE@ABVVector3d@@00@Z 0040b190 f   Vector3d.obj
+ 0001:0000a510       ??0Spin3d@@QAE@VVector3d@@0@Z 0040b510 f   Vector3d.obj
+ 0001:0000a710       ?getReper@Spin3d@@QBEXAAVVector3d@@00@Z 0040b710 f   Vector3d.obj
+ 0001:0000a7e0       ?volume@@YANABVCuboid3d@@@Z 0040b7e0 f   Vector3d.obj
+ 0001:0000a800       ?_min@@YAABNABN00@Z        0040b800 f i Vector3d.obj
+ 0001:0000a9f0       ??6Display@@QAEAAV0@N@Z    0040b9f0 f   Display.obj
+ 0001:0000aaa0       ??6Display@@QAEAAV0@PBD@Z  0040baa0 f   Display.obj
+ 0001:0000aad0       ??6Display@@QAEAAV0@ABV0@@Z 0040bad0 f   Display.obj
+ 0001:0000b090       ?randPolyhedron@?%D:\PROJECTS\ShevTest\Test\opti3d_test.cpp2830818619@@YAAAVPolyhedron@Shev@@IAAV23@@Z 0040c090 f   opti3d_test.obj
+ 0001:0000b290       ?findMax@@YA_NABV?$CArrRef@V?$Double@$06@@@@ABV?$Double@$05@@NQAV2@@Z 0040c290 f   opti3d_test.obj
+ 0001:0000b790       ?divide4@@YAXABVTriangle3d@@QAV1@@Z 0040c790 f   opti3d_test.obj
+ 0001:0000b930       ?maxCuboidInConvexPolyhedron@@YA?AU?$Def@VCuboid3d@@@@ABVSpin3d@@ABVPolyhedron@Shev@@@Z 0040c930 f   opti3d_test.obj
+ 0001:0000c4b0       ?maxCuboidInConvexPolyhedron_test@@YAXXZ 0040d4b0 f   opti3d_test.obj
+ 0001:0000c8c0       ?opti3d_test@@YAXXZ        0040d8c0 f   opti3d_test.obj
+ 0001:0000c8d0       ??1?$DynArray@V?$Double@$06@@@@QAE@XZ 0040d8d0 f i opti3d_test.obj
+ 0001:0000c8f0       ?resize@?$DynArray@V?$Double@$06@@@@UAEAAV?$DynArrRef@V?$Double@$06@@@@I@Z 0040d8f0 f i opti3d_test.obj
+ 0001:0000c930       ?mul@Vector3d@@AAAXABU?$Def@VConform3d@@@@ZZ 0040d930 f i opti3d_test.obj
+ 0001:0000ca00       ?mul@Plane3d@@AAAXABU?$Def@VConform3d@@@@ZZ 0040da00 f i opti3d_test.obj
+ 0001:0000d4e0       ?SetOccDialogInfo@CWnd@@MAEHPAU_AFX_OCC_DIALOG_INFO@@@Z 0040e4e0 f   mfc42:MFC42.DLL
+ 0001:0000d4e6       ?CheckAutoCenter@CWnd@@UAEHXZ 0040e4e6 f   mfc42:MFC42.DLL
+ 0001:0000d4ec       ?PreTranslateMessage@CWnd@@UAEHPAUtagMSG@@@Z 0040e4ec f   mfc42:MFC42.DLL
+ 0001:0000d4f2       ?GetMessageMap@CWnd@@MBEPBUAFX_MSGMAP@@XZ 0040e4f2 f   mfc42:MFC42.DLL
+ 0001:0000d4f8       ?OnCmdMsg@CCmdTarget@@UAEHIHPAXPAUAFX_CMDHANDLERINFO@@@Z 0040e4f8 f   mfc42:MFC42.DLL
+ 0001:0000d4fe       ?GetRuntimeClass@CEdit@@UBEPAUCRuntimeClass@@XZ 0040e4fe f   mfc42:MFC42.DLL
+ 0001:0000d504       ?PreInitDialog@CDialog@@MAEXXZ 0040e504 f   mfc42:MFC42.DLL
+ 0001:0000d50a       ?OnCancel@CDialog@@MAEXXZ  0040e50a f   mfc42:MFC42.DLL
+ 0001:0000d510       ?OnOK@CDialog@@MAEXXZ      0040e510 f   mfc42:MFC42.DLL
+ 0001:0000d516       ?OnSetFont@CDialog@@UAEXPAVCFont@@@Z 0040e516 f   mfc42:MFC42.DLL
+ 0001:0000d51c       ?OnInitDialog@CDialog@@UAEHXZ 0040e51c f   mfc42:MFC42.DLL
+ 0001:0000d522       ?DoModal@CDialog@@UAEHXZ   0040e522 f   mfc42:MFC42.DLL
+ 0001:0000d528       ?SetOccDialogInfo@CDialog@@MAEHPAU_AFX_OCC_DIALOG_INFO@@@Z 0040e528 f   mfc42:MFC42.DLL
+ 0001:0000d52e       ?IsFrameWnd@CWnd@@UBEHXZ   0040e52e f   mfc42:MFC42.DLL
+ 0001:0000d534       ?CheckAutoCenter@CDialog@@UAEHXZ 0040e534 f   mfc42:MFC42.DLL
+ 0001:0000d53a       ?OnChildNotify@CWnd@@MAEHIIJPAJ@Z 0040e53a f   mfc42:MFC42.DLL
+ 0001:0000d540       ?PostNcDestroy@CWnd@@MAEXXZ 0040e540 f   mfc42:MFC42.DLL
+ 0001:0000d546       ?DefWindowProcA@CWnd@@MAEJIIJ@Z 0040e546 f   mfc42:MFC42.DLL
+ 0001:0000d54c       ?OnWndMsg@CWnd@@MAEHIIJPAJ@Z 0040e54c f   mfc42:MFC42.DLL
+ 0001:0000d552       ?WindowProc@CWnd@@MAEJIIJ@Z 0040e552 f   mfc42:MFC42.DLL
+ 0001:0000d558       ?OnAmbientProperty@CWnd@@UAEHPAVCOleControlSite@@JPAUtagVARIANT@@@Z 0040e558 f   mfc42:MFC42.DLL
+ 0001:0000d55e       ?PreTranslateMessage@CDialog@@UAEHPAUtagMSG@@@Z 0040e55e f   mfc42:MFC42.DLL
+ 0001:0000d564       ?GetSuperWndProcAddr@CWnd@@MAEPAP6GJPAUHWND__@@IIJ@ZXZ 0040e564 f   mfc42:MFC42.DLL
+ 0001:0000d56a       ?OnNotify@CWnd@@MAEHIJPAJ@Z 0040e56a f   mfc42:MFC42.DLL
+ 0001:0000d570       ?OnCommand@CWnd@@MAEHIJ@Z  0040e570 f   mfc42:MFC42.DLL
+ 0001:0000d576       ?EndModalLoop@CWnd@@UAEXH@Z 0040e576 f   mfc42:MFC42.DLL
+ 0001:0000d57c       ?ContinueModal@CWnd@@UAEHXZ 0040e57c f   mfc42:MFC42.DLL
+ 0001:0000d582       ?WinHelpA@CWnd@@UAEXKI@Z   0040e582 f   mfc42:MFC42.DLL
+ 0001:0000d588       ?GetScrollBarCtrl@CWnd@@UBEPAVCScrollBar@@H@Z 0040e588 f   mfc42:MFC42.DLL
+ 0001:0000d58e       ?OnToolHitTest@CWnd@@UBEHVCPoint@@PAUtagTOOLINFOA@@@Z 0040e58e f   mfc42:MFC42.DLL
+ 0001:0000d594       ?CalcWindowRect@CWnd@@UAEXPAUtagRECT@@I@Z 0040e594 f   mfc42:MFC42.DLL
+ 0001:0000d59a       ?PreCreateWindow@CWnd@@UAEHAAUtagCREATESTRUCTA@@@Z 0040e59a f   mfc42:MFC42.DLL
+ 0001:0000d5a0       ?DestroyWindow@CWnd@@UAEHXZ 0040e5a0 f   mfc42:MFC42.DLL
+ 0001:0000d5a6       ?Create@CWnd@@UAEHPBD0KABUtagRECT@@PAV1@IPAUCCreateContext@@@Z 0040e5a6 f   mfc42:MFC42.DLL
+ 0001:0000d5ac       ?PreSubclassWindow@CWnd@@UAEXXZ 0040e5ac f   mfc42:MFC42.DLL
+ 0001:0000d5b2       ?GetConnectionHook@CCmdTarget@@MAEPAUIConnectionPoint@@ABU_GUID@@@Z 0040e5b2 f   mfc42:MFC42.DLL
+ 0001:0000d5b8       ?GetExtraConnectionPoints@CCmdTarget@@MAEHPAVCPtrArray@@@Z 0040e5b8 f   mfc42:MFC42.DLL
+ 0001:0000d5be       ?GetInterfaceHook@CCmdTarget@@UAEPAUIUnknown@@PBX@Z 0040e5be f   mfc42:MFC42.DLL
+ 0001:0000d5c4       ?OnCreateAggregates@CCmdTarget@@UAEHXZ 0040e5c4 f   mfc42:MFC42.DLL
+ 0001:0000d5ca       ?GetEventSinkMap@CCmdTarget@@MBEPBUAFX_EVENTSINKMAP@@XZ 0040e5ca f   mfc42:MFC42.DLL
+ 0001:0000d5d0       ?GetInterfaceMap@CCmdTarget@@MBEPBUAFX_INTERFACEMAP@@XZ 0040e5d0 f   mfc42:MFC42.DLL
+ 0001:0000d5d6       ?GetConnectionMap@CCmdTarget@@MBEPBUAFX_CONNECTIONMAP@@XZ 0040e5d6 f   mfc42:MFC42.DLL
+ 0001:0000d5dc       ?GetDispatchMap@CCmdTarget@@MBEPBUAFX_DISPMAP@@XZ 0040e5dc f   mfc42:MFC42.DLL
+ 0001:0000d5e2       ?GetCommandMap@CCmdTarget@@MBEPBUAFX_OLECMDMAP@@XZ 0040e5e2 f   mfc42:MFC42.DLL
+ 0001:0000d5e8       ?GetTypeLib@CCmdTarget@@UAEJKPAPAUITypeLib@@@Z 0040e5e8 f   mfc42:MFC42.DLL
+ 0001:0000d5ee       ?GetTypeLibCache@CCmdTarget@@UAEPAVCTypeLibCache@@XZ 0040e5ee f   mfc42:MFC42.DLL
+ 0001:0000d5f4       ?GetTypeInfoCount@CCmdTarget@@UAEIXZ 0040e5f4 f   mfc42:MFC42.DLL
+ 0001:0000d5fa       ?GetDispatchIID@CCmdTarget@@UAEHPAU_GUID@@@Z 0040e5fa f   mfc42:MFC42.DLL
+ 0001:0000d600       ?IsInvokeAllowed@CCmdTarget@@UAEHJ@Z 0040e600 f   mfc42:MFC42.DLL
+ 0001:0000d606       ?OnFinalRelease@CWnd@@UAEXXZ 0040e606 f   mfc42:MFC42.DLL
+ 0001:0000d60c       ?OnCmdMsg@CDialog@@UAEHIHPAXPAUAFX_CMDHANDLERINFO@@@Z 0040e60c f   mfc42:MFC42.DLL
+ 0001:0000d612       ?GetRuntimeClass@CDialog@@UBEPAUCRuntimeClass@@XZ 0040e612 f   mfc42:MFC42.DLL
+ 0001:0000d618       ??1CString@@QAE@XZ         0040e618 f   mfc42:MFC42.DLL
+ 0001:0000d61e       ??1CEdit@@UAE@XZ           0040e61e f   mfc42:MFC42.DLL
+ 0001:0000d624       ??1CDialog@@UAE@XZ         0040e624 f   mfc42:MFC42.DLL
+ 0001:0000d62a       ??4CString@@QAEABV0@PBD@Z  0040e62a f   mfc42:MFC42.DLL
+ 0001:0000d630       ??0CString@@QAE@XZ         0040e630 f   mfc42:MFC42.DLL
+ 0001:0000d636       ??0CWnd@@QAE@XZ            0040e636 f   mfc42:MFC42.DLL
+ 0001:0000d63c       ??0CDialog@@QAE@IPAVCWnd@@@Z 0040e63c f   mfc42:MFC42.DLL
+ 0001:0000d642       ??3@YAXPAX@Z               0040e642 f   mfc42:MFC42.DLL
+ 0001:0000d648       ?DDX_Text@@YGXPAVCDataExchange@@HAAH@Z 0040e648 f   mfc42:MFC42.DLL
+ 0001:0000d64e       ?DDX_Control@@YGXPAVCDataExchange@@HAAVCWnd@@@Z 0040e64e f   mfc42:MFC42.DLL
+ 0001:0000d654       ?Empty@CString@@QAEXXZ     0040e654 f   mfc42:MFC42.DLL
+ 0001:0000d65a       ?Default@CWnd@@IAEJXZ      0040e65a f   mfc42:MFC42.DLL
+ 0001:0000d660       ?MoveWindow@CWnd@@QAEXHHHHH@Z 0040e660 f   mfc42:MFC42.DLL
+ 0001:0000d666       ?SetWindowTextA@CWnd@@QAEXPBD@Z 0040e666 f   mfc42:MFC42.DLL
+ 0001:0000d66c       ??YCString@@QAEABV0@PBD@Z  0040e66c f   mfc42:MFC42.DLL
+ 0001:0000d672       ?Create@CDialog@@QAEHPBDPAVCWnd@@@Z 0040e672 f   mfc42:MFC42.DLL
+ 0001:0000d678       ??2@YAPAXI@Z               0040e678 f   mfc42:MFC42.DLL
+ 0001:0000d67e       ?ExitHelpMode@CFrameWnd@@UAEXXZ 0040e67e f   mfc42:MFC42.DLL
+ 0001:0000d684       ?DelayUpdateFrameMenu@CFrameWnd@@UAEXPAUHMENU__@@@Z 0040e684 f   mfc42:MFC42.DLL
+ 0001:0000d68a       ?GetDefaultAccelerator@CFrameWnd@@UAEPAUHACCEL__@@XZ 0040e68a f   mfc42:MFC42.DLL
+ 0001:0000d690       ?OnUpdateFrameMenu@CFrameWnd@@UAEXPAUHMENU__@@@Z 0040e690 f   mfc42:MFC42.DLL
+ 0001:0000d696       ?OnUpdateFrameTitle@CFrameWnd@@UAEXH@Z 0040e696 f   mfc42:MFC42.DLL
+ 0001:0000d69c       ?OnCreateClient@CFrameWnd@@MAEHPAUtagCREATESTRUCTA@@PAUCCreateContext@@@Z 0040e69c f   mfc42:MFC42.DLL
+ 0001:0000d6a2       ?NegotiateBorderSpace@CFrameWnd@@UAEHIPAUtagRECT@@@Z 0040e6a2 f   mfc42:MFC42.DLL
+ 0001:0000d6a8       ?GetMessageBar@CFrameWnd@@UAEPAVCWnd@@XZ 0040e6a8 f   mfc42:MFC42.DLL
+ 0001:0000d6ae       ?OnSetPreviewMode@CFrameWnd@@UAEXHPAUCPrintPreviewState@@@Z 0040e6ae f   mfc42:MFC42.DLL
+ 0001:0000d6b4       ?ActivateFrame@CFrameWnd@@UAEXH@Z 0040e6b4 f   mfc42:MFC42.DLL
+ 0001:0000d6ba       ?RecalcLayout@CFrameWnd@@UAEXH@Z 0040e6ba f   mfc42:MFC42.DLL
+ 0001:0000d6c0       ?GetMessageString@CFrameWnd@@UBEXIAAVCString@@@Z 0040e6c0 f   mfc42:MFC42.DLL
+ 0001:0000d6c6       ?GetActiveFrame@CFrameWnd@@UAEPAV1@XZ 0040e6c6 f   mfc42:MFC42.DLL
+ 0001:0000d6cc       ?GetActiveDocument@CFrameWnd@@UAEPAVCDocument@@XZ 0040e6cc f   mfc42:MFC42.DLL
+ 0001:0000d6d2       ?LoadFrame@CFrameWnd@@UAEHIKPAVCWnd@@PAUCCreateContext@@@Z 0040e6d2 f   mfc42:MFC42.DLL
+ 0001:0000d6d8       ?IsFrameWnd@CFrameWnd@@UBEHXZ 0040e6d8 f   mfc42:MFC42.DLL
+ 0001:0000d6de       ?PostNcDestroy@CFrameWnd@@MAEXXZ 0040e6de f   mfc42:MFC42.DLL
+ 0001:0000d6e4       ?PreTranslateMessage@CFrameWnd@@UAEHPAUtagMSG@@@Z 0040e6e4 f   mfc42:MFC42.DLL
+ 0001:0000d6ea       ?EndModalState@CFrameWnd@@UAEXXZ 0040e6ea f   mfc42:MFC42.DLL
+ 0001:0000d6f0       ?BeginModalState@CFrameWnd@@UAEXXZ 0040e6f0 f   mfc42:MFC42.DLL
+ 0001:0000d6f6       ?OnCommand@CFrameWnd@@MAEHIJ@Z 0040e6f6 f   mfc42:MFC42.DLL
+ 0001:0000d6fc       ?OnCmdMsg@CFrameWnd@@UAEHIHPAXPAUAFX_CMDHANDLERINFO@@@Z 0040e6fc f   mfc42:MFC42.DLL
+ 0001:0000d702       ??1CStatusBar@@UAE@XZ      0040e702 f   mfc42:MFC42.DLL
+ 0001:0000d708       ??1CFrameWnd@@UAE@XZ       0040e708 f   mfc42:MFC42.DLL
+ 0001:0000d70e       ??0CToolBar@@QAE@XZ        0040e70e f   mfc42:MFC42.DLL
+ 0001:0000d714       ??0CStatusBar@@QAE@XZ      0040e714 f   mfc42:MFC42.DLL
+ 0001:0000d71a       ??0CFrameWnd@@QAE@XZ       0040e71a f   mfc42:MFC42.DLL
+ 0001:0000d720       ??1CToolBar@@UAE@XZ        0040e720 f   mfc42:MFC42.DLL
+ 0001:0000d726       ?DockControlBar@CFrameWnd@@QAEXPAVCControlBar@@IPBUtagRECT@@@Z 0040e726 f   mfc42:MFC42.DLL
+ 0001:0000d72c       ?EnableDocking@CFrameWnd@@QAEXK@Z 0040e72c f   mfc42:MFC42.DLL
+ 0001:0000d732       ?EnableDocking@CControlBar@@QAEXK@Z 0040e732 f   mfc42:MFC42.DLL
+ 0001:0000d738       ?SetIndicators@CStatusBar@@QAEHPBIH@Z 0040e738 f   mfc42:MFC42.DLL
+ 0001:0000d73e       ?Create@CStatusBar@@QAEHPAVCWnd@@KI@Z 0040e73e f   mfc42:MFC42.DLL
+ 0001:0000d744       ?LoadToolBar@CToolBar@@QAEHPBD@Z 0040e744 f   mfc42:MFC42.DLL
+ 0001:0000d74a       ?CreateEx@CToolBar@@QAEHPAVCWnd@@KKVCRect@@I@Z 0040e74a f   mfc42:MFC42.DLL
+ 0001:0000d750       ?OnCreate@CFrameWnd@@IAEHPAUtagCREATESTRUCTA@@@Z 0040e750 f   mfc42:MFC42.DLL
+ 0001:0000d756       ?PreCreateWindow@CFrameWnd@@MAEHAAUtagCREATESTRUCTA@@@Z 0040e756 f   mfc42:MFC42.DLL
+ 0001:0000d75c       ?OnFilePrintSetup@CWinApp@@IAEXXZ 0040e75c f   mfc42:MFC42.DLL
+ 0001:0000d762       ?OnFileOpen@CWinApp@@IAEXXZ 0040e762 f   mfc42:MFC42.DLL
+ 0001:0000d768       ?OnFileNew@CWinApp@@IAEXXZ 0040e768 f   mfc42:MFC42.DLL
+ 0001:0000d76e       ?WinHelpA@CWinApp@@UAEXKI@Z 0040e76e f   mfc42:MFC42.DLL
+ 0001:0000d774       ?OnDDECommand@CWinApp@@UAEHPAD@Z 0040e774 f   mfc42:MFC42.DLL
+ 0001:0000d77a       ?DoWaitCursor@CWinApp@@UAEXH@Z 0040e77a f   mfc42:MFC42.DLL
+ 0001:0000d780       ?DoMessageBox@CWinApp@@UAEHPBDII@Z 0040e780 f   mfc42:MFC42.DLL
+ 0001:0000d786       ?SaveAllModified@CWinApp@@UAEHXZ 0040e786 f   mfc42:MFC42.DLL
+ 0001:0000d78c       ?InitApplication@CWinApp@@UAEHXZ 0040e78c f   mfc42:MFC42.DLL
+ 0001:0000d792       ?AddToRecentFileList@CWinApp@@UAEXPBD@Z 0040e792 f   mfc42:MFC42.DLL
+ 0001:0000d798       ?OpenDocumentFile@CWinApp@@UAEPAVCDocument@@PBD@Z 0040e798 f   mfc42:MFC42.DLL
+ 0001:0000d79e       ?Delete@CWinThread@@UAEXXZ 0040e79e f   mfc42:MFC42.DLL
+ 0001:0000d7a4       ?GetMainWnd@CWinThread@@UAEPAVCWnd@@XZ 0040e7a4 f   mfc42:MFC42.DLL
+ 0001:0000d7aa       ?ProcessMessageFilter@CWinThread@@UAEHHPAUtagMSG@@@Z 0040e7aa f   mfc42:MFC42.DLL
+ 0001:0000d7b0       ?ProcessWndProcException@CWinApp@@UAEJPAVCException@@PBUtagMSG@@@Z 0040e7b0 f   mfc42:MFC42.DLL
+ 0001:0000d7b6       ?ExitInstance@CWinApp@@UAEHXZ 0040e7b6 f   mfc42:MFC42.DLL
+ 0001:0000d7bc       ?IsIdleMessage@CWinThread@@UAEHPAUtagMSG@@@Z 0040e7bc f   mfc42:MFC42.DLL
+ 0001:0000d7c2       ?OnIdle@CWinApp@@UAEHJ@Z   0040e7c2 f   mfc42:MFC42.DLL
+ 0001:0000d7c8       ?PumpMessage@CWinThread@@UAEHXZ 0040e7c8 f   mfc42:MFC42.DLL
+ 0001:0000d7ce       ?PreTranslateMessage@CWinThread@@UAEHPAUtagMSG@@@Z 0040e7ce f   mfc42:MFC42.DLL
+ 0001:0000d7d4       ?Run@CWinApp@@UAEHXZ       0040e7d4 f   mfc42:MFC42.DLL
+ 0001:0000d7da       ?OnFinalRelease@CCmdTarget@@UAEXXZ 0040e7da f   mfc42:MFC42.DLL
+ 0001:0000d7e0       ?GetRuntimeClass@CWinApp@@UBEPAUCRuntimeClass@@XZ 0040e7e0 f   mfc42:MFC42.DLL
+ 0001:0000d7e6       ??0CWinApp@@QAE@PBD@Z      0040e7e6 f   mfc42:MFC42.DLL
+ 0001:0000d7ec       ??1CWinApp@@UAE@XZ         0040e7ec f   mfc42:MFC42.DLL
+ 0001:0000d7f2       ?ShowWindow@CWnd@@QAEHH@Z  0040e7f2 f   mfc42:MFC42.DLL
+ 0001:0000d7f8       ??1CCommandLineInfo@@UAE@XZ 0040e7f8 f   mfc42:MFC42.DLL
+ 0001:0000d7fe       ?ProcessShellCommand@CWinApp@@QAEHAAVCCommandLineInfo@@@Z 0040e7fe f   mfc42:MFC42.DLL
+ 0001:0000d804       ?ParseCommandLine@CWinApp@@QAEXAAVCCommandLineInfo@@@Z 0040e804 f   mfc42:MFC42.DLL
+ 0001:0000d80a       ??0CCommandLineInfo@@QAE@XZ 0040e80a f   mfc42:MFC42.DLL
+ 0001:0000d810       ?AddDocTemplate@CWinApp@@QAEXPAVCDocTemplate@@@Z 0040e810 f   mfc42:MFC42.DLL
+ 0001:0000d816       ??0CSingleDocTemplate@@QAE@IPAUCRuntimeClass@@00@Z 0040e816 f   mfc42:MFC42.DLL
+ 0001:0000d81c       ?LoadStdProfileSettings@CWinApp@@IAEXI@Z 0040e81c f   mfc42:MFC42.DLL
+ 0001:0000d822       ?SetRegistryKey@CWinApp@@IAEXPBD@Z 0040e822 f   mfc42:MFC42.DLL
+ 0001:0000d828       ?Enable3dControls@CWinApp@@IAEHXZ 0040e828 f   mfc42:MFC42.DLL
+ 0001:0000d82e       ?OnIdle@CDocument@@UAEXXZ  0040e82e f   mfc42:MFC42.DLL
+ 0001:0000d834       ?GetDefaultAccelerator@CDocument@@UAEPAUHACCEL__@@XZ 0040e834 f   mfc42:MFC42.DLL
+ 0001:0000d83a       ?GetDefaultMenu@CDocument@@UAEPAUHMENU__@@XZ 0040e83a f   mfc42:MFC42.DLL
+ 0001:0000d840       ?UpdateFrameCounts@CDocument@@UAEXXZ 0040e840 f   mfc42:MFC42.DLL
+ 0001:0000d846       ?DoFileSave@CDocument@@UAEHXZ 0040e846 f   mfc42:MFC42.DLL
+ 0001:0000d84c       ?DoSave@CDocument@@UAEHPBDH@Z 0040e84c f   mfc42:MFC42.DLL
+ 0001:0000d852       ?PreCloseFrame@CDocument@@UAEXPAVCFrameWnd@@@Z 0040e852 f   mfc42:MFC42.DLL
+ 0001:0000d858       ?SaveModified@CDocument@@UAEHXZ 0040e858 f   mfc42:MFC42.DLL
+ 0001:0000d85e       ?CanCloseFrame@CDocument@@UAEHPAVCFrameWnd@@@Z 0040e85e f   mfc42:MFC42.DLL
+ 0001:0000d864       ?ReleaseFile@CDocument@@UAEXPAVCFile@@H@Z 0040e864 f   mfc42:MFC42.DLL
+ 0001:0000d86a       ?GetFile@CDocument@@UAEPAVCFile@@PBDIPAVCFileException@@@Z 0040e86a f   mfc42:MFC42.DLL
+ 0001:0000d870       ?ReportSaveLoadException@CDocument@@UAEXPBDPAVCException@@HI@Z 0040e870 f   mfc42:MFC42.DLL
+ 0001:0000d876       ?OnCloseDocument@CDocument@@UAEXXZ 0040e876 f   mfc42:MFC42.DLL
+ 0001:0000d87c       ?OnSaveDocument@CDocument@@UAEHPBD@Z 0040e87c f   mfc42:MFC42.DLL
+ 0001:0000d882       ?OnOpenDocument@CDocument@@UAEHPBD@Z 0040e882 f   mfc42:MFC42.DLL
+ 0001:0000d888       ?DeleteContents@CDocument@@UAEXXZ 0040e888 f   mfc42:MFC42.DLL
+ 0001:0000d88e       ?OnChangedViewList@CDocument@@UAEXXZ 0040e88e f   mfc42:MFC42.DLL
+ 0001:0000d894       ?GetNextView@CDocument@@UBEPAVCView@@AAPAU__POSITION@@@Z 0040e894 f   mfc42:MFC42.DLL
+ 0001:0000d89a       ?GetFirstViewPosition@CDocument@@UBEPAU__POSITION@@XZ 0040e89a f   mfc42:MFC42.DLL
+ 0001:0000d8a0       ?SetPathName@CDocument@@UAEXPBDH@Z 0040e8a0 f   mfc42:MFC42.DLL
+ 0001:0000d8a6       ?SetTitle@CDocument@@UAEXPBD@Z 0040e8a6 f   mfc42:MFC42.DLL
+ 0001:0000d8ac       ?OnFinalRelease@CDocument@@UAEXXZ 0040e8ac f   mfc42:MFC42.DLL
+ 0001:0000d8b2       ?OnCmdMsg@CDocument@@UAEHIHPAXPAUAFX_CMDHANDLERINFO@@@Z 0040e8b2 f   mfc42:MFC42.DLL
+ 0001:0000d8b8       ??0CDocument@@QAE@XZ       0040e8b8 f   mfc42:MFC42.DLL
+ 0001:0000d8be       ??1CDocument@@UAE@XZ       0040e8be f   mfc42:MFC42.DLL
+ 0001:0000d8c4       ?OnNewDocument@CDocument@@UAEHXZ 0040e8c4 f   mfc42:MFC42.DLL
+ 0001:0000d8ca       ?OnFilePrintPreview@CView@@IAEXXZ 0040e8ca f   mfc42:MFC42.DLL
+ 0001:0000d8d0       ?OnFilePrint@CView@@IAEXXZ 0040e8d0 f   mfc42:MFC42.DLL
+ 0001:0000d8d6       ?OnEndPrintPreview@CView@@MAEXPAVCDC@@PAUCPrintInfo@@UtagPOINT@@PAVCPreviewView@@@Z 0040e8d6 f   mfc42:MFC42.DLL
+ 0001:0000d8dc       ?OnPrint@CView@@MAEXPAVCDC@@PAUCPrintInfo@@@Z 0040e8dc f   mfc42:MFC42.DLL
+ 0001:0000d8e2       ?OnUpdate@CView@@MAEXPAV1@JPAVCObject@@@Z 0040e8e2 f   mfc42:MFC42.DLL
+ 0001:0000d8e8       ?OnActivateFrame@CView@@MAEXIPAVCFrameWnd@@@Z 0040e8e8 f   mfc42:MFC42.DLL
+ 0001:0000d8ee       ?OnActivateView@CView@@MAEXHPAV1@0@Z 0040e8ee f   mfc42:MFC42.DLL
+ 0001:0000d8f4       ?OnInitialUpdate@CView@@UAEXXZ 0040e8f4 f   mfc42:MFC42.DLL
+ 0001:0000d8fa       ?OnPrepareDC@CView@@UAEXPAVCDC@@PAUCPrintInfo@@@Z 0040e8fa f   mfc42:MFC42.DLL
+ 0001:0000d900       ?OnDragScroll@CView@@UAEKKVCPoint@@@Z 0040e900 f   mfc42:MFC42.DLL
+ 0001:0000d906       ?OnDropEx@CView@@UAEKPAVCOleDataObject@@KKVCPoint@@@Z 0040e906 f   mfc42:MFC42.DLL
+ 0001:0000d90c       ?OnDrop@CView@@UAEHPAVCOleDataObject@@KVCPoint@@@Z 0040e90c f   mfc42:MFC42.DLL
+ 0001:0000d912       ?OnDragLeave@CView@@UAEXXZ 0040e912 f   mfc42:MFC42.DLL
+ 0001:0000d918       ?OnDragOver@CView@@UAEKPAVCOleDataObject@@KVCPoint@@@Z 0040e918 f   mfc42:MFC42.DLL
+ 0001:0000d91e       ?OnDragEnter@CView@@UAEKPAVCOleDataObject@@KVCPoint@@@Z 0040e91e f   mfc42:MFC42.DLL
+ 0001:0000d924       ?OnScrollBy@CView@@UAEHVCSize@@H@Z 0040e924 f   mfc42:MFC42.DLL
+ 0001:0000d92a       ?OnScroll@CView@@UAEHIIH@Z 0040e92a f   mfc42:MFC42.DLL
+ 0001:0000d930       ?IsSelected@CView@@UBEHPBVCObject@@@Z 0040e930 f   mfc42:MFC42.DLL
+ 0001:0000d936       ?PostNcDestroy@CView@@MAEXXZ 0040e936 f   mfc42:MFC42.DLL
+ 0001:0000d93c       ?GetScrollBarCtrl@CView@@UBEPAVCScrollBar@@H@Z 0040e93c f   mfc42:MFC42.DLL
+ 0001:0000d942       ?CalcWindowRect@CView@@UAEXPAUtagRECT@@I@Z 0040e942 f   mfc42:MFC42.DLL
+ 0001:0000d948       ?OnCmdMsg@CView@@UAEHIHPAXPAUAFX_CMDHANDLERINFO@@@Z 0040e948 f   mfc42:MFC42.DLL
+ 0001:0000d94e       ??0CView@@IAE@XZ           0040e94e f   mfc42:MFC42.DLL
+ 0001:0000d954       ??1CView@@UAE@XZ           0040e954 f   mfc42:MFC42.DLL
+ 0001:0000d95a       ?PreCreateWindow@CView@@MAEHAAUtagCREATESTRUCTA@@@Z 0040e95a f   mfc42:MFC42.DLL
+ 0001:0000d960       ?MessageBoxA@CWnd@@QAEHPBD0I@Z 0040e960 f   mfc42:MFC42.DLL
+ 0001:0000d966       ??0CClientDC@@QAE@PAVCWnd@@@Z 0040e966 f   mfc42:MFC42.DLL
+ 0001:0000d96c       ?OnCreate@CView@@IAEHPAUtagCREATESTRUCTA@@@Z 0040e96c f   mfc42:MFC42.DLL
+ 0001:0000d972       ?DoPreparePrinting@CView@@QAEHPAUCPrintInfo@@@Z 0040e972 f   mfc42:MFC42.DLL
+ 0001:0000d978       ___CxxFrameHandler         0040e978 f   msvcrt:MSVCRT.dll
+ 0001:0000d980       __onexit                   0040e980 f   msvcrt:atonexit.obj
+ 0001:0000d9ac       _atexit                    0040e9ac f   msvcrt:atonexit.obj
+ 0001:0000d9be       __purecall                 0040e9be f   msvcrt:MSVCRT.dll
+ 0001:0000d9c4       ??_M@YGXPAXIHP6EX0@Z@Z     0040e9c4 f   msvcrt:ehvecdtr.obj
+ 0001:0000da44       ?__ArrayUnwind@@YGXPAXIHP6EX0@Z@Z 0040ea44 f   msvcrt:ehvecdtr.obj
+ 0001:0000dab8       ??_L@YGXPAXIHP6EX0@Z1@Z    0040eab8 f   msvcrt:ehvecctr.obj
+ 0001:0000db3a       __ftol                     0040eb3a f   msvcrt:MSVCRT.dll
+ 0001:0000db40       __chkstk                   0040eb40 f   msvcrt:chkstk.obj
+ 0001:0000db40       __alloca_probe             0040eb40 f   msvcrt:chkstk.obj
+ 0001:0000db70       __allshl                   0040eb70 f   msvcrt:llshl.obj
+ 0001:0000db90       __aullrem                  0040eb90 f   msvcrt:ullrem.obj
+ 0001:0000dc10       __aulldiv                  0040ec10 f   msvcrt:ulldiv.obj
+ 0001:0000dc80       __allmul                   0040ec80 f   msvcrt:llmul.obj
+ 0001:0000dcb4       _WinMainCRTStartup         0040ecb4 f   msvcrt:crtexew.obj
+ 0001:0000de12       ___dllonexit               0040ee12 f   msvcrt:MSVCRT.dll
+ 0001:0000de18       __except_handler3          0040ee18 f   msvcrt:MSVCRT.dll
+ 0001:0000de1e       ?terminate@@YAXXZ          0040ee1e f   msvcrt:MSVCRT.dll
+ 0001:0000de24       __XcptFilter               0040ee24 f   msvcrt:MSVCRT.dll
+ 0001:0000de2a       __initterm                 0040ee2a f   msvcrt:MSVCRT.dll
+ 0001:0000de30       __setdefaultprecision      0040ee30 f   msvcrt:fp8.obj
+ 0001:0000de42       __matherr                  0040ee42 f   msvcrt:merr.obj
+ 0001:0000de45       __setargv                  0040ee45 f   msvcrt:dllargv.obj
+ 0001:0000de46       __controlfp                0040ee46 f   msvcrt:MSVCRT.dll
+ 0001:0000de4c       _WinMain@16                0040ee4c f   mfcs42:appmodul.obj
+ 0001:0000de64       ?AfxInitialize@@YGHHK@Z    0040ee64 f   mfcs42:appmodul.obj
+ 0001:0000dea4       ?AfxWinMain@@YGHPAUHINSTANCE__@@0PADH@Z 0040eea4 f   mfc42:MFC42.DLL
+ 0001:0000deaa       ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ 0040eeaa f   mfc42:MFC42.DLL
+ 0002:00000000       ?messageMap@DisplayPanel@@1UAFX_MSGMAP@@B 00410000     DisplayPanel.obj
+ 0002:00000008       ?_messageEntries@DisplayPanel@@0QBUAFX_MSGMAP_ENTRY@@B 00410008     DisplayPanel.obj
+ 0002:00000050       ??_7DisplayPanel@@6B@      00410050     DisplayPanel.obj
+ 0002:00000128       ??_7CEdit@@6B@             00410128     DisplayPanel.obj
+ 0002:000001e8       ??_7IWriteFile@@6B@        004101e8     DisplayPanel.obj
+ 0002:000001f8       ??_7?$Suite@D@@6B@         004101f8     DisplayPanel.obj
+ 0002:00000200       ??_7DisplayFile@@6B@       00410200     DisplayPanel.obj
+ 0002:00000218       __real@4@40018000000000000000 00410218     draw.obj
+ 0002:0000021c       __real@4@3ffccccccd0000000000 0041021c     draw.obj
+ 0002:00000220       __real@4@3ffe8000000000000000 00410220     draw.obj
+ 0002:00000224       ??_7?$DynArray@VVector3d@@@@6B@ 00410224     draw.obj
+ 0002:00000228       __real@8@00000000000000000000 00410228     draw.obj
+ 0002:00000230       ??_7?$DynArray@VFacet@Shev@@@@6B@ 00410230     draw.obj
+ 0002:00000234       ??_7?$DynArray@I@@6B@      00410234     draw.obj
+ 0002:00000238       ?classCMainFrame@CMainFrame@@2UCRuntimeClass@@B 00410238     MainFrm.obj
+ 0002:00000250       ?messageMap@CMainFrame@@1UAFX_MSGMAP@@B 00410250     MainFrm.obj
+ 0002:00000258       ?_messageEntries@CMainFrame@@0QBUAFX_MSGMAP_ENTRY@@B 00410258     MainFrm.obj
+ 0002:00000408       ??_7CMainFrame@@6B@        00410408     MainFrm.obj
+ 0002:00000508       __real@8@3fff8000000000000000 00410508     MainFrm.obj
+ 0002:00000510       ?messageMap@CShevTestApp@@1UAFX_MSGMAP@@B 00410510     ShevTest.obj
+ 0002:00000518       ?_messageEntries@CShevTestApp@@0QBUAFX_MSGMAP_ENTRY@@B 00410518     ShevTest.obj
+ 0002:00000590       ?messageMap@CAboutDlg@@1UAFX_MSGMAP@@B 00410590     ShevTest.obj
+ 0002:00000598       ?_messageEntries@CAboutDlg@@0QBUAFX_MSGMAP_ENTRY@@B 00410598     ShevTest.obj
+ 0002:000005b0       ??_7CShevTestApp@@6B@      004105b0     ShevTest.obj
+ 0002:00000654       ??_7CAboutDlg@@6B@         00410654     ShevTest.obj
+ 0002:00000730       ?classCShevTestDoc@CShevTestDoc@@2UCRuntimeClass@@B 00410730     ShevTestDoc.obj
+ 0002:00000748       ?messageMap@CShevTestDoc@@1UAFX_MSGMAP@@B 00410748     ShevTestDoc.obj
+ 0002:00000750       ?_messageEntries@CShevTestDoc@@0QBUAFX_MSGMAP_ENTRY@@B 00410750     ShevTestDoc.obj
+ 0002:00000768       ??_7CShevTestDoc@@6B@      00410768     ShevTestDoc.obj
+ 0002:00000820       ?classCShevTestView@CShevTestView@@2UCRuntimeClass@@B 00410820     ShevTestView.obj
+ 0002:00000838       ?messageMap@CShevTestView@@1UAFX_MSGMAP@@B 00410838     ShevTestView.obj
+ 0002:00000840       ?_messageEntries@CShevTestView@@0QBUAFX_MSGMAP_ENTRY@@B 00410840     ShevTestView.obj
+ 0002:00000960       ??_7CShevTestView@@6B@     00410960     ShevTestView.obj
+ 0002:00000a70       __real@8@40008000000000000000 00410a70     ShevTestView.obj
+ 0002:00000a78       __real@8@3ff8a3d70a3d70a3d800 00410a78     approx.obj
+ 0002:00000a88       __real@8@bffe8000000000000000 00410a88     approx2d.obj
+ 0002:00000a90       __real@8@3ffe8000000000000000 00410a90     approx2d.obj
+ 0002:00000a98       __real@8@3fe189705f4136b4a800 00410a98     approx2d.obj
+ 0002:00000aa0       __real@8@3fe4abcc77118461d000 00410aa0     approx2d.obj
+ 0002:00000aa8       __real@8@3fd0b424dc35095cd800 00410aa8     approx3d.obj
+ 0002:00000ab0       __real@8@40028000000000000000 00410ab0     approx3d.obj
+ 0002:00000ab8       __real@8@3ffdaaaaaaaaaaaaa800 00410ab8     Complex.obj
+ 0002:00000ac0       __real@8@3ffbccccccccccccd000 00410ac0     File.obj
+ 0002:00000ac8       __real@8@4002a000000000000000 00410ac8     File.obj
+ 0002:00000b28       ??_7?$Suite@I@@6B@         00410b28     func2d.obj
+ 0002:00000b30       __real@8@3fd78cbccc096f508800 00410b30     func2d.obj
+ 0002:00000b38       ??_7?$DynArrRef@I@@6B@     00410b38     func2d.obj
+ 0002:00000b3c       ??_7?$Suite@U?$Set2@II@@@@6B@ 00410b3c     func3d.obj
+ 0002:00000b44       ??_7?$ListItemA@N@SL@@6B@  00410b44     func3d.obj
+ 0002:00000b48       __real@8@bfff8000000000000000 00410b48     func3d.obj
+ 0002:00000b50       ??_7?$DynArray@VTrianFacet@@@@6B@ 00410b50     func3d.obj
+ 0002:00000b54       ??_7?$DynArrRef@U?$Set2@II@@@@6B@ 00410b54     func3d.obj
+ 0002:00000b58       ??_7ShevItem@SL@@6B@       00410b58     intersect2d.obj
+ 0002:00000de0       __real@8@3fffc000000000000000 00410de0     Mathem.obj
+ 0002:00000de8       __real@8@3ffde38e38e38e38e000 00410de8     Mathem.obj
+ 0002:00000df0       __real@8@3ffc8000000000000000 00410df0     Mathem.obj
+ 0002:00000e08       __real@8@4001a000000000000000 00410e08     opti1d.obj
+ 0002:00000e10       __real@8@bfe4abcc77118461d000 00410e10     opti2d_4.obj
+ 0002:00000e18       __real@8@3fc39392ee8e921d6000 00410e18     opti3d.obj
+ 0002:00000e20       ??_7?$DynArray@VPlane4d@@@@6B@ 00410e20     opti3d_2.obj
+ 0002:00000e30       ??_7?$Suite@U?$SortItem@U?$Set2@II@@U1@@@@@6B@ 00410e30     Polyhedron.obj
+ 0002:00000e38       ??_7?$CmbSuite@PAU?$SortItem@U?$Set2@II@@U1@@@$0EA@@@6B@ 00410e38     Polyhedron.obj
+ 0002:00000e40       ??_7?$DynArrRef@PAU?$SortItem@U?$Set2@II@@U1@@@@@6B@ 00410e40     Polyhedron.obj
+ 0002:00000e44       ??_7?$Suite@_I@@6B@        00410e44     printf.obj
+ 0002:00000e4c       ??_7?$CmbArray@D$0EA@@@6B@ 00410e4c     printf.obj
+ 0002:00000e50       ??_7?$CmbSuite@D$08@@6B@   00410e50     printf.obj
+ 0002:00000e58       ??_7?$DynArrRef@D@@6B@     00410e58     printf.obj
+ 0002:00000e5c       ??_7?$DynArrRef@_I@@6B@    00410e5c     printf.obj
+ 0002:00000e60       ??_7?$CmbArray@_I$0EA@@@6B@ 00410e60     printf.obj
+ 0002:00000e78       __real@8@3fe1c90fdaa22168c000 00410e78     Rand.obj
+ 0002:00000e80       __real@8@3fdf8000000000000000 00410e80     Rand.obj
+ 0002:00000e88       __real@8@3fe08000000000000000 00410e88     Rand.obj
+ 0002:00000e90       ??_7Alter@SL@@6B@          00410e90     ShevList.obj
+ 0002:00000ea0       ??_7PRandVector3d@@6B@     00410ea0     approx3d_test.obj
+ 0002:00000eb0       __real@8@40209502f90000000000 00410eb0     Display.obj
+ 0002:00000ec0       ??_7?$DynArray@V?$Double@$06@@@@6B@ 00410ec0     opti3d_test.obj
+ 0003:00000000       ___xc_a                    00412000     msvcrt:cinitexe.obj
+ 0003:0000020c       ___xc_z                    0041220c     msvcrt:cinitexe.obj
+ 0003:00000210       ___xi_a                    00412210     msvcrt:cinitexe.obj
+ 0003:00000214       ___xi_z                    00412214     msvcrt:cinitexe.obj
+ 0003:00000230       ??_C@_0L@IAGP@CMainFrame?$AA@ 00412230     MainFrm.obj
+ 0003:0000023c       ??_C@_0CH@DJLM@Local?5AppWizard?9Generated?5Applic@ 0041223c     ShevTest.obj
+ 0003:00000264       ??_C@_0N@PEGK@CShevTestDoc?$AA@ 00412264     ShevTestDoc.obj
+ 0003:00000274       ??_C@_0O@MIEM@CShevTestView?$AA@ 00412274     ShevTestView.obj
+ 0003:00000284       ??_C@_0BG@IJPF@SetPixelFormat?5failed?$AA@ 00412284     ShevTestView.obj
+ 0003:0000029c       ??_C@_0BJ@FFJB@ChoosePixelFormat?5failed?$AA@ 0041229c     ShevTestView.obj
+ 0003:000002b8       ??_C@_01BJG@?6?$AA@        004122b8     fileOBJ.obj
+ 0003:000002bc       ??_C@_08OIBM@POLYHED1?$AA@ 004122bc     filePYH.obj
+ 0003:00000328       ??_C@_0L@INOO@8463847412?$AA@ 00412328     printf.obj
+ 0003:00000334       ??_C@_08GGDF@?$CL1?4?$CDQNAN?$AA@ 00412334     printf.obj
+ 0003:00000340       ??_C@_08NGNC@?91?4?$CDQNAN?$AA@ 00412340     printf.obj
+ 0003:0000034c       ??_C@_07GJAM@?91?4?$CDIND?$AA@ 0041234c     printf.obj
+ 0003:00000354       ??_C@_07NLFP@?$CL1?4?$CDINF?$AA@ 00412354     printf.obj
+ 0003:0000035c       ??_C@_07DMCC@?91?4?$CDINF?$AA@ 0041235c     printf.obj
+ 0003:00000364       ??_C@_05OFLO@e?$CL000?$AA@ 00412364     printf.obj
+ 0003:0000036c       ??_C@_03DNBD@end?$AA@      0041236c     approx2d_test.obj
+ 0003:00000374       ??_C@_01FCOA@?5?$AA@       00412374     Display.obj
+ 0003:00000378       ??_C@_04FHKA@?$CF?43e?$AA@ 00412378     Display.obj
+ 0003:00000380       ??_C@_04KIBJ@?$CF?43f?$AA@ 00412380     Display.obj
+ 0003:00000388       ??_C@_01PLJA@0?$AA@        00412388     Display.obj
+ 0003:0000038c       ??_C@_02JBAA@?$CFf?$AA@    0041238c     Display.obj
+ 0003:00000390       ??_C@_05COLM@error?$AA@    00412390     func1d_test.obj
+ 0003:00000398       ??_C@_08BHKF@POLYHED2?$AA@ 00412398     filePYH_Body.obj
+ 0003:000003a4       ??_C@_08LNDC@POLYHED3?$AA@ 004123a4     filePYH_ExtraBody.obj
+ 0003:000003b0       ___defaultmatherr          004123b0     msvcrt:merr.obj
+ 0003:000003b8       ?display@@3VDisplay@@A     004123b8     DisplayPanel.obj
+ 0003:00000480       ??_C@_00A@?$AA@            00412480     DisplayPanel.obj
+ 0003:000004d0       ?theApp@@3VCShevTestApp@@A 004124d0     ShevTest.obj
+ 0003:00000594       ?view@@3PAVCShevTestView@@A 00412594     ShevTestView.obj
+ 0003:000008ac       ?none@SL@@3VAlter@1@A      004128ac     ShevList.obj
+ 0003:000008b0       ?Info@SL@@3VInfoActGen@1@A 004128b0     ShevList.obj
+ 0003:00000910       ?d030@Spin2d@@2V1@B        00412910     Vector2d.obj
+ 0003:00000920       ?d045@Spin2d@@2V1@B        00412920     Vector2d.obj
+ 0003:00000930       ?d300@Spin2d@@2V1@B        00412930     Vector2d.obj
+ 0003:00000940       ?d240@Spin2d@@2V1@B        00412940     Vector2d.obj
+ 0003:00000950       ?d180@Spin2d@@2V1@B        00412950     Vector2d.obj
+ 0003:00000960       ?d210@Spin2d@@2V1@B        00412960     Vector2d.obj
+ 0003:00000970       ?d150@Spin2d@@2V1@B        00412970     Vector2d.obj
+ 0003:00000980       ?d090@Spin2d@@2V1@B        00412980     Vector2d.obj
+ 0003:00000990       ?d330@Spin2d@@2V1@B        00412990     Vector2d.obj
+ 0003:000009a0       ?d270@Spin2d@@2V1@B        004129a0     Vector2d.obj
+ 0003:000009b0       ?d135@Spin2d@@2V1@B        004129b0     Vector2d.obj
+ 0003:000009c0       ?d225@Spin2d@@2V1@B        004129c0     Vector2d.obj
+ 0003:000009d0       ?d315@Spin2d@@2V1@B        004129d0     Vector2d.obj
+ 0003:000009f0       ?d120@Spin2d@@2V1@B        004129f0     Vector2d.obj
+ 0003:00000a00       ?d060@Spin2d@@2V1@B        00412a00     Vector2d.obj
+ 0003:00000de4       ?isum@?%D:\PROJECTS\ShevTest\Test\func1d_test.cpp120624215@@3IA 00412de4     func1d_test.obj
+ 0003:00002240       __afxForceEXCLUDE          00414240     mfcs42:nolib.obj
+ 0003:00002244       __afxForceSTDAFX           00414244     mfcs42:stdafx.obj
+ 0003:00002248       __dowildcard               00414248     msvcrt:wildcard.obj
+ 0003:0000224c       __newmode                  0041424c     msvcrt:_newmode.obj
+ 0003:00002250       __commode                  00414250     msvcrt:xncommod.obj
+ 0003:00002254       __fmode                    00414254     msvcrt:xtxtmode.obj
+ 0003:00002258       ?_afxInitAppState@@3DA     00414258     mfcs42:appmodul.obj
+ 0003:0000225c       __adjust_fdiv              0041425c     <common>
+ 0003:00002260       ___onexitend               00414260     <common>
+ 0003:00002264       ___onexitbegin             00414264     <common>
+ 0004:00000000       __IMPORT_DESCRIPTOR_OPENGL32 00415000     opengl32:OPENGL32.dll
+ 0004:00000014       __IMPORT_DESCRIPTOR_MFC42  00415014     mfc42:MFC42.DLL
+ 0004:00000028       __IMPORT_DESCRIPTOR_MSVCRT 00415028     msvcrt:MSVCRT.dll
+ 0004:0000003c       __IMPORT_DESCRIPTOR_KERNEL32 0041503c     kernel32:KERNEL32.dll
+ 0004:00000050       __IMPORT_DESCRIPTOR_USER32 00415050     user32:USER32.dll
+ 0004:00000064       __IMPORT_DESCRIPTOR_GDI32  00415064     gdi32:GDI32.dll
+ 0004:00000078       __NULL_IMPORT_DESCRIPTOR   00415078     opengl32:OPENGL32.dll
+ 0004:000004ec       __imp__DescribePixelFormat@16 004154ec     gdi32:GDI32.dll
+ 0004:000004f0       __imp__SwapBuffers@4       004154f0     gdi32:GDI32.dll
+ 0004:000004f4       __imp__ChoosePixelFormat@8 004154f4     gdi32:GDI32.dll
+ 0004:000004f8       __imp__SetPixelFormat@12   004154f8     gdi32:GDI32.dll
+ 0004:000004fc       __imp__GetPixelFormat@4    004154fc     gdi32:GDI32.dll
+ 0004:00000500       \177GDI32_NULL_THUNK_DATA  00415500     gdi32:GDI32.dll
+ 0004:00000504       __imp__QueryPerformanceFrequency@4 00415504     kernel32:KERNEL32.dll
+ 0004:00000508       __imp__QueryPerformanceCounter@4 00415508     kernel32:KERNEL32.dll
+ 0004:0000050c       __imp__GetStartupInfoA@4   0041550c     kernel32:KERNEL32.dll
+ 0004:00000510       __imp__GetModuleHandleA@4  00415510     kernel32:KERNEL32.dll
+ 0004:00000514       \177KERNEL32_NULL_THUNK_DATA 00415514     kernel32:KERNEL32.dll
+ 0004:00000518       __imp_?SaveAllModified@CWinApp@@UAEHXZ 00415518     mfc42:MFC42.DLL
+ 0004:0000051c       __imp_?AfxWinMain@@YGHPAUHINSTANCE__@@0PADH@Z 0041551c     mfc42:MFC42.DLL
+ 0004:00000520       __imp_?DoPreparePrinting@CView@@QAEHPAUCPrintInfo@@@Z 00415520     mfc42:MFC42.DLL
+ 0004:00000524       __imp_?OnCreate@CView@@IAEHPAUtagCREATESTRUCTA@@@Z 00415524     mfc42:MFC42.DLL
+ 0004:00000528       __imp_??0CClientDC@@QAE@PAVCWnd@@@Z 00415528     mfc42:MFC42.DLL
+ 0004:0000052c       __imp_?MessageBoxA@CWnd@@QAEHPBD0I@Z 0041552c     mfc42:MFC42.DLL
+ 0004:00000530       __imp_?PreCreateWindow@CView@@MAEHAAUtagCREATESTRUCTA@@@Z 00415530     mfc42:MFC42.DLL
+ 0004:00000534       __imp_??1CView@@UAE@XZ     00415534     mfc42:MFC42.DLL
+ 0004:00000538       __imp_??0CView@@IAE@XZ     00415538     mfc42:MFC42.DLL
+ 0004:0000053c       __imp_?OnCmdMsg@CView@@UAEHIHPAXPAUAFX_CMDHANDLERINFO@@@Z 0041553c     mfc42:MFC42.DLL
+ 0004:00000540       __imp_?CalcWindowRect@CView@@UAEXPAUtagRECT@@I@Z 00415540     mfc42:MFC42.DLL
+ 0004:00000544       __imp_?GetScrollBarCtrl@CView@@UBEPAVCScrollBar@@H@Z 00415544     mfc42:MFC42.DLL
+ 0004:00000548       __imp_?PostNcDestroy@CView@@MAEXXZ 00415548     mfc42:MFC42.DLL
+ 0004:0000054c       __imp_?IsSelected@CView@@UBEHPBVCObject@@@Z 0041554c     mfc42:MFC42.DLL
+ 0004:00000550       __imp_?OnScroll@CView@@UAEHIIH@Z 00415550     mfc42:MFC42.DLL
+ 0004:00000554       __imp_?OnScrollBy@CView@@UAEHVCSize@@H@Z 00415554     mfc42:MFC42.DLL
+ 0004:00000558       __imp_?OnDragEnter@CView@@UAEKPAVCOleDataObject@@KVCPoint@@@Z 00415558     mfc42:MFC42.DLL
+ 0004:0000055c       __imp_?OnDragOver@CView@@UAEKPAVCOleDataObject@@KVCPoint@@@Z 0041555c     mfc42:MFC42.DLL
+ 0004:00000560       __imp_?OnDragLeave@CView@@UAEXXZ 00415560     mfc42:MFC42.DLL
+ 0004:00000564       __imp_?OnDrop@CView@@UAEHPAVCOleDataObject@@KVCPoint@@@Z 00415564     mfc42:MFC42.DLL
+ 0004:00000568       __imp_?OnDropEx@CView@@UAEKPAVCOleDataObject@@KKVCPoint@@@Z 00415568     mfc42:MFC42.DLL
+ 0004:0000056c       __imp_?OnDragScroll@CView@@UAEKKVCPoint@@@Z 0041556c     mfc42:MFC42.DLL
+ 0004:00000570       __imp_?OnPrepareDC@CView@@UAEXPAVCDC@@PAUCPrintInfo@@@Z 00415570     mfc42:MFC42.DLL
+ 0004:00000574       __imp_?OnInitialUpdate@CView@@UAEXXZ 00415574     mfc42:MFC42.DLL
+ 0004:00000578       __imp_?OnActivateView@CView@@MAEXHPAV1@0@Z 00415578     mfc42:MFC42.DLL
+ 0004:0000057c       __imp_?OnActivateFrame@CView@@MAEXIPAVCFrameWnd@@@Z 0041557c     mfc42:MFC42.DLL
+ 0004:00000580       __imp_?OnUpdate@CView@@MAEXPAV1@JPAVCObject@@@Z 00415580     mfc42:MFC42.DLL
+ 0004:00000584       __imp_?SetOccDialogInfo@CWnd@@MAEHPAU_AFX_OCC_DIALOG_INFO@@@Z 00415584     mfc42:MFC42.DLL
+ 0004:00000588       __imp_?CheckAutoCenter@CWnd@@UAEHXZ 00415588     mfc42:MFC42.DLL
+ 0004:0000058c       __imp_?PreTranslateMessage@CWnd@@UAEHPAUtagMSG@@@Z 0041558c     mfc42:MFC42.DLL
+ 0004:00000590       __imp_?GetMessageMap@CWnd@@MBEPBUAFX_MSGMAP@@XZ 00415590     mfc42:MFC42.DLL
+ 0004:00000594       __imp_?OnCmdMsg@CCmdTarget@@UAEHIHPAXPAUAFX_CMDHANDLERINFO@@@Z 00415594     mfc42:MFC42.DLL
+ 0004:00000598       __imp_?GetRuntimeClass@CEdit@@UBEPAUCRuntimeClass@@XZ 00415598     mfc42:MFC42.DLL
+ 0004:0000059c       __imp_?PreInitDialog@CDialog@@MAEXXZ 0041559c     mfc42:MFC42.DLL
+ 0004:000005a0       __imp_?OnCancel@CDialog@@MAEXXZ 004155a0     mfc42:MFC42.DLL
+ 0004:000005a4       __imp_?OnOK@CDialog@@MAEXXZ 004155a4     mfc42:MFC42.DLL
+ 0004:000005a8       __imp_?OnSetFont@CDialog@@UAEXPAVCFont@@@Z 004155a8     mfc42:MFC42.DLL
+ 0004:000005ac       __imp_?OnInitDialog@CDialog@@UAEHXZ 004155ac     mfc42:MFC42.DLL
+ 0004:000005b0       __imp_?DoModal@CDialog@@UAEHXZ 004155b0     mfc42:MFC42.DLL
+ 0004:000005b4       __imp_?SetOccDialogInfo@CDialog@@MAEHPAU_AFX_OCC_DIALOG_INFO@@@Z 004155b4     mfc42:MFC42.DLL
+ 0004:000005b8       __imp_?IsFrameWnd@CWnd@@UBEHXZ 004155b8     mfc42:MFC42.DLL
+ 0004:000005bc       __imp_?CheckAutoCenter@CDialog@@UAEHXZ 004155bc     mfc42:MFC42.DLL
+ 0004:000005c0       __imp_?OnChildNotify@CWnd@@MAEHIIJPAJ@Z 004155c0     mfc42:MFC42.DLL
+ 0004:000005c4       __imp_?PostNcDestroy@CWnd@@MAEXXZ 004155c4     mfc42:MFC42.DLL
+ 0004:000005c8       __imp_?DefWindowProcA@CWnd@@MAEJIIJ@Z 004155c8     mfc42:MFC42.DLL
+ 0004:000005cc       __imp_?OnWndMsg@CWnd@@MAEHIIJPAJ@Z 004155cc     mfc42:MFC42.DLL
+ 0004:000005d0       __imp_?WindowProc@CWnd@@MAEJIIJ@Z 004155d0     mfc42:MFC42.DLL
+ 0004:000005d4       __imp_?OnAmbientProperty@CWnd@@UAEHPAVCOleControlSite@@JPAUtagVARIANT@@@Z 004155d4     mfc42:MFC42.DLL
+ 0004:000005d8       __imp_?PreTranslateMessage@CDialog@@UAEHPAUtagMSG@@@Z 004155d8     mfc42:MFC42.DLL
+ 0004:000005dc       __imp_?GetSuperWndProcAddr@CWnd@@MAEPAP6GJPAUHWND__@@IIJ@ZXZ 004155dc     mfc42:MFC42.DLL
+ 0004:000005e0       __imp_?OnNotify@CWnd@@MAEHIJPAJ@Z 004155e0     mfc42:MFC42.DLL
+ 0004:000005e4       __imp_?OnCommand@CWnd@@MAEHIJ@Z 004155e4     mfc42:MFC42.DLL
+ 0004:000005e8       __imp_?EndModalLoop@CWnd@@UAEXH@Z 004155e8     mfc42:MFC42.DLL
+ 0004:000005ec       __imp_?ContinueModal@CWnd@@UAEHXZ 004155ec     mfc42:MFC42.DLL
+ 0004:000005f0       __imp_?WinHelpA@CWnd@@UAEXKI@Z 004155f0     mfc42:MFC42.DLL
+ 0004:000005f4       __imp_?GetScrollBarCtrl@CWnd@@UBEPAVCScrollBar@@H@Z 004155f4     mfc42:MFC42.DLL
+ 0004:000005f8       __imp_?OnToolHitTest@CWnd@@UBEHVCPoint@@PAUtagTOOLINFOA@@@Z 004155f8     mfc42:MFC42.DLL
+ 0004:000005fc       __imp_?CalcWindowRect@CWnd@@UAEXPAUtagRECT@@I@Z 004155fc     mfc42:MFC42.DLL
+ 0004:00000600       __imp_?PreCreateWindow@CWnd@@UAEHAAUtagCREATESTRUCTA@@@Z 00415600     mfc42:MFC42.DLL
+ 0004:00000604       __imp_?DestroyWindow@CWnd@@UAEHXZ 00415604     mfc42:MFC42.DLL
+ 0004:00000608       __imp_?Create@CWnd@@UAEHPBD0KABUtagRECT@@PAV1@IPAUCCreateContext@@@Z 00415608     mfc42:MFC42.DLL
+ 0004:0000060c       __imp_?PreSubclassWindow@CWnd@@UAEXXZ 0041560c     mfc42:MFC42.DLL
+ 0004:00000610       __imp_?GetConnectionHook@CCmdTarget@@MAEPAUIConnectionPoint@@ABU_GUID@@@Z 00415610     mfc42:MFC42.DLL
+ 0004:00000614       __imp_?GetExtraConnectionPoints@CCmdTarget@@MAEHPAVCPtrArray@@@Z 00415614     mfc42:MFC42.DLL
+ 0004:00000618       __imp_?GetInterfaceHook@CCmdTarget@@UAEPAUIUnknown@@PBX@Z 00415618     mfc42:MFC42.DLL
+ 0004:0000061c       __imp_?OnCreateAggregates@CCmdTarget@@UAEHXZ 0041561c     mfc42:MFC42.DLL
+ 0004:00000620       __imp_?GetEventSinkMap@CCmdTarget@@MBEPBUAFX_EVENTSINKMAP@@XZ 00415620     mfc42:MFC42.DLL
+ 0004:00000624       __imp_?GetInterfaceMap@CCmdTarget@@MBEPBUAFX_INTERFACEMAP@@XZ 00415624     mfc42:MFC42.DLL
+ 0004:00000628       __imp_?GetConnectionMap@CCmdTarget@@MBEPBUAFX_CONNECTIONMAP@@XZ 00415628     mfc42:MFC42.DLL
+ 0004:0000062c       __imp_?GetDispatchMap@CCmdTarget@@MBEPBUAFX_DISPMAP@@XZ 0041562c     mfc42:MFC42.DLL
+ 0004:00000630       __imp_?GetCommandMap@CCmdTarget@@MBEPBUAFX_OLECMDMAP@@XZ 00415630     mfc42:MFC42.DLL
+ 0004:00000634       __imp_?GetTypeLib@CCmdTarget@@UAEJKPAPAUITypeLib@@@Z 00415634     mfc42:MFC42.DLL
+ 0004:00000638       __imp_?GetTypeLibCache@CCmdTarget@@UAEPAVCTypeLibCache@@XZ 00415638     mfc42:MFC42.DLL
+ 0004:0000063c       __imp_?GetTypeInfoCount@CCmdTarget@@UAEIXZ 0041563c     mfc42:MFC42.DLL
+ 0004:00000640       __imp_?GetDispatchIID@CCmdTarget@@UAEHPAU_GUID@@@Z 00415640     mfc42:MFC42.DLL
+ 0004:00000644       __imp_?IsInvokeAllowed@CCmdTarget@@UAEHJ@Z 00415644     mfc42:MFC42.DLL
+ 0004:00000648       __imp_?OnFinalRelease@CWnd@@UAEXXZ 00415648     mfc42:MFC42.DLL
+ 0004:0000064c       __imp_?OnCmdMsg@CDialog@@UAEHIHPAXPAUAFX_CMDHANDLERINFO@@@Z 0041564c     mfc42:MFC42.DLL
+ 0004:00000650       __imp_?GetRuntimeClass@CDialog@@UBEPAUCRuntimeClass@@XZ 00415650     mfc42:MFC42.DLL
+ 0004:00000654       __imp_??1CString@@QAE@XZ   00415654     mfc42:MFC42.DLL
+ 0004:00000658       __imp_??1CEdit@@UAE@XZ     00415658     mfc42:MFC42.DLL
+ 0004:0000065c       __imp_??1CDialog@@UAE@XZ   0041565c     mfc42:MFC42.DLL
+ 0004:00000660       __imp_??4CString@@QAEABV0@PBD@Z 00415660     mfc42:MFC42.DLL
+ 0004:00000664       __imp_??0CString@@QAE@XZ   00415664     mfc42:MFC42.DLL
+ 0004:00000668       __imp_??0CWnd@@QAE@XZ      00415668     mfc42:MFC42.DLL
+ 0004:0000066c       __imp_??0CDialog@@QAE@IPAVCWnd@@@Z 0041566c     mfc42:MFC42.DLL
+ 0004:00000670       __imp_??3@YAXPAX@Z         00415670     mfc42:MFC42.DLL
+ 0004:00000674       __imp_?DDX_Text@@YGXPAVCDataExchange@@HAAH@Z 00415674     mfc42:MFC42.DLL
+ 0004:00000678       __imp_?DDX_Control@@YGXPAVCDataExchange@@HAAVCWnd@@@Z 00415678     mfc42:MFC42.DLL
+ 0004:0000067c       __imp_?messageMap@CDialog@@1UAFX_MSGMAP@@B 0041567c     mfc42:MFC42.DLL
+ 0004:00000680       __imp_?Empty@CString@@QAEXXZ 00415680     mfc42:MFC42.DLL
+ 0004:00000684       __imp_?Default@CWnd@@IAEJXZ 00415684     mfc42:MFC42.DLL
+ 0004:00000688       __imp_?MoveWindow@CWnd@@QAEXHHHHH@Z 00415688     mfc42:MFC42.DLL
+ 0004:0000068c       __imp_?SetWindowTextA@CWnd@@QAEXPBD@Z 0041568c     mfc42:MFC42.DLL
+ 0004:00000690       __imp_??YCString@@QAEABV0@PBD@Z 00415690     mfc42:MFC42.DLL
+ 0004:00000694       __imp_?Create@CDialog@@QAEHPBDPAVCWnd@@@Z 00415694     mfc42:MFC42.DLL
+ 0004:00000698       __imp_??2@YAPAXI@Z         00415698     mfc42:MFC42.DLL
+ 0004:0000069c       __imp_?classCFrameWnd@CFrameWnd@@2UCRuntimeClass@@B 0041569c     mfc42:MFC42.DLL
+ 0004:000006a0       __imp_?messageMap@CFrameWnd@@1UAFX_MSGMAP@@B 004156a0     mfc42:MFC42.DLL
+ 0004:000006a4       __imp_?ExitHelpMode@CFrameWnd@@UAEXXZ 004156a4     mfc42:MFC42.DLL
+ 0004:000006a8       __imp_?DelayUpdateFrameMenu@CFrameWnd@@UAEXPAUHMENU__@@@Z 004156a8     mfc42:MFC42.DLL
+ 0004:000006ac       __imp_?GetDefaultAccelerator@CFrameWnd@@UAEPAUHACCEL__@@XZ 004156ac     mfc42:MFC42.DLL
+ 0004:000006b0       __imp_?OnUpdateFrameMenu@CFrameWnd@@UAEXPAUHMENU__@@@Z 004156b0     mfc42:MFC42.DLL
+ 0004:000006b4       __imp_?OnUpdateFrameTitle@CFrameWnd@@UAEXH@Z 004156b4     mfc42:MFC42.DLL
+ 0004:000006b8       __imp_?OnCreateClient@CFrameWnd@@MAEHPAUtagCREATESTRUCTA@@PAUCCreateContext@@@Z 004156b8     mfc42:MFC42.DLL
+ 0004:000006bc       __imp_?NegotiateBorderSpace@CFrameWnd@@UAEHIPAUtagRECT@@@Z 004156bc     mfc42:MFC42.DLL
+ 0004:000006c0       __imp_?GetMessageBar@CFrameWnd@@UAEPAVCWnd@@XZ 004156c0     mfc42:MFC42.DLL
+ 0004:000006c4       __imp_?OnSetPreviewMode@CFrameWnd@@UAEXHPAUCPrintPreviewState@@@Z 004156c4     mfc42:MFC42.DLL
+ 0004:000006c8       __imp_?ActivateFrame@CFrameWnd@@UAEXH@Z 004156c8     mfc42:MFC42.DLL
+ 0004:000006cc       __imp_?RecalcLayout@CFrameWnd@@UAEXH@Z 004156cc     mfc42:MFC42.DLL
+ 0004:000006d0       __imp_?GetMessageString@CFrameWnd@@UBEXIAAVCString@@@Z 004156d0     mfc42:MFC42.DLL
+ 0004:000006d4       __imp_?GetActiveFrame@CFrameWnd@@UAEPAV1@XZ 004156d4     mfc42:MFC42.DLL
+ 0004:000006d8       __imp_?GetActiveDocument@CFrameWnd@@UAEPAVCDocument@@XZ 004156d8     mfc42:MFC42.DLL
+ 0004:000006dc       __imp_?LoadFrame@CFrameWnd@@UAEHIKPAVCWnd@@PAUCCreateContext@@@Z 004156dc     mfc42:MFC42.DLL
+ 0004:000006e0       __imp_?IsFrameWnd@CFrameWnd@@UBEHXZ 004156e0     mfc42:MFC42.DLL
+ 0004:000006e4       __imp_?PostNcDestroy@CFrameWnd@@MAEXXZ 004156e4     mfc42:MFC42.DLL
+ 0004:000006e8       __imp_?PreTranslateMessage@CFrameWnd@@UAEHPAUtagMSG@@@Z 004156e8     mfc42:MFC42.DLL
+ 0004:000006ec       __imp_?EndModalState@CFrameWnd@@UAEXXZ 004156ec     mfc42:MFC42.DLL
+ 0004:000006f0       __imp_?BeginModalState@CFrameWnd@@UAEXXZ 004156f0     mfc42:MFC42.DLL
+ 0004:000006f4       __imp_?OnCommand@CFrameWnd@@MAEHIJ@Z 004156f4     mfc42:MFC42.DLL
+ 0004:000006f8       __imp_?OnCmdMsg@CFrameWnd@@UAEHIHPAXPAUAFX_CMDHANDLERINFO@@@Z 004156f8     mfc42:MFC42.DLL
+ 0004:000006fc       __imp_??1CStatusBar@@UAE@XZ 004156fc     mfc42:MFC42.DLL
+ 0004:00000700       __imp_??1CFrameWnd@@UAE@XZ 00415700     mfc42:MFC42.DLL
+ 0004:00000704       __imp_??0CToolBar@@QAE@XZ  00415704     mfc42:MFC42.DLL
+ 0004:00000708       __imp_??0CStatusBar@@QAE@XZ 00415708     mfc42:MFC42.DLL
+ 0004:0000070c       __imp_??0CFrameWnd@@QAE@XZ 0041570c     mfc42:MFC42.DLL
+ 0004:00000710       __imp_??1CToolBar@@UAE@XZ  00415710     mfc42:MFC42.DLL
+ 0004:00000714       __imp_?DockControlBar@CFrameWnd@@QAEXPAVCControlBar@@IPBUtagRECT@@@Z 00415714     mfc42:MFC42.DLL
+ 0004:00000718       __imp_?EnableDocking@CFrameWnd@@QAEXK@Z 00415718     mfc42:MFC42.DLL
+ 0004:0000071c       __imp_?EnableDocking@CControlBar@@QAEXK@Z 0041571c     mfc42:MFC42.DLL
+ 0004:00000720       __imp_?SetIndicators@CStatusBar@@QAEHPBIH@Z 00415720     mfc42:MFC42.DLL
+ 0004:00000724       __imp_?Create@CStatusBar@@QAEHPAVCWnd@@KI@Z 00415724     mfc42:MFC42.DLL
+ 0004:00000728       __imp_?LoadToolBar@CToolBar@@QAEHPBD@Z 00415728     mfc42:MFC42.DLL
+ 0004:0000072c       __imp_?CreateEx@CToolBar@@QAEHPAVCWnd@@KKVCRect@@I@Z 0041572c     mfc42:MFC42.DLL
+ 0004:00000730       __imp_?OnCreate@CFrameWnd@@IAEHPAUtagCREATESTRUCTA@@@Z 00415730     mfc42:MFC42.DLL
+ 0004:00000734       __imp_?PreCreateWindow@CFrameWnd@@MAEHAAUtagCREATESTRUCTA@@@Z 00415734     mfc42:MFC42.DLL
+ 0004:00000738       __imp_?OnFilePrintSetup@CWinApp@@IAEXXZ 00415738     mfc42:MFC42.DLL
+ 0004:0000073c       __imp_?OnFileOpen@CWinApp@@IAEXXZ 0041573c     mfc42:MFC42.DLL
+ 0004:00000740       __imp_?OnFileNew@CWinApp@@IAEXXZ 00415740     mfc42:MFC42.DLL
+ 0004:00000744       __imp_?messageMap@CWinApp@@1UAFX_MSGMAP@@B 00415744     mfc42:MFC42.DLL
+ 0004:00000748       __imp_?WinHelpA@CWinApp@@UAEXKI@Z 00415748     mfc42:MFC42.DLL
+ 0004:0000074c       __imp_?OnDDECommand@CWinApp@@UAEHPAD@Z 0041574c     mfc42:MFC42.DLL
+ 0004:00000750       __imp_?DoWaitCursor@CWinApp@@UAEXH@Z 00415750     mfc42:MFC42.DLL
+ 0004:00000754       __imp_?DoMessageBox@CWinApp@@UAEHPBDII@Z 00415754     mfc42:MFC42.DLL
+ 0004:00000758       __imp_?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ 00415758     mfc42:MFC42.DLL
+ 0004:0000075c       __imp_?InitApplication@CWinApp@@UAEHXZ 0041575c     mfc42:MFC42.DLL
+ 0004:00000760       __imp_?AddToRecentFileList@CWinApp@@UAEXPBD@Z 00415760     mfc42:MFC42.DLL
+ 0004:00000764       __imp_?OpenDocumentFile@CWinApp@@UAEPAVCDocument@@PBD@Z 00415764     mfc42:MFC42.DLL
+ 0004:00000768       __imp_?Delete@CWinThread@@UAEXXZ 00415768     mfc42:MFC42.DLL
+ 0004:0000076c       __imp_?GetMainWnd@CWinThread@@UAEPAVCWnd@@XZ 0041576c     mfc42:MFC42.DLL
+ 0004:00000770       __imp_?ProcessMessageFilter@CWinThread@@UAEHHPAUtagMSG@@@Z 00415770     mfc42:MFC42.DLL
+ 0004:00000774       __imp_?ProcessWndProcException@CWinApp@@UAEJPAVCException@@PBUtagMSG@@@Z 00415774     mfc42:MFC42.DLL
+ 0004:00000778       __imp_?ExitInstance@CWinApp@@UAEHXZ 00415778     mfc42:MFC42.DLL
+ 0004:0000077c       __imp_?IsIdleMessage@CWinThread@@UAEHPAUtagMSG@@@Z 0041577c     mfc42:MFC42.DLL
+ 0004:00000780       __imp_?OnIdle@CWinApp@@UAEHJ@Z 00415780     mfc42:MFC42.DLL
+ 0004:00000784       __imp_?PumpMessage@CWinThread@@UAEHXZ 00415784     mfc42:MFC42.DLL
+ 0004:00000788       __imp_?PreTranslateMessage@CWinThread@@UAEHPAUtagMSG@@@Z 00415788     mfc42:MFC42.DLL
+ 0004:0000078c       __imp_?Run@CWinApp@@UAEHXZ 0041578c     mfc42:MFC42.DLL
+ 0004:00000790       __imp_?OnFinalRelease@CCmdTarget@@UAEXXZ 00415790     mfc42:MFC42.DLL
+ 0004:00000794       __imp_?GetRuntimeClass@CWinApp@@UBEPAUCRuntimeClass@@XZ 00415794     mfc42:MFC42.DLL
+ 0004:00000798       __imp_??0CWinApp@@QAE@PBD@Z 00415798     mfc42:MFC42.DLL
+ 0004:0000079c       __imp_??1CWinApp@@UAE@XZ   0041579c     mfc42:MFC42.DLL
+ 0004:000007a0       __imp_?ShowWindow@CWnd@@QAEHH@Z 004157a0     mfc42:MFC42.DLL
+ 0004:000007a4       __imp_??1CCommandLineInfo@@UAE@XZ 004157a4     mfc42:MFC42.DLL
+ 0004:000007a8       __imp_?ProcessShellCommand@CWinApp@@QAEHAAVCCommandLineInfo@@@Z 004157a8     mfc42:MFC42.DLL
+ 0004:000007ac       __imp_?ParseCommandLine@CWinApp@@QAEXAAVCCommandLineInfo@@@Z 004157ac     mfc42:MFC42.DLL
+ 0004:000007b0       __imp_??0CCommandLineInfo@@QAE@XZ 004157b0     mfc42:MFC42.DLL
+ 0004:000007b4       __imp_?AddDocTemplate@CWinApp@@QAEXPAVCDocTemplate@@@Z 004157b4     mfc42:MFC42.DLL
+ 0004:000007b8       __imp_??0CSingleDocTemplate@@QAE@IPAUCRuntimeClass@@00@Z 004157b8     mfc42:MFC42.DLL
+ 0004:000007bc       __imp_?LoadStdProfileSettings@CWinApp@@IAEXI@Z 004157bc     mfc42:MFC42.DLL
+ 0004:000007c0       __imp_?SetRegistryKey@CWinApp@@IAEXPBD@Z 004157c0     mfc42:MFC42.DLL
+ 0004:000007c4       __imp_?Enable3dControls@CWinApp@@IAEHXZ 004157c4     mfc42:MFC42.DLL
+ 0004:000007c8       __imp_?classCDocument@CDocument@@2UCRuntimeClass@@B 004157c8     mfc42:MFC42.DLL
+ 0004:000007cc       __imp_?messageMap@CDocument@@1UAFX_MSGMAP@@B 004157cc     mfc42:MFC42.DLL
+ 0004:000007d0       __imp_?OnIdle@CDocument@@UAEXXZ 004157d0     mfc42:MFC42.DLL
+ 0004:000007d4       __imp_?GetDefaultAccelerator@CDocument@@UAEPAUHACCEL__@@XZ 004157d4     mfc42:MFC42.DLL
+ 0004:000007d8       __imp_?GetDefaultMenu@CDocument@@UAEPAUHMENU__@@XZ 004157d8     mfc42:MFC42.DLL
+ 0004:000007dc       __imp_?UpdateFrameCounts@CDocument@@UAEXXZ 004157dc     mfc42:MFC42.DLL
+ 0004:000007e0       __imp_?DoFileSave@CDocument@@UAEHXZ 004157e0     mfc42:MFC42.DLL
+ 0004:000007e4       __imp_?DoSave@CDocument@@UAEHPBDH@Z 004157e4     mfc42:MFC42.DLL
+ 0004:000007e8       __imp_?PreCloseFrame@CDocument@@UAEXPAVCFrameWnd@@@Z 004157e8     mfc42:MFC42.DLL
+ 0004:000007ec       __imp_?SaveModified@CDocument@@UAEHXZ 004157ec     mfc42:MFC42.DLL
+ 0004:000007f0       __imp_?CanCloseFrame@CDocument@@UAEHPAVCFrameWnd@@@Z 004157f0     mfc42:MFC42.DLL
+ 0004:000007f4       __imp_?ReleaseFile@CDocument@@UAEXPAVCFile@@H@Z 004157f4     mfc42:MFC42.DLL
+ 0004:000007f8       __imp_?GetFile@CDocument@@UAEPAVCFile@@PBDIPAVCFileException@@@Z 004157f8     mfc42:MFC42.DLL
+ 0004:000007fc       __imp_?ReportSaveLoadException@CDocument@@UAEXPBDPAVCException@@HI@Z 004157fc     mfc42:MFC42.DLL
+ 0004:00000800       __imp_?OnCloseDocument@CDocument@@UAEXXZ 00415800     mfc42:MFC42.DLL
+ 0004:00000804       __imp_?OnSaveDocument@CDocument@@UAEHPBD@Z 00415804     mfc42:MFC42.DLL
+ 0004:00000808       __imp_?OnOpenDocument@CDocument@@UAEHPBD@Z 00415808     mfc42:MFC42.DLL
+ 0004:0000080c       __imp_?DeleteContents@CDocument@@UAEXXZ 0041580c     mfc42:MFC42.DLL
+ 0004:00000810       __imp_?OnChangedViewList@CDocument@@UAEXXZ 00415810     mfc42:MFC42.DLL
+ 0004:00000814       __imp_?GetNextView@CDocument@@UBEPAVCView@@AAPAU__POSITION@@@Z 00415814     mfc42:MFC42.DLL
+ 0004:00000818       __imp_?GetFirstViewPosition@CDocument@@UBEPAU__POSITION@@XZ 00415818     mfc42:MFC42.DLL
+ 0004:0000081c       __imp_?SetPathName@CDocument@@UAEXPBDH@Z 0041581c     mfc42:MFC42.DLL
+ 0004:00000820       __imp_?SetTitle@CDocument@@UAEXPBD@Z 00415820     mfc42:MFC42.DLL
+ 0004:00000824       __imp_?OnFinalRelease@CDocument@@UAEXXZ 00415824     mfc42:MFC42.DLL
+ 0004:00000828       __imp_?OnCmdMsg@CDocument@@UAEHIHPAXPAUAFX_CMDHANDLERINFO@@@Z 00415828     mfc42:MFC42.DLL
+ 0004:0000082c       __imp_??0CDocument@@QAE@XZ 0041582c     mfc42:MFC42.DLL
+ 0004:00000830       __imp_??1CDocument@@UAE@XZ 00415830     mfc42:MFC42.DLL
+ 0004:00000834       __imp_?OnNewDocument@CDocument@@UAEHXZ 00415834     mfc42:MFC42.DLL
+ 0004:00000838       __imp_?OnFilePrintPreview@CView@@IAEXXZ 00415838     mfc42:MFC42.DLL
+ 0004:0000083c       __imp_?OnFilePrint@CView@@IAEXXZ 0041583c     mfc42:MFC42.DLL
+ 0004:00000840       __imp_?classCView@CView@@2UCRuntimeClass@@B 00415840     mfc42:MFC42.DLL
+ 0004:00000844       __imp_?messageMap@CView@@1UAFX_MSGMAP@@B 00415844     mfc42:MFC42.DLL
+ 0004:00000848       __imp_?OnEndPrintPreview@CView@@MAEXPAVCDC@@PAUCPrintInfo@@UtagPOINT@@PAVCPreviewView@@@Z 00415848     mfc42:MFC42.DLL
+ 0004:0000084c       __imp_?OnPrint@CView@@MAEXPAVCDC@@PAUCPrintInfo@@@Z 0041584c     mfc42:MFC42.DLL
+ 0004:00000850       \177MFC42_NULL_THUNK_DATA  00415850     mfc42:MFC42.DLL
+ 0004:00000854       __imp___controlfp          00415854     msvcrt:MSVCRT.dll
+ 0004:00000858       __imp____set_app_type      00415858     msvcrt:MSVCRT.dll
+ 0004:0000085c       __imp____p__fmode          0041585c     msvcrt:MSVCRT.dll
+ 0004:00000860       __imp____p__commode        00415860     msvcrt:MSVCRT.dll
+ 0004:00000864       __imp___adjust_fdiv        00415864     msvcrt:MSVCRT.dll
+ 0004:00000868       __imp____setusermatherr    00415868     msvcrt:MSVCRT.dll
+ 0004:0000086c       __imp___initterm           0041586c     msvcrt:MSVCRT.dll
+ 0004:00000870       __imp____getmainargs       00415870     msvcrt:MSVCRT.dll
+ 0004:00000874       __imp___acmdln             00415874     msvcrt:MSVCRT.dll
+ 0004:00000878       __imp__exit                00415878     msvcrt:MSVCRT.dll
+ 0004:0000087c       __imp___XcptFilter         0041587c     msvcrt:MSVCRT.dll
+ 0004:00000880       __imp___exit               00415880     msvcrt:MSVCRT.dll
+ 0004:00000884       __imp_?terminate@@YAXXZ    00415884     msvcrt:MSVCRT.dll
+ 0004:00000888       __imp___except_handler3    00415888     msvcrt:MSVCRT.dll
+ 0004:0000088c       __imp___onexit             0041588c     msvcrt:MSVCRT.dll
+ 0004:00000890       __imp____dllonexit         00415890     msvcrt:MSVCRT.dll
+ 0004:00000894       __imp___finite             00415894     msvcrt:MSVCRT.dll
+ 0004:00000898       __imp____CxxFrameHandler   00415898     msvcrt:MSVCRT.dll
+ 0004:0000089c       __imp___purecall           0041589c     msvcrt:MSVCRT.dll
+ 0004:000008a0       __imp___ftol               004158a0     msvcrt:MSVCRT.dll
+ 0004:000008a4       __imp__ldexp               004158a4     msvcrt:MSVCRT.dll
+ 0004:000008a8       __imp__frexp               004158a8     msvcrt:MSVCRT.dll
+ 0004:000008ac       __imp__modf                004158ac     msvcrt:MSVCRT.dll
+ 0004:000008b0       __imp___setmbcp            004158b0     msvcrt:MSVCRT.dll
+ 0004:000008b4       \177MSVCRT_NULL_THUNK_DATA 004158b4     msvcrt:MSVCRT.dll
+ 0004:000008b8       __imp__glCallList@4        004158b8     opengl32:OPENGL32.dll
+ 0004:000008bc       __imp__glEndList@0         004158bc     opengl32:OPENGL32.dll
+ 0004:000008c0       __imp__glRotated@32        004158c0     opengl32:OPENGL32.dll
+ 0004:000008c4       __imp__glTranslated@24     004158c4     opengl32:OPENGL32.dll
+ 0004:000008c8       __imp__wglMakeCurrent@8    004158c8     opengl32:OPENGL32.dll
+ 0004:000008cc       __imp__wglCreateContext@4  004158cc     opengl32:OPENGL32.dll
+ 0004:000008d0       __imp__wglGetCurrentDC@0   004158d0     opengl32:OPENGL32.dll
+ 0004:000008d4       __imp__glFlush@0           004158d4     opengl32:OPENGL32.dll
+ 0004:000008d8       __imp__glClear@4           004158d8     opengl32:OPENGL32.dll
+ 0004:000008dc       __imp__glClearColor@16     004158dc     opengl32:OPENGL32.dll
+ 0004:000008e0       __imp__glOrtho@48          004158e0     opengl32:OPENGL32.dll
+ 0004:000008e4       __imp__glLoadIdentity@0    004158e4     opengl32:OPENGL32.dll
+ 0004:000008e8       __imp__glMatrixMode@4      004158e8     opengl32:OPENGL32.dll
+ 0004:000008ec       __imp__glViewport@16       004158ec     opengl32:OPENGL32.dll
+ 0004:000008f0       __imp__glMultMatrixd@4     004158f0     opengl32:OPENGL32.dll
+ 0004:000008f4       __imp__glScaled@24         004158f4     opengl32:OPENGL32.dll
+ 0004:000008f8       __imp__glGetDoublev@8      004158f8     opengl32:OPENGL32.dll
+ 0004:000008fc       __imp__glNewList@8         004158fc     opengl32:OPENGL32.dll
+ 0004:00000900       __imp__glDisable@4         00415900     opengl32:OPENGL32.dll
+ 0004:00000904       __imp__glEnable@4          00415904     opengl32:OPENGL32.dll
+ 0004:00000908       __imp__glDepthFunc@4       00415908     opengl32:OPENGL32.dll
+ 0004:0000090c       __imp__glPolygonMode@8     0041590c     opengl32:OPENGL32.dll
+ 0004:00000910       __imp__glMaterialfv@12     00415910     opengl32:OPENGL32.dll
+ 0004:00000914       __imp__glEnd@0             00415914     opengl32:OPENGL32.dll
+ 0004:00000918       __imp__glBegin@4           00415918     opengl32:OPENGL32.dll
+ 0004:0000091c       __imp__glColor4f@16        0041591c     opengl32:OPENGL32.dll
+ 0004:00000920       __imp__glCullFace@4        00415920     opengl32:OPENGL32.dll
+ 0004:00000924       __imp__glVertex3dv@4       00415924     opengl32:OPENGL32.dll
+ 0004:00000928       __imp__glLineStipple@8     00415928     opengl32:OPENGL32.dll
+ 0004:0000092c       __imp__glNormal3dv@4       0041592c     opengl32:OPENGL32.dll
+ 0004:00000930       \177OPENGL32_NULL_THUNK_DATA 00415930     opengl32:OPENGL32.dll
+ 0004:00000934       __imp__InvalidateRect@12   00415934     user32:USER32.dll
+ 0004:00000938       __imp__SendMessageA@16     00415938     user32:USER32.dll
+ 0004:0000093c       __imp__IsWindow@4          0041593c     user32:USER32.dll
+ 0004:00000940       __imp__EnableWindow@8      00415940     user32:USER32.dll
+ 0004:00000944       __imp__UpdateWindow@4      00415944     user32:USER32.dll
+ 0004:00000948       \177USER32_NULL_THUNK_DATA 00415948     user32:USER32.dll
+
+ entry point at        0001:0000dcb4
+
+ Static symbols
+
+ 0001:0000d450       _$E2                       0040e450 f   TRANS3.OBJ
+ 0001:0000d460       _$E1                       0040e460 f   TRANS3.OBJ
+ 0001:0000d490       _$E20                      0040e490 f   TRANS3.OBJ
+ 0001:0000d4a0       _$E19                      0040e4a0 f   TRANS3.OBJ
+ 0001:0000d3c0       _$E2                       0040e3c0 f   PolyhedronDoctor.obj
+ 0001:0000d3d0       _$E1                       0040e3d0 f   PolyhedronDoctor.obj
+ 0001:0000d400       _$E20                      0040e400 f   PolyhedronDoctor.obj
+ 0001:0000d410       _$E19                      0040e410 f   PolyhedronDoctor.obj
+ 0001:0000d330       _$E2                       0040e330 f   maxConvPolyInPolyNR3d.obj
+ 0001:0000d340       _$E1                       0040e340 f   maxConvPolyInPolyNR3d.obj
+ 0001:0000d380       _$E5                       0040e380 f   maxConvPolyInPolyNR3d.obj
+ 0001:0000d390       _$E4                       0040e390 f   maxConvPolyInPolyNR3d.obj
+ 0001:0000d280       _$E2                       0040e280 f   filePYH_ExtraBody.obj
+ 0001:0000d290       _$E1                       0040e290 f   filePYH_ExtraBody.obj
+ 0001:0000d2d0       _$E5                       0040e2d0 f   filePYH_ExtraBody.obj
+ 0001:0000d2e0       _$E4                       0040e2e0 f   filePYH_ExtraBody.obj
+ 0001:0000d230       _$E2                       0040e230 f   filePYH_Body.obj
+ 0001:0000d240       _$E1                       0040e240 f   filePYH_Body.obj
+ 0001:0000d1a0       _$E2                       0040e1a0 f   ExtraBody.obj
+ 0001:0000d1b0       _$E1                       0040e1b0 f   ExtraBody.obj
+ 0001:0000d1e0       _$E20                      0040e1e0 f   ExtraBody.obj
+ 0001:0000d1f0       _$E19                      0040e1f0 f   ExtraBody.obj
+ 0001:0000d150       _$E2                       0040e150 f   ex_opti3d.obj
+ 0001:0000d160       _$E1                       0040e160 f   ex_opti3d.obj
+ 0001:0000d0c0       _$E2                       0040e0c0 f   ex_intersect3d.obj
+ 0001:0000d0d0       _$E1                       0040e0d0 f   ex_intersect3d.obj
+ 0001:0000d100       _$E20                      0040e100 f   ex_intersect3d.obj
+ 0001:0000d110       _$E19                      0040e110 f   ex_intersect3d.obj
+ 0001:0000d030       _$E2                       0040e030 f   Body2Func.obj
+ 0001:0000d040       _$E1                       0040e040 f   Body2Func.obj
+ 0001:0000d080       _$E5                       0040e080 f   Body2Func.obj
+ 0001:0000d090       _$E4                       0040e090 f   Body2Func.obj
+ 0001:0000cfa0       _$E2                       0040dfa0 f   BODY2.OBJ
+ 0001:0000cfb0       _$E1                       0040dfb0 f   BODY2.OBJ
+ 0001:0000cfe0       _$E20                      0040dfe0 f   BODY2.OBJ
+ 0001:0000cff0       _$E19                      0040dff0 f   BODY2.OBJ
+ 0001:0000cf50       _$E2                       0040df50 f   Vector3d_test.obj
+ 0001:0000cf60       _$E1                       0040df60 f   Vector3d_test.obj
+ 0001:0000cf10       _$E2                       0040df10 f   Vector2d_test.obj
+ 0001:0000cf20       _$E1                       0040df20 f   Vector2d_test.obj
+ 0001:0000ce80       _$E2                       0040de80 f   trian3d_test.obj
+ 0001:0000ce90       _$E1                       0040de90 f   trian3d_test.obj
+ 0001:0000ced0       _$E5                       0040ded0 f   trian3d_test.obj
+ 0001:0000cee0       _$E4                       0040dee0 f   trian3d_test.obj
+ 0001:0000cdf0       _$E29                      0040ddf0 f   trian2d_test.obj
+ 0001:0000ce00       _$E28                      0040de00 f   trian2d_test.obj
+ 0001:0000ce30       _$E47                      0040de30 f   trian2d_test.obj
+ 0001:0000ce40       _$E46                      0040de40 f   trian2d_test.obj
+ 0001:0000cd60       _$E2                       0040dd60 f   S2D_Model_test.obj
+ 0001:0000cd70       _$E1                       0040dd70 f   S2D_Model_test.obj
+ 0001:0000cda0       _$E20                      0040dda0 f   S2D_Model_test.obj
+ 0001:0000cdb0       _$E19                      0040ddb0 f   S2D_Model_test.obj
+ 0001:0000ccd0       _$E2                       0040dcd0 f   recon_test.obj
+ 0001:0000cce0       _$E1                       0040dce0 f   recon_test.obj
+ 0001:0000cd10       _$E20                      0040dd10 f   recon_test.obj
+ 0001:0000cd20       _$E19                      0040dd20 f   recon_test.obj
+ 0001:0000cbb0       _$E2                       0040dbb0 f   rand_test.obj
+ 0001:0000cbc0       _$E1                       0040dbc0 f   rand_test.obj
+ 0001:0000cbf0       _$E20                      0040dbf0 f   rand_test.obj
+ 0001:0000cc00       _$E19                      0040dc00 f   rand_test.obj
+ 0001:0000cc40       _$E32                      0040dc40 f   rand_test.obj
+ 0001:0000cc50       _$E31                      0040dc50 f   rand_test.obj
+ 0001:0000cc70       _$E35                      0040dc70 f   rand_test.obj
+ 0001:0000cc80       _$E34                      0040dc80 f   rand_test.obj
+ 0001:0000cca0       _$E38                      0040dca0 f   rand_test.obj
+ 0001:0000ccb0       _$E37                      0040dcb0 f   rand_test.obj
+ 0001:0000cb60       _$E2                       0040db60 f   PolyhedronErrorRecipient.obj
+ 0001:0000cb70       _$E1                       0040db70 f   PolyhedronErrorRecipient.obj
+ 0001:0000cad0       _$E2                       0040dad0 f   polyhedron_test.obj
+ 0001:0000cae0       _$E1                       0040dae0 f   polyhedron_test.obj
+ 0001:0000cb20       _$E5                       0040db20 f   polyhedron_test.obj
+ 0001:0000cb30       _$E4                       0040db30 f   polyhedron_test.obj
+ 0001:0000b000       _$E2                       0040c000 f   opti3d_test.obj
+ 0001:0000b010       _$E1                       0040c010 f   opti3d_test.obj
+ 0001:0000b040       _$E20                      0040c040 f   opti3d_test.obj
+ 0001:0000b050       _$E19                      0040c050 f   opti3d_test.obj
+ 0001:0000b270       _$E42                      0040c270 f   opti3d_test.obj
+ 0001:0000b280       _$E41                      0040c280 f   opti3d_test.obj
+ 0001:0000c8b0       _$E102                     0040d8b0 f   opti3d_test.obj
+ 0001:0000af70       _$E2                       0040bf70 f   opti2d_test.obj
+ 0001:0000af80       _$E1                       0040bf80 f   opti2d_test.obj
+ 0001:0000afb0       _$E20                      0040bfb0 f   opti2d_test.obj
+ 0001:0000afc0       _$E19                      0040bfc0 f   opti2d_test.obj
+ 0001:0000aee0       _$E2                       0040bee0 f   moment2d_test.obj
+ 0001:0000aef0       _$E1                       0040bef0 f   moment2d_test.obj
+ 0001:0000af20       _$E20                      0040bf20 f   moment2d_test.obj
+ 0001:0000af30       _$E19                      0040bf30 f   moment2d_test.obj
+ 0001:0000ae50       _$E2                       0040be50 f   math_test.obj
+ 0001:0000ae60       _$E1                       0040be60 f   math_test.obj
+ 0001:0000ae90       _$E20                      0040be90 f   math_test.obj
+ 0001:0000aea0       _$E19                      0040bea0 f   math_test.obj
+ 0001:0000adc0       _$E2                       0040bdc0 f   intersect3d_test.obj
+ 0001:0000add0       _$E1                       0040bdd0 f   intersect3d_test.obj
+ 0001:0000ae00       _$E20                      0040be00 f   intersect3d_test.obj
+ 0001:0000ae10       _$E19                      0040be10 f   intersect3d_test.obj
+ 0001:0000ad30       _$E2                       0040bd30 f   intersect2d_test.obj
+ 0001:0000ad40       _$E1                       0040bd40 f   intersect2d_test.obj
+ 0001:0000ad70       _$E20                      0040bd70 f   intersect2d_test.obj
+ 0001:0000ad80       _$E19                      0040bd80 f   intersect2d_test.obj
+ 0001:0000aca0       _$E2                       0040bca0 f   func4d_test.obj
+ 0001:0000acb0       _$E1                       0040bcb0 f   func4d_test.obj
+ 0001:0000ace0       _$E20                      0040bce0 f   func4d_test.obj
+ 0001:0000acf0       _$E19                      0040bcf0 f   func4d_test.obj
+ 0001:0000ac10       _$E2                       0040bc10 f   func3d_test.obj
+ 0001:0000ac20       _$E1                       0040bc20 f   func3d_test.obj
+ 0001:0000ac60       _$E5                       0040bc60 f   func3d_test.obj
+ 0001:0000ac70       _$E4                       0040bc70 f   func3d_test.obj
+ 0001:0000ab80       _$E2                       0040bb80 f   func2d_test.obj
+ 0001:0000ab90       _$E1                       0040bb90 f   func2d_test.obj
+ 0001:0000abc0       _$E20                      0040bbc0 f   func2d_test.obj
+ 0001:0000abd0       _$E19                      0040bbd0 f   func2d_test.obj
+ 0001:0000aaf0       _$E2                       0040baf0 f   filePYH_test.obj
+ 0001:0000ab00       _$E1                       0040bb00 f   filePYH_test.obj
+ 0001:0000ab40       _$E5                       0040bb40 f   filePYH_test.obj
+ 0001:0000ab50       _$E4                       0040bb50 f   filePYH_test.obj
+ 0001:0000a960       _$E2                       0040b960 f   Display.obj
+ 0001:0000a970       _$E1                       0040b970 f   Display.obj
+ 0001:0000a9a0       _$E20                      0040b9a0 f   Display.obj
+ 0001:0000a9b0       _$E19                      0040b9b0 f   Display.obj
+ 0001:0000a8d0       _$E2                       0040b8d0 f   approx3d_test.obj
+ 0001:0000a8e0       _$E1                       0040b8e0 f   approx3d_test.obj
+ 0001:0000a910       _$E20                      0040b910 f   approx3d_test.obj
+ 0001:0000a920       _$E19                      0040b920 f   approx3d_test.obj
+ 0001:0000a840       _$E2                       0040b840 f   approx2d_test.obj
+ 0001:0000a850       _$E1                       0040b850 f   approx2d_test.obj
+ 0001:0000a880       _$E20                      0040b880 f   approx2d_test.obj
+ 0001:0000a890       _$E19                      0040b890 f   approx2d_test.obj
+ 0001:00009f30       _$E2                       0040af30 f   Vector3d.obj
+ 0001:00009f40       _$E1                       0040af40 f   Vector3d.obj
+ 0001:00009b30       _$E2                       0040ab30 f   Vector2d.obj
+ 0001:00009b40       _$E1                       0040ab40 f   Vector2d.obj
+ 0001:00009b70       _$E20                      0040ab70 f   Vector2d.obj
+ 0001:00009b80       _$E19                      0040ab80 f   Vector2d.obj
+ 0001:00009bb0       _$E23                      0040abb0 f   Vector2d.obj
+ 0001:00009bc0       _$E22                      0040abc0 f   Vector2d.obj
+ 0001:00009bf0       _$E26                      0040abf0 f   Vector2d.obj
+ 0001:00009c00       _$E25                      0040ac00 f   Vector2d.obj
+ 0001:00009c30       _$E29                      0040ac30 f   Vector2d.obj
+ 0001:00009c40       _$E28                      0040ac40 f   Vector2d.obj
+ 0001:00009c70       _$E32                      0040ac70 f   Vector2d.obj
+ 0001:00009c80       _$E31                      0040ac80 f   Vector2d.obj
+ 0001:00009cb0       _$E35                      0040acb0 f   Vector2d.obj
+ 0001:00009cc0       _$E34                      0040acc0 f   Vector2d.obj
+ 0001:00009cf0       _$E38                      0040acf0 f   Vector2d.obj
+ 0001:00009d00       _$E37                      0040ad00 f   Vector2d.obj
+ 0001:00009d30       _$E41                      0040ad30 f   Vector2d.obj
+ 0001:00009d40       _$E40                      0040ad40 f   Vector2d.obj
+ 0001:00009d70       _$E44                      0040ad70 f   Vector2d.obj
+ 0001:00009d80       _$E43                      0040ad80 f   Vector2d.obj
+ 0001:00009db0       _$E47                      0040adb0 f   Vector2d.obj
+ 0001:00009dc0       _$E46                      0040adc0 f   Vector2d.obj
+ 0001:00009df0       _$E50                      0040adf0 f   Vector2d.obj
+ 0001:00009e00       _$E49                      0040ae00 f   Vector2d.obj
+ 0001:00009e30       _$E53                      0040ae30 f   Vector2d.obj
+ 0001:00009e40       _$E52                      0040ae40 f   Vector2d.obj
+ 0001:00009e70       _$E56                      0040ae70 f   Vector2d.obj
+ 0001:00009e80       _$E55                      0040ae80 f   Vector2d.obj
+ 0001:00009eb0       _$E59                      0040aeb0 f   Vector2d.obj
+ 0001:00009ec0       _$E58                      0040aec0 f   Vector2d.obj
+ 0001:00009ef0       _$E62                      0040aef0 f   Vector2d.obj
+ 0001:00009f00       _$E61                      0040af00 f   Vector2d.obj
+ 0001:00009ae0       _$E2                       0040aae0 f   trian3d.obj
+ 0001:00009af0       _$E1                       0040aaf0 f   trian3d.obj
+ 0001:00009aa0       _$E2                       0040aaa0 f   trian2d.obj
+ 0001:00009ab0       _$E1                       0040aab0 f   trian2d.obj
+ 0001:00009a10       _$E2                       0040aa10 f   TRANS.OBJ
+ 0001:00009a20       _$E1                       0040aa20 f   TRANS.OBJ
+ 0001:00009a50       _$E20                      0040aa50 f   TRANS.OBJ
+ 0001:00009a60       _$E19                      0040aa60 f   TRANS.OBJ
+ 0001:000099b0       _$E2                       0040a9b0 f   Timer.obj
+ 0001:000099c0       _$E1                       0040a9c0 f   Timer.obj
+ 0001:00009730       _$E2                       0040a730 f   ShevList.obj
+ 0001:00009740       _$E1                       0040a740 f   ShevList.obj
+ 0001:000095d0       _$E2                       0040a5d0 f   Rand.obj
+ 0001:000095e0       _$E1                       0040a5e0 f   Rand.obj
+ 0001:00009610       _$E20                      0040a610 f   Rand.obj
+ 0001:00009620       _$E19                      0040a620 f   Rand.obj
+ 0001:00009640       _$E23                      0040a640 f   Rand.obj
+ 0001:00009650       _$E22                      0040a650 f   Rand.obj
+ 0001:000084b0       ?printf_va@@YA_NAAVIWriteFile@@PBDPAD@Z 004094b0 f   printf.obj
+ 0001:000066d0       _$E2                       004076d0 f   Polyhedron.obj
+ 0001:000066e0       _$E1                       004076e0 f   Polyhedron.obj
+ 0001:00006720       _$E5                       00407720 f   Polyhedron.obj
+ 0001:00006730       _$E4                       00407730 f   Polyhedron.obj
+ 0001:00006680       _$E2                       00407680 f   Poly3gon.obj
+ 0001:00006690       _$E1                       00407690 f   Poly3gon.obj
+ 0001:00005da0       _$E2                       00406da0 f   opti3d_2.obj
+ 0001:00005db0       _$E1                       00406db0 f   opti3d_2.obj
+ 0001:00005d10       _$E2                       00406d10 f   opti3d.obj
+ 0001:00005d20       _$E1                       00406d20 f   opti3d.obj
+ 0001:00005d50       _$E20                      00406d50 f   opti3d.obj
+ 0001:00005d60       _$E19                      00406d60 f   opti3d.obj
+ 0001:00005c80       _$E2                       00406c80 f   opti2d_4.obj
+ 0001:00005c90       _$E1                       00406c90 f   opti2d_4.obj
+ 0001:00005cc0       _$E20                      00406cc0 f   opti2d_4.obj
+ 0001:00005cd0       _$E19                      00406cd0 f   opti2d_4.obj
+ 0001:00005ab0       _$E2                       00406ab0 f   opti2d_3d.obj
+ 0001:00005ac0       _$E1                       00406ac0 f   opti2d_3d.obj
+ 0001:00005af0       _$E20                      00406af0 f   opti2d_3d.obj
+ 0001:00005b00       _$E19                      00406b00 f   opti2d_3d.obj
+ 0001:00005a20       _$E2                       00406a20 f   opti2d_2.obj
+ 0001:00005a30       _$E1                       00406a30 f   opti2d_2.obj
+ 0001:00005a60       _$E20                      00406a60 f   opti2d_2.obj
+ 0001:00005a70       _$E19                      00406a70 f   opti2d_2.obj
+ 0001:00005990       _$E2                       00406990 f   opti2d.obj
+ 0001:000059a0       _$E1                       004069a0 f   opti2d.obj
+ 0001:000059d0       _$E20                      004069d0 f   opti2d.obj
+ 0001:000059e0       _$E19                      004069e0 f   opti2d.obj
+ 0001:00005910       _$E2                       00406910 f   opti1d.obj
+ 0001:00005920       _$E1                       00406920 f   opti1d.obj
+ 0001:00005930       _$E5                       00406930 f   opti1d.obj
+ 0001:00005940       _$E4                       00406940 f   opti1d.obj
+ 0001:00005960       _$E8                       00406960 f   opti1d.obj
+ 0001:00005970       _$E7                       00406970 f   opti1d.obj
+ 0001:000058c0       _$E2                       004068c0 f   moment3d.obj
+ 0001:000058d0       _$E1                       004068d0 f   moment3d.obj
+ 0001:00005880       _$E2                       00406880 f   moment2d.obj
+ 0001:00005890       _$E1                       00406890 f   moment2d.obj
+ 0001:000057f0       _$E2                       004067f0 f   Micro.obj
+ 0001:00005800       _$E1                       00406800 f   Micro.obj
+ 0001:00005830       _$E20                      00406830 f   Micro.obj
+ 0001:00005840       _$E19                      00406840 f   Micro.obj
+ 0001:000056d0       ?_root3@@YANN@Z            004066d0 f   Mathem.obj
+ 0001:000057d0       _$E2                       004067d0 f   Mathem.obj
+ 0001:000057e0       _$E1                       004067e0 f   Mathem.obj
+ 0001:00005620       _$E2                       00406620 f   MarchingCubes.obj
+ 0001:00005630       _$E1                       00406630 f   MarchingCubes.obj
+ 0001:00005590       _$E2                       00406590 f   ioSTL.obj
+ 0001:000055a0       _$E1                       004065a0 f   ioSTL.obj
+ 0001:000055d0       _$E20                      004065d0 f   ioSTL.obj
+ 0001:000055e0       _$E19                      004065e0 f   ioSTL.obj
+ 0001:000054c0       _$E2                       004064c0 f   intersect3d.obj
+ 0001:000054d0       _$E1                       004064d0 f   intersect3d.obj
+ 0001:00005500       _$E20                      00406500 f   intersect3d.obj
+ 0001:00005510       _$E19                      00406510 f   intersect3d.obj
+ 0001:00005460       _$E2                       00406460 f   intersect2d.obj
+ 0001:00005470       _$E1                       00406470 f   intersect2d.obj
+ 0001:00002850       _$E2                       00403850 f   func3d.obj
+ 0001:00002860       _$E1                       00403860 f   func3d.obj
+ 0001:000028a0       _$E5                       004038a0 f   func3d.obj
+ 0001:000028b0       _$E4                       004038b0 f   func3d.obj
+ 0001:00004140       ?calcPlane@@YAXAAVTrianFacet@@V?$CArrRef@I@@V?$CArrRef@VVector3d@@@@ABVPlane3d@@3NABVVector3d@@@Z 00405140 f   func3d.obj
+ 0001:00004500       ?recalcNorm@@YAXABVVector3d@@0NNAAV1@@Z 00405500 f   func3d.obj
+ 0001:00004620       ?putFacet@@YAXAAVTrianFacet@@AAV?$MaxHeap@U?$SortItem@NPAVTrianFacet@@@@@@@Z 00405620 f   func3d.obj
+ 0001:00004770       ?putFacet@@YAXAAVTrianFacet@@AAV?$MaxHeap@U?$SortItem@NPAVTrianFacet@@@@@@V?$CArrRef@VVector3d@@@@ABVVector3d@@N@Z 00405770 f   func3d.obj
+ 0001:00004960       ?moveVert@@YAXAAVTrianFacet@@IV?$ArrRef@VTrianFacet@@@@V?$CArrRef@VVector3d@@@@V?$CArrRef@I@@ABVVector3d@@@Z 00405960 f   func3d.obj
+ 0001:00002750       _$E2                       00403750 f   func2d.obj
+ 0001:00002760       _$E1                       00403760 f   func2d.obj
+ 0001:00002700       _$E2                       00403700 f   filePYH.obj
+ 0001:00002710       _$E1                       00403710 f   filePYH.obj
+ 0001:00002600       _$E2                       00403600 f   approx3d.obj
+ 0001:00002610       _$E1                       00403610 f   approx3d.obj
+ 0001:00002650       _$E5                       00403650 f   approx3d.obj
+ 0001:00002660       _$E4                       00403660 f   approx3d.obj
+ 0001:000025c0       _$E2                       004035c0 f   approx2d.obj
+ 0001:000025d0       _$E1                       004035d0 f   approx2d.obj
+ 0001:00001b30       _$E214                     00402b30 f   ShevTest.obj
+ 0001:00001b40       _$E211                     00402b40 f   ShevTest.obj
+ 0001:00001b50       _$E213                     00402b50 f   ShevTest.obj
+ 0001:00001b60       _$E212                     00402b60 f   ShevTest.obj
+ 0001:00000560       _$E204                     00401560 f   draw.obj
+ 0001:00000570       _$E203                     00401570 f   draw.obj
+ 0001:000005a0       _$E222                     004015a0 f   draw.obj
+ 0001:000005b0       _$E221                     004015b0 f   draw.obj
+ 0001:00000200       _$E205                     00401200 f   DisplayPanel.obj
+ 0001:00000210       _$E202                     00401210 f   DisplayPanel.obj
+ 0001:00000220       _$E204                     00401220 f   DisplayPanel.obj
+ 0001:00000230       _$E203                     00401230 f   DisplayPanel.obj
+ 0001:000003d0       _$E210                     004013d0 f   DisplayPanel.obj
+ 0001:000003e0       _$E207                     004013e0 f   DisplayPanel.obj
+ 0001:000003f0       _$E209                     004013f0 f   DisplayPanel.obj
+ 0001:00000400       _$E208                     00401400 f   DisplayPanel.obj
+ 0001:000004d0       _$E213                     004014d0 f   DisplayPanel.obj
+ 0001:000004e0       _$E212                     004014e0 f   DisplayPanel.obj
+ 0001:0000de8d       _$E373                     0040ee8d f   mfcs42:appmodul.obj
+ 0001:0000de92       _$E372                     0040ee92 f   mfcs42:appmodul.obj
+ 0001:0000daa2       ?ArrayUnwindFilter@@YAHPAU_EXCEPTION_POINTERS@@@Z 0040eaa2 f   msvcrt:ehvecdtr.obj
+
+FIXUPS: 13d6 10 10 10 3b dac3 a ffff2575 31 d 10 50 2a d912 8 29 c ffffffa1
+FIXUPS: ed1f 19 f 33 6a 1b fffffd36 ffffff0a 45 30 fffffef0 d ffff268a
+FIXUPS: 1053 17 de4a b e a ffff21fd d 13 d 3b d f dd8c b a ffff228a 12
+FIXUPS: 11b4 b 39 9 5 12 e 10 ed 11 4a 11 42 db81 ffff3062 6 1b cf8f a
+FIXUPS: 2004 47 1e 21 5c 27 ce78 c ffff3227 22 34 6 3f 6 27 27 ccfe c ffff333d
+FIXUPS: 22f9 12 b 26 4a f0 ffffebb3 18eb 30 25 1c 28 30 30 30 30 30 14
+FIXUPS: 1561 40 3f7 255 f0 16 60 48 38 2e 2c 29 1c 2a 32 6 20 d033 b b
+FIXUPS: ef48 ffff363e ca3f b ffff35e6 68 13 10 c9a3 e a ffff36a8 d 41 10
+FIXUPS: 2711 c8f3 e a ffff3720 3f 10 1c 12 10 c c 25 21 2d 30 30 30 22d
+FIXUPS: 2b21 10 5 10 10 10 26 c 9 7 2e 14 9 14 c 15 1c 1e c3c3 9 a ffff3c50
+FIXUPS: 2ca4 d 10 4c 11 11 c315 a ffff351e 9a8 20 d 53 c110 a ffff3f0f
+FIXUPS: 2ff2 21 19 ab 43 bfab b ffff4126 27 b6 12 a3 3f 11 fffff991 1a
+FIXUPS: f065 b ffff3d84 40 d 16 a fffffc85 1e 33e6 924b c ffff6ded 6 3f
+FIXUPS: 5f79 24 27 9191 c ffff6e93 d 2d b 12 b 3e d 1fa ffffd4b6 73 2a
+FIXUPS: 381b fffffee6 ffffff00 50 ffffff70 fffff8c8 1a c1e2 b ffff60f4
+FIXUPS: 5191 5a 31 4a a4 11a 15 9b 195 192 65 227 2e 38 12 1f 40 5 37 16
+FIXUPS: 5d20 6 19 93d5 8 a ffff6c55 6e 40 22 78 ffffead0 12 f 8 1d 12 f
+FIXUPS: 4a02 2b9 12 6 3d 12 6 22e 2c c 1a 12 f b 43 12 a 6 3d 1a 18 a03f
+FIXUPS: f0f2 b a ffff74ca fffffef0 40 ffffff60 43 d ffffd3a0 50 506 242
+FIXUPS: 4382 dc 48 26 1c 1d 1f fb 2d 189 12 d 39 12 6 39 12 6 b7 12 f 8
+FIXUPS: 7572 16 14 2c 2c 45 21 fffff6b7 40 ffffff30 40 fffffdf0 40 fa fffffe36
+FIXUPS: 6a61 ffffff30 40 ffffff40 10 10 30 ffffff60 ffffffc0 ffffff70 40
+FIXUPS: 668c 26 11f 10 fffffe40 ffffff70 8be3 8 a ffff8e41 4c 53 43 52
+FIXUPS: 8161 5f c 52 ff 15 1f3 6c72 a ffff9413 31 2d fffff06f fffff720
+FIXUPS: 6e04 18 528 3b 2a 6 1e 6 3e 14f 29f2 e0 20 1a 7c 1f 8c 7f 18 6f
+FIXUPS: a314 2e 28 1c 29 43 28 15 73 19 14 5d 18 74 ffffd119 50 70 19 124
+FIXUPS: 78e7 161 16 16cd 6089 a ffff9ff9 8c 28 a3 122 34 3c 425 23 a a7
+FIXUPS: 99ae 6e 29 94 13 14 6a f5 15 66 65 55 4d 53f6 a ffffacca 46 31
+FIXUPS: aeb1 40 fffffbf0 ffffffc0 ffffff70 40 ffffff60 fffffd80 fffffea0
+FIXUPS: a611 30 ffffe02d 216 9 1cf 9 135 9 8e 93 53 6f d 104 34 17 26 1f
+FIXUPS: 8f58 64 57 9 2985 e1 2e fffffe21 40 ffffff30 40 fffff6b0 383 79
+FIXUPS: b392 97 26 77 1f 45 10 152 fffff4a5 40 40 40 40 40 40 40 40 40
+FIXUPS: adb1 40 40 40 43e7 b b b a ffffe63e 5 5 10 1d 27 2f d4 ffffe54f
+FIXUPS: bfb1 ffffff30 40 ffffff30 40 ffffff30 40 ffffff30 40 ffffff30 40
+FIXUPS: bc11 50 ffffff20 40 ffffff30 50 fffffe20 1c03 11 17 17 5 1b 8 2e
+FIXUPS: d606 12 68 16 14 18 1f 4a 59 33 22 1a 19 7 f 1d 7 7 7 22 1d 19a4
+FIXUPS: f242 b ffffea54 fffffec0 ffffff70 50 ffffe4e0 40 9e 29 a1 8d 5
+FIXUPS: c255 2f9f a ffffd828 1ef 145 116 43 4f b8 24 a e1 c8 cb aa 162
+FIXUPS: f217 a ffffe2e2 55 ef9 40 ffffff30 40 ffffff30 50 ffffff00 50 ffffff60
+FIXUPS: e1a1 40 ffffff70 ffffff70 40 ffffff30 50 ffffff20 40 ffffff70 ffffffc0
+FIXUPS: de81 50 ffffff20 40 ffffff30 40 ffffff30 40 fffffea0 40 50 30
+
+ 688 bytes saved through ICF
+

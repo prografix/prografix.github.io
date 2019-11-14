@@ -1,0 +1,101 @@
+Profile: Function timing, sorted by time
+Date:    Sun Jan 13 19:04:56 2019
+
+
+Program Statistics
+------------------
+    Command line at 2019 Jan 13 19:04: ShevTest.exe
+    Start function: cutTest(class S2D_Model<9> &,class S2D_ModelStor<9> &)
+    Total time: 396.058 millisecond
+    Time outside of functions: 61.953 millisecond
+    Call depth: 5
+    Total functions: 674
+    Total hits: 148728
+    Function coverage: 2.8%
+    Overhead Calculated 6416
+    Overhead Average 6416
+
+Module Statistics for shevtest.exe
+----------------------------------
+    Time in module: 334.105 millisecond
+    Percent of time in module: 100.0%
+    Functions in module: 674
+    Hits in module: 148728
+    Module function coverage: 2.8%
+
+                                   |    Func      Func+Child        Hit
+ Functions and Callers             |    Time   %     Time     %     Count
+
+S2D_Model<9>::cut(class Double<10>*| 277.230  83.0  334.092 100.0     9
+  cutTest(class S2D_Model<9> &,cla*| 277.230 100.0  334.092 100.0     9
+
+SL::ShevList::addAftLas(class SL::*|  13.059   3.9   13.059   3.9 44793
+  S2D_Model<9>::cut(class Double<1*|  13.059 100.0   13.059 100.0 44793
+    cutTest(class S2D_Model<9> &,c*|  13.059 100.0   13.059 100.0 44793
+
+operator new(unsigned int) (mfc42.*|   8.225   2.5    8.225   2.5  7514
+  S2D_Model<9>::cut(class Double<1*|   8.225 100.0    8.225 100.0  7514
+    cutTest(class S2D_Model<9> &,c*|   8.225 100.0    8.225 100.0  7514
+
+S2D_EdgePtr<9>::`default construct*|   8.146   2.4   13.220   4.0 18072
+  S2D_Edge<9>::S2D_Edge<9>(void) (*|   8.146 100.0   13.220 100.0 18072
+    S2D_Model<9>::cut(class Double*|   8.146 100.0   13.220 100.0 18072
+
+S2D_Edge<9>::S2D_Edge<9>(void) (s2*|   6.288   1.9   19.508   5.8  2259
+  S2D_Model<9>::cut(class Double<1*|   6.288 100.0   19.508 100.0  2259
+    cutTest(class S2D_Model<9> &,c*|   6.288 100.0   19.508 100.0  2259
+
+SuiteRef<class S2D_Vert<9> *>::inc*|   5.090   1.5    5.090   1.5 16208
+  S2D_Model<9>::cut(class Double<1*|   5.090 100.0    5.090 100.0 16208
+    cutTest(class S2D_Model<9> &,c*|   5.090 100.0    5.090 100.0 16208
+
+S2D_EdgePtr<9>::S2D_EdgePtr<9>(cla*|   5.074   1.5    5.074   1.5 18072
+  S2D_EdgePtr<9>::`default constru*|   5.074 100.0    5.074 100.0 18072
+    S2D_Edge<9>::S2D_Edge<9>(void)*|   5.074 100.0    5.074 100.0 18072
+
+SL::ShevList::outCur(void) (shevli*|   3.899   1.2    3.899   1.2 14344
+  S2D_Model<9>::cut(class Double<1*|   3.899 100.0    3.899 100.0 14344
+    cutTest(class S2D_Model<9> &,c*|   3.899 100.0    3.899 100.0 14344
+
+SuiteRef<class S2D_Vert<9> *>::_de*|   1.951   0.6    1.951   0.6  8104
+  S2D_Model<9>::cut(class Double<1*|   1.951 100.0    1.951 100.0  8104
+    cutTest(class S2D_Model<9> &,c*|   1.951 100.0    1.951 100.0  8104
+
+SL::ShevList::outLas(void) (shevli*|   1.295   0.4    1.295   0.4  4863
+  S2D_Model<9>::cut(class Double<1*|   1.295 100.0    1.295 100.0  4863
+    cutTest(class S2D_Model<9> &,c*|   1.295 100.0    1.295 100.0  4863
+
+SL::ListItem<class SL::List<class *|   1.269   0.4    1.269   0.4  4488
+  S2D_Model<9>::cut(class Double<1*|   1.269 100.0    1.269 100.0  4488
+    cutTest(class S2D_Model<9> &,c*|   1.269 100.0    1.269 100.0  4488
+
+SL::ShevList::movAllAftLas(class S*|   1.039   0.3    1.039   0.3  4070
+  S2D_Model<9>::cut(class Double<1*|   1.039 100.0    1.039 100.0  4070
+    cutTest(class S2D_Model<9> &,c*|   1.039 100.0    1.039 100.0  4070
+
+SL::ShevList::movCurAftLas(class S*|   0.968   0.3    0.968   0.3  5119
+  S2D_Model<9>::cut(class Double<1*|   0.968 100.0    0.968 100.0  5119
+    cutTest(class S2D_Model<9> &,c*|   0.968 100.0    0.968 100.0  5119
+
+SL::ShevList::setAllInfo(int) (she*|   0.377   0.1    0.377   0.1     9
+  S2D_Model<9>::cut(class Double<1*|   0.377 100.0    0.377 100.0     9
+    cutTest(class S2D_Model<9> &,c*|   0.377 100.0    0.377 100.0     9
+
+S2D_Vert<9>::S2D_Vert<9>(void) (s2*|   0.183   0.1    0.183   0.1   758
+  S2D_Model<9>::cut(class Double<1*|   0.183 100.0    0.183 100.0   758
+    cutTest(class S2D_Model<9> &,c*|   0.183 100.0    0.183 100.0   758
+
+cutTest(class S2D_Model<9> &,class*|   0.011   0.0  334.103 100.0     1
+
+DynArrRef<class S2D_Vert<9> *>::Dy*|   0.000   0.0    0.000   0.0     9
+  S2D_Model<9>::cut(class Double<1*|  -0.000   0.0   -0.000   0.0     9
+    cutTest(class S2D_Model<9> &,c*|  -0.000   0.0   -0.000   0.0     9
+
+S2D_Plane<9>::S2D_Plane<9>(void) (*|   0.000   0.0    0.000   0.0     9
+  S2D_Model<9>::cut(class Double<1*|  -0.001   0.0   -0.001   0.0     9
+    cutTest(class S2D_Model<9> &,c*|  -0.001   0.0   -0.001   0.0     9
+
+SL::ShevList::~ShevList(void) (she*|   0.000   0.0    0.000   0.0    27
+  S2D_Model<9>::cut(class Double<1*|  -0.001   0.0   -0.001   0.0    27
+    cutTest(class S2D_Model<9> &,c*|  -0.001   0.0   -0.001   0.0    27
+

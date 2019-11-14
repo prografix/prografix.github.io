@@ -1,0 +1,93 @@
+Profile: Function timing, sorted by time
+Date:    Sat Nov 24 11:53:10 2018
+
+
+Program Statistics
+------------------
+    Command line at 2018 Nov 24 11:43: ShevTest.exe
+    Start function: maxParallelogramInConvexPolyhedronA(class Shev::Polyhedron const &)
+    Total time: 21973.319 millisecond
+    Time outside of functions: 70.440 millisecond
+    Call depth: 6
+    Total functions: 868
+    Total hits: 17122952
+    Function coverage: 7.5%
+    Overhead Calculated 12654
+    Overhead Average 12654
+
+Module Statistics for shevtest.exe
+----------------------------------
+    Time in module: 21902.879 millisecond
+    Percent of time in module: 100.0%
+    Functions in module: 868
+    Hits in module: 17122952
+    Module function coverage: 7.5%
+
+        Func          Func+Child           Hit
+        Time   %         Time      %      Count  Function
+---------------------------------------------------------
+    8536.269  39.0    17925.181  81.8       53 WireModel<9>::cut(class Double<10> const &,class SL::List<class Vertex<9> > &) (opti2d_3d.obj)
+    7716.290  35.2     7716.290  35.2 11910940 operator==(class SegmentId<9> const &,class SegmentId<9> const &) (opti2d_3d.obj)
+     708.757   3.2      708.757   3.2  1213977 SL::ShevList::next(void) (approx3d.obj)
+     708.757   3.2      708.757   3.2  1213977 SL::ShowList::next(void) (approx3d.obj)
+     603.275   2.8      603.275   2.8   928408 SegmentId<9>::SegmentId<9>(unsigned __int16,unsigned __int16 const *) (opti2d_3d.obj)
+     349.679   1.6      694.627   3.2       53 `anonymous namespace'::maxParallelogramArea(class WireModel<9> const &,class Double<9> &) (opti3d_test.obj)
+     244.783   1.1      244.783   1.1   559462 operator%(class Double<10> const &,class Double<9> const &) (opti2d_3d.obj)
+     233.978   1.1      233.978   1.1    51742 operator delete(void *) (mfc42.dll)
+     209.186   1.0      480.233   2.2    51688 Item2<unsigned int>::`scalar deleting destructor'(unsigned int) (func3d.obj)
+     209.186   1.0      480.233   2.2    51688 Item2<unsigned int>::`vector deleting destructor'(unsigned int) (func3d.obj)
+     209.186   1.0      480.233   2.2    51688 SL::ListItem<struct Set2<unsigned int,unsigned int> >::`scalar deleting destructor'(unsigned int) (func3d.obj)
+     209.186   1.0      480.233   2.2    51688 SL::ListItem<struct Set2<unsigned int,unsigned int> >::`vector deleting destructor'(unsigned int) (func3d.obj)
+     209.186   1.0      480.233   2.2    51688 SL::ListItemA<double>::`scalar deleting destructor'(unsigned int) (func3d.obj)
+     209.186   1.0      480.233   2.2    51688 SL::ListItemA<double>::`vector deleting destructor'(unsigned int) (func3d.obj)
+     209.186   1.0      480.233   2.2    51688 Vertex<6>::`scalar deleting destructor'(unsigned int) (func3d.obj)
+     209.186   1.0      480.233   2.2    51688 Vertex<6>::`vector deleting destructor'(unsigned int) (func3d.obj)
+     209.186   1.0      480.233   2.2    51688 Vertex<9>::`scalar deleting destructor'(unsigned int) (func3d.obj)
+     209.186   1.0      480.233   2.2    51688 Vertex<9>::`vector deleting destructor'(unsigned int) (func3d.obj)
+     125.978   0.6      299.435   1.4   116051 SL::List<class Vertex<9> >::addNewBefFir(class SL::List<class Vertex<9> > &) (opti2d_3d.obj)
+     120.476   0.6      419.912   1.9       53 WireModel<9>::newVert(class SL::List<class Vertex<9> > &,class SL::List<class Vertex<9> > &,class SL::List<class Vertex<9> > &) (opti2d_3d.obj)
+     114.215   0.5      114.215   0.5    51742 operator new(unsigned int) (mfc42.dll)
+      49.257   0.2      529.489   2.4      108 SL::ShevList::~ShevList(void) (shevlist.obj)
+      41.512   0.2       41.512   0.2   116051 SL::ShevList::addBefFir(class SL::ShevItem *) (shevlist.obj)
+      40.436   0.2       40.436   0.2    51688 Item2<unsigned int>::~Item2<unsigned int>(void) (func3d.obj)
+      40.436   0.2       40.436   0.2    51688 SL::ListItem<struct Set2<unsigned int,unsigned int> >::~ListItem<struct Set2<unsigned int,unsigned int> >(void) (func3d.obj)
+      40.436   0.2       40.436   0.2    51688 SL::ListItemA<double>::~ListItemA<double>(void) (func3d.obj)
+      40.436   0.2       40.436   0.2    51688 Vertex<6>::~Vertex<6>(void) (func3d.obj)
+      40.436   0.2       40.436   0.2    51688 Vertex<9>::~Vertex<9>(void) (func3d.obj)
+      35.771   0.2       35.771   0.2    68529 SL::ShevList::movCurAftLas(class SL::ShevList &) (shevlist.obj)
+      19.197   0.1       19.197   0.1    64373 SL::ShevList::outLas(void) (shevlist.obj)
+       0.243   0.0    18619.983  85.0        1 `anonymous namespace'::maxParallelogramInConvexPolyhedron(class CArrRef<class Vector2d> const &,class CArrRef<class Plane3d> const &,class WireModel<9> &,class SL::List<class Vertex<9> > &,class Parallelogram3d &) (opti3d_test.obj)
+       0.124   0.0        0.124   0.0       53 ArrRef<class SegmentEnd<9> *>::fill(class SegmentEnd<9> * const &) (opti2d_3d.obj)
+       0.086   0.0        1.520   0.0       53 DynArray<class SegmentEnd<9> >::DynArray<class SegmentEnd<9> >(unsigned int) (opti2d_3d.obj)
+       0.072   0.0        0.072   0.0      106 SL::ShevList::movAllAftLas(class SL::ShevList &) (shevlist.obj)
+       0.071   0.0        0.071   0.0        1 SL::ShevList::movFirBefFir(unsigned int,class SL::ShevList &) (shevlist.obj)
+       0.047   0.0        3.412   0.0       53 DynArray<class SegmentEnd<9> >::~DynArray<class SegmentEnd<9> >(void) (opti2d_3d.obj)
+       0.001   0.0        0.001   0.0        1 dimensions(class CArrRef<class Vector3d>) (func3d.obj)
+       0.000   0.0        0.000   0.0        1 SL::List<class Vertex<9> >::operator-=(class Double<9> const &) (opti3d_test.obj)
+       0.000   0.0        0.000   0.0        1 Conform3d::operator~(void) (opti2d_3d.obj)
+       0.000   0.0        0.000   0.0        1 Double<9>::fill(double) (opti2d_3d.obj)
+       0.000   0.0        0.000   0.0        1 DynArray<class Plane3d>::DynArray<class Plane3d>(unsigned int) (opti2d_3d.obj)
+       0.000   0.0        0.000   0.0        5 LinTran2d::LinTran2d(void) (opti2d.obj)
+       0.000   0.0        0.000   0.0        5 Parallelogram2d::Parallelogram2d(void) (opti2d.obj)
+       0.000   0.0        0.000   0.0        5 Parallelogram3d::Parallelogram3d(void) (opti2d.obj)
+       0.000   0.0        0.000   0.0        1 Parallelogram3d::operator*=(class Conform3d const &) (opti2d_3d.obj)
+       0.000   0.0        0.000   0.0       34 Plane3d::mul(class Similar3d const &,...) (draw.obj)
+       0.000   0.0        0.000   0.0        1 SL::List<class Vertex<6> >::List<class Vertex<6> >(void) (approx3d.obj)
+       0.000   0.0        0.087   0.0        1 SL::List<class Vertex<9> >::resize(unsigned int,class SL::List<class Vertex<9> > &) (opti2d_3d.obj)
+       0.000   0.0        0.000   0.0    51688 SL::ShevItem::~ShevItem(void) (shevlist.obj)
+       0.000   0.0        0.000   0.0        1 SL::ShevList::ShevList(void) (approx3d.obj)
+       0.000   0.0        0.000   0.0       10 SL::ShevList::addAftLas(class SL::ShevItem *) (shevlist.obj)
+       0.000   0.0        0.000   0.0        1 SL::ShevList::addAllBefFir(class SL::ShevList &) (shevlist.obj)
+       0.000   0.0        0.000   0.0       53 SL::ShowList::ShowList(class SL::ShevList const &) (approx3d.obj)
+       0.000   0.0        0.000   0.0        5 SortItem<double,unsigned int>::SortItem<double,unsigned int>(void) (opti2d.obj)
+       0.000   0.0        0.000   0.0        1 Spin3d::Spin3d(void) (opti2d_3d.obj)
+       0.000   0.0        0.000   0.0        3 Spin3d::getReper(class Vector3d &,class Vector3d &,class Vector3d &) (vector3d.obj)
+       0.000   0.0        0.000   0.0        5 Vector2d::Vector2d(void) (opti2d.obj)
+       0.000   0.0        0.000   0.0        5 Vector3d::Vector3d(double,double,double) (draw.obj)
+       0.000   0.0        0.000   0.0        5 Vector3d::Vector3d(void) (opti2d.obj)
+       0.000   0.0        0.000   0.0        3 Vector3d::mul(class Similar3d const &,...) (draw.obj)
+       0.000   0.0        0.000   0.0        1 `vector constructor iterator'(void *,unsigned int,int,void (*)(void *)) (draw.obj)
+       0.000   0.0    19149.606  87.4        1 maxParallelogramInConvexPolyhedronA(class Shev::Polyhedron const &) (opti3d_test.obj)
+       0.000   0.0        0.000   0.0        1 normU(class Vector3d const &) (vector3d.obj)
+       0.000   0.0        0.000   0.0        4 operator*(class Vector3d const &,double) (draw.obj)
+       0.000   0.0        0.000   0.0        2 operator-(class Vector3d const &,class Vector3d const &) (approx3d.obj)

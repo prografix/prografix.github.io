@@ -1,0 +1,355 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <SccProjectName>"$/sad/ShevTest", YFCAAAAA</SccProjectName>
+    <SccLocalPath>.</SccLocalPath>
+    <Keyword>MFCProj</Keyword>
+    <ProjectGuid>{7AAFAB60-1804-490A-B78D-40DC3DD4CC62}</ProjectGuid>
+    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v140</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>.\Release\</OutDir>
+    <IntDir>.\Release\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules />
+    <CodeAnalysisRuleAssemblies />
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>.\Debug\</OutDir>
+    <IntDir>.\Debug\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules />
+    <CodeAnalysisRuleAssemblies />
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <StringPooling>true</StringPooling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <Optimization>MaxSpeed</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>.\Release\</AssemblerListingLocation>
+      <PrecompiledHeaderOutputFile>.\Release\ShevTest.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeader />
+      <ObjectFileName>.\Release\</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release\</ProgramDataBaseFileName>
+    </ClCompile>
+    <Midl>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <TypeLibraryName>.\Release\ShevTest.tlb</TypeLibraryName>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0419</Culture>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Release\ShevTest.bsc</OutputFile>
+    </Bscmake>
+    <Link>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <SubSystem>Windows</SubSystem>
+      <OutputFile>.\Release\ShevTest.exe</OutputFile>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <Optimization>Disabled</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <MinimalRebuild>true</MinimalRebuild>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>.\Debug\</AssemblerListingLocation>
+      <PrecompiledHeaderOutputFile>.\Debug\ShevTest.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeader />
+      <ObjectFileName>.\Debug\</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug\</ProgramDataBaseFileName>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+    </ClCompile>
+    <Midl>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <TypeLibraryName>.\Debug\ShevTest.tlb</TypeLibraryName>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0419</Culture>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Debug\ShevTest.bsc</OutputFile>
+    </Bscmake>
+    <Link>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OutputFile>.\Debug\ShevTest.exe</OutputFile>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="DisplayPanel.cpp" />
+    <ClCompile Include="draw.cpp" />
+    <ClCompile Include="Extra\BODY2.CPP" />
+    <ClCompile Include="Extra\Body2Func.cpp" />
+    <ClCompile Include="Extra\ExtraBody.cpp" />
+    <ClCompile Include="Extra\ExtraBodyPolyhedron.cpp" />
+    <ClCompile Include="Extra\ex_intersect3d.cpp" />
+    <ClCompile Include="Extra\ex_opti3d.cpp" />
+    <ClCompile Include="Extra\filePYH_Body.cpp" />
+    <ClCompile Include="Extra\filePYH_ExtraBody.cpp" />
+    <ClCompile Include="Extra\KONTUR.CPP" />
+    <ClCompile Include="Extra\maxConvPolyInPolyNR3d.cpp" />
+    <ClCompile Include="Extra\PolyhedronDoctor.cpp" />
+    <ClCompile Include="Extra\TRANS3.CPP" />
+    <ClCompile Include="MainFrm.cpp" />
+    <ClCompile Include="ShevTest.cpp" />
+    <ClCompile Include="ShevTestDoc.cpp" />
+    <ClCompile Include="ShevTestView.cpp" />
+    <ClCompile Include="Shev\acoder.cpp" />
+    <ClCompile Include="Shev\approx.cpp" />
+    <ClCompile Include="Shev\approx2d.cpp" />
+    <ClCompile Include="Shev\approx3d.cpp" />
+    <ClCompile Include="Shev\asc.cpp" />
+    <ClCompile Include="Shev\CMatrix.cpp" />
+    <ClCompile Include="Shev\Complex.cpp" />
+    <ClCompile Include="Shev\File.cpp" />
+    <ClCompile Include="Shev\fileBMP.cpp" />
+    <ClCompile Include="Shev\fileOBJ.cpp" />
+    <ClCompile Include="Shev\filePYH.cpp" />
+    <ClCompile Include="Shev\fileSTL.cpp" />
+    <ClCompile Include="Shev\func1d.cpp" />
+    <ClCompile Include="Shev\func2d.cpp" />
+    <ClCompile Include="Shev\func3d.cpp" />
+    <ClCompile Include="Shev\intersect2d.cpp" />
+    <ClCompile Include="Shev\intersect3d.cpp" />
+    <ClCompile Include="Shev\ioSTL.cpp" />
+    <ClCompile Include="Shev\LZH.cpp" />
+    <ClCompile Include="Shev\MarchingCubes.cpp" />
+    <ClCompile Include="Shev\Mathem.cpp" />
+    <ClCompile Include="Shev\Matrix.cpp" />
+    <ClCompile Include="Shev\Micro.cpp" />
+    <ClCompile Include="Shev\moment2d.cpp" />
+    <ClCompile Include="Shev\moment3d.cpp" />
+    <ClCompile Include="Shev\opti1d.cpp" />
+    <ClCompile Include="Shev\opti2d.cpp" />
+    <ClCompile Include="Shev\opti2d_2.cpp" />
+    <ClCompile Include="Shev\opti2d_3d.cpp" />
+    <ClCompile Include="Shev\opti2d_4.cpp" />
+    <ClCompile Include="Shev\opti3d.cpp" />
+    <ClCompile Include="Shev\opti3d_2.cpp" />
+    <ClCompile Include="Shev\Poly3gon.cpp" />
+    <ClCompile Include="Shev\Polyhedron.cpp" />
+    <ClCompile Include="Shev\Polyhedron_Poly3gon.cpp" />
+    <ClCompile Include="Shev\printf.cpp" />
+    <ClCompile Include="Shev\PseudoFile.cpp" />
+    <ClCompile Include="Shev\Rand.cpp" />
+    <ClCompile Include="Shev\RealFile.cpp" />
+    <ClCompile Include="Shev\ShevList.cpp" />
+    <ClCompile Include="Shev\swdict.cpp" />
+    <ClCompile Include="Shev\Timer.cpp" />
+    <ClCompile Include="Shev\TRANS.CPP" />
+    <ClCompile Include="Shev\trian2d.cpp" />
+    <ClCompile Include="Shev\trian3d.cpp" />
+    <ClCompile Include="Shev\ValueSet.cpp" />
+    <ClCompile Include="Shev\Vector2d.cpp" />
+    <ClCompile Include="Shev\Vector2f.cpp" />
+    <ClCompile Include="Shev\Vector3d.cpp" />
+    <ClCompile Include="Shev\Vector3f.cpp" />
+    <ClCompile Include="Shev\Vector4d.cpp" />
+    <ClCompile Include="StdAfx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="Test\approx2d_test.cpp" />
+    <ClCompile Include="Test\approx3d_test.cpp" />
+    <ClCompile Include="Test\approx_test.cpp" />
+    <ClCompile Include="Test\array_test.cpp" />
+    <ClCompile Include="Test\calc_test.cpp" />
+    <ClCompile Include="Test\complex_test.cpp" />
+    <ClCompile Include="Test\compress_test.cpp" />
+    <ClCompile Include="Test\Display.cpp" />
+    <ClCompile Include="Test\filePYH_test.cpp" />
+    <ClCompile Include="Test\file_test.cpp" />
+    <ClCompile Include="Test\func1d_test.cpp" />
+    <ClCompile Include="Test\func2d_test.cpp" />
+    <ClCompile Include="Test\func3d_test.cpp" />
+    <ClCompile Include="Test\func4d_test.cpp" />
+    <ClCompile Include="Test\intersect2d_test.cpp" />
+    <ClCompile Include="Test\intersect3d_test.cpp" />
+    <ClCompile Include="Test\LinAlg_test.cpp" />
+    <ClCompile Include="Test\math_test.cpp" />
+    <ClCompile Include="Test\matrix_test.cpp" />
+    <ClCompile Include="Test\moment2d_test.cpp" />
+    <ClCompile Include="Test\opti1d_test.cpp" />
+    <ClCompile Include="Test\opti2d_test.cpp" />
+    <ClCompile Include="Test\opti3d_test.cpp" />
+    <ClCompile Include="Test\PolyhedronErrorRecipient.cpp" />
+    <ClCompile Include="Test\polyhedron_test.cpp" />
+    <ClCompile Include="Test\rand_test.cpp" />
+    <ClCompile Include="Test\recon_test.cpp" />
+    <ClCompile Include="Test\S2D_Model_test.cpp" />
+    <ClCompile Include="Test\ShevList_test.cpp" />
+    <ClCompile Include="Test\tree_test.cpp" />
+    <ClCompile Include="Test\trian2d_test.cpp" />
+    <ClCompile Include="Test\trian3d_test.cpp" />
+    <ClCompile Include="Test\Vector2d_test.cpp" />
+    <ClCompile Include="Test\Vector3d_test.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ShevTest.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="draw.h" />
+    <ClInclude Include="Extra\Body2.h" />
+    <ClInclude Include="Extra\Body2Func.h" />
+    <ClInclude Include="Extra\ExtraBody.h" />
+    <ClInclude Include="Extra\ExtraBodyPolyhedron.h" />
+    <ClInclude Include="Extra\ex_intersect3d.h" />
+    <ClInclude Include="Extra\filePYH_Body.h" />
+    <ClInclude Include="Extra\filePYH_ExtraBody.h" />
+    <ClInclude Include="Extra\PolyhedronDoctor.h" />
+    <ClInclude Include="Extra\Vert.h" />
+    <ClInclude Include="MainFrm.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="ShevTest.h" />
+    <ClInclude Include="ShevTestDoc.h" />
+    <ClInclude Include="ShevTestView.h" />
+    <ClInclude Include="Shev\acoder.h" />
+    <ClInclude Include="Shev\approx.h" />
+    <ClInclude Include="Shev\approx2d.h" />
+    <ClInclude Include="Shev\approx3d.h" />
+    <ClInclude Include="Shev\atrian.h" />
+    <ClInclude Include="Shev\AVL_Tree.h" />
+    <ClInclude Include="Shev\CMatrix.h" />
+    <ClInclude Include="Shev\Complex.h" />
+    <ClInclude Include="Shev\DoubleN.h" />
+    <ClInclude Include="Shev\file.h" />
+    <ClInclude Include="Shev\fileBMP.h" />
+    <ClInclude Include="Shev\fileOBJ.h" />
+    <ClInclude Include="Shev\filePYH.h" />
+    <ClInclude Include="Shev\fileSTL.h" />
+    <ClInclude Include="Shev\func1d.h" />
+    <ClInclude Include="Shev\func1t.h" />
+    <ClInclude Include="Shev\func2d.h" />
+    <ClInclude Include="Shev\func2t.h" />
+    <ClInclude Include="Shev\func3d.h" />
+    <ClInclude Include="Shev\heap.h" />
+    <ClInclude Include="Shev\HeapAndTree.h" />
+    <ClInclude Include="Shev\intersect2d.h" />
+    <ClInclude Include="Shev\intersect3d.h" />
+    <ClInclude Include="Shev\LinAlg.h" />
+    <ClInclude Include="Shev\lists.h" />
+    <ClInclude Include="Shev\LZH.H" />
+    <ClInclude Include="Shev\MarchingCubes.h" />
+    <ClInclude Include="Shev\Mathem.h" />
+    <ClInclude Include="Shev\MathFunc.h" />
+    <ClInclude Include="Shev\Matrix.h" />
+    <ClInclude Include="Shev\median.h" />
+    <ClInclude Include="Shev\Micro.h" />
+    <ClInclude Include="Shev\moment2d.h" />
+    <ClInclude Include="Shev\moment3d.h" />
+    <ClInclude Include="Shev\opti1d.h" />
+    <ClInclude Include="Shev\opti2d.h" />
+    <ClInclude Include="Shev\opti2d_3d.h" />
+    <ClInclude Include="Shev\opti3d.h" />
+    <ClInclude Include="Shev\Poly3gon.h" />
+    <ClInclude Include="Shev\Polyhedron.h" />
+    <ClInclude Include="Shev\Polyhedron_Poly3gon.h" />
+    <ClInclude Include="Shev\PseudoFile.h" />
+    <ClInclude Include="Shev\Rand.h" />
+    <ClInclude Include="Shev\RealFile.h" />
+    <ClInclude Include="Shev\S2D_Model.h" />
+    <ClInclude Include="Shev\SemiRib.h" />
+    <ClInclude Include="Shev\ShevArray.h" />
+    <ClInclude Include="Shev\ShevArray2.h" />
+    <ClInclude Include="Shev\ShevList.h" />
+    <ClInclude Include="Shev\sorting.h" />
+    <ClInclude Include="Shev\StringFile.h" />
+    <ClInclude Include="Shev\swdict.h" />
+    <ClInclude Include="Shev\Template.h" />
+    <ClInclude Include="Shev\Timer.h" />
+    <ClInclude Include="Shev\Trans.h" />
+    <ClInclude Include="Shev\trian2d.h" />
+    <ClInclude Include="Shev\trian2t.h" />
+    <ClInclude Include="Shev\trian3d.h" />
+    <ClInclude Include="Shev\TUNE.H" />
+    <ClInclude Include="Shev\typedef.h" />
+    <ClInclude Include="Shev\ValueSet.h" />
+    <ClInclude Include="Shev\Vector2d.h" />
+    <ClInclude Include="Shev\Vector2f.h" />
+    <ClInclude Include="Shev\Vector2i.h" />
+    <ClInclude Include="Shev\Vector3d.h" />
+    <ClInclude Include="Shev\Vector3f.h" />
+    <ClInclude Include="Shev\Vector4d.h" />
+    <ClInclude Include="Shev\Vert.h" />
+    <ClInclude Include="Shev\VertFunc.h" />
+    <ClInclude Include="Shev\WireModel.h" />
+    <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="Test\Display.h" />
+    <ClInclude Include="Test\PolyhedronErrorRecipient.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\ShevTest.ico" />
+    <Image Include="res\ShevTestDoc.ico" />
+    <Image Include="res\Toolbar.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="res\ShevTest.rc2" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

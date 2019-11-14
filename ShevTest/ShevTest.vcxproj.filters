@@ -1,0 +1,632 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{cc855765-5393-4b22-84c8-b7d23eba10bd}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{d3de129e-1a47-4278-856a-1c37acd8a85d}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{ae7752fd-4d24-4ecb-8476-d0b5b0a8da3a}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+    <Filter Include="Shev h">
+      <UniqueIdentifier>{0d7ed05e-4f61-4acb-95fd-9a0affcd1653}</UniqueIdentifier>
+      <Extensions>h</Extensions>
+    </Filter>
+    <Filter Include="Shev cpp">
+      <UniqueIdentifier>{0031a3f5-9402-4908-b185-d80a113fe126}</UniqueIdentifier>
+      <Extensions>cpp</Extensions>
+    </Filter>
+    <Filter Include="Test">
+      <UniqueIdentifier>{99808d67-9b10-4ce5-9a33-4aece39a01fc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Extra">
+      <UniqueIdentifier>{203b4801-25e7-4d58-b041-d3f7dfaab6c8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="DisplayPanel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="draw.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MainFrm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShevTest.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShevTestDoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShevTestView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StdAfx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\acoder.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\approx.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\approx2d.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\approx3d.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\asc.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\CMatrix.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\Complex.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\File.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\fileBMP.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\fileOBJ.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\filePYH.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\fileSTL.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\func1d.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\func2d.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\func3d.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\intersect2d.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\intersect3d.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\ioSTL.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\LZH.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\MarchingCubes.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\Mathem.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\Matrix.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\Micro.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\moment2d.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\moment3d.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\opti1d.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\opti2d.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\opti2d_2.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\opti2d_3d.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\opti2d_4.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\opti3d.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\opti3d_2.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\Poly3gon.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\Polyhedron.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\Polyhedron_Poly3gon.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\printf.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\PseudoFile.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\Rand.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\RealFile.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\ShevList.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\swdict.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\Timer.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\TRANS.CPP">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\trian2d.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\trian3d.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\ValueSet.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\Vector2d.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\Vector2f.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\Vector3d.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\Vector3f.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Shev\Vector4d.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\approx2d_test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\approx3d_test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\approx_test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\array_test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\calc_test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\complex_test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\compress_test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\Display.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\file_test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\filePYH_test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\func1d_test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\func2d_test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\func3d_test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\func4d_test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\intersect2d_test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\intersect3d_test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\LinAlg_test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\math_test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\matrix_test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\moment2d_test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\opti1d_test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\opti2d_test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\opti3d_test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\polyhedron_test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\PolyhedronErrorRecipient.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\rand_test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\recon_test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\S2D_Model_test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\ShevList_test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\tree_test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\trian2d_test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\trian3d_test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\Vector2d_test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Test\Vector3d_test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
+    <ClCompile Include="Extra\BODY2.CPP">
+      <Filter>Extra</Filter>
+    </ClCompile>
+    <ClCompile Include="Extra\Body2Func.cpp">
+      <Filter>Extra</Filter>
+    </ClCompile>
+    <ClCompile Include="Extra\ex_intersect3d.cpp">
+      <Filter>Extra</Filter>
+    </ClCompile>
+    <ClCompile Include="Extra\ex_opti3d.cpp">
+      <Filter>Extra</Filter>
+    </ClCompile>
+    <ClCompile Include="Extra\ExtraBody.cpp">
+      <Filter>Extra</Filter>
+    </ClCompile>
+    <ClCompile Include="Extra\ExtraBodyPolyhedron.cpp">
+      <Filter>Extra</Filter>
+    </ClCompile>
+    <ClCompile Include="Extra\filePYH_Body.cpp">
+      <Filter>Extra</Filter>
+    </ClCompile>
+    <ClCompile Include="Extra\filePYH_ExtraBody.cpp">
+      <Filter>Extra</Filter>
+    </ClCompile>
+    <ClCompile Include="Extra\KONTUR.CPP">
+      <Filter>Extra</Filter>
+    </ClCompile>
+    <ClCompile Include="Extra\maxConvPolyInPolyNR3d.cpp">
+      <Filter>Extra</Filter>
+    </ClCompile>
+    <ClCompile Include="Extra\PolyhedronDoctor.cpp">
+      <Filter>Extra</Filter>
+    </ClCompile>
+    <ClCompile Include="Extra\TRANS3.CPP">
+      <Filter>Extra</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ShevTest.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="draw.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MainFrm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShevTest.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShevTestDoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShevTestView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\acoder.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\approx.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\approx2d.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\approx3d.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\atrian.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\AVL_Tree.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\CMatrix.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\Complex.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\DoubleN.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\file.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\fileBMP.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\fileOBJ.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\filePYH.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\fileSTL.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\func1d.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\func1t.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\func2d.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\func2t.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\func3d.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\heap.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\HeapAndTree.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\intersect2d.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\intersect3d.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\LinAlg.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\lists.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\LZH.H">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\MarchingCubes.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\Mathem.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\MathFunc.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\Matrix.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\median.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\Micro.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\moment2d.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\moment3d.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\opti1d.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\opti2d.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\opti2d_3d.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\opti3d.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\Poly3gon.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\Polyhedron.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\Polyhedron_Poly3gon.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\PseudoFile.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\Rand.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\RealFile.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\S2D_Model.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\SemiRib.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\ShevArray.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\ShevArray2.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\ShevList.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\sorting.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\StringFile.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\swdict.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\Template.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\Timer.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\Trans.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\trian2d.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\trian2t.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\trian3d.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\TUNE.H">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\typedef.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\ValueSet.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\Vector2d.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\Vector2f.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\Vector2i.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\Vector3d.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\Vector3f.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\Vector4d.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\Vert.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\VertFunc.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\WireModel.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Test\Display.h">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="Test\PolyhedronErrorRecipient.h">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="Extra\Body2.h">
+      <Filter>Extra</Filter>
+    </ClInclude>
+    <ClInclude Include="Extra\Body2Func.h">
+      <Filter>Extra</Filter>
+    </ClInclude>
+    <ClInclude Include="Extra\ex_intersect3d.h">
+      <Filter>Extra</Filter>
+    </ClInclude>
+    <ClInclude Include="Extra\ExtraBody.h">
+      <Filter>Extra</Filter>
+    </ClInclude>
+    <ClInclude Include="Extra\ExtraBodyPolyhedron.h">
+      <Filter>Extra</Filter>
+    </ClInclude>
+    <ClInclude Include="Extra\filePYH_Body.h">
+      <Filter>Extra</Filter>
+    </ClInclude>
+    <ClInclude Include="Extra\filePYH_ExtraBody.h">
+      <Filter>Extra</Filter>
+    </ClInclude>
+    <ClInclude Include="Extra\PolyhedronDoctor.h">
+      <Filter>Extra</Filter>
+    </ClInclude>
+    <ClInclude Include="Extra\Vert.h">
+      <Filter>Extra</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\ShevTest.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\ShevTestDoc.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Toolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="res\ShevTest.rc2">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>

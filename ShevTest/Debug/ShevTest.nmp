@@ -1,0 +1,10 @@
+[NuMega Checkers Project]
+Version=1
+ImageCount=1
+[Image 0]
+Path=D:\PROJECTS\ShevTest\Debug\ShevTest.exe
+Executable=
+WorkingPath=D:\PROJECTS\ShevTest\Debug\
+Arguments=
+SearchPaths=.;..;
+ProjectType=0

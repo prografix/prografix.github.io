@@ -1,0 +1,22 @@
+
+				Зависимость файлов
+
+typedef.h	()
+LinAlg.h	()
+
+template.h	( typedef.h )
+
+ShevArray.h 	( template.h )
+sorting.h	( template.h )
+heap.h		( template.h )
+lists.h		( template.h, ShevList.h )
+
+ShevArray2.h	( ShevArray.h )
+Poly3gon.h	( ShevArray.h )
+func2t.h	( ShevArray.h )
+func1t.h	( ShevArray.h, rand.h )
+WireModel.h 	( ShevArray.h, ShevList.h, DoubleN.h )
+median.h	( ShevArray.h, sorting.h )
+atrin.h		( ShevArray.h, SemiRib.h )
+
+trian2t.h	( atrin.h )

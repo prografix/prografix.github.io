@@ -1,0 +1,118 @@
+Profile: Function timing, sorted by time
+Date:    Sat Nov 24 12:18:42 2018
+
+
+Program Statistics
+------------------
+    Command line at 2018 Nov 24 12:03: ShevTest.exe
+    Start function: maxParallelogramInConvexPolyhedronA(class Shev::Polyhedron const &)
+    Total time: 45283.427 millisecond
+    Time outside of functions: 346.673 millisecond
+    Call depth: 28
+    Total functions: 894
+    Total hits: 46655905
+    Function coverage: 10.1%
+    Overhead Calculated 12185
+    Overhead Average 12185
+
+Module Statistics for shevtest.exe
+----------------------------------
+    Time in module: 44936.754 millisecond
+    Percent of time in module: 100.0%
+    Functions in module: 894
+    Hits in module: 46655905
+    Module function coverage: 10.1%
+
+        Func          Func+Child           Hit
+        Time   %         Time      %      Count  Function
+---------------------------------------------------------
+    9328.823  20.8    10231.613  22.8 10734051 AVL_Tree<struct SortItem<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> >,unsigned int> >::add(struct SortItem<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> >,unsigned int> const &,struct AVL_Tree<struct SortItem<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> >,unsigned int> >::Node * &,bool &,class AVL_Tree<struct SortItem<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> >,unsigned int> >::NodeStor *) (opti3d_test.obj)
+    6988.704  15.6    36685.705  81.6       53 WireModel<9>::cut(class Double<10> const &,class SL::List<class Vertex<9> > &) (opti2d_3d.obj)
+    6218.442  13.8     6218.442  13.8 11910940 operator==(class SegmentId<9> const &,class SegmentId<9> const &) (opti2d_3d.obj)
+    4075.066   9.1     4468.563   9.9  5292096 AVL_Tree<struct SortItem<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> >,unsigned int> >::delet(struct SortItem<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> >,unsigned int> const &,struct AVL_Tree<struct SortItem<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> >,unsigned int> >::Node * &,class AVL_Tree<struct SortItem<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> >,unsigned int> >::NodeStor *) (opti3d_test.obj)
+    2778.152   6.2    10332.340  23.0       52 `anonymous namespace'::DelVertFuncParallelogram::operator()(class SL::List<class Vertex<9> > const &) (opti3d_test.obj)
+    2296.470   5.1     2296.470   5.1  5292096 operator>(struct Set2<class Vertex<9> const *,class Vertex<9> const *> const &,struct Set2<class Vertex<9> const *,class Vertex<9> const *> const &) (opti3d_test.obj)
+    2296.470   5.1     2296.470   5.1  5292096 operator>(struct Set2<unsigned int,unsigned int> const &,struct Set2<unsigned int,unsigned int> const &) (opti3d_test.obj)
+    1684.962   3.7     1972.278   4.4   427789 AVL_Tree<struct SortItem<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> >,unsigned int> >::delAll(struct AVL_Tree<struct SortItem<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> >,unsigned int> >::Node *,class AVL_Tree<struct SortItem<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> >,unsigned int> >::NodeStor *) (opti3d_test.obj)
+    1091.299   2.4    11923.131  26.5       53 `anonymous namespace'::NewVertFuncParallelogram::operator()(class SL::List<class Vertex<9> > const &) (opti3d_test.obj)
+     729.734   1.6      729.734   1.6   265652 operator delete(void *) (mfc42.dll)
+     643.819   1.4      643.819   1.4   265652 operator new(unsigned int) (mfc42.dll)
+     446.080   1.0      446.080   1.0   693168 MaxDynHeap<struct SortItem<double,struct SortItemPtr<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> > > > >::raise(unsigned int) (opti3d_test.obj)
+     411.452   0.9      411.452   0.9   580255 AVL_TreeNodeStor<struct SortItem<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> >,unsigned int> >::put(struct AVL_Tree<struct SortItem<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> >,unsigned int> >::Node *) (opti3d_test.obj)
+     382.058   0.9      382.058   0.9   928408 SegmentId<9>::SegmentId<9>(unsigned __int16,unsigned __int16 const *) (opti2d_3d.obj)
+     380.820   0.8      902.790   2.0   580255 AVL_TreeNodeStor<struct SortItem<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> >,unsigned int> >::get(void) (opti3d_test.obj)
+     319.753   0.7      319.753   0.7   366300 _swap(struct SortItem<double,struct SortItemPtr<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> > > > &,struct SortItem<double,struct SortItemPtr<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> > > > &) (opti3d_test.obj)
+     298.338   0.7      844.929   1.9        1 AVL_TreeNodeStor<struct SortItem<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> >,unsigned int> >::~AVL_TreeNodeStor<struct SortItem<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> >,unsigned int> >(void) (opti3d_test.obj)
+     298.338   0.7      844.929   1.9        1 HeapAndTreeStor<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> > >::~HeapAndTreeStor<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> > >(void) (opti3d_test.obj)
+     234.723   0.5      457.610   1.0    51688 Item2<unsigned int>::`scalar deleting destructor'(unsigned int) (opti2d_3d.obj)
+     234.723   0.5      457.610   1.0    51688 Item2<unsigned int>::`vector deleting destructor'(unsigned int) (opti2d_3d.obj)
+     234.723   0.5      457.610   1.0    51688 SL::ListItem<struct Set2<unsigned int,unsigned int> >::`scalar deleting destructor'(unsigned int) (opti2d_3d.obj)
+     234.723   0.5      457.610   1.0    51688 SL::ListItem<struct Set2<unsigned int,unsigned int> >::`vector deleting destructor'(unsigned int) (opti2d_3d.obj)
+     234.723   0.5      457.610   1.0    51688 SL::ListItemA<double>::`scalar deleting destructor'(unsigned int) (opti2d_3d.obj)
+     234.723   0.5      457.610   1.0    51688 SL::ListItemA<double>::`vector deleting destructor'(unsigned int) (opti2d_3d.obj)
+     234.723   0.5      457.610   1.0    51688 Vertex<6>::`scalar deleting destructor'(unsigned int) (opti2d_3d.obj)
+     234.723   0.5      457.610   1.0    51688 Vertex<6>::`vector deleting destructor'(unsigned int) (opti2d_3d.obj)
+     234.723   0.5      457.610   1.0    51688 Vertex<9>::`scalar deleting destructor'(unsigned int) (opti2d_3d.obj)
+     234.723   0.5      457.610   1.0    51688 Vertex<9>::`vector deleting destructor'(unsigned int) (opti2d_3d.obj)
+     233.394   0.5      252.275   0.6   580255 SuiteRef<struct SortItem<double,struct SortItemPtr<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> > > > >::inc(void) (opti3d_test.obj)
+     229.497   0.5      229.497   0.5   559462 operator%(class Double<10> const &,class Double<9> const &) (opti2d_3d.obj)
+     218.622   0.5      218.622   0.5   253387 MaxDynHeap<struct SortItem<double,struct SortItemPtr<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> > > > >::down(unsigned int) (opti3d_test.obj)
+     188.187   0.4      188.187   0.4   316593 AVL_Tree<struct SortItem<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> >,unsigned int> >::del(struct AVL_Tree<struct SortItem<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> >,unsigned int> >::Node * &,struct AVL_Tree<struct SortItem<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> >,unsigned int> >::Node * &) (opti3d_test.obj)
+     182.718   0.4      182.718   0.4   606993 SL::ShevList::next(void) (approx3d.obj)
+     152.642   0.3      152.642   0.3   366361 SuiteRef<struct SortItem<double,struct SortItemPtr<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> > > > >::dec(unsigned int) (opti3d_test.obj)
+     120.105   0.3      393.829   0.9       53 WireModel<9>::newVert(class SL::List<class Vertex<9> > &,class SL::List<class Vertex<9> > &,class SL::List<class Vertex<9> > &) (opti2d_3d.obj)
+     103.917   0.2      273.724   0.6   116051 SL::List<class Vertex<9> >::addNewBefFir(class SL::List<class Vertex<9> > &) (opti2d_3d.obj)
+      68.879   0.2      526.490   1.2      108 SL::ShevList::~ShevList(void) (shevlist.obj)
+      44.997   0.1       44.997   0.1    51688 Item2<unsigned int>::~Item2<unsigned int>(void) (approx3d.obj)
+      44.997   0.1       44.997   0.1    51688 SL::ListItem<struct Set2<unsigned int,unsigned int> >::~ListItem<struct Set2<unsigned int,unsigned int> >(void) (approx3d.obj)
+      44.997   0.1       44.997   0.1    51688 SL::ListItemA<double>::~ListItemA<double>(void) (approx3d.obj)
+      44.997   0.1       44.997   0.1    51688 Vertex<6>::~Vertex<6>(void) (approx3d.obj)
+      44.997   0.1       44.997   0.1    51688 Vertex<9>::~Vertex<9>(void) (approx3d.obj)
+      43.704   0.1       43.704   0.1    66234 AVL_Tree<struct SortItem<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> >,unsigned int> >::balanceR(struct AVL_Tree<struct SortItem<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> >,unsigned int> >::Node * &) (opti3d_test.obj)
+      37.469   0.1       37.469   0.1    83895 AVL_Tree<struct SortItem<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> >,unsigned int> >::balanceL(struct AVL_Tree<struct SortItem<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> >,unsigned int> >::Node * &) (opti3d_test.obj)
+      30.198   0.1       30.198   0.1    68529 SL::ShevList::movCurAftLas(class SL::ShevList &) (shevlist.obj)
+      29.801   0.1       29.801   0.1   116051 SL::ShevList::addBefFir(class SL::ShevItem *) (shevlist.obj)
+      19.967   0.0       19.967   0.0    64373 SL::ShevList::outLas(void) (shevlist.obj)
+      17.495   0.0       18.881   0.0       15 Suite<class Vector2d>::resizeAndCopy(unsigned int) (opti3d_test.obj)
+      17.495   0.0       18.881   0.0       15 Suite<struct SortItem<double,struct SortItemPtr<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> > > > >::resizeAndCopy(unsigned int) (opti3d_test.obj)
+       0.756   0.0    39505.047  87.9        1 `anonymous namespace'::maxParallelogramInConvexPolyhedron2(class CArrRef<class Vector2d> const &,class CArrRef<class Plane3d> const &,class WireModel<9> &,class SL::List<class Vertex<9> > &,class Parallelogram3d &) (opti3d_test.obj)
+       0.517   0.0        0.517   0.0     1088 ArrRef<struct SortItem<double,struct SortItemPtr<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> > > > >::operator()(unsigned int) (opti3d_test.obj)
+       0.114   0.0        0.114   0.0      106 SL::ShevList::movAllAftLas(class SL::ShevList &) (shevlist.obj)
+       0.093   0.0        0.112   0.0        1 SL::List<class Vertex<9> >::resize(unsigned int,class SL::List<class Vertex<9> > &) (opti2d_3d.obj)
+       0.074   0.0        3.752   0.0       53 DynArray<class SegmentEnd<9> >::~DynArray<class SegmentEnd<9> >(void) (opti2d_3d.obj)
+       0.039   0.0    40031.916  89.1        1 maxParallelogramInConvexPolyhedronA(class Shev::Polyhedron const &) (opti3d_test.obj)
+       0.037   0.0        0.037   0.0       34 Plane3d::mul(class Similar3d const &,...) (draw.obj)
+       0.022   0.0        0.022   0.0       53 ArrRef<class SegmentEnd<9> *>::fill(class SegmentEnd<9> * const &) (opti2d_3d.obj)
+       0.010   0.0        0.010   0.0       10 SL::ShevList::addAftLas(class SL::ShevItem *) (shevlist.obj)
+       0.002   0.0        0.002   0.0        1 dimensions(class CArrRef<class Vector3d>) (func3d.obj)
+       0.001   0.0        0.001   0.0        1 Conform3d::operator~(void) (opti2d_3d.obj)
+       0.001   0.0        0.001   0.0        5 LinTran2d::LinTran2d(void) (intersect3d.obj)
+       0.001   0.0        0.001   0.0        5 Parallelogram2d::Parallelogram2d(void) (intersect3d.obj)
+       0.001   0.0        0.001   0.0        5 Parallelogram3d::Parallelogram3d(void) (intersect3d.obj)
+       0.001   0.0        0.001   0.0        5 SortItem<double,unsigned int>::SortItem<double,unsigned int>(void) (intersect3d.obj)
+       0.001   0.0        0.001   0.0        5 Vector2d::Vector2d(void) (intersect3d.obj)
+       0.001   0.0        0.001   0.0        5 Vector3d::Vector3d(void) (intersect3d.obj)
+       0.000   0.0        0.001   0.0        1 `vector constructor iterator'(void *,unsigned int,int,void (*)(void *)) (draw.obj)
+       0.000   0.0        0.000   0.0        1 Spin3d::Spin3d(void) (opti2d_3d.obj)
+       0.000   0.0        0.001   0.0        1 MaxDynHeap<struct SortItem<double,struct SortItemPtr<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> > > > >::MaxDynHeap<struct SortItem<double,struct SortItemPtr<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> > > > >(unsigned int) (opti3d_test.obj)
+       0.000   0.0        0.000   0.0        3 operator-(class Vector3d const &,class Vector3d const &) (approx3d.obj)
+       0.000   0.0        0.000   0.0        1 AVL_TreeNodeStor<struct SortItem<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> >,unsigned int> >::AVL_TreeNodeStor<struct SortItem<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> >,unsigned int> >(void) (opti3d_test.obj)
+       0.000   0.0        0.001   0.0        1 DynArray<class Plane3d>::DynArray<class Plane3d>(unsigned int) (opti2d_3d.obj)
+       0.000   0.0        0.000   0.0       91 AVL_Tree<struct SortItem<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> >,unsigned int> >::countItems(struct AVL_Tree<struct SortItem<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> >,unsigned int> >::Node const *) (opti3d_test.obj)
+       0.000   0.0        0.000   0.0       45 AVL_Tree<struct SortItem<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> >,unsigned int> >::find(struct SortItem<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> >,unsigned int> const &) (opti3d_test.obj)
+       0.000   0.0        0.000   0.0        1 Double<9>::fill(double) (opti2d_3d.obj)
+       0.000   0.0        1.431   0.0       53 DynArray<class SegmentEnd<9> >::DynArray<class SegmentEnd<9> >(unsigned int) (opti2d_3d.obj)
+       0.000   0.0        0.000   0.0        1 Parallelogram3d::operator*=(class Conform3d const &) (opti2d_3d.obj)
+       0.000   0.0        0.000   0.0        1 SL::List<class Vertex<6> >::List<class Vertex<6> >(void) (approx3d.obj)
+       0.000   0.0        0.000   0.0        1 SL::List<class Vertex<9> >::operator-=(class Double<9> const &) (opti3d_test.obj)
+       0.000   0.0        0.000   0.0    51688 SL::ShevItem::~ShevItem(void) (shevlist.obj)
+       0.000   0.0        0.000   0.0        1 SL::ShevList::ShevList(void) (approx3d.obj)
+       0.000   0.0        0.000   0.0        1 SL::ShevList::addAllBefFir(class SL::ShevList &) (shevlist.obj)
+       0.000   0.0        0.000   0.0        1 SL::ShevList::movFirBefFir(unsigned int,class SL::ShevList &) (shevlist.obj)
+       0.000   0.0        0.000   0.0        3 Spin3d::getReper(class Vector3d &,class Vector3d &,class Vector3d &) (vector3d.obj)
+       0.000   0.0        0.001   0.0        1 Suite<struct SortItem<double,struct SortItemPtr<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> > > > >::Suite<struct SortItem<double,struct SortItemPtr<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> > > > >(unsigned int,unsigned int) (opti3d_test.obj)
+       0.000   0.0        0.540   0.0        1 Suite<struct SortItem<double,struct SortItemPtr<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> > > > >::~Suite<struct SortItem<double,struct SortItemPtr<struct SortItem<struct Set2<class Vertex<9> const *,class Vertex<9> const *>,class Double<9> > > > >(void) (opti3d_test.obj)
+       0.000   0.0        0.000   0.0        8 Vector3d::Vector3d(double,double,double) (draw.obj)
+       0.000   0.0        0.000   0.0        3 Vector3d::mul(class Similar3d const &,...) (draw.obj)
+       0.000   0.0        0.000   0.0        1 normU(class Vector3d const &) (vector3d.obj)
+       0.000   0.0        0.000   0.0        4 operator*(class Vector3d const &,double) (draw.obj)

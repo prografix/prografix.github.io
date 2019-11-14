@@ -1,0 +1,62 @@
+
+WireModel<4>
+
+Аппроксимация плоскостью множества точек ( Минимум максимума расстояний )
+Функция качества d0 * d0 + d1 * d1 + d2 * d2
+Ограничения линейные
+
+Минимальный охватывающий фиксированный эллипс
+Функция качества d0 * d0 + d1 * d1
+
+Максимальный объект вписанный в выпуклый многоугольник
+Функция качества d0 * d0 + d1 * d1
+Ограничения линейные:
+const double x = line[km].norm.x;
+const double y = line[km].norm.y;
+Double<5> plane;
+plane.d0 = x * pm.x + y * pm.y;
+plane.d1 = y * pm.x - x * pm.y;
+plane.d2 = x;
+plane.d3 = y;
+plane.d4 = line[km].dist;
+
+WireModel<5>
+
+Максимальный многогранник вписанный в выпуклый многогранник с вращением вокруг заданной оси
+Функция качества d0 * d0 + d1 * d1
+Ограничения:
+const Vector3d & norm = plane[km].norm;
+const double xn = ax * norm;
+const double yn = ay * norm;
+cor.d0 = xn * vert[jm].x + yn * vert[jm].y;
+cor.d1 = yn * vert[jm].x - xn * vert[jm].y;
+const double u = vert[jm].z * ( az * norm ) / q;
+cor.d0 += s * u;
+cor.d1 += t * u;
+cor.d2 = norm.x;
+cor.d3 = norm.y;
+cor.d4 = norm.z;
+cor.d5 = plane[km].dist;
+
+WireModel<6>
+
+Максимальный параллелограмм вписанный в выпуклый многоугольник
+Функция качества d0 * d4 - d1 * d3 на рёбрах
+
+Максимальная фигура вращения вписанная в выпуклый многогранник
+Функция качества d0 * d0 + d1 * d1 + d2 * d2
+Ограничения:
+const Vector3d & v = plane[jm].norm;
+Double<7> cor;
+cor.d0 = pm.x;
+cor.d1 = pm.y;
+cor.d2 = pm.z;
+cor.d3 = v.x;
+cor.d4 = v.y;
+cor.d5 = v.z;
+cor.d6 = plane[jm].dist;
+
+Цилиндр минимального радиуса вокруг точек
+Функция качества: d0 * d0 + d1 * d1 + d2 * d2
+Дополнительное ограничение: d0 * d3 + d1 * d4 + d2 * d5 = 0
+Ограничения нелинейные: qmod ( a % point[j] + b ) <= 1
