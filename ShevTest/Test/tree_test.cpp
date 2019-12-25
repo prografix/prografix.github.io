@@ -3,17 +3,6 @@
 
 #include "display.h"
 
-template <class T> struct HidxPtr
-{
-    T * ptr;
-};
-
-template <class T> inline void _swap ( HidxPtr<T> & p1, HidxPtr<T> & p2 )
-{
-    _swap ( p1.ptr, p2.ptr );
-    _swap ( p1.ptr->hidx, p2.ptr->hidx );
-}
-
 /*
 
     unsigned height ( const T & x ) const
@@ -52,14 +41,6 @@ template <class T> inline void _swap ( HidxPtr<T> & p1, HidxPtr<T> & p2 )
         return 0;
     }
 */
-
-inline 
-void _swap ( SortItem<double, SortItemPtr<nat> > & p1, SortItem<double, SortItemPtr<nat> > & p2 )
-{
-    _swap ( p1.head, p2.head );
-    _swap ( p1.tail, p2.tail );
-    _swap ( p1.tail.ptr->tail, p2.tail.ptr->tail );
-}
 
 namespace
 {
@@ -134,11 +115,13 @@ template <class T>  void MaxHeapAndTree_test()
                 if ( ! heap.add ( j, j ) )
                    display << "error" << NL;
             }
+            checkMHAT ( heap );
             for ( nat j = 1; j <= n; j += 2 )
             {
                 if ( ! heap.del ( j ) )
                     display << "error" << NL;
             }
+            checkMHAT ( heap );
             for ( nat j = 1; j <= n; ++j )
             {
                 const T * k = heap.maxItem();

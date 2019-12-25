@@ -4,11 +4,6 @@
 #include "AVL_Tree.h"
 #include "Heap.h"
 
-template <class T> struct SortItemPtr
-{
-    SortItem<T, nat> * ptr;
-};
-
 template <class T> struct HeapAndTreeStor
 {
     AVL_TreeNodeStor<SortItem<T, nat> > stor;
@@ -17,8 +12,8 @@ template <class T> struct HeapAndTreeStor
 template <class T> class MaxHeapAndTree : public HeapAndTreeStor<T>
 {
 public:
-    AVL_Tree<SortItem<T, nat> > tree;
-    MaxDynHeap<SortItem<double, SortItemPtr<T> > > heap;
+    AVL_Tree<SortItem<T, nat>> tree;
+    MaxDynHeap<SortItem<double, SwapPtr<nat>>> heap;
 public:
     MaxHeapAndTree() : tree ( & stor ) {}
     bool add ( double d, const T & t )
@@ -28,9 +23,7 @@ public:
         si.tail = heap.size();
         const SortItem<T, nat> & r = tree.add ( si );
         if ( r.tail != si.tail ) return false;
-        SortItemPtr<T> np;
-        np.ptr = (SortItem<T, nat> *) & r;
-        heap << SortItem<double, SortItemPtr<T> > ( d, np );
+        heap << SortItem<double, SwapPtr<nat>> ( d, (nat*) &r.tail );
         return true;
     }
     bool del ( const T & t )
@@ -43,9 +36,11 @@ public:
     }
     const T * maxItem() const
     {
-        const SortItem<double, SortItemPtr<T> > * p = heap[0];
+        const SortItem<double, SwapPtr<nat>> * p = heap[0];
         if ( ! p ) return 0;
-        return & p->tail.ptr->head;
+        typedef SortItem<T, nat> TN;
+        const TN * t = container_of ( p->tail.ptr, TN, tail );
+        return & t->head;
     }
     bool has ( const T & t ) const
     {
@@ -62,10 +57,11 @@ template <class T> void checkMHAT ( const MaxHeapAndTree<T> & mhat )
     }
     for ( nat i = 0; i < mhat.heap.size(); ++i )
     {
-        const SortItem<T, nat> * ptr1 = mhat.heap[i]->tail.ptr;
+        typedef SortItem<T, nat> tn;
+        const SortItem<T, nat> * ptr1 = container_of ( mhat.heap[i]->tail.ptr, tn, tail );
         for ( nat j = i+1; j < mhat.heap.size(); ++j )
         {
-            if ( ptr1->head == mhat.heap[j]->tail.ptr->head )
+            if ( ptr1->head == container_of ( mhat.heap[j]->tail.ptr, tn, tail )->head )
                 j=j;
         }
         const SortItem<T, nat> * ptr2 = mhat.tree.find ( *ptr1 );

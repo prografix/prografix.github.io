@@ -68,7 +68,8 @@ MarchingCubes1::MarchingCubes1()
     List<ListItem<List2n> > plist;
     for ( nat i = 1; i < 255; ++i )
     {
-        for ( nat j = 0; j < 8; ++j )
+        nat j;
+        for ( j = 0; j < 8; ++j )
         {
             flag[j] = ( i & ( 1 << j ) ) != 0;
         }
@@ -112,7 +113,7 @@ MarchingCubes1::MarchingCubes1()
         DynArray<DynArray<nat> > & ref = poly[i];
         ref.resize ( plist.size() );
         plist.top();
-        for ( nat j = 0; j < ref.size(); ++j )
+        for ( j = 0; j < ref.size(); ++j )
         {
             List2n & list = *plist.cur();
             DynArray<nat> & array = ref[j];

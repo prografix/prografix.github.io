@@ -5,7 +5,7 @@
 <div align="center"><center>
 <table width="800" cellspacing="0" cellpadding="0">
 <div align=center><br>
-<font color="" style="font-size: 20pt">Аппроксимация функции полиномом</font>
+<font color="" style="font-size: 20pt">Аппроксимация функций</font>
 </div>
 <br><div align=left><td>
 <p>Пусть заданы значения функции в некоторых точках и степень полинома. Необходимо выбрать
@@ -28,8 +28,35 @@ bool apprLSS_O ( nat n, CArrRef&lt;double> x, CArrRef&lt;double> y, nat m, ArrRe
 полинома и ссылку на них. Обратите внимание, что m - это не степень полинома, а количество коэффициентов.
 Степень полинома равна m-1. 
 </p>
-<p>Описание класса Matrix находится <a href="rus_matrix.html">здесь</a>
-<br>Описание шаблонов классов CArrRef и ArrRef находится <a href=array.html>здесь</a>.
+Для аппроксимации периодических функций предлагаются следующие классы, которые представляют собой разложение Фурье.
+Конструкторы этих классов имеют два параметра. Первый параметр (func) - это массив значений функции в некоторых точках (xi, yi),
+а второй параметр (nr) - это максимальная гармоника. Период функции равен 2*M_PI.
+<pre>
+class HarmAppr
+{
+protected:
+    DynArray&lt;double> coef;
+    HarmAppr () {}
+public:
+    HarmAppr ( CCArrRef&lt;Vector2d> & func, nat nr );
+
+    double operator () ( double a ) const;
+};
+</pre>
+Класс HarmApprMod предназначен аппроксимация периодических функций с возможностью изменения отдельных значений исходной функции
+(метод rebuild).
+<pre>
+class HarmApprMod : public HarmAppr
+{
+    HMatrix&lt;double> mat;
+public:
+    HarmApprMod ( CCArrRef&lt;Vector2d> & func, nat nr );
+
+    void rebuild ( ArrRef&lt;Vector2d> & func, nat iy, double y );
+};
+</pre>
+<p>Описание класса HMatrix находится <a href="rus_matrix.html">здесь</a>
+<br>Описание шаблонов классов CArrRef, ArrRef и DynArray находится <a href=array.html>здесь</a>.
 </p>
 <p>Исходники находятся в <a href="source/source.zip">approx.cpp</a></p>
 </p>
@@ -39,14 +66,5 @@ bool apprLSS_O ( nat n, CArrRef&lt;double> x, CArrRef&lt;double> y, nat m, ArrRe
 </pre>
 </td></div>
 </table>
-<script type="text/javascript">
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
-<script type="text/javascript">
-try {
-var pageTracker = _gat._getTracker("UA-10825496-1");
-pageTracker._trackPageview();
-} catch(err) {}</script>
 </body>
 </html>

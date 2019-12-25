@@ -383,10 +383,10 @@ bool operator != ( const SortItem<H,T> & a, const SortItem<H,T> & b )
 }
 
 template <class H, class T> inline
-void _swap ( const SortItem<H,T> & a, const SortItem<H,T> & b )
+void _swap ( SortItem<H,T> & a, SortItem<H,T> & b )
 {
-    _swap ( a.head, a.head );
-    _swap ( b.tail, b.tail );
+    _swap ( a.head, b.head );
+    _swap ( a.tail, b.tail );
 }
 
 /************************ SemiRef *************************/

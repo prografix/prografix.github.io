@@ -75,7 +75,7 @@ Def<Vector4d> getNearPointU ( CCArrRef<Plane4d> & plane )
     CmbArray2<double, 36> data ( 4, nn );
     CmbArray<double, 9> w ( nn );
     CmbArray<nat, 10> index ( nn );
-    nat i;
+    nat i, j;
     for ( i = 0; i < nn; ++i )
     {
         const Plane4d & p = plane[i];
@@ -87,7 +87,7 @@ Def<Vector4d> getNearPointU ( CCArrRef<Plane4d> & plane )
     if ( ! sluGaussRow ( data, 4, nn, index(), nn ) ) return res;
     double max = 0, summ = 0;
     nat jm = 4;
-    for ( nat j = 4; j < nn; ++j )
+    for ( j = 4; j < nn; ++j )
     {
         w.fill ( 0 );
         double norm = 1;
@@ -150,7 +150,7 @@ Def<Vector4d> getNearPointU ( CCArrRef<Plane4d> & plane )
         mat[i][2] = temp[i].norm.x2;
         mat[i][3] = temp[i].norm.x3;
         mat[i][4] = temp[i].norm.x4;
-        for ( nat j = 0; j < nRow; ++j ) mat[i][j+nRow] = i == j ? 1 : 0;
+        for ( j = 0; j < nRow; ++j ) mat[i][j+nRow] = i == j ? 1 : 0;
     }
     index.resize ( nCol );
     sluGaussRow ( mat, nRow, nCol, index(), nRow );
@@ -159,7 +159,7 @@ Def<Vector4d> getNearPointU ( CCArrRef<Plane4d> & plane )
     for ( i = 0; i < nRow; ++i )
     {
         double * d = & arr[i+1].d0;
-        for ( nat j = 0; j < nRow; ++j ) d[index[j]] = mat[j][nRow+i];
+        for ( j = 0; j < nRow; ++j ) d[index[j]] = mat[j][nRow+i];
     }
     // Нормализация векторов
     for ( i = 1; i < 6; ++i )

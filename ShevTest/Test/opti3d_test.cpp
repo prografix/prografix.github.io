@@ -34,7 +34,7 @@ bool maxConvexPolyhedronInPolyhedronNR ( const Polyhedron & inner, const Polyhed
                                          CArrRef<Vector3d> point, Conform3d & res );
 Def<Conform3d> maxPolyhedronInConvexPolyhedronNR ( const Vector4d & v0, double eps, CArrRef<Plane4d> plane );
 Def<Ellipse3d> maxEllipseInConvexPolyhedronA ( const Spin3d & spin, const Polyhedron & poly );
-
+/*
 inline 
 void _swap ( SortItem<double, SortItemPtr<SortItem<Set2<const Vertex<9> *>, Double<9> > > > & p1, 
              SortItem<double, SortItemPtr<SortItem<Set2<const Vertex<9> *>, Double<9> > > > & p2 )
@@ -43,7 +43,7 @@ void _swap ( SortItem<double, SortItemPtr<SortItem<Set2<const Vertex<9> *>, Doub
     _swap ( p1.tail, p2.tail );
     _swap ( p1.tail.ptr->tail, p2.tail.ptr->tail );
 }
-
+*/
 #include "../Shev/approx2d.h"
 #include "../Shev/func1t.h"
 

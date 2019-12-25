@@ -1188,7 +1188,8 @@ Spin3d makeSpin3d ( CArrRef<Set2<Vector3d> > data )
         return Spin3d ( data[0].a, data[0].b );
     }
     double xx = 0, xy = 0, xz = 0, yx = 0, yy = 0, yz = 0, zx = 0, zy = 0, zz = 0;
-    for ( nat i = 0; i < n; ++i )
+    nat i;
+    for ( i = 0; i < n; ++i )
     {
         const Vector3d & a = data[i].a;
         const Vector3d & b = data[i].b;
@@ -1215,7 +1216,7 @@ Spin3d makeSpin3d ( CArrRef<Set2<Vector3d> > data )
     a[3][3] = xx + yy + zz;
     double d[4], max = 0;
     jacobi ( 4, a, d, v );
-    for ( nat i = 0; i < 4; ++i )
+    for ( i = 0; i < 4; ++i )
     {
         if ( max >= d[i] ) continue;
         max = d[i];

@@ -41,7 +41,7 @@ template &lt;class T> bool select ( ArrRef&lt;T> a, nat i );
 что в некоторых случаях удобнее:
 <pre>
 template &lt;class T1, class T2> 
-Def&lt;nat> selectR ( CArrRef&lt;T1> a, CArrRef&lt;T2> w, double p, ArrRef&lt;nat> buf );
+Def&lt;nat> selectR ( CCArrRef&lt;T1> & a, CCArrRef&lt;T2> & w, T2 p, ArrRef&lt;nat> & buf );
 </pre>
 В этой функции члены массива а с нулевым весом игнорируются, а в случае обнаружения отрицательных весов функция
 завершает работу и возвращает неопределённое значение. Размер вспомогательного массива buf должен быть не меньше,
