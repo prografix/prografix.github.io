@@ -30,15 +30,16 @@ bool apprLSS_O ( nat n, CArrRef&lt;double> x, CArrRef&lt;double> y, nat m, ArrRe
 </p>
 Для аппроксимации периодических функций предлагаются следующие классы, которые представляют собой разложение Фурье.
 Конструкторы этих классов имеют два параметра. Первый параметр (func) - это массив значений функции в некоторых точках (xi, yi),
-а второй параметр (nr) - это максимальная гармоника. Период функции равен 2*M_PI.
+второй параметр (nr) - это максимальная гармоника, а третий (k) - коэффициент симметрии. Период функции равен 2*M_PI.
 <pre>
 class HarmAppr
 {
 protected:
+    nat ks;
     DynArray&lt;double> coef;
     HarmAppr () {}
 public:
-    HarmAppr ( CCArrRef&lt;Vector2d> & func, nat nr );
+    HarmAppr ( CCArrRef<Vector2d> & func, nat nr, nat k = 1 );
 
     double operator () ( double a ) const;
 };
@@ -50,11 +51,34 @@ class HarmApprMod : public HarmAppr
 {
     HMatrix&lt;double> mat;
 public:
-    HarmApprMod ( CCArrRef&lt;Vector2d> & func, nat nr );
+    HarmApprMod ( CCArrRef&lt;Vector2d> & func, nat nr, nat k = 1 );
 
     void rebuild ( ArrRef&lt;Vector2d> & func, nat iy, double y );
 };
 </pre>
+Класс HarmAppr2 делает аппроксимацию периодических функций при помощи метода наименьших квадратов:
+<pre>
+class HarmAppr2 : public HarmAppr
+{
+    nat rank;
+public:
+    HarmAppr2 ( CCArrRef&lt;Vector2d> & func, CCArrRef&lt;bool> & w, nat nr, nat k = 1 )
+    {
+        rebuild ( func, w, nr, k );
+    }
+
+    bool rebuild ( CCArrRef&lt;Vector2d> & func, CCArrRef&lt;bool> & w, nat nr, nat k );
+    bool rebuild ( CCArrRef&lt;Vector2d> & func, CCArrRef&lt;bool> & w, nat nr )
+    {
+        return rebuild ( func, w, rank = nr, ks );
+    }
+    bool rebuild ( CCArrRef&lt;Vector2d> & func, CCArrRef&lt;bool> & w )
+    {
+        return rebuild ( func, w, rank, ks );
+    }
+};
+</pre>
+Массив w позволяет исключать некоторые точки указав значение false.
 <p>Описание класса HMatrix находится <a href="rus_matrix.html">здесь</a>
 <br>Описание шаблонов классов CArrRef, ArrRef и DynArray находится <a href=array.html>здесь</a>.
 </p>
