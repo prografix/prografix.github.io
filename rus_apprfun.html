@@ -79,6 +79,18 @@ public:
 };
 </pre>
 Массив w позволяет исключать некоторые точки указав значение false.
+<br><br>Класс HarmAppr1 делает аппроксимацию периодических функций минимизируя <a href=normv.html>1-норму</a>:
+<pre>
+class HarmAppr1 : public HarmAppr
+{
+    nat rank;
+public:
+    HarmAppr1 ( CCArrRef<Vector2d> & func, nat nr, nat k = 1 );
+};
+</pre>
+Ниже приведено сравнение методов HarmAppr1 и HarmAppr2:
+<br><br><center><img src="approx.png"></center><br>
+Здесь красный цвет это исходные данные ( имеются выбросы ). Зелёный цвет - метод наименьших квадратов. Синий цвет - минимум 1-нормы ( выбросы игнорированы ).
 <p>Описание класса HMatrix находится <a href="rus_matrix.html">здесь</a>
 <br>Описание шаблонов классов CArrRef, ArrRef и DynArray находится <a href=array.html>здесь</a>.
 </p>
