@@ -18,6 +18,12 @@
 <br>Следующая функция делает то же самое, но без вращения:
 <pre>Def&lt;Conform2d> maxPolygonInConvexPolygonNR ( CCArrRef&lt;Vector2d> & inner, CCArrRef&lt;Vector2d> & outer );
 </pre>
+&bull; Максимальный искажённый аффинным преобразованием многоугольник:
+<pre>Def&lt;Affin2d> maxAffinPolygonInConvexPolygon ( CCArrRef&lt;Vector2d> & inner, CCArrRef&lt;Vector2d> & outer );
+</pre>
+Ответ получатся в виде аффинного преобразования, которое надо применить
+к вершинам внутреннего многоугольника ( inner ), чтобы получить оптимальное положение.
+<br><br>
 &bull; Максимальный по площади прямоугольник:
 <pre>
 Def&lt;Rectangle2d> maxRectangleInConvexPolygonA ( CCArrRef&lt;Vector2d> & poly );
@@ -62,7 +68,7 @@ bool maxNgonInConvexPolygonA ( ArrRef&lt;Vector2d> & inner, CCArrRef&lt;Vector2d
 </p>
 <p>
 Описание класса Vector2d смотрите в разделе <a href="rus_vector2d.html">Вектора на плоскости</a>.
-<br>Описание класса Conform2d смотрите в разделе <a href="transform2d.html">Преобразования на плоскости</a>.
+<br>Описание классов Conform2d и Affin2d смотрите в разделе <a href="transform2d.html">Преобразования на плоскости</a>.
 <br>Описание шаблонов FixArrRef и CCArrRef смотрите в разделе <a href="array.html">Массивы</a>.
 <br>Описание шаблона классов Def смотрите в разделе <a href="def.html">Шаблон Def</a>.
 <br>Описание классов Triangle2d, Rhombus2d, Rectangle2d и Parallelogram2d находится <a href="figure2d.html">здесь</a>.
