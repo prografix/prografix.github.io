@@ -247,6 +247,13 @@ protected:
 public:
     virtual DynArrRef & resize ( nat n = 0 ) = 0;
 
+    DynArrRef & resize ( nat n, const T & a )
+    {
+        resize ( n );
+        for ( nat i = 0; i < _size; ++i ) _data.var[i] = a;
+        return *this;
+    }
+
     DynArrRef & operator= ( CCArrRef&lt;T> & r )
     {
         if ( _data.var == r() ) return *this;
