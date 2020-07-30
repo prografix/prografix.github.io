@@ -187,11 +187,11 @@ public:
 //      Переопределённые системы линейных уравнений ( n > m ).
 //      Минимум 1-нормы вектора невязок.
 //
-//*********************** 12.11.2011 **************************//
+//*********************** 04.02.2020 **************************//
 
-bool minNorm1 ( CArrRef2<double> data, ArrRef<double> x, ArrRef<nat> index );
-bool minNorm1 ( CArrRef2<double> data, ArrRef<double> x );
-bool minNorm1 ( CArrRef2<double> data, ArrRef<nat> index );
+bool minNorm1 ( CCArrRef2<double> & data, ArrRef<double> & x, ArrRef<nat> & index );
+bool minNorm1 ( CCArrRef2<double> & data, ArrRef<double> & x );
+bool minNorm1 ( CCArrRef2<double> & data, ArrRef<nat> & index );
 
 
 //*********************** 24.07.2010 **************************//

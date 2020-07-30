@@ -1106,9 +1106,10 @@ void makeSpin_test()
 {
     static PRand drand;
     static PRandVector3d vrand;
+	nat i;
     const nat n = 4;
     FixArray<Set2<Vector3d>, n> data;
-    for ( nat i = 0; i < n; ++i )
+    for ( i = 0; i < n; ++i )
     {
         data[i].a = vrand();
     }
@@ -1123,7 +1124,7 @@ void makeSpin_test()
     set.c *= c;
     set.d *= c;
     Ortho3d ortho ( (Spin3d&) set );
-    for ( nat i = 0; i < n; ++i )
+    for ( i = 0; i < n; ++i )
     {
 //draw ( Segment3d ( null3d, data[i].a ), 0, 1, 1 );
         data[i].b = ortho ( data[i].a );
@@ -1132,7 +1133,7 @@ draw ( Segment3d ( null3d, data[i].b ), 1, 1, 0 );
     }
     Spin3d spin = makeSpin3d ( data );
     ortho = Ortho3d ( spin );
-    for ( nat i = 0; i < n; ++i )
+    for ( i = 0; i < n; ++i )
     {
         draw ( Segment3d ( null3d, ortho ( data[i].a ) ), 0, 1, 1 );
     }

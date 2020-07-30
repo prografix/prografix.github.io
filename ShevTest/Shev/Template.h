@@ -382,13 +382,6 @@ bool operator != ( const SortItem<H,T> & a, const SortItem<H,T> & b )
     return a.head != b.head;
 }
 
-template <class H, class T> inline
-void _swap ( SortItem<H,T> & a, SortItem<H,T> & b )
-{
-    _swap ( a.head, b.head );
-    _swap ( a.tail, b.tail );
-}
-
 /************************ SemiRef *************************/
 
 template <class T> struct SemiRef

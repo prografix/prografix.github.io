@@ -2,30 +2,30 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
-      <UniqueIdentifier>{cc855765-5393-4b22-84c8-b7d23eba10bd}</UniqueIdentifier>
+      <UniqueIdentifier>{288d85e3-3ef0-407e-8a26-1a8493677787}</UniqueIdentifier>
       <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
     </Filter>
     <Filter Include="Header Files">
-      <UniqueIdentifier>{d3de129e-1a47-4278-856a-1c37acd8a85d}</UniqueIdentifier>
+      <UniqueIdentifier>{f1d7f819-2138-4330-a3b4-22aa4b15c55c}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl</Extensions>
     </Filter>
     <Filter Include="Resource Files">
-      <UniqueIdentifier>{ae7752fd-4d24-4ecb-8476-d0b5b0a8da3a}</UniqueIdentifier>
+      <UniqueIdentifier>{9d21c4e9-fd5b-4c08-9322-eb04e3acff14}</UniqueIdentifier>
       <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
     </Filter>
     <Filter Include="Shev h">
-      <UniqueIdentifier>{0d7ed05e-4f61-4acb-95fd-9a0affcd1653}</UniqueIdentifier>
+      <UniqueIdentifier>{6e4106dd-1635-4779-9475-99e912030aea}</UniqueIdentifier>
       <Extensions>h</Extensions>
     </Filter>
     <Filter Include="Shev cpp">
-      <UniqueIdentifier>{0031a3f5-9402-4908-b185-d80a113fe126}</UniqueIdentifier>
+      <UniqueIdentifier>{e15b63b4-f63a-4628-9b8a-d45a57328a60}</UniqueIdentifier>
       <Extensions>cpp</Extensions>
     </Filter>
     <Filter Include="Test">
-      <UniqueIdentifier>{99808d67-9b10-4ce5-9a33-4aece39a01fc}</UniqueIdentifier>
+      <UniqueIdentifier>{229baed3-e81d-4415-ad0f-fd0ea18b94d1}</UniqueIdentifier>
     </Filter>
     <Filter Include="Extra">
-      <UniqueIdentifier>{203b4801-25e7-4d58-b041-d3f7dfaab6c8}</UniqueIdentifier>
+      <UniqueIdentifier>{46fdc104-e3f2-49f1-8ee0-38d72a4c32be}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -614,18 +614,16 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\ShevTest.ico">
+    <CustomBuild Include="res\ShevTest.ico">
       <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\ShevTestDoc.ico">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="res\Toolbar.bmp">
-      <Filter>Resource Files</Filter>
-    </Image>
-  </ItemGroup>
-  <ItemGroup>
+    </CustomBuild>
     <CustomBuild Include="res\ShevTest.rc2">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="res\ShevTestDoc.ico">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+    <CustomBuild Include="res\Toolbar.bmp">
       <Filter>Resource Files</Filter>
     </CustomBuild>
   </ItemGroup>

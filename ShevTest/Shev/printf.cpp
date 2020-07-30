@@ -216,7 +216,7 @@ void writeFltDec_ ( SuiteRef<char> & buf, real64 d, nat32 prec, bool plus, bool 
     if ( d > 0 )
     {
         const nat k = buf.size();
-        if ( d < ldexp ( 1, 63 ) ) // если число поместится в int64
+        if ( d < ldexp ( 1., 63 ) ) // если число поместится в int64
         {
             nat64 u = nat64 ( d );
             while ( u > 0 )
@@ -952,7 +952,7 @@ CopyLen:
                     file.putc ( &fc );  /* fc is 'x' or 'X'             *
                 }*/
 
-                if ( file.write ( buf(), buf.size(), 1 ) != 1 ) return false;
+                if ( file.write ( buf(), 1, buf.size() ) != buf.size() ) return false;
 
                 // If arrive here, the conversion has been done and copied to output.
                 goto NEXT;

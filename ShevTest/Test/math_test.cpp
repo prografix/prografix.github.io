@@ -885,7 +885,7 @@ void slu_ortho_test ()
     SMatrix<double, n, n> x;
     double b[n];
     double gmax = 0.;
-    for ( nat kk = 0; kk < 100; ++kk )
+    for ( nat k = 0; k < 100; ++k )
     {
         const nat m = 1 + rand.number ( n );
         HMatrix<double> mat ( m, n );
@@ -1143,7 +1143,7 @@ bool minNormU2 ( CCArrRef2<double> & matr, ArrRef<double> & x )
     {
         for ( j = 0; j < nCol1; ++j ) data[j][i] = matr[i][j];
     }
-    if ( ! sluGaussRow ( data, nCol1, nRow, index(), nCol1 ) ) return false;
+    if ( ! sluGaussRow ( data, nCol1, nRow, index(), nCol1, nCol1 ) ) return false;
     // Поиск первоначального оптимума
     double max = 0, summ = 0;
     nat jm = nCol1;
@@ -1222,7 +1222,7 @@ bool minNormU2 ( CCArrRef2<double> & matr, ArrRef<double> & x )
         for ( j = 0; j < nCol; ++j ) p[j+nCol] = i == j ? 1 : 0;
     }
     index.resize ( 2*nCol );
-    sluGaussRow ( mat, nRow, nCol, index(), nRow );
+    sluGaussRow ( mat, nRow, nCol, index(), nRow, nRow );
     DynArray2<double> bevel ( nCol1, nCol );
 /*    Double<5> arr[6];
     arr[0].init ( dist, res.x1, res.x2, res.x3, res.x4 );
@@ -1520,12 +1520,431 @@ void minNorm_test2()
     //message ( "end" );
 }
 
+nat gg = 0;
+
+bool maxNormUb ( ArrRef2<double> & data, ArrRef<nat> & res )
+{
+    nat i, j, k;
+    const nat nRow = data.size0();
+    const nat nCol = data.size1();
+    const nat nRow1 = nRow - 1;
+    DynArray<nat> index ( nCol );
+    DynArray<double> w ( nCol );
+    ArrRef<double> func = data[nRow1];
+#if 1
+    if ( ! _sluGaussRow ( data, nRow, nCol, index(), nRow1, nCol ) ) return false;
+#else
+// Прямой ход
+    for ( i = 0; i < nCol; ++i ) index[i] = i;
+    for ( k = 0; k < nRow1; ++k )
+    {
+        double * rk = & data[k][0];
+        double sum = 0;
+        for ( j = k; j < nCol; ++j )
+        {
+            const nat ij = index[j];
+            w[ij] = func[ij] < 0 ? -1 : 1;
+            sum -= rk[ij] * w[ij];
+        }
+        const double ds = sum < 0 ? -1 : 1;
+// Поиск максимального по модулю члена в k-ой строке
+        nat jm = nCol;
+        double max = -1e300;
+        for ( j = k; j < nCol; ++j )
+        {
+            const nat ij = index[j];
+            double t = rk[ij];
+            if ( !t )
+                continue;
+            const double a = func[ij] * ds / t;
+            if ( a > 0 )
+                continue;
+            if ( max < a ) max = a, jm = j;
+        }
+        if ( jm == nCol ) 
+            return false;
+        const nat ik = index[jm];
+        _swap ( index[jm], index[k] );
+// Нормализация строки
+        const double p = 1. / rk[ik];
+        for ( i = k+1; i < nCol; ++i ) rk[index[i]] *= p;
+        rk[ik] = 1;
+// Вычитание строк
+        for ( j = k+1; j < nRow; ++j )
+        {
+            double * rj = data[j]();
+            const double t = rj[ik];
+            for ( i = k+1; i < nCol; ++i )
+            {
+                const nat ii = index[i];
+                if ( fabs ( rj[ii] -= rk[ii] * t ) < 1e-290 ) rj[ii] = 0;
+            }
+            rj[ik] = 0;
+        }
+    }
+// Обратная подстановка
+    for ( j = nRow1; --j > 0; )
+    {
+        const double * rj = & data[j][0];
+        const nat ij = index[j];
+        for ( i = 0; i < j; ++i )
+        {
+            double * ri = & data[i][0];
+            const double t = ri[ij];
+            for ( k = nRow1; k < nCol; ++k )
+            {
+                const nat ik = index[k];
+                ri[ik] -= rj[ik] * t;
+            }
+            ri[ij] = 0;
+        }
+    }
+#endif
+////////////////////////////////////////////////////////////////////////
+
+    for ( k = 0; k < 2*nCol; ++k )
+    {
+        for ( j = nRow1; j < nCol; ++j )
+        {
+            const nat ij = index[j];
+            w[ij] = func[ij] < 0 ? -1 : 1;
+        }
+        nat im = 0;
+        double max = 0, sum = 0;
+        for ( i = 0; i < nRow1; ++i )
+        {
+            const double * p = data[i]();
+            double t = 0;
+            for ( j = nRow1; j < nCol; ++j )
+            {
+                const nat ij = index[j];
+                t -= p[ij] * w[ij];
+            }
+            const double a = fabs ( t );
+            if ( max < a ) max = a, sum = t, im = i;
+        }
+        if ( max < 1 + 1e-9 )
+        {
+            gg += 1+k;
+            for ( i = 0; i < nRow1; ++i ) res[i] = index[i];
+            return true;
+        }
+        const double ds = sum < 0 ? -1 : 1;
+        nat jm = nCol;
+        max = -1e300;
+        double * ri = data[im]();
+        for ( j = nRow1; j < nCol; ++j )
+        {
+            const nat ij = index[j];
+            const double t = ri[ij];
+            if ( !t )
+                continue;
+            const double a = func[ij] * ds / t;
+            if ( a > 0 )
+                continue;
+            if ( max < a ) max = a, jm = j;
+        }
+        if ( jm == nCol )
+            return false;
+        const nat ik = index[jm];
+        _swap ( index[jm], index[im] );
+// Нормализация строки
+        const double p = 1. / ri[ik];
+        for ( j = im+1; j < nCol; ++j ) ri[index[j]] *= p;
+        ri[ik] = 1;
+// Вычитание строк
+        for ( j = 0; j < nRow; ++j )
+        {
+            if ( j == im ) continue;
+            double * rj = data[j]();
+            const double t = rj[ik];
+            for ( i = im+1; i < nCol; ++i )
+            {
+                const nat ii = index[i];
+                if ( fabs ( rj[ii] -= ri[ii] * t ) < 1e-290 ) rj[ii] = 0;
+            }
+            rj[ik] = 0;
+        }
+    }
+    return false;
+}
+
+void test ( ArrRef2<double> & data, double * w, nat * index )
+{
+    const nat nRow = data.size0();
+    const nat nCol = data.size1();
+    const nat nRow1 = nRow - 1;
+    for ( nat i = 0; i < nRow1; ++i )
+    {
+        for ( nat j = 0; j < nRow1; ++j )
+        {
+           double t = data[i][index[j]];
+           if ( i == j )
+           {
+               if ( fabs ( t ) != 1 )
+                   t = t;
+           }
+           else
+           {
+               if ( t )
+                   t = t;
+           }
+        }
+    }
+    for ( nat j = 0; j < nRow1; ++j )
+    {
+        double sum = 0;
+        const double * rj = data[j]();
+        for ( nat i = 0; i < nCol; ++i )
+        {
+            sum += rj[i] * w[i];
+        }
+        if ( fabs ( sum ) > 1e-15 )
+            sum = sum;
+    }
+}
+
+bool maxNormUc ( ArrRef2<double> & data, double * w, nat * index )
+{
+    nat i, j;
+    const nat nRow = data.size0();
+    const nat nCol = data.size1();
+    const nat nRow1 = nRow - 1;
+    CCArrRef<double> func = data[nRow1];
+    if ( ! _sluGaussRow ( data, nRow, nCol, index, nRow1, nCol ) ) return false;
+// Заполнение весов
+    for ( j = nRow1; j < nCol; ++j )
+    {
+        const nat ij = index[j];
+        const double f = func[ij];
+        if ( f > 0 )
+            w[ij] = 1;
+        else
+        if ( f < 0 )
+            w[ij] = -1;
+        else
+            w[ij] = 0;
+    }
+    nat im = 0;
+    double max = 0, sum = 0;
+    for ( i = 0; i < nRow1; ++i )
+    {
+        const double * p = data[i]();
+        double t = 0;
+        for ( j = nRow1; j < nCol; ++j )
+        {
+            const nat ij = index[j];
+            t -= p[ij] * w[ij];
+        }
+        w[index[i]] = t;
+        const double a = fabs ( t );
+        if ( max < a ) max = a, sum = t, im = i;
+    }
+    if ( max < 1 + 1e-9 )
+        return true;
+//
+    {
+        // Находим допустимое решение
+        for ( j = 0; j < nCol; ++j ) w[j] /= max;
+//        w[index[im]] = sum < 0 ? -1 : 1;
+        // Меняем свободную переменную
+        double * ri = data[im]();
+        nat jm = nRow1;
+        max = fabs ( ri[index[jm]] );
+        for ( j = nRow; j < nCol; ++j )
+        {
+            const double a = fabs ( ri[index[j]] );
+            if ( max < a ) max = a, jm = j;
+        }
+        // Нормализация строки
+        const nat iim = index[im];
+        const nat ijm = index[jm];
+        const double p = 1. / ri[ijm];
+        for ( j = nRow1; j < nCol; ++j ) ri[index[j]] *= p;
+        ri[iim] *= p;
+        ri[ijm] = 1;
+        // Вычитание строки
+        for ( j = 0; j < nRow; ++j )
+        {
+            if ( j == im ) continue;
+            double * rj = data[j]();
+            const double t = rj[ijm];
+            for ( i = nRow1; i < nCol; ++i )
+            {
+                const nat ii = index[i];
+                if ( fabs ( rj[ii] -= ri[ii] * t ) < 1e-290 ) rj[ii] = 0;
+            }
+            if ( fabs ( rj[iim] -= ri[iim] * t ) < 1e-290 ) rj[iim] = 0;
+            rj[ijm] = 0;
+        }
+        _swap ( index[jm], index[im] );
+test ( data, w, index );
+    }
+//
+    for ( nat k = 0; k < 1; ++k )
+    {
+        bool noChange = true;
+        for ( nat jj = nRow1; jj < nCol; ++jj )
+        {
+            const nat ij = index[jj];
+            const double v = w[ij];
+            const double f = func[ij];
+            if ( ! f ) continue;
+            nat im = 0;
+            double max = 0, sum = 0;
+            if ( f < 0 )
+            {
+                const double d = v + 1;
+                if ( d <= 0 ) continue;
+                for ( i = 0; i < nRow1; ++i )
+                {
+                    const double t = w[index[i]] + d * data[i][ij];
+                    const double a = fabs ( t );
+                    if ( max < a ) max = a, sum = t, im = i;
+                }
+                if ( max < 1 + 1e-9 )
+                {
+test ( data, w, index );
+                    for ( i = 0; i < nRow1; ++i ) w[index[i]] += d * data[i][ij];
+                    w[ij] = -1;
+test ( data, w, index );
+                    continue;
+                }
+            }
+            else
+            {
+                const double d = 1 - v;
+                if ( d <= 0 ) continue;
+                for ( i = 0; i < nRow1; ++i )
+                {
+                    const double t = w[index[i]] - d * data[i][ij];
+                    const double a = fabs ( t );
+                    if ( max < a ) max = a, sum = t, im = i;
+                }
+                if ( max < 1 + 1e-9 )
+                {
+                    for ( i = 0; i < nRow1; ++i ) w[index[i]] -= d * data[i][ij];
+                    w[ij] = 1;
+test ( data, w, index );
+                    continue;
+                }
+            }
+test ( data, w, index );
+            noChange = false;
+            if ( sum > 0 )
+            {
+                const double t = ( 1 - w[index[im]] ) / data[im][ij];
+                w[ij] += t;
+                for ( i = 0; i < nRow1; ++i ) w[index[i]] += t * data[i][ij];
+                //w[index[im]] = 1;
+            }
+            else
+            {
+                const double t = ( 1 - w[index[im]] ) / data[im][ij];
+                w[ij] += t;
+                for ( i = 0; i < nRow1; ++i ) w[index[i]] += t * data[i][ij];
+                //w[index[im]] = 1;
+            }
+test ( data, w, index );
+            // Нормализация строки
+            double * ri = data[im]();
+            const nat iim = index[im];
+            const nat ijm = index[jj];
+            const double p = 1. / ri[ijm];
+            for ( j = nRow1; j < nCol; ++j ) ri[index[j]] *= p;
+            ri[iim] *= p;
+            ri[ijm] = 1;
+            // Вычитание строк
+            for ( j = 0; j < nRow; ++j )
+            {
+                if ( j == im ) continue;
+                double * rj = data[j]();
+                const double t = rj[ijm];
+                for ( i = nRow1; i < nCol; ++i )
+                {
+                    const nat ii = index[i];
+                    if ( fabs ( rj[ii] -= ri[ii] * t ) < 1e-290 ) rj[ii] = 0;
+                }
+                if ( fabs ( rj[iim] -= ri[iim] * t ) < 1e-290 ) rj[iim] = 0;
+                rj[ijm] = 0;
+            }
+            _swap ( index[jj], index[im] );
+test ( data, w, index );
+        }
+        if ( noChange ) return true;
+    }
+    return true;
+}
+
+bool minNorm1b ( CCArrRef2<double> & data, ArrRef<double> & x, ArrRef<nat> & index )
+{
+    const nat nRow = data.size0();
+    const nat nCol = data.size1();
+    if ( nRow < nCol || nCol < 2 ) return false;
+    const nat nCol1 = nCol - 1;
+    if ( x.size() > 0 && x.size() < nCol1 ) return false;
+    DynArray<double> temp ( nRow * nCol );
+    ArrRef2<double> ref ( temp, 0, nCol, nRow );
+    for ( nat j = 0; j < nCol; ++j )
+    {
+        double * p = ref[j]();
+        for ( nat i = 0; i < nRow; ++i )
+        {
+            p[i] = data[i][j];
+        }
+    }
+// Решаем двойственную задачу
+    DynArray<double> w ( nRow );
+    DynArray<nat> index2 ( nRow );
+    if ( ! maxNormUc ( ref, w(), index2() ) ) return false;
+    {
+        for ( nat j = 0; j < nCol1; ++j )
+        {
+            double sum = 0;
+            for ( nat i = 0; i < nRow; ++i )
+            {
+                sum += data[i][j] * w[i];
+            }
+            if ( fabs ( sum ) > 1e-15 )
+                sum = sum;
+        }
+    }
+    if ( x.size() == 0 ) return true;
+// Решаем систему линейных уравнений методом Гаусса
+    ArrRef2<double> ref2 ( temp, 0, nCol1, nCol );
+    for ( nat i = 0; i < nCol1; ++i )
+    {
+        ref2[i] = data[index[i]=index2[i]];
+    }
+    return slu_gauss ( ref2, x );
+}
+
+double calcSum ( CCArrRef2<double> & data, ArrRef<double> & x )
+{
+    double sum = 0;
+    const nat nRow = data.size0();
+    const nat nCol = data.size1();
+    const nat nCol1 = nCol - 1;
+    for ( nat i = 0; i < nRow; ++i )
+    {
+        const double * p = data[i]();
+        double t = p[nCol1];
+        for ( nat j = 0; j < nCol1; ++j )
+        {
+            t += p[j] * x[j];
+        }
+        sum += fabs(t);
+    }
+    return sum;
+}
+
 void minNorm_test3()
 {
     static PRand rand;
     static PRandVector3d vrand;
-    const nat nn = 20;
+    const nat nn = 5;//20;
     FixArray<Plane3d, nn> plane;
+    const double eps = 1e-13;
     for ( nat n = 4; n <= nn; n += 1 )
     {
         DynArray2<double> data ( n, 4 );
@@ -1557,9 +1976,32 @@ void minNorm_test3()
                 display << "err minNorm1" << NL;
                 continue;
             }
-            if ( fabs ( p.x - x[0] ) > 1e-12 || fabs ( p.y - x[1] ) > 1e-12 || fabs ( p.z - x[2] ) > 1e-12 )
+            if ( fabs ( p.x - x[0] ) > eps || fabs ( p.y - x[1] ) > eps || fabs ( p.z - x[2] ) > eps )
                 display << fabs ( p.x - x[0] ) << fabs ( p.y - x[1] ) << fabs ( p.z - x[2] ) << NL;
-            p = getNearPointU ( ref );
+            FixArray<nat, 3> index;
+if(j==99)
+j=j;
+            double s1 = calcSum ( data, x );
+            if ( minNorm1b ( data, x, index ) )
+            {
+                j=j;
+                if ( fabs ( p.x - x[0] ) > eps || fabs ( p.y - x[1] ) > eps || fabs ( p.z - x[2] ) > eps )
+                {
+                    double s2 = calcSum ( data, x );
+                    if ( s1 < s2 )
+                    {
+                        display << n << j << s1 << s2 << NL;
+                    //display << fabs ( p.x - x[0] ) << fabs ( p.y - x[1] ) << fabs ( p.z - x[2] ) << NL;
+                        minNorm1b ( data, x, index );
+                    }
+                }
+            }
+            else
+            {
+                display << n << j << NL;
+                minNorm1b ( data, x, index );
+            }
+            /*p = getNearPointU ( ref );
             if ( ! p.isDef )
             {
                 getNearPointU ( ref );
@@ -1572,11 +2014,11 @@ void minNorm_test3()
                 display << "err minNormU" << NL;
                 continue;
             }
-            if ( fabs ( p.x - x[0] ) > 1e-12 || fabs ( p.y - x[1] ) > 1e-12 || fabs ( p.z - x[2] ) > 1e-12 )
-                display << fabs ( p.x - x[0] ) << fabs ( p.y - x[1] ) << fabs ( p.z - x[2] ) << NL;
+            if ( fabs ( p.x - x[0] ) > eps || fabs ( p.y - x[1] ) > eps || fabs ( p.z - x[2] ) > eps )
+                display << fabs ( p.x - x[0] ) << fabs ( p.y - x[1] ) << fabs ( p.z - x[2] ) << NL;*/
         }
     }
-    //message ( "end" );
+    display << "end" << gg << NL;
 }
 
 void slu_gauss_test()
@@ -1608,7 +2050,7 @@ void slu_gauss_test()
 void math_test ()
 {
 //   sym_test ();
-    root2_test ();
+//    root2_test ();
 //    columnScale_test ();
 //    slu_ortho_test ();
 //    ortho_test ();
@@ -1626,6 +2068,6 @@ void math_test ()
 //    ellipseCircumference_test ();
 //    fmax_test();
 //    over_lin_sys2();
-//    minNorm_test3();
+    minNorm_test3();
 //    slu_gauss_test();
 }

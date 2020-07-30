@@ -430,10 +430,11 @@ void getNearPointU_test()
     Double<5> r4 = vec_pro ( p0, p1, p2, p3 );
     display << p0 * r0 << p1 * r1 << p2 * r2 << p3 * r3 << p4 * r4 << NL;
 /*/
+	nat i;
     static PRand rand1;
     static PRandVector4d rand4;
     FixArray<Plane4d, 9> plane;
-    for ( nat i = 0; i < plane.size(); ++i )
+    for ( i = 0; i < plane.size(); ++i )
     {
         plane[i].norm = rand4() * ( rand1() + 1 );
         plane[i].dist = 2*rand1() - 1;
@@ -445,10 +446,10 @@ void getNearPointU_test()
     double t2 = timeInSec();
     if ( p.isDef && p2.isDef )
     {
-        for ( nat i = 0; i < plane.size(); ++i )
+        for ( i = 0; i < plane.size(); ++i )
             display << fabs ( plane[i] % p );
             display << NL;
-        for ( nat i = 0; i < plane.size(); ++i )
+        for ( i = 0; i < plane.size(); ++i )
             display << fabs ( plane[i] % p2 );
             display << NL;
     }

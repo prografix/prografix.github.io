@@ -117,7 +117,7 @@ void sluGaussRow_test ()
     data2 = data;
     CmbArray<nat, 6> index ( nCol ), index2 ( nCol );
     CmbArray<double, 6> x ( mCol ), x2 ( mCol );
-    if ( sluGaussRow ( data, nRow, nCol, index(), mCol ) )
+    if ( sluGaussRow ( data, nRow, nCol, index(), nRow, mCol ) )
     {/*
         for ( i = 0; i < nRow; ++i )
         {
@@ -155,7 +155,7 @@ void sluGaussRow_test2 ()
         }
         data2 = data;
         double t0 = timeInSec();
-        sluGaussRow ( data, nRow, nCol, index(), nCol );
+        sluGaussRow ( data, nRow, nCol, index(), nRow, nCol );
         double t1 = timeInSec();
         slu_gauss ( data2, nCol, index2 );
         double t2 = timeInSec();
@@ -183,7 +183,7 @@ void sluGaussRow_test3 () // Обращение матриц
         }
     }
     data2 = data;
-    sluGaussRow ( data, nRow, nCol, index(), nRow );
+    sluGaussRow ( data, nRow, nCol, index(), nRow, nRow );
     for ( i = 0; i < nRow; ++i )
     {
         for ( j = 0; j < nRow; ++j )
@@ -197,6 +197,31 @@ void sluGaussRow_test3 () // Обращение матриц
         }
         display << NL;
     }
+}
+void sluGaussRow_test4 ()
+{
+    static PNormalRand rand;
+    const nat nRow = 4, nCol = 5;
+    CmbArray2<double, nRow*nCol> data ( nRow, nCol );
+    CmbArray<nat, nCol> index ( nCol );
+    nat i, j;
+    for ( i = 0; i < nRow; ++i )
+    {
+        for ( j = 0; j < nCol; ++j )
+        {
+            data[i][j] = (3*rand());
+        }
+    }
+    sluGaussRow ( data, nRow, nCol, index(), 3, 4 );
+    for ( i = 0; i < nRow; ++i )
+    {
+        for ( j = 0; j < nCol; ++j )
+        {
+            display << data[i][j];
+        }
+        display << NL;
+    }
+    display << NL;
 }
 
 } // namespace

@@ -309,19 +309,20 @@ public:
 //      Выбор ведущего элемента по строкам.
 //      nRow, nCol - размеры матрицы.
 //      index - массив для индексов выбранных столбцов (nCol).
-//      mCol - размер подматрицы, где выбираются ведущие элементы.
+//      mRow, mCol - размеры подматрицы, где выбираются ведущие элементы.
 //
 //*************************** 02.06.2019 ******************************//
 
 template <class Matrix>
-bool _sluGaussRow ( Matrix & data, nat nRow, nat nCol, nat index[], nat mCol )
+bool _sluGaussRow ( Matrix & data, nat nRow, nat nCol, nat index[], nat mRow, nat mCol )
 {
-    if ( nRow == 0 || nCol <= nRow || mCol < nRow ) return false;
+    if ( mRow > nRow ) mRow = nRow;
     if ( mCol > nCol ) mCol = nCol;
+    if ( mRow < 2 || mRow > mCol ) return false;
 // Прямой ход
     nat i, j, k;
     for ( i = 0; i < nCol; ++i ) index[i] = i;
-    for ( k = 0; k < nRow; ++k )
+    for ( k = 0; k < mRow; ++k )
     {
 // Поиск максимального по модулю члена в k-ой строке
         nat im = k;
@@ -338,6 +339,7 @@ bool _sluGaussRow ( Matrix & data, nat nRow, nat nCol, nat index[], nat mCol )
 // Нормализация строки
         const double p = 1. / rk[ik];
         for ( i = k+1; i < nCol; ++i ) rk[index[i]] *= p;
+        rk[ik] = 1;
 // Вычитание строк
         for ( j = k+1; j < nRow; ++j )
         {
@@ -348,21 +350,24 @@ bool _sluGaussRow ( Matrix & data, nat nRow, nat nCol, nat index[], nat mCol )
                 const nat ii = index[i];
                 if ( fabs ( rj[ii] -= rk[ii] * t ) < 1e-290 ) rj[ii] = 0;
             }
+            rj[ik] = 0;
         }
     }
 // Обратная подстановка
-    for ( j = nRow; --j > 0; )
+    for ( j = mRow; --j > 0; )
     {
         const double * rj = & data[j][0];
+        const nat ij = index[j];
         for ( i = 0; i < j; ++i )
         {
             double * ri = & data[i][0];
-            const double t = ri[index[j]];
-            for ( k = nRow; k < nCol; ++k )
+            const double t = ri[ij];
+            for ( k = mRow; k < nCol; ++k )
             {
                 const nat ik = index[k];
                 ri[ik] -= rj[ik] * t;
             }
+            ri[ij] = 0;
         }
     }
     return true;
@@ -371,15 +376,15 @@ bool _sluGaussRow ( Matrix & data, nat nRow, nat nCol, nat index[], nat mCol )
 template <class T> class IMatrix;
 
 template <class T> inline
-bool sluGaussRow ( IMatrix<T> & data, nat nRow, nat nCol, unsigned * index, nat mCol )
+bool sluGaussRow ( IMatrix<T> & data, nat nRow, nat nCol, unsigned * index, nat mRow, nat mCol )
 {
-    return _sluGaussRow ( data, nRow, nCol, index, mCol );
+    return _sluGaussRow ( data, nRow, nCol, index, mRow, mCol );
 }
 
 template <class T> class ArrRef2;
 
 template <class T> inline
-bool sluGaussRow ( ArrRef2<T> & data, nat nRow, nat nCol, unsigned * index, nat mCol )
+bool sluGaussRow ( ArrRef2<T> & data, nat nRow, nat nCol, unsigned * index, nat mRow, nat mCol )
 {
-    return _sluGaussRow ( data, nRow, nCol, index, mCol );
+    return _sluGaussRow ( data, nRow, nCol, index, mRow, mCol );
 }

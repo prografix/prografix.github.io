@@ -58,9 +58,9 @@ Def<Ellipse2d> minEllipseAroundPointsA ( CArrRef<Vector2d> points );
 //
 //**************************** 18.02.2018 *********************************//
 
-Def<Triangle2d> minTriangleAroundConvexPolygonA ( CArrRef<Vector2d> inner );
-Def<Triangle2d> minTriangleAroundPolygonA       ( CArrRef<Vector2d> inner );
-Def<Triangle2d> minTriangleAroundPointsA        ( CArrRef<Vector2d> inner );
+Def<Triangle2d> minTriangleAroundConvexPolygonA ( CCArrRef<Vector2d> & inner );
+Def<Triangle2d> minTriangleAroundPolygonA       ( CCArrRef<Vector2d> & inner );
+Def<Triangle2d> minTriangleAroundPointsA        ( CCArrRef<Vector2d> & inner );
 
 
 //**************************** 12.07.2009 *********************************//
@@ -95,9 +95,9 @@ Def<Rhombus2d> minRhombusAroundPointsP ( CArrRef<Vector2d> inner );
 //
 //**************************** 16.02.2018 *********************************//
 
-Def<Parallelogram2d> minParallelogramAroundConvexPolygonA ( CArrRef<Vector2d> inner );
-Def<Parallelogram2d> minParallelogramAroundPolygonA       ( CArrRef<Vector2d> inner );
-Def<Parallelogram2d> minParallelogramAroundPointsA        ( CArrRef<Vector2d> inner );
+Def<Parallelogram2d> minParallelogramAroundConvexPolygonA ( CCArrRef<Vector2d> & inner );
+Def<Parallelogram2d> minParallelogramAroundPolygonA       ( CCArrRef<Vector2d> & inner );
+Def<Parallelogram2d> minParallelogramAroundPointsA        ( CCArrRef<Vector2d> & inner );
 
 
 //**************************** 17.11.2015 *********************************//
@@ -106,9 +106,9 @@ Def<Parallelogram2d> minParallelogramAroundPointsA        ( CArrRef<Vector2d> in
 //
 //**************************** 17.11.2015 *********************************//
 
-bool minTrapezoidAroundConvexPolygonA ( FixArrRef<Vector2d, 4> & outer, CArrRef<Vector2d> inner );
-bool minTrapezoidAroundPolygonA       ( FixArrRef<Vector2d, 4> & outer, CArrRef<Vector2d> inner );
-bool minTrapezoidAroundPointsA        ( FixArrRef<Vector2d, 4> & outer, CArrRef<Vector2d> inner );
+bool minTrapezoidAroundConvexPolygonA ( FixArrRef<Vector2d, 4> & outer, CCArrRef<Vector2d> & inner );
+bool minTrapezoidAroundPolygonA       ( FixArrRef<Vector2d, 4> & outer, CCArrRef<Vector2d> & inner );
+bool minTrapezoidAroundPointsA        ( FixArrRef<Vector2d, 4> & outer, CCArrRef<Vector2d> & inner );
 
 
 //**************************** 22.02.2016 *********************************//
@@ -128,9 +128,9 @@ bool minNgonAroundPointsA        ( ArrRef<Vector2d> outer, CArrRef<Vector2d> inn
 //
 //**************************** 29.10.2016 *********************************//
 
-bool minEquianglarPolygonAroundConvexPolygonA ( ArrRef<Vector2d> outer, CArrRef<Vector2d> inner );
-bool minEquianglarPolygonAroundPolygonA       ( ArrRef<Vector2d> outer, CArrRef<Vector2d> inner );
-bool minEquianglarPolygonAroundPointsA        ( ArrRef<Vector2d> outer, CArrRef<Vector2d> inner );
+bool minEquianglarPolygonAroundConvexPolygonA ( ArrRef<Vector2d> & outer, CCArrRef<Vector2d> & inner );
+bool minEquianglarPolygonAroundPolygonA       ( ArrRef<Vector2d> & outer, CCArrRef<Vector2d> & inner );
+bool minEquianglarPolygonAroundPointsA        ( ArrRef<Vector2d> & outer, CCArrRef<Vector2d> & inner );
 
 
 //**************************** 19.06.2004 *********************************//
@@ -278,6 +278,15 @@ Def<Conform2d> maxPolygonInConvexPolygon ( CCArrRef<Vector2d> & inner, CCArrRef<
 Def<Conform2d> maxPolygonInConvexPolygonNR ( CCArrRef<Vector2d> & inner, CCArrRef<Vector2d> & outer );
 
 
+//**************************** 25.04.2020 *********************************//
+//
+// Максимальный искажённый многоугольник вписанный в выпуклый многоугольник
+//
+//**************************** 25.04.2020 *********************************//
+
+Def<Affin2d> maxAffinPolygonInConvexPolygon ( CCArrRef<Vector2d> & inner, CCArrRef<Vector2d> & outer );
+
+
 //**************************** 26.04.2014 *********************************//
 //
 //      Максимальный выпуклый многоугольник вписанный в многоугольник
@@ -392,7 +401,7 @@ Def<Triangle2d> maxTriangleInConvexPolygonA ( CCArrRef<Vector2d> & poly );
 //      Максимальный параллелограмм вписанный в выпуклый многоугольник
 //              A - максимум площади, P - максимум периметра 
 //
-//**************************** 02.12.2018 *********************************//
+//**************************** 25.04.2020 *********************************//
 
 Def<Parallelogram2d> maxParallelogramInConvexPolygonA ( CCArrRef<Vector2d> & poly );
 Def<Parallelogram2d> maxParallelogramInConvexPolygonP ( CCArrRef<Vector2d> & poly );

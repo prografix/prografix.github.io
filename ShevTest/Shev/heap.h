@@ -270,19 +270,3 @@ public:
         return true;
     }
 };
-
-template <class T> struct SwapPtr
-{
-    T * ptr;
-    SwapPtr () {}
-    SwapPtr ( T * p ) : ptr(p) {}
-};
-
-template <class T> inline void _swap ( SwapPtr<T> & a, SwapPtr<T> & b )
-{
-    _swap ( a.ptr, b.ptr );
-    _swap ( *a.ptr, *b.ptr );
-}
-
-#define container_of(ptr, type, member) \
-  ((type *)((char *)(ptr)-(size_t)(&((type *)0)->member)))

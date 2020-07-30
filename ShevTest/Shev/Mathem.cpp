@@ -1,7 +1,7 @@
 
 #include "math.h"
 #include "Mathem.h"
-#include "func1t.h"
+#include "LinAlg.h"
 
 //*********************** 13.05.2004 ************************//
 //
@@ -1090,132 +1090,85 @@ double SM_LDLt::determinant () const
 //      Переопределённые системы линейных уравнений ( n > m ).
 //      Минимум 1-нормы вектора невязок.
 //
-//*********************** 26.11.2011 **************************//
+//*********************** 04.02.2020 **************************//
 
-static
-bool minNorm1 ( CArrRef2<double> data, ArrRef<double> temp, ArrRef<bool> used, 
-                ArrRef<nat> index, ArrRef<double> d, ArrRef<nat> buf )
+bool minNorm1_Dual ( ArrRef2<double> & data, ArrRef<nat> & res )
 {
-    nat i, j, im;
+    nat i, j, k;
     const nat nRow = data.size0();
     const nat nCol = data.size1();
-    ArrRef<double> a ( d, 0, nRow );
-    ArrRef<double> w ( d, nRow, nRow );
-    if ( nCol == 2 )
-    {
-        for ( i = 0; i < nRow; ++i )
-        {
-            const double s = data[i][0];
-            w[i] = fabs ( s );
-            if ( s != 0 ) a[i] = data[i][1] / s;
-        }
-        Def<nat> m = selectR ( a, w, 0.5, buf );
-        if ( ! m.isDef ) return false;
-        index[0] = m.a;
-        return true;
-    }
     const nat nRow1 = nRow - 1;
-    const nat nCol1 = nCol - 1;
-    const nat nCol2 = nCol - 2;
-    double max = 0;
-    for ( i = 0; i < nRow; ++i )
+    DynArray<nat> index ( nCol );
+    DynArray<double> w ( nCol );
+    ArrRef<double> func = data[nRow1];
+    if ( ! _sluGaussRow ( data, nRow, nCol, index(), nRow1, nCol ) ) return false;
+    for ( k = 0; k < 2*nCol; ++k )
     {
-        used[i] = false;
-        CArrRef<double> row = data[i];
-        for ( j = 0; j < nCol1; ++j )
+        for ( j = nRow1; j < nCol; ++j )
         {
-            const double t = fabs ( row[j] );
-            if ( max < t ) max = t, im = i;
+            const nat ij = index[j];
+            w[ij] = func[ij] < 0 ? -1 : 1;
         }
-    }
-    if ( max == 0 ) return false;
-    ArrRef2<double> data2 ( temp, 0, nRow1, nCol1 );
-    ArrRef2<double> ref2 ( temp, 0, nRow, nCol );
-    DynArray<double> temp2 ( nRow1 * nCol1 );
-    DynArray<nat> index2 ( nCol2 );
-    DynArray<bool> used2 ( nRow1 );
-    for(;;)
-    {
-        used[im] = true;
-        CArrRef<double> row = data[im];
-        nat jm = 0;
-        max = fabs ( row[0] );
-        for ( j = 1; j < nCol1; ++j )
+        nat im = 0;
+        double max = 0, sum = 0;
+        for ( i = 0; i < nRow1; ++i )
         {
-            const double t = fabs ( row[j] );
-            if ( max < t ) max = t, jm = j;
-        }
-        for ( i = 0; i < nRow; ++i )
-        {
-            if ( i == im ) continue;
-            CArrRef<double> row1 = data[i];
-            const nat ii = i < im ? i : i - 1;
-            ArrRef<double> row2 = data2[ii];
-            const double coef = row1[jm] / row[jm];
-            for ( j = 0; j < nCol; ++j )
+            const double * p = data[i]();
+            double t = 0;
+            for ( j = nRow1; j < nCol; ++j )
             {
-                if ( j == jm ) continue;
-                const nat jj = j < jm ? j : j - 1;
-                row2[jj] = row1[j] - coef * row[j];
+                const nat ij = index[j];
+                t -= p[ij] * w[ij];
             }
+            const double a = fabs ( t );
+            if ( max < a ) max = a, sum = t, im = i;
         }
-        if ( ! minNorm1 ( data2, temp2, used2, index, d, buf ) ) return false;
-        for ( i = 0; i < nCol1; ++i ) used2[i] = false;
-        for ( i = 0; i < nRow; ++i )
+        if ( max < 1 + 1e-9 )
         {
-            CArrRef<double> row = data[i];
-            ArrRef<double> row2 = ref2[i];
-            for ( j = 0; j < nCol; ++j ) row2[j] = row[j];
-        }
-        for ( nat k = 0; k < nCol2; ++k )
-        {
-            if ( index[k] >= im ) ++index[k];
-            const nat ik = index[k];
-            CArrRef<double> row = ref2[ik];
-            max = 0.;
-            for ( j = 0; j < nCol1; ++j )
-            {
-                const double t = fabs ( row[j] );
-                if ( max < t ) max = t, jm = j;
-            }
-            if ( max == 0 ) return false;
-            used2[jm] = true;
-            for ( i = 0; i < nRow; ++i )
-            {
-                ArrRef<double> row2 = ref2[i];
-                if ( i == ik ) continue;
-                const double coef = row2[jm] / row[jm];
-                for ( j = 0; j < nCol; ++j )
-                {
-                    if ( j == jm )
-                        row2[j] = 0.;
-                    else
-                        row2[j] -= coef * row[j];
-                }
-            }
-            ref2[ik].fill(0);
-        }
-        jm = 0; 
-        while ( used2[jm] ) ++jm;
-        for ( i = 0; i < nRow; ++i )
-        {
-            const double s = ref2[i][jm];
-            w[i] = fabs ( s );
-            if ( s != 0 ) a[i] = ref2[i][nCol1] / s;
-        }
-        Def<nat> m = selectR ( a, w, 0.5, buf );
-        if ( ! m.isDef ) return false;
-        if ( used[m] )
-        {
-            index[nCol2] = m.a;
+            for ( i = 0; i < nRow1; ++i ) res[i] = index[i];
             return true;
         }
-        im = m.a;
+        const double ds = sum < 0 ? -1 : 1;
+        nat jm = nCol;
+        max = -1e300;
+        double * ri = data[im]();
+        for ( j = nRow1; j < nCol; ++j )
+        {
+            const nat ij = index[j];
+            const double t = ri[ij];
+            if ( !t )
+                continue;
+            const double a = func[ij] * ds / t;
+            if ( a > 0 )
+                continue;
+            if ( max < a ) max = a, jm = j;
+        }
+        if ( jm == nCol )
+            return false;
+        const nat ik = index[jm];
+        _swap ( index[jm], index[im] );
+// Нормализация строки
+        const double p = 1. / ri[ik];
+        for ( j = im+1; j < nCol; ++j ) ri[index[j]] *= p;
+        ri[ik] = 1;
+// Вычитание строк
+        for ( j = 0; j < nRow; ++j )
+        {
+            if ( j == im ) continue;
+            double * rj = data[j]();
+            const double t = rj[ik];
+            for ( i = im+1; i < nCol; ++i )
+            {
+                const nat ii = index[i];
+                if ( fabs ( rj[ii] -= ri[ii] * t ) < 1e-290 ) rj[ii] = 0;
+            }
+            rj[ik] = 0;
+        }
     }
     return false;
 }
 
-bool minNorm1 ( CArrRef2<double> data, ArrRef<double> x, ArrRef<nat> index )
+bool minNorm1 ( CCArrRef2<double> & data, ArrRef<double> & x, ArrRef<nat> & index )
 {
     const nat nRow = data.size0();
     const nat nCol = data.size1();
@@ -1223,61 +1176,32 @@ bool minNorm1 ( CArrRef2<double> data, ArrRef<double> x, ArrRef<nat> index )
     const nat nCol1 = nCol - 1;
     if ( x.size() > 0 && x.size() < nCol1 ) return false;
     DynArray<double> temp ( nRow * nCol );
-    DynArray<double> d ( nRow + nRow );
-    DynArray<nat> buf ( nRow + nRow );
-    DynArray<bool> used ( nRow );
-    if ( ! minNorm1 ( data, temp, used, index, d, buf ) ) return false;
-    if ( x.size() == 0 ) return true;
-// Решаем систему линейных уравнений методом Гаусса
-    ArrRef2<double> ref2 ( temp, 0, nRow, nCol );
-    nat i, j, jm;
-    for ( i = 0; i < nRow; ++i ) ref2[i] = data[i];
-    for ( nat k = 0; k < nCol1; ++k )
+    ArrRef2<double> ref ( temp, 0, nCol, nRow );
+    for ( nat j = 0; j < nCol; ++j )
     {
-        const nat ik = index[k];
-        CArrRef<double> row = ref2[ik];
-        double max = 0.;
-        for ( j = 0; j < nCol1; ++j )
+        double * p = ref[j]();
+        for ( nat i = 0; i < nRow; ++i )
         {
-            const double a = fabs ( row[j] );
-            if ( max < a ) max = a, jm = j;
-        }
-        if ( max == 0 ) return false;
-        buf[jm] = ik;
-        for ( i = 0; i < nCol1; ++i )
-        {
-            const nat ii = index[i];
-            ArrRef<double> row2 = ref2[ii];
-            if ( ii == ik )
-            {
-                const double coef = 1 / row[jm];
-                for ( j = 0; j < nCol; ++j ) row2[j] *= coef;
-            }
-            else
-            {
-                const double coef = row2[jm] / row[jm];
-                for ( j = 0; j < nCol; ++j )
-                {
-                    if ( j == jm )
-                        row2[j] = 0.;
-                    else
-                        row2[j] -= coef * row[j];
-                }
-            }
+            p[i] = data[i][j];
         }
     }
-    for ( i = 0; i < nCol1; ++i ) x[i] = ref2[buf[i]][nCol1];
-    return true;
+// Решаем двойственную задачу
+    if ( ! minNorm1_Dual ( ref, index ) ) return false;
+    if ( x.size() == 0 ) return true;
+// Решаем систему линейных уравнений методом Гаусса
+    ArrRef2<double> ref2 ( temp, 0, nCol1, nCol );
+    for ( nat i = 0; i < nCol1; ++i ) ref2[i] = data[index[i]];
+    return slu_gauss ( ref2, x );
 }
 
-bool minNorm1 ( CArrRef2<double> data, ArrRef<double> x )
+bool minNorm1 ( CCArrRef2<double> & data, ArrRef<double> & x )
 {
     const nat nCol = data.size1();
     if ( nCol < 2 ) return false;
     return minNorm1 ( data, x, DynArray<nat>(nCol-1) );
 }
 
-bool minNorm1 ( CArrRef2<double> data, ArrRef<nat> index )
+bool minNorm1 ( CCArrRef2<double> & data, ArrRef<nat> & index )
 {
     return minNorm1 ( data, ArrRef<double>(), index );
 }
@@ -1719,9 +1643,8 @@ nat orthogonalizationH1 ( nat nr, IMatrix<double> & mat )
     if ( nr == 0 || mat.nRow == 0 ) return 0;
     if ( nr > mat.nRow ) nr = mat.nRow;
     HMatrix<double> temp ( nr, mat.nCol+1 ); // матрица для хранения параметров отображений
-    CmbArray<bool, 80> mark ( nr ); // массив для отметки выбранных строк
+    CmbArray<bool, 80> mark ( nr, false ); // массив для отметки выбранных строк
     nat i, j, k;
-    mark.fill ( false );
     for ( k = 0; k < nr; ++k )
     {
 // Поиск строки с максимальной нормой

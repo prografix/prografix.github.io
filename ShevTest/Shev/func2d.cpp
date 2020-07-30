@@ -353,7 +353,7 @@ double maxDiameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, double an
 //
 //**************************** 26.06.2007 *********************************//
 
-double area ( CArrRef<Vector2d> vert )
+double area ( CCArrRef<Vector2d> & vert )
 {
     return 0.5 * tempArea2<double, Vector2d> ( vert );
 }
@@ -364,7 +364,7 @@ double area ( CArrRef<Vector2d> vert )
 //
 //**************************** 25.09.2010 *********************************//
 
-double perimeter ( CArrRef<Vector2d> vert )
+double perimeter ( CCArrRef<Vector2d> & vert )
 {
     if ( vert.size() < 2 ) return 0.;
     double p = norm2 ( vert.las() - vert[0] );
@@ -957,19 +957,28 @@ SuiteRef<Vector2d> & convexMN ( SuiteRef<Vector2d> & point )
 //      Выпуклая оболочка вершин многоугольника за время O ( n ).
 //      Обход вершин против часовой стрелки.
 //      vert и res должны быть разными массивами.
+//      Возвращается false, если площадь многоугольника меньше или равна 0.
 //
-//**************************** 25.02.2014 *********************************//
+//**************************** 12.06.2020 *********************************//
 
-SuiteRef<nat> & convexPolygon ( nat a, nat b, CArrRef<Vector2d> vert, SuiteRef<nat> & index )
+inline nat nextIndex ( nat i, nat n, const Vector2d * v )
+{
+    nat j = i;
+m1: if ( ++j == n ) j = 0;
+    if ( v[i] == v[j] ) goto m1;
+    return j;
+}
+
+void convexPolygon ( nat a, nat b, CArrRef<Vector2d> vert, SuiteRef<nat> & index )
 {
     const nat n = vert.size();
     index.inc() = a;
-    if ( ++a == n ) a = 0;
-    if ( a == b ) return index;
+    a = nextIndex ( a, n, vert() );
+    if ( a == b ) return;
     index.inc() = a;
     for(;;)
     {
-        if ( ++a == n ) a = 0;
+        a = nextIndex ( a, n, vert() );
 m1:     const Vector2d & qi = vert[index.las(0)]; // последняя выпуклая вершина
         const Vector2d & q1 = vert[index.las(1)]; // предпоследняя выпуклая вершина
         const Vector2d & v = vert[a]; // исходная вершина после qi
@@ -981,7 +990,7 @@ m1:     const Vector2d & qi = vert[index.las(0)]; // последняя выпуклая вершина
             {
                 do
                 {
-                    if ( ++a == n ) a = 0;
+                    a = nextIndex ( a, n, vert() );
                     if ( a == b ) goto m1;
                 }
                 while ( ( vert[a] - qi ) % ( qi - q1 ) <= 0 );
@@ -1001,17 +1010,17 @@ m1:     const Vector2d & qi = vert[index.las(0)]; // последняя выпуклая вершина
         }
         index.inc() = a; 
     }
-    return index;
 }
 
-SuiteRef<nat> & convexPolygon ( CArrRef<Vector2d> vert, SuiteRef<nat> & index )
+bool convexPolygon ( CCArrRef<Vector2d> & vert, SuiteRef<nat> & index )
 {
+    if ( area ( vert ) <= 0 ) return false;
     const nat n = vert.size();
-    if ( n < 4 )
+    if ( n == 3 )
     {
         index.resize ( n );
         for ( nat i = 0; i < n; ++i ) index[i] = i;
-        return index;
+        return true;
     }
 // Поиск крайних точек по X
     nat i, a = 0, b = 0;
@@ -1028,20 +1037,16 @@ SuiteRef<nat> & convexPolygon ( CArrRef<Vector2d> vert, SuiteRef<nat> & index )
 // Поиск остальных точек
     index.resize ( 0 );
     convexPolygon ( b, a, vert, index );
-    return convexPolygon ( a, b, vert, index );
+    convexPolygon ( a, b, vert, index );
+    return true;
 }
 
-DynArrRef<Vector2d> & convexPolygon ( CArrRef<Vector2d> vert, DynArrRef<Vector2d> & res )
+bool convexPolygon ( CCArrRef<Vector2d> & vert, DynArrRef<Vector2d> & res )
 {
     const nat n = vert.size();
-    if ( n < 4 )
-    {
-        if ( res.size() != n ) res.resize ( n );
-        for ( nat i = 0; i < n; ++i ) res[i] = vert[i];
-        return res;
-    }
     Suite<nat> index ( n );
-    const nat m = convexPolygon ( vert, index ).size();
+    if ( ! convexPolygon ( vert, index ) ) return false;
+    const nat m = index.size();
     if ( res.size() != m ) res.resize ( m );
     if ( m < n )
     {
@@ -1056,16 +1061,16 @@ DynArrRef<Vector2d> & convexPolygon ( CArrRef<Vector2d> vert, DynArrRef<Vector2d
     {
         res = vert;
     }
-    return res;
+    return true;
 }
 
-SuiteRef<Vector2d> & convexPolygon ( SuiteRef<Vector2d> & vert )
+bool convexPolygon ( SuiteRef<Vector2d> & vert )
 {
     const nat n = vert.size();
-    if ( n < 4 ) return vert;
     Suite<nat> index ( n );
-    const nat m = convexPolygon ( vert, index ).size();
-    if ( vert.size() == m ) return vert;
+    if ( ! convexPolygon ( vert, index ) ) return false;
+    const nat m = index.size();
+    if ( vert.size() == m ) return true;
     nat k = firMin ( index );
     for ( nat i = 0; i < m; ++i )
     {
@@ -1073,7 +1078,7 @@ SuiteRef<Vector2d> & convexPolygon ( SuiteRef<Vector2d> & vert )
         if ( ++k == m ) k = 0;
     }
     vert.resize ( m );
-    return vert;
+    return true;
 }
 
 //**************************** 23.08.2003 *********************************//

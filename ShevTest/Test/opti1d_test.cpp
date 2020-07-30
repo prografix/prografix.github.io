@@ -243,7 +243,8 @@ Def<double> getMinSumMinMaxParabola1d ( CArrRef<MutCArrRef<Set2<double> > > arr2
     double y = func ( x, g );
     for(;;)
     {
-        for ( nat j = 0; j < m; ++j )
+		nat j;
+        for ( j = 0; j < m; ++j )
         {
             FixArray<nat, 2> & index = index2[j];
             nat im = index[0];
@@ -329,7 +330,7 @@ Def<double> getMinSumMinMaxParabola1d ( CArrRef<MutCArrRef<Set2<double> > > arr2
         const double z = func ( x, g );
         const double z1 = func ( x, arr2 ) / m;
         if ( fabs ( z - z1 ) > 1e-9 )
-            i2=i2;
+            j=j;
         if ( z <= y )
         {
             for ( nat j = 0; j < m; ++j )

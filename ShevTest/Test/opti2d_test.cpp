@@ -22,13 +22,6 @@
 
 double timeInSec();
 
-template<nat N> struct OptiFacet
-{
-    Double<N> vert;
-    Double<N+1> plane;
-    nat hidx, num, iarr[N];
-};
-
 bool savePgn ( const char * name, CArrRef<Vector2d> vert )
 {
     RealFile file ( name, "wb" );
@@ -97,10 +90,6 @@ void maxPolygonInConvexPolygon_test()
 {
     FixArray<Vector2d, 4> vert1;
     randPolygon ( vert1 );
-        /*for ( nat i = 0; i < vert1.size(); ++i )
-        {
-            display << vert1[i] << display;
-        }*/
     Suite<Vector2d> vert2 ( 7, 7 );
     randConvexPolygon ( vert2 );
     drawPolygon ( vert2, 0, 1, 1 );
@@ -108,6 +97,20 @@ void maxPolygonInConvexPolygon_test()
     if ( conf.isDef )
     {
         drawPolygon ( vert1 *= conf, 1, 0, 1 );
+    }
+}
+
+void maxAffinPolygonInConvexPolygon_test()
+{
+    FixArray<Vector2d, 5> vert1;
+    regularPolygon ( vert1 );
+    Suite<Vector2d> vert2 ( 7, 7 );
+    randConvexPolygon ( vert2 );
+    drawPolygon ( vert2, 0, 1, 1 );
+    Def<Affin2d> affin = maxAffinPolygonInConvexPolygon ( vert1, vert2 );
+    if ( affin.isDef )
+    {
+        drawPolygon ( vert1 *= affin, 1, 0, 1 );
     }
 }
 
@@ -1628,14 +1631,15 @@ void maxParallelogramInConvexPolygon_test()
     {
         poly.resize(9);
         randConvexPolygon ( poly );
-        Def<Parallelogram2d> fig1 = maxParallelogramInConvexPolygon  ( poly );
+//        Def<Parallelogram2d> fig1 = maxParallelogramInConvexPolygon  ( poly );
         Def<Parallelogram2d> fig2 = maxParallelogramInConvexPolygonA ( poly );
         //Def<Triangle2d> fig1 = maxParallelogramInConvexPolygon  ( poly );
         //Def<Triangle2d> fig2 = maxTriangleInConvexPolygonA ( poly );
-        double area1 = fig1.isDef ? fig1.getArea() : 0;
-        double area2 = fig2.isDef ? fig2.getArea() : 0;
-        display << i << area1 << area2 << NL;
-if ( i == 0 ) draw ( fig1, 1, 0, 0 ), draw ( fig2, 1, 1, 0 ), drawPoints ( poly, 0, 1, 1 );
+//        double area1 = fig1.isDef ? fig1.getArea() : 0;
+//        double area2 = fig2.isDef ? fig2.getArea() : 0;
+ //       display << i << area1 << area2 << NL;
+        drawPolygon ( poly, 0, 1, 1 );
+        draw ( fig2, 1, 1, 0 );
     }
 }
 
@@ -2356,6 +2360,11 @@ void maxCircleInPolygon_test4()
 //    display << "end" << NL;
 }
 
+template <nat N> struct LPCone
+{
+    Double<N> arr[N+1];
+};
+
 Def<Rectangle2d> maxRectangleInConvexPolygonANR2 ( const Spin2d & spin, CCArrRef<Vector2d> & outer )
 {
     Def<Rectangle2d> res;
@@ -2369,65 +2378,117 @@ Def<Rectangle2d> maxRectangleInConvexPolygonANR2 ( const Spin2d & spin, CCArrRef
     Vector2d ax, ay;
     (~spin).getReper ( ax, ay );
     double x1, x2, y1, y2;
-    x1 = x2 = outer[0].x;
-    y1 = y2 = outer[0].y;
+    x1 = x2 = outer[0] * ax;
+    y1 = y2 = outer[0] * ay;
     for ( j = 1; j < nv; ++j )
     {
-        const Vector2d & v = outer[j];
-        if ( x1 > v.x ) x1 = v.x; else
-        if ( x2 < v.x ) x2 = v.x;
-        if ( y1 > v.y ) y1 = v.y; else
-        if ( y2 < v.y ) y2 = v.y;
+        const double x = outer[j] * ax;
+        const double y = outer[j] * ay;
+        if ( x1 > x ) x1 = x; else
+        if ( x2 < x ) x2 = x;
+        if ( y1 > y ) y1 = y; else
+        if ( y2 < y ) y2 = y;
+    }
+    const double dx = x2 - x1;
+    const double dy = y2 - y1;
+// Конус допустимых значений
+    const nat N = 4;
+    const nat NT = 7;
+    LPCone<N> cone[NT];
+    {
+        Double<N> * con = cone[0].arr;
+        Double<N> & dn = con[0];
+        dn.init ( dx, dy, x2, y2 );
+        for ( l = 1; l <= N; ++l )
+        {
+            con[l].fill(0);
+            (&con[l].d0)[l-1] = -1;
+        }
     }
 // Вычисление ограничений
-    const nat N = 4;
-    DynArray<OptiFacet<N> > cor ( nv + 4 );
-    MaxDynHeap<SortItem<double, OptiFacet<N>*> > heap;
+    DynArray<Double<N+1> > cor ( nv + 4 );
     for ( l = 0; l < nv; ++l )
     {
         const Line2d & p = line[l];
-        OptiFacet<N> & fa = cor[l];
-        Double<N+1> & c = fa.plane;
+        Double<N+1> & c = cor[l];
         c.d0 = fabs ( p.norm * ax );
         c.d1 = fabs ( p.norm * ay );
         c.d2 = p.norm.x;
         c.d3 = p.norm.y;
         c.d4 = p.dist;
-        fa.num = 0;
     }
-    Double<N> dn;
-    dn.init ( x2 - x1, y2 - y1, x2, y2 );
-    const double q = dn.d0 * dn.d1;
-    for ( i = 0; i < 4; ++i )
     {
-        OptiFacet<N> & fa = cor[i+nv];
-        fa.vert = dn;
-        fa.plane.init ( 1, 0, 0, 0, -(&dn.d0)[i] );
-        for ( l = 0; l < 4; ++l ) fa.iarr[l] = nv + (l+i)%4;
-        fa.num = 4;
-        fa.hidx = i;
-        heap << SortItem<double, OptiFacet<N>*> ( q, &fa );
+        const Double<N> & dn = cone[0].arr[0];
+        cor[ nv ].init ( 1, 0, 0, 0, -dn.d0 );
+        cor[nv+1].init ( 0, 1, 0, 0, -dn.d1 );
+        cor[nv+2].init ( 0, 0, 1, 0, -dn.d2 );
+        cor[nv+3].init ( 0, 0, 0, 1, -dn.d3 );
     }
-    const double eps = 1e-6 * ( dn.d0 + dn.d1 );
-    for ( i = 0; i < 1000; ++i )
+    MaxHeap<SortItem<double,nat> > heap ( NT );
+    const double q = dx * dy;
+    for ( l = 0; l < NT; ++l )
     {
-        SortItem<double, OptiFacet<N> *> * si = heap[0];
-        OptiFacet<N> * facet = si->tail;
-        Double<N> & vert = facet->vert;
-        nat ml = 0;
-        double max = cor[0].plane % vert;
-        for ( l = 1; l < nv; ++l )
+        heap << SortItem<double,nat> ( q, l );
+    }
+    const double eps = 1e-6 * ( dx + dy );
+    for ( nat k = 0; k < 1000; ++k )
+    {
+        Double<N> * con = cone[heap[0]->tail].arr;
+        Double<N> & dn = con[0];
+        nat im = 0;
+        double max = cor[0] % dn;
+        for ( i = 1; i < nv; ++i )
         {
-            const double t = cor[l].plane % vert;
-            if ( max < t ) max = t, ml = l;
+            const double t = cor[i] % dn;
+            if ( max < t ) max = t, im = i;
         }
         if ( max < eps )
         {
+            res.a = dn.d0;
+            res.b = dn.d1;
+            res.o.x = dn.d2;
+            res.o.y = dn.d3;
+            res.isDef = true;
             break;
         }
-        for ( l = 1; l < facet->num; ++l )
+        const double dist = max;
+        const Double<N> & norm = ( const Double<N> & ) cor[im];
+        const double lvl = -1e-8 * sqrt ( norm * norm );
+        nat ib = 0;
+        double sm = 0; // для оптимизатора
+        for ( i = 1; i <= N; ++i )
         {
-            //
+            const Double<N> & v = con[i];
+            double t = norm * v;
+            if ( t > lvl ) continue;
+            t = -1./ t;
+            const double c = dist * t;
+            const double x = dn.d0 + c * v.d0; 
+            const double y = dn.d1 + c * v.d1; 
+            if ( !ib )
+            {
+                max = x * y;
+                ib = i;
+                sm = t;
+            }
+            else
+            {
+                const double s = x * y;
+                if ( max < s ) max = s, ib = i, sm = t;
+            }
+        }
+        if ( !ib )
+        {
+            return res;
+        }
+        const Double<N> & v = con[ib];
+        dn += v * ( dist * sm );
+        for ( i = 1; i <= N; ++i )
+        {
+            if ( i == ib ) continue;
+            Double<N> & ai = con[i];
+            ai += v * ( ( norm * ai ) * sm );
+            ai *= ( 1./ sqrt ( ai * ai ) );
         }
     }
     return res;
@@ -2438,11 +2499,20 @@ void maxRectangleInConvexPolygonANR_test()
     Suite<Vector2d> vert ( 7, 7 );
     randConvexPolygon ( vert );
     drawPolygon ( vert, 0, 1, 1 );
- //   Def<Rectangle2d> fig = maxRectangleInConvexPolygonANR ( vert );
-    Def<Rhombus2d> fig = maxRhombusInConvexPolygonANR ( vert );
+    Def<Rectangle2d> fig = maxRectangleInConvexPolygonANR ( vert );
+ //   Def<Rhombus2d> fig = maxRhombusInConvexPolygonANR ( vert );
     if ( fig.isDef )
     {
-        draw ( fig, 1, 1, 0 );
+        draw ( fig, 1, 0, 0 );
+    }
+    else
+    {
+        display << "err" << NL;
+    }
+    Def<Rectangle2d> fig2 = maxRectangleInConvexPolygonANR2 ( Spin2d(), vert );
+    if ( fig2.isDef )
+    {
+        draw ( fig2, 1, 1, 0 );
     }
     else
     {
@@ -2476,7 +2546,7 @@ void opti2d_test ()
 //    maxCircle_correct_test();
 //    maxCircle_time_test();
 //    maxCircleInPolygon_test4();
-//    maxPolygonInConvexPolygon_test();
+    maxAffinPolygonInConvexPolygon_test();
 //    maxConvexPolygonInPolygon_test3();
 //    minConvexPolygonDiameter_test2();
 //    minCircleAroundPoints_test();
@@ -2486,6 +2556,6 @@ void opti2d_test ()
 //    minNgonAroundPoints_test1 ();
 //    maxNgonInConvexPolygon_test1 ();
 //    minEquianglarPolygonAroundPolygon_test ();
-    maxRectangleInConvexPolygonANR_test();
+//    maxRectangleInConvexPolygonANR_test();
     endNewList ();
 }

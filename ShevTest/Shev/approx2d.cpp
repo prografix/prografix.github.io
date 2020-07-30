@@ -347,19 +347,19 @@ Line2d getLineU ( CCArrRef<Vector2d> & point, double & r )
 //      Робастный метод аппроксимации набора точек прямой
 //      Заполняет массив весов (mass) значениями от 0 до 1
 //
-//************************* 03.12.2016 ******************************//
+//************************* 11.12.2019 ******************************//
 
-template<> inline void approx2 ( CArrRef<Vector2d> arr, Def<Line2d> & res )
+template<> inline void approx2 ( CCArrRef<Vector2d> & arr, Def<Line2d> & res )
 {
     res = getLine2 ( arr );
 }
 
-template<> inline void approx2 ( CArrRef<Vector2d> arr, ArrRef<double> mass, Def<Line2d> & res )
+template<> inline void approx2 ( CCArrRef<Vector2d> & arr, ArrRef<double> & mass, Def<Line2d> & res )
 {
     res = getLine2 ( arr, mass );
 }
 
-Def<Line2d> getLineR ( CArrRef<Vector2d> arr, ArrRef<double> mass )
+Def<Line2d> getLineR ( CCArrRef<Vector2d> & arr, ArrRef<double> & mass )
 {
     Def<Line2d> res;
     approxR ( arr, mass, res );
@@ -1162,19 +1162,19 @@ Def<Vector2d> getNearPointU ( CArrRef<Line2d> line )
 //    Робастный метод вычисления ближайшей точки к заданным прямым
 //    Заполняет массив весов (mass) значениями от 0 до 1
 //
-//************************* 03.12.2016 ******************************//
+//************************* 11.12.2019 ******************************//
 
-template<> inline void approx2 ( CArrRef<Line2d> arr, Def<Vector2d> & res )
+template<> inline void approx2 ( CCArrRef<Line2d> & arr, Def<Vector2d> & res )
 {
     res = getNearPoint2 ( arr );
 }
 
-template<> inline void approx2 ( CArrRef<Line2d> arr, ArrRef<double> mass, Def<Vector2d> & res )
+template<> inline void approx2 ( CCArrRef<Line2d> & arr, ArrRef<double> & mass, Def<Vector2d> & res )
 {
     res = getNearPoint2 ( arr, mass );
 }
 
-Def<Vector2d> getNearPointR ( CArrRef<Line2d> line, ArrRef<double> mass )
+Def<Vector2d> getNearPointR ( CCArrRef<Line2d> & line, ArrRef<double> & mass )
 {
     Def<Vector2d> res;
     approxR ( line, mass, res );

@@ -42,6 +42,14 @@
     }
 */
 
+inline 
+void _swap ( SortItem<double, SortItemPtr<nat> > & p1, SortItem<double, SortItemPtr<nat> > & p2 )
+{
+    _swap ( p1.head, p2.head );
+    _swap ( p1.tail, p2.tail );
+    _swap ( p1.tail.ptr->tail, p2.tail.ptr->tail );
+}
+
 namespace
 {
 
@@ -70,16 +78,17 @@ void heap_test1()
     const nat nn = 17;
     for ( nat n = nn; n <= nn; ++n )
     {
+		nat j;
         //for ( nat i = 1; i <= n; ++i )
         {
             MaxHeap<nat> heap ( nn );
-            for ( nat j = 1; j <= n; ++j )
+            for ( j = 1; j <= n; ++j )
             {
                 heap << j;
                 if ( ! testMaxHeap ( heap ) )
                     display << "error" << NL;
             }
-            for ( nat j = 1; j <= n; j += 2 )
+            for ( j = 1; j <= n; j += 2 )
             {
                 nat * p = heap[j];
                 if ( ! p ) continue;
@@ -89,7 +98,7 @@ void heap_test1()
                 if ( ! testMaxHeap ( heap ) )
                     display << "error" << NL;
             }
-            for ( nat j = 1; j <= n; ++j )
+            for ( j = 1; j <= n; ++j )
             {
                 nat k = 0;
                 if ( heap >> k )
@@ -115,14 +124,12 @@ template <class T>  void MaxHeapAndTree_test()
                 if ( ! heap.add ( j, j ) )
                    display << "error" << NL;
             }
-            checkMHAT ( heap );
-            for ( nat j = 1; j <= n; j += 2 )
+            for ( j = 1; j <= n; j += 2 )
             {
                 if ( ! heap.del ( j ) )
                     display << "error" << NL;
             }
-            checkMHAT ( heap );
-            for ( nat j = 1; j <= n; ++j )
+            for ( j = 1; j <= n; ++j )
             {
                 const T * k = heap.maxItem();
                 if ( k )
@@ -140,7 +147,7 @@ template <class T>  void MaxHeapAndTree_test()
 
 void tree_test()
 {
-    MaxHeapAndTree_test<nat>();
-//    tree_test1();
+//    MaxHeapAndTree_test<nat>();
+    tree_test1();
 //    heap_test1();
 }

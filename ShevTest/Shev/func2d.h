@@ -128,7 +128,7 @@ double maxDiameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, double an
 //
 //**************************** 25.09.2010 *********************************//
 
-double area ( CArrRef<Vector2d> vert );
+double area ( CCArrRef<Vector2d> & vert );
 
 
 //*************************************************************************//
@@ -137,7 +137,7 @@ double area ( CArrRef<Vector2d> vert );
 //
 //**************************** 25.09.2010 *********************************//
 
-double perimeter ( CArrRef<Vector2d> vert );
+double perimeter ( CCArrRef<Vector2d> & vert );
 
 
 //**************************** 14.08.2006 *********************************//
@@ -255,14 +255,15 @@ SuiteRef<Vector2d> & convexMN ( SuiteRef<Vector2d> & point );
 //      Выпуклая оболочка вершин многоугольника за время O ( n ).
 //      Обход вершин против часовой стрелки.
 //      vert и res должны быть разными массивами.
+//      Возвращается false, если площадь многоугольника меньше или равна 0.
 //
-//**************************** 03.08.2011 *********************************//
+//**************************** 12.06.2020 *********************************//
 
-SuiteRef<nat> & convexPolygon ( CArrRef<Vector2d> vert, SuiteRef<nat> & index );
+bool convexPolygon ( CCArrRef<Vector2d> & vert, SuiteRef<nat> & index );
 
-DynArrRef<Vector2d> & convexPolygon ( CArrRef<Vector2d> vert, DynArrRef<Vector2d> & res );
+bool convexPolygon ( CCArrRef<Vector2d> & vert, DynArrRef<Vector2d> & res );
 
-SuiteRef<Vector2d> & convexPolygon ( SuiteRef<Vector2d> & vert );
+bool convexPolygon ( SuiteRef<Vector2d> & vert );
 
 
 //**************************** 23.08.2003 *********************************//

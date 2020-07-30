@@ -2,6 +2,8 @@
 #pragma once
 
 #include "ShevArray.h"
+#include "Vector2d.h"
+#include "Matrix.h"
 
 //********************** 16.10.2004 *********************************//
 //
@@ -27,13 +29,13 @@ bool apprLSS_O ( nat n, CArrRef<double> x, CArrRef<double> y, CArrRef<double> w,
 //      Робастный метод аппроксимации.
 //      Заполняет массив весов (mass) значениями от 0 до 1.
 //
-//************************* 03.12.2016 ******************************//
+//************************* 11.12.2019 ******************************//
 
-template<class In, class Out> void approx2 ( CArrRef<In> arr, Def<Out> & res );
+template<class In, class Out> void approx2 ( CCArrRef<In> & arr, Def<Out> & res );
 
-template<class In, class Out> void approx2 ( CArrRef<In> arr, ArrRef<double> mass, Def<Out> & res );
+template<class In, class Out> void approx2 ( CCArrRef<In> & arr, ArrRef<double> & mass, Def<Out> & res );
 
-template<class In, class Out> void approxR ( CArrRef<In> arr, ArrRef<double> mass, Def<Out> & res )
+template<class In, class Out> void approxR ( CCArrRef<In> & arr, ArrRef<double> & mass, Def<Out> & res )
 {
     approx2 ( arr, res );
     if ( ! res.isDef ) return;
@@ -69,3 +71,77 @@ template<class In, class Out> void approxR ( CArrRef<In> arr, ArrRef<double> mas
         }
     }
 }
+
+//************************* 24.12.2019 ******************************//
+//
+//              Аппроксимация периодических функций.
+//
+//************************* 30.12.2019 ******************************//
+
+class HarmAppr
+{
+protected:
+    nat ks;
+    DynArray<double> coef;
+    HarmAppr () {}
+public:
+    HarmAppr ( CCArrRef<Vector2d> & func, nat nr, nat k = 1 );
+
+    double operator () ( double a ) const;
+};
+
+//************************* 24.12.2019 ******************************//
+//
+//         Аппроксимация периодических функций с модификацией.
+//
+//************************* 30.12.2019 ******************************//
+
+class HarmApprMod : public HarmAppr
+{
+    HMatrix<double> mat;
+public:
+    HarmApprMod ( CCArrRef<Vector2d> & func, nat nr, nat k = 1 );
+
+    void rebuild ( ArrRef<Vector2d> & func, nat iy, double y );
+};
+
+//************************* 03.01.2020 ******************************//
+//
+//              Аппроксимация периодических функций.
+//                  Метод наименьших квадратов.
+//
+//************************* 03.01.2020 ******************************//
+
+class HarmAppr2 : public HarmAppr
+{
+    nat rank;
+public:
+    HarmAppr2 ( CCArrRef<Vector2d> & func, CCArrRef<bool> & w, nat nr, nat k = 1 )
+    {
+        rebuild ( func, w, nr, k );
+    }
+
+    bool rebuild ( CCArrRef<Vector2d> & func, CCArrRef<bool> & w, nat nr, nat k );
+    bool rebuild ( CCArrRef<Vector2d> & func, CCArrRef<bool> & w, nat nr )
+    {
+        return rebuild ( func, w, rank = nr, ks );
+    }
+    bool rebuild ( CCArrRef<Vector2d> & func, CCArrRef<bool> & w )
+    {
+        return rebuild ( func, w, rank, ks );
+    }
+};
+
+//************************* 05.02.2020 ******************************//
+//
+//              Аппроксимация периодических функций.
+//                      Минимум 1-нормы.
+//
+//************************* 05.02.2020 ******************************//
+
+class HarmAppr1 : public HarmAppr
+{
+    nat rank;
+public:
+    HarmAppr1 ( CCArrRef<Vector2d> & func, nat nr, nat k = 1 );
+};

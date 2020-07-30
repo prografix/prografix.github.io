@@ -34,7 +34,7 @@ bool maxConvexPolyhedronInPolyhedronNR ( const Polyhedron & inner, const Polyhed
                                          CArrRef<Vector3d> point, Conform3d & res );
 Def<Conform3d> maxPolyhedronInConvexPolyhedronNR ( const Vector4d & v0, double eps, CArrRef<Plane4d> plane );
 Def<Ellipse3d> maxEllipseInConvexPolyhedronA ( const Spin3d & spin, const Polyhedron & poly );
-/*
+
 inline 
 void _swap ( SortItem<double, SortItemPtr<SortItem<Set2<const Vertex<9> *>, Double<9> > > > & p1, 
              SortItem<double, SortItemPtr<SortItem<Set2<const Vertex<9> *>, Double<9> > > > & p2 )
@@ -43,7 +43,7 @@ void _swap ( SortItem<double, SortItemPtr<SortItem<Set2<const Vertex<9> *>, Doub
     _swap ( p1.tail, p2.tail );
     _swap ( p1.tail.ptr->tail, p2.tail.ptr->tail );
 }
-*/
+
 #include "../Shev/approx2d.h"
 #include "../Shev/func1t.h"
 
@@ -1672,7 +1672,7 @@ Def<Ellipsoid3d> maxEllipsoidInConvexPolyhedronV ( const Polyhedron & poly )
         // »щем наиболее близкую плоскость
         nat im;
         double max = -1;
-        for ( nat i = 0; i < plane.size(); ++i )
+        for ( i = 0; i < plane.size(); ++i )
         {
             const double t = distance ( aff, plane[i] );
             if ( max < t ) max = t, im = i;
@@ -2845,6 +2845,7 @@ Def<Parallelogram3d> maxParallelogramInConvexPolyhedronAFN ( const Polyhedron & 
 
 void maxParallelogramFN_test ()
 {
+	nat i;
     static PRandPoint3d rand;
     static Polyhedron poly;
     randPolyhedron ( 19, poly );
@@ -2859,7 +2860,7 @@ void maxParallelogramFN_test ()
     Suite<Vector2d> vert2;
     OrthoFunc3to2 func ( plane.norm );
     vert2.inc() = func ( sect[0][0] );
-    for ( nat i = 1; i < sect[0].size(); ++i )
+    for ( i = 1; i < sect[0].size(); ++i )
     {
         Vector2d v = func ( sect[0][i] );
         if ( norm2 ( v - vert2.las() ) > 1e-9 ) vert2.inc() = v;
@@ -2873,13 +2874,14 @@ display << sect[0].size() << vert2.size() << NL;
     OrthoFunc2to3 back ( plane );
     Vector2d vpar[4];
     para.getVerts ( vpar );
-    for ( nat i = 0; i < 4; ++i ) vert[i] = back ( vpar[i] );
+    for ( i = 0; i < 4; ++i ) vert[i] = back ( vpar[i] );
     drawPolygon ( vert, 1, 0.7f, 0.3f );
 display << "time =" << t1 - t0 << fig1.getArea() - para.getArea() << NL;
 }
 
 void maxParallelogramFN_test2 ()
 {
+	nat i;
     static PRandPoint3d rand;
     static Polyhedron poly;
     for ( nat k = 0; k < 750; ++k )
@@ -2898,7 +2900,7 @@ void maxParallelogramFN_test2 ()
         Suite<Vector2d> vert2;
         OrthoFunc3to2 func ( plane.norm );
         vert2.inc() = func ( sect[0][0] );
-        for ( nat i = 1; i < sect[0].size(); ++i )
+        for ( i = 1; i < sect[0].size(); ++i )
         {
             Vector2d v = func ( sect[0][i] );
             if ( norm2 ( v - vert2.las() ) > 1e-9 ) vert2.inc() = v;
@@ -2908,7 +2910,7 @@ void maxParallelogramFN_test2 ()
 OrthoFunc2to3 back ( plane );
 Vector2d vpar[4];
 para.getVerts ( vpar );
-for ( nat i = 0; i < 4; ++i ) vert[i] = back ( vpar[i] );
+for ( i = 0; i < 4; ++i ) vert[i] = back ( vpar[i] );
 //check ( poly, vert() );
         if ( fabs ( fig1.getArea() - para.getArea() ) > 1e-4 )
             display << k << "time =" << t1 - t0 << fig1.getArea() << para.getArea() << 
@@ -2949,6 +2951,7 @@ display << "time =" << t1 - t0 << NL;
 
 void maxParallelogram_test ()
 {
+	nat i;
     static PRandPoint3d rand;
     static Polyhedron poly;
     randPolyhedron ( 19, poly );
@@ -2964,7 +2967,7 @@ void maxParallelogram_test ()
     Suite<Vector2d> vert2;
     OrthoFunc3to2 func ( plane.norm );
     vert2.inc() = func ( sect[0][0] );
-    for ( nat i = 1; i < sect[0].size(); ++i )
+    for ( i = 1; i < sect[0].size(); ++i )
     {
         Vector2d v = func ( sect[0][i] );
         if ( norm2 ( v - vert2.las() ) > 1e-9 ) vert2.inc() = v;
@@ -2978,7 +2981,7 @@ void maxParallelogram_test ()
     OrthoFunc2to3 back ( plane );
     Vector2d vpar[4];
     para.getVerts ( vpar );
-    for ( nat i = 0; i < 4; ++i ) vert[i] = back ( vpar[i] );
+    for ( i = 0; i < 4; ++i ) vert[i] = back ( vpar[i] );
     drawPolygon ( vert, 1, 0.7f, 0.3f );
 //display << "time =" << t1 - t0 << fig1.getArea() << para.getArea() << NL;
 display << "time =" << t1 - t0 << fig1.getPerimeter() << para.getPerimeter() << NL;
@@ -3174,18 +3177,18 @@ void maxPolygon_test()
 {
     static PRandPoint3d rand;
     static Polyhedron poly;
-    for ( nat i = 0; i < 8; ++i ) randPolyhedron ( 4, poly );
+    for ( nat i = 0; i < 1; ++i ) randPolyhedron ( 11, poly );
     double t0 = timeInSec();
-//    Def<Parallelogram3d> fig1 = maxParallelogramInConvexPolyhedronP ( poly );
-    Def<Ellipse3d> fig1 = maxEllipseInTetrahedronA ( poly.vertex[0], poly.vertex[1], poly.vertex[2], poly.vertex[3] );
+    Def<Parallelogram3d> fig1 = maxParallelogramInConvexPolyhedronA ( poly );
+//    Def<Ellipse3d> fig1 = maxEllipseInTetrahedronA ( poly.vertex[0], poly.vertex[1], poly.vertex[2], poly.vertex[3] );
     if ( ! fig1.isDef ) return;
     double t1 = timeInSec();
 //    Def<Parallelogram3d> fig2 = maxParallelogramInConvexPolyhedronP2 ( poly );
 //    if ( ! fig2.isDef ) return;
     double t2 = timeInSec();
     draw ( poly, 0, 1, 1, 1, VM_WIRE );
-    draw ( fig1, 0.3f, 0.3f, 1, 1, VM_WIRE );
-//    draw ( fig2, 1, 0.3f, 0.3f, 1, VM_WIRE );
+//    draw ( fig1, 0.3f, 0.3f, 1, 1, VM_WIRE );
+    draw ( fig1, 1, 0.3f, 0.3f, 1, VM_WIRE );
 display << "time =" << t1 - t0 << NL;
 }
 
@@ -3507,7 +3510,7 @@ bool findMax ( CCArrRef<Double<7> > & cor, const Double<6> & func, double eps, D
             return true;
         }
         const double dist = max;
-        const Double<6> & norm = ( const Double<6> & ) cor[im];
+        const Double<N> & norm = ( const Double<N> & ) cor[im];
         const double lvl = -1e-8 * sqrt ( norm * norm );
         nat ib = 0;
         double sm = 0; // дл€ оптимизатора
@@ -3994,7 +3997,7 @@ void opti3d_test ()
 //    minTetrahedronAroundPoints_test1();
 //    minEllipsoid_test();
 //    maxEllipsoidInConvexPolyhedron_test();
-    maxCuboidInConvexPolyhedron_test();
+//    maxCuboidInConvexPolyhedron_test();
 //    maxPolyhedronInConvexPolyhedron_test();
 //    maxConvexPolyhedronInPolyhedronNR_test();
 //    maxPolyhedronInConvexPolyhedron1R_test();
@@ -4005,7 +4008,7 @@ void opti3d_test ()
 //    minSpherePlane_test();
 //    minSphereLine_test();
 //    maxCylinder_test();
-//   maxPolygon_test();
+   maxPolygon_test();
 //    proba ();
     endNewList();
 }

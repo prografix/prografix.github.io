@@ -1173,19 +1173,19 @@ Def<Vector3d> getNearPointU ( CArrRef<Plane3d> plane )
 //    Робастный метод вычисления ближайшей точки к заданным плоскостям
 //    Заполняет массив весов (mass) значениями от 0 до 1
 //
-//************************* 03.12.2016 ******************************//
+//************************* 11.12.2019 ******************************//
 
-template<> inline void approx2 ( CArrRef<Plane3d> arr, Def<Vector3d> & res )
+template<> inline void approx2 ( CCArrRef<Plane3d> & arr, Def<Vector3d> & res )
 {
     res = getNearPoint2 ( arr );
 }
 
-template<> inline void approx2 ( CArrRef<Plane3d> arr, ArrRef<double> mass, Def<Vector3d> & res )
+template<> inline void approx2 ( CCArrRef<Plane3d> & arr, ArrRef<double> & mass, Def<Vector3d> & res )
 {
     res = getNearPoint2 ( arr, mass );
 }
 
-Def<Vector3d> getNearPointR ( CArrRef<Plane3d> plane, ArrRef<double> mass )
+Def<Vector3d> getNearPointR ( CCArrRef<Plane3d> & plane, ArrRef<double> & mass )
 {
     Def<Vector3d> res;
     approxR ( plane, mass, res );

@@ -10,14 +10,14 @@
 //**************************** 15.09.2013 *********************************//
 
 template <class Scalar, class Vector> 
-Scalar tempArea2 ( CArrRef<Vector> vert )
+Scalar tempArea2 ( CCArrRef<Vector> & vert )
 {
     if ( vert.size() < 3 ) return 0;
     Scalar a = 0;
     Vector v1 = vert[1] - vert[0];
     for ( nat i = 2; i < vert.size(); ++i )
     {
-        Vector v2 = vert[i] - vert[0];
+        const Vector v2 = vert[i] - vert[0];
         a += v1 % v2;
         v1 = v2;
     }

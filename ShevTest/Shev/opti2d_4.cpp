@@ -36,9 +36,9 @@ bool points2lines ( CCArrRef<Vector2d> & poly, ArrRef<Line2d> & line )
 
 bool points2lines ( CCArrRef<Vector2d> & poly, Conform2d & conf, ArrRef<Line2d> & line )
 {
+    if ( poly.size() < 3 ) return false;
 // Определение габаритов многоугольника
     const Def<Segment2d> seg = dimensions ( poly );
-    if ( ! seg.isDef ) return false;
 // Проверка на малость площади по сравнению с габаритами многоугольника
     if ( area ( poly ) < 1e-9 * ( seg.b.x - seg.a.x ) * ( seg.b.y - seg.a.y ) ) return false;
 // Преобразование вершин многоугольника к стандартному виду
@@ -394,6 +394,134 @@ Def<Conform2d> maxPolygonInConvexPolygonNR ( CCArrRef<Vector2d> & inner, CCArrRe
             ai *= ( 1./ sqrt ( ai * ai ) );
         }
     }
+    return res;
+}
+
+//**************************** 25.04.2020 *********************************//
+//
+// Максимальный искажённый многоугольник вписанный в выпуклый многоугольник
+//
+//**************************** 25.04.2020 *********************************//
+
+static bool area2 ( const WireModel<6> & model, Double<6> & best )
+{
+// Поиск максимального решения на вершинах и рёбрах
+    Show< Vertex<6> > show ( model.vlist );
+    double max = 0.;
+    if ( show.top() )
+    do
+    {
+        const Vertex<6> * p = show.cur();
+        const Double<6> & pc = p->coor;
+        const double t = pc.d0 * pc.d4 - pc.d1 * pc.d3;
+        if ( max < t ) max = t, best = pc;
+        for ( nat k = 0; k < 6; ++k )
+        {
+            const Vertex<6> * v = p->vertex[k];
+            if ( v < p ) continue;
+            const Double<6> & vc = v->coor;
+            const double a0 = vc.d0 - pc.d0;
+            const double a1 = vc.d1 - pc.d1;
+            const double a3 = vc.d3 - pc.d3;
+            const double a4 = vc.d4 - pc.d4;
+            const double a = a0 * a4 - a1 * a3;
+            if ( a == 0 ) continue;
+            const double t = 0.5 * ( a1 * pc.d3 + a3 * pc.d1 - a0 * pc.d4 - a4 * pc.d0 ) / a;
+            if ( t >= 0 && t <= 1 )
+            {
+                const double e0 = pc.d0 + a0 * t;
+                const double e1 = pc.d1 + a1 * t;
+                const double e3 = pc.d3 + a3 * t;
+                const double e4 = pc.d4 + a4 * t;
+                const double p = e0 * e4 - e1 * e3;
+                if ( p > max )
+                {
+                    max = p;
+                    const double s = 1 - t;
+                    best.d0 = e0;
+                    best.d1 = e1;
+                    best.d2 = pc.d2 * s + vc.d2 * t;
+                    best.d3 = e3;
+                    best.d4 = e4;
+                    best.d5 = pc.d5 * s + vc.d5 * t;
+                }
+            }
+        }
+    }
+    while ( show.next() );
+    return max > 0;
+}
+
+Def<Affin2d> maxAffinPolygonInConvexPolygon ( CCArrRef<Vector2d> & inner, CCArrRef<Vector2d> & outer,
+                                              bool (*func) ( const WireModel<6> &, Double<6> & ) )
+{
+// Получение границ многоугольника в виде прямых линий
+    Conform2d conf2;
+    DynArray<Line2d> line ( outer.size() );
+    if ( ! points2lines ( outer, conf2, line ) ) return Def<Affin2d>();
+// Инициализация области допустимых преобразований
+    List< Vertex<6> > stor;
+    WireModel<6> model;
+    model.simplex ( 2*(6+1), stor );
+    Double<6> dn;
+    dn.fill ( 2 );
+    dn.d0 = dn.d1 = 0;
+    model.vlist -= dn;
+// Поиск оптимального преобразования
+    for ( nat i = 0; i < 1000; ++i )
+    {
+// Поиск максимального решения
+        Double<6> best;
+        if ( ! func ( model, best ) ) return Def<Affin2d>();
+// Поиск максимального нарушения ограничений для выбранного решения
+        nat km;
+        Vector2d pm;
+        double max = 0.;
+        for ( nat j = 0; j < inner.size(); ++j )
+        {
+            const Vector2d & p = inner[j];
+            const Vector2d p1 ( best.d0*p.x + best.d1*p.y + best.d2,
+                                best.d3*p.x + best.d4*p.y + best.d5 );
+            for ( nat k = 0; k < line.size(); ++k )
+            {
+                const double t = line[k] % p1;
+                if ( max < t ) max = t, pm = p, km = k;
+            }
+        }
+// Если нарушение мало, то завершение программы
+        if ( max < 1e-5 )
+        {
+            const Affin2d at ( Vector2d ( best.d0, best.d1 ), 
+                               Vector2d ( best.d3, best.d4 ),
+                               Vector2d ( best.d2, best.d5 ) );
+            return Affin2d ( ~conf2 ) * at;
+        }
+// Применение ограничения к области допустимых преобразований
+        const double nx = line[km].norm.x;
+        const double ny = line[km].norm.y;
+        Double<7> plane;
+        plane.d0 = nx * pm.x;
+        plane.d1 = nx * pm.y;
+        plane.d2 = nx;
+        plane.d3 = ny * pm.x;
+        plane.d4 = ny * pm.y;
+        plane.d5 = ny;
+        plane.d6 = line[km].dist;
+        model.cut ( plane, stor );
+    }
+    return Def<Affin2d>();
+}
+
+Def<Affin2d> maxAffinPolygonInConvexPolygon ( CCArrRef<Vector2d> & inner, CCArrRef<Vector2d> & outer )
+{
+    if ( inner.size() < 3 || outer.size() < 3 ) return Def<Affin2d>();
+// Приведение входного многоугольника к стандартному виду
+    DynArray<Vector2d> points ( inner );
+    const Def<Conform2d> conf = setStandardPosition ( points );
+    if ( ! conf.isDef ) return Def<Affin2d>();
+// Поиск оптимального преобразования
+    Def<Affin2d> res = maxAffinPolygonInConvexPolygon ( points, outer, area2 );
+    if ( res.isDef ) res = res * Affin2d ( conf );
     return res;
 }
 
@@ -762,22 +890,39 @@ public:
 
 class MaxRectangleInPolygon : public MaxFigureInPolygon
 {
+    bool fixX;
 public:
 
     MaxRectangleInPolygon ( CArrRef<Vector2d> p,
-                            Def<Conform2d> (*f) ( CCArrRef<Vector2d> &, CCArrRef<Vector2d> & ) ) : 
-                            MaxFigureInPolygon ( p, f )
+                            Def<Conform2d> (*f) ( CCArrRef<Vector2d> &, CCArrRef<Vector2d> & ), bool fx = true ) : 
+                            MaxFigureInPolygon ( p, f ), fixX ( fx )
     {
-        vert[0].x = vert[3].x = +1;
-        vert[1].x = vert[2].x = -1;
+        if ( fixX )
+        {
+            vert[0].x = vert[3].x = +1;
+            vert[1].x = vert[2].x = -1;
+        }
+        else
+        {
+            vert[0].y = vert[1].y = +1;
+            vert[2].y = vert[3].y = -1;
+        }
     }
-    virtual double operator () ( double y ) const
+    virtual double operator () ( double t ) const
     {
-        vert[0].y = vert[1].y = +y;
-        vert[2].y = vert[3].y = -y;
+        if ( fixX )
+        {
+            vert[0].y = vert[1].y = +t;
+            vert[2].y = vert[3].y = -t;
+        }
+        else
+        {
+            vert[0].x = vert[3].x = +t;
+            vert[1].x = vert[2].x = -t;
+        }
         Def<Conform2d> c = func ( vert, poly );
         if ( ! c.isDef ) return 0;
-        const double a = c.magn * c.magn * y;
+        const double a = c.magn * c.magn * t;
         if ( max < a ) max = a, conf = c;
         return a;
     }
@@ -787,8 +932,16 @@ public:
         const double y = findMax ( *this );
         if ( conf.isDef )
         {
-            res.a = conf.magn;
-            res.b = conf.magn * y;
+            if ( fixX )
+            {
+                res.a = conf.magn;
+                res.b = conf.magn * y;
+            }
+            else
+            {
+                res.a = conf.magn * y;
+                res.b = conf.magn;
+            }
             res.spin = conf.spin;
             res.o = conf.trans;
             res.isDef = true;
@@ -893,11 +1046,15 @@ Def<Rectangle2d> maxRectangleInPolygonA ( CCArrRef<Vector2d> & poly )
 //           Максимальный по площади прямоугольник вписанный
 //              в невыпуклый многоугольник без вращения
 //
-//**************************** 02.10.2018 *********************************//
+//**************************** 30.11.2019 *********************************//
 
 Def<Rectangle2d> maxRectangleInPolygonANR ( CCArrRef<Vector2d> & poly )
 {
-    return MaxRectangleInPolygon ( poly, maxConvexPolygonInPolygonNR ).run();
+    Def<Rectangle2d> fx = MaxRectangleInPolygon ( poly, maxConvexPolygonInPolygonNR, true ).run();
+    const double ax = fx.isDef ? fx.getArea() : 0.;
+    Def<Rectangle2d> fy = MaxRectangleInPolygon ( poly, maxConvexPolygonInPolygonNR, false ).run();
+    const double ay = fy.isDef ? fy.getArea() : 0.;
+    return ax > ay ? fx : fy;
 }
 
 //**************************** 24.04.2009 *********************************//
@@ -992,55 +1149,22 @@ Def<Triangle2d> maxTriangleInConvexPolygonA ( CCArrRef<Vector2d> & poly )
 //
 //      Максимальный параллелограмм вписанный в выпуклый многоугольник
 //
-//**************************** 12.02.2018 *********************************//
+//**************************** 25.04.2020 *********************************//
 
-static bool area2 ( const WireModel<6> & model, Double<6> & best )
+Def<Parallelogram2d> maxParallelogramInConvexPolygon ( CCArrRef<Vector2d> & poly, bool (*func) ( const WireModel<6> &, Double<6> & ) )
 {
-// Поиск максимального решения на вершинах и рёбрах
-    Show< Vertex<6> > show ( model.vlist );
-    double max = 0.;
-    if ( show.top() )
-    do
-    {
-        const Vertex<6> * p = show.cur();
-        const Double<6> & pc = p->coor;
-        const double t = pc.d0 * pc.d4 - pc.d1 * pc.d3;
-        if ( max < t ) max = t, best = pc;
-        for ( nat k = 0; k < 6; ++k )
-        {
-            const Vertex<6> * v = p->vertex[k];
-            if ( v < p ) continue;
-            const Double<6> & vc = v->coor;
-            const double a0 = vc.d0 - pc.d0;
-            const double a1 = vc.d1 - pc.d1;
-            const double a3 = vc.d3 - pc.d3;
-            const double a4 = vc.d4 - pc.d4;
-            const double a = a0 * a4 - a1 * a3;
-            if ( a == 0 ) continue;
-            const double t = 0.5 * ( a1 * pc.d3 + a3 * pc.d1 - a0 * pc.d4 - a4 * pc.d0 ) / a;
-            if ( t >= 0 && t <= 1 )
-            {
-                const double e0 = pc.d0 + a0 * t;
-                const double e1 = pc.d1 + a1 * t;
-                const double e3 = pc.d3 + a3 * t;
-                const double e4 = pc.d4 + a4 * t;
-                const double p = e0 * e4 - e1 * e3;
-                if ( p > max )
-                {
-                    max = p;
-                    const double s = 1 - t;
-                    best.d0 = e0;
-                    best.d1 = e1;
-                    best.d2 = pc.d2 * s + vc.d2 * t;
-                    best.d3 = e3;
-                    best.d4 = e4;
-                    best.d5 = pc.d5 * s + vc.d5 * t;
-                }
-            }
-        }
-    }
-    while ( show.next() );
-    return max > 0;
+    FixArray<Vector2d, 4> vert;
+    vert[0] = Vector2d ( 0.5,-0.5 );
+    vert[1] = Vector2d ( 0.5, 0.5 );
+    vert[2] = Vector2d (-0.5, 0.5 );
+    vert[3] = Vector2d (-0.5,-0.5 );
+    const Def<Affin2d> at = maxAffinPolygonInConvexPolygon ( vert, poly, func );
+    return at.isDef ? Parallelogram2d ( vert[0] *= at, vert[1] *= at, vert[2] *= at ) : Def<Parallelogram2d>();
+}
+
+Def<Parallelogram2d> maxParallelogramInConvexPolygonA ( CCArrRef<Vector2d> & poly )
+{
+    return maxParallelogramInConvexPolygon ( poly, area2 );
 }
 
 static bool perimeter ( const WireModel<6> & model, Double<6> & best )
@@ -1058,86 +1182,6 @@ static bool perimeter ( const WireModel<6> & model, Double<6> & best )
     }
     while ( show.next() );
     return max > 0;
-}
-
-static
-bool maxPointsInConvexPolygon ( CArrRef<Vector2d> poly1, CCArrRef<Vector2d> & poly2, 
-                                WireModel<6> & model, List< Vertex<6> > & stor,
-                                Affin2d & res, bool (*func) ( const WireModel<6> &, Double<6> & ) )
-{
-// Получение границ многоугольника в виде прямых линий
-    Conform2d conf2;
-    DynArray<Line2d> line ( poly2.size() );
-    if ( ! points2lines ( poly2, conf2, line ) ) return false;
-    for ( nat i = 0; i < 1000; ++i )
-    {
-// Поиск максимального решения
-        Double<6> best;
-        if ( ! func ( model, best ) ) return false;
-// Поиск максимального нарушения ограничений для выбранного решения
-        nat km;
-        Vector2d pm;
-        double max = 0.;
-        for ( nat j = 0; j < poly1.size(); ++j )
-        {
-            const Vector2d & p = poly1[j];
-            const Vector2d p1 ( best.d0*p.x + best.d1*p.y + best.d2,
-                                best.d3*p.x + best.d4*p.y + best.d5 );
-            for ( nat k = 0; k < line.size(); ++k )
-            {
-                const double t = line[k] % p1;
-                if ( max < t ) max = t, pm = p, km = k;
-            }
-        }
-// Если нарушение мало, то завершение программы
-        if ( max < 1e-5 )
-        {
-            const Affin2d at ( Vector2d ( best.d0, best.d1 ), 
-                               Vector2d ( best.d3, best.d4 ),
-                               Vector2d ( best.d2, best.d5 ) );
-            res = Affin2d ( ~conf2 ) * at;
-            return true;
-        }
-// Применение ограничения к области допустимых преобразований
-        const double nx = line[km].norm.x;
-        const double ny = line[km].norm.y;
-        Double<7> plane;
-        plane.d0 = nx * pm.x;
-        plane.d1 = nx * pm.y;
-        plane.d2 = nx;
-        plane.d3 = ny * pm.x;
-        plane.d4 = ny * pm.y;
-        plane.d5 = ny;
-        plane.d6 = line[km].dist;
-        model.cut ( plane, stor );
-    }
-    return false;
-}
-
-Def<Parallelogram2d> maxParallelogramInConvexPolygon ( CCArrRef<Vector2d> & poly, bool (*func) ( const WireModel<6> &, Double<6> & ) )
-{
-// Инициализация области допустимых преобразований
-    List< Vertex<6> > stor;
-    WireModel<6> model;
-    model.simplex ( 2*(6+1), stor );
-    Double<6> dn;
-    dn.fill ( 2 );
-    dn.d0 = dn.d1 = 0;
-    model.vlist -= dn;
-// Поиск оптимального преобразования
-    Affin2d at;
-    FixArray<Vector2d, 4> vert;
-    vert[0] = Vector2d ( 0.5,-0.5 );
-    vert[1] = Vector2d ( 0.5, 0.5 );
-    vert[2] = Vector2d (-0.5, 0.5 );
-    vert[3] = Vector2d (-0.5,-0.5 );
-    if ( ! maxPointsInConvexPolygon ( vert, poly, model, stor, at, func ) ) return Def<Parallelogram2d>();
-    return Parallelogram2d ( vert[0] *= at, vert[1] *= at, vert[2] *= at );
-}
-
-Def<Parallelogram2d> maxParallelogramInConvexPolygonA ( CCArrRef<Vector2d> & poly )
-{
-    return maxParallelogramInConvexPolygon ( poly, area2 );
 }
 
 Def<Parallelogram2d> maxParallelogramInConvexPolygonP ( CCArrRef<Vector2d> & poly )

@@ -218,8 +218,7 @@ void delSides ( Poly3gon<Vector3d, void> & poly3gon )
 void delVerts ( Poly3gon<Vector3d, void> & poly3gon )
 {
     nat i, n = 0;
-    DynArray<nat> index ( poly3gon.vertex.size() );
-    index.fill ( 0 );
+    DynArray<nat> index ( poly3gon.vertex.size(), 0 );
     for ( i = 0; i < poly3gon.side.size(); ++i )
     {
         const Trigon<void> & t = poly3gon.side[i];

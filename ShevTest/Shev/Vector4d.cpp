@@ -84,7 +84,7 @@ Def<Vector4d> getNearPointU ( CCArrRef<Plane4d> & plane )
         data[2][i] = p.norm.x3;
         data[3][i] = p.norm.x4;
     }
-    if ( ! sluGaussRow ( data, 4, nn, index(), nn ) ) return res;
+    if ( ! sluGaussRow ( data, 4, nn, index(), 4, nn ) ) return res;
     double max = 0, summ = 0;
     nat jm = 4;
     for ( j = 4; j < nn; ++j )
@@ -153,7 +153,7 @@ Def<Vector4d> getNearPointU ( CCArrRef<Plane4d> & plane )
         for ( j = 0; j < nRow; ++j ) mat[i][j+nRow] = i == j ? 1 : 0;
     }
     index.resize ( nCol );
-    sluGaussRow ( mat, nRow, nCol, index(), nRow );
+    sluGaussRow ( mat, nRow, nCol, index(), nRow, nRow );
     Double<5> arr[6];
     arr[0].init ( dist, res.x1, res.x2, res.x3, res.x4 );
     for ( i = 0; i < nRow; ++i )

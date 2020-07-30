@@ -28,7 +28,8 @@ void filePYH_test ()
         display << "no load file 1" << NL;
         return;
     }
-    for ( nat i = 955; i < _min ( 956u, poly1.facet.size() ); ++i )
+	nat i;
+    for ( i = 955; i < _min ( 956u, poly1.facet.size() ); ++i )
     {
 //        if ( i != 311 ) continue;
 //        if ( i == 311 ) continue;
@@ -43,5 +44,5 @@ display << i << NL;
 //    draw ( poly1, 0, 1, 1, 1, VM_WIRE );
 //    draw ( poly2, 1, 1, 0, 1, VM_WIRE );
 //    endNewList ();
-    display << "end" << NL;
+    display << "end" << i << NL;
 }

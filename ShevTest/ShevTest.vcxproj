@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
       <Configuration>Debug</Configuration>
@@ -11,22 +11,20 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <SccProjectName>"$/sad/ShevTest", YFCAAAAA</SccProjectName>
-    <SccLocalPath>.</SccLocalPath>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
     <Keyword>MFCProj</Keyword>
-    <ProjectGuid>{7AAFAB60-1804-490A-B78D-40DC3DD4CC62}</ProjectGuid>
-    <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v140</PlatformToolset>
     <UseOfMfc>Dynamic</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>Application</ConfigurationType>
-    <PlatformToolset>v140</PlatformToolset>
     <UseOfMfc>Dynamic</UseOfMfc>
     <CharacterSet>MultiByte</CharacterSet>
   </PropertyGroup>
@@ -46,22 +44,16 @@
     <OutDir>.\Release\</OutDir>
     <IntDir>.\Release\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRules />
-    <CodeAnalysisRuleAssemblies />
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>.\Debug\</OutDir>
     <IntDir>.\Debug\</IntDir>
     <LinkIncremental>true</LinkIncremental>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <CodeAnalysisRules />
-    <CodeAnalysisRuleAssemblies />
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
-      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <InlineFunctionExpansion>OnlyExplicitInline</InlineFunctionExpansion>
       <StringPooling>true</StringPooling>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <Optimization>MaxSpeed</Optimization>
@@ -70,7 +62,8 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\Release\</AssemblerListingLocation>
       <PrecompiledHeaderOutputFile>.\Release\ShevTest.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeader />
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <ObjectFileName>.\Release\</ObjectFileName>
       <ProgramDataBaseFileName>.\Release\</ProgramDataBaseFileName>
     </ClCompile>
@@ -100,7 +93,7 @@
     <ClCompile>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <FunctionLevelLinking>false</FunctionLevelLinking>
       <Optimization>Disabled</Optimization>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
@@ -109,11 +102,11 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\Debug\</AssemblerListingLocation>
       <PrecompiledHeaderOutputFile>.\Debug\ShevTest.pch</PrecompiledHeaderOutputFile>
-      <PrecompiledHeader />
+      <PrecompiledHeader>
+      </PrecompiledHeader>
       <ObjectFileName>.\Debug\</ObjectFileName>
       <ProgramDataBaseFileName>.\Debug\</ProgramDataBaseFileName>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
-      <AdditionalOptions>/FS %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Midl>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -141,22 +134,16 @@
   <ItemGroup>
     <ClCompile Include="DisplayPanel.cpp" />
     <ClCompile Include="draw.cpp" />
-    <ClCompile Include="Extra\BODY2.CPP" />
-    <ClCompile Include="Extra\Body2Func.cpp" />
-    <ClCompile Include="Extra\ExtraBody.cpp" />
-    <ClCompile Include="Extra\ExtraBodyPolyhedron.cpp" />
-    <ClCompile Include="Extra\ex_intersect3d.cpp" />
-    <ClCompile Include="Extra\ex_opti3d.cpp" />
-    <ClCompile Include="Extra\filePYH_Body.cpp" />
-    <ClCompile Include="Extra\filePYH_ExtraBody.cpp" />
-    <ClCompile Include="Extra\KONTUR.CPP" />
-    <ClCompile Include="Extra\maxConvPolyInPolyNR3d.cpp" />
-    <ClCompile Include="Extra\PolyhedronDoctor.cpp" />
-    <ClCompile Include="Extra\TRANS3.CPP" />
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="ShevTest.cpp" />
     <ClCompile Include="ShevTestDoc.cpp" />
     <ClCompile Include="ShevTestView.cpp" />
+    <ClCompile Include="StdAfx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
     <ClCompile Include="Shev\acoder.cpp" />
     <ClCompile Include="Shev\approx.cpp" />
     <ClCompile Include="Shev\approx2d.cpp" />
@@ -208,12 +195,6 @@
     <ClCompile Include="Shev\Vector3d.cpp" />
     <ClCompile Include="Shev\Vector3f.cpp" />
     <ClCompile Include="Shev\Vector4d.cpp" />
-    <ClCompile Include="StdAfx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">stdafx.h</PrecompiledHeaderFile>
-    </ClCompile>
     <ClCompile Include="Test\approx2d_test.cpp" />
     <ClCompile Include="Test\approx3d_test.cpp" />
     <ClCompile Include="Test\approx_test.cpp" />
@@ -222,8 +203,8 @@
     <ClCompile Include="Test\complex_test.cpp" />
     <ClCompile Include="Test\compress_test.cpp" />
     <ClCompile Include="Test\Display.cpp" />
-    <ClCompile Include="Test\filePYH_test.cpp" />
     <ClCompile Include="Test\file_test.cpp" />
+    <ClCompile Include="Test\filePYH_test.cpp" />
     <ClCompile Include="Test\func1d_test.cpp" />
     <ClCompile Include="Test\func2d_test.cpp" />
     <ClCompile Include="Test\func3d_test.cpp" />
@@ -237,8 +218,8 @@
     <ClCompile Include="Test\opti1d_test.cpp" />
     <ClCompile Include="Test\opti2d_test.cpp" />
     <ClCompile Include="Test\opti3d_test.cpp" />
-    <ClCompile Include="Test\PolyhedronErrorRecipient.cpp" />
     <ClCompile Include="Test\polyhedron_test.cpp" />
+    <ClCompile Include="Test\PolyhedronErrorRecipient.cpp" />
     <ClCompile Include="Test\rand_test.cpp" />
     <ClCompile Include="Test\recon_test.cpp" />
     <ClCompile Include="Test\S2D_Model_test.cpp" />
@@ -248,26 +229,30 @@
     <ClCompile Include="Test\trian3d_test.cpp" />
     <ClCompile Include="Test\Vector2d_test.cpp" />
     <ClCompile Include="Test\Vector3d_test.cpp" />
+    <ClCompile Include="Extra\BODY2.CPP" />
+    <ClCompile Include="Extra\Body2Func.cpp" />
+    <ClCompile Include="Extra\ex_intersect3d.cpp" />
+    <ClCompile Include="Extra\ex_opti3d.cpp" />
+    <ClCompile Include="Extra\ExtraBody.cpp" />
+    <ClCompile Include="Extra\ExtraBodyPolyhedron.cpp" />
+    <ClCompile Include="Extra\filePYH_Body.cpp" />
+    <ClCompile Include="Extra\filePYH_ExtraBody.cpp" />
+    <ClCompile Include="Extra\KONTUR.CPP" />
+    <ClCompile Include="Extra\maxConvPolyInPolyNR3d.cpp" />
+    <ClCompile Include="Extra\PolyhedronDoctor.cpp" />
+    <ClCompile Include="Extra\TRANS3.CPP" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ShevTest.rc" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="draw.h" />
-    <ClInclude Include="Extra\Body2.h" />
-    <ClInclude Include="Extra\Body2Func.h" />
-    <ClInclude Include="Extra\ExtraBody.h" />
-    <ClInclude Include="Extra\ExtraBodyPolyhedron.h" />
-    <ClInclude Include="Extra\ex_intersect3d.h" />
-    <ClInclude Include="Extra\filePYH_Body.h" />
-    <ClInclude Include="Extra\filePYH_ExtraBody.h" />
-    <ClInclude Include="Extra\PolyhedronDoctor.h" />
-    <ClInclude Include="Extra\Vert.h" />
     <ClInclude Include="MainFrm.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="ShevTest.h" />
     <ClInclude Include="ShevTestDoc.h" />
     <ClInclude Include="ShevTestView.h" />
+    <ClInclude Include="StdAfx.h" />
     <ClInclude Include="Shev\acoder.h" />
     <ClInclude Include="Shev\approx.h" />
     <ClInclude Include="Shev\approx2d.h" />
@@ -338,17 +323,25 @@
     <ClInclude Include="Shev\Vert.h" />
     <ClInclude Include="Shev\VertFunc.h" />
     <ClInclude Include="Shev\WireModel.h" />
-    <ClInclude Include="StdAfx.h" />
     <ClInclude Include="Test\Display.h" />
     <ClInclude Include="Test\PolyhedronErrorRecipient.h" />
+    <ClInclude Include="Extra\Body2.h" />
+    <ClInclude Include="Extra\Body2Func.h" />
+    <ClInclude Include="Extra\ex_intersect3d.h" />
+    <ClInclude Include="Extra\ExtraBody.h" />
+    <ClInclude Include="Extra\ExtraBodyPolyhedron.h" />
+    <ClInclude Include="Extra\filePYH_Body.h" />
+    <ClInclude Include="Extra\filePYH_ExtraBody.h" />
+    <ClInclude Include="Extra\PolyhedronDoctor.h" />
+    <ClInclude Include="Extra\Vert.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\ShevTest.ico" />
-    <Image Include="res\ShevTestDoc.ico" />
-    <Image Include="res\Toolbar.bmp" />
-  </ItemGroup>
-  <ItemGroup>
-    <CustomBuild Include="res\ShevTest.rc2" />
+    <CustomBuild Include="res\ShevTest.ico" />
+    <CustomBuild Include="res\ShevTest.rc2">
+      <FileType>RC</FileType>
+    </CustomBuild>
+    <CustomBuild Include="res\ShevTestDoc.ico" />
+    <CustomBuild Include="res\Toolbar.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

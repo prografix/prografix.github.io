@@ -58,7 +58,7 @@ Def<Circle3d> maxCircleInConvexPolyhedron ( const Polyhedron & poly )
 Def<Triangle3d> maxTriangleInConvexPolyhedronA ( const Polyhedron & poly )
 {
     Def<Triangle3d> triangle;
-    CArrRef<Vector3d> vert = poly.vertex;
+    CCArrRef<Vector3d> & vert = poly.vertex;
     if ( vert.size() < 3 ) return triangle;
     nat m0(0), m1(1), m2(2);
     double max = qmod ( ( vert[m1] - vert[m0] ) % ( vert[m2] - vert[m1] ) );
@@ -234,16 +234,26 @@ Def<Rhombus3d> maxRhombusInConvexPolyhedronANR ( const Polyhedron & outer )
 //**************************** 16.12.2018 *********************************//
 
 static
-bool maxParallelogramInConvexPolyhedron ( CArrRef<Vector2d> poly, CArrRef<Plane3d> plane, 
-                                          WireModel<9> & model, List< Vertex<9> > & stor,
+bool maxParallelogramInConvexPolyhedron ( CCArrRef<Vector2d> & poly, CCArrRef<Plane3d> & plane, 
                                           bool (*func) ( const WireModel<9> & model, Double<9> & best ),
-                                          Parallelogram3d & res
+                                          Double<9> & best
                                         )
 {
+    WireModel<9> model;
+    List< Vertex<9> > stor;
+    model.simplex ( 2*9, stor );
+    Double<9> dn;
+    dn.fill ( 1. );
+    dn.d3 = dn.d6 = 0;
+    model.vlist -= dn;
+    Double<10> g;
+    g.d3 = 1;
+    g.d6 = -1;
+    g.d0 = g.d1 = g.d2 = g.d4 = g.d5 = g.d7 = g.d8 = g.d9 = 0;
+    model.cut ( g, stor );
     for ( nat i = 0; i < 1000; ++i )
     {
 // ѕоиск максимального решени€
-        Double<9> best;
         if ( ! func ( model, best ) ) return false;
 // ѕоиск максимального нарушени€ ограничений дл€ выбранного решени€
         nat km;
@@ -264,10 +274,6 @@ bool maxParallelogramInConvexPolyhedron ( CArrRef<Vector2d> poly, CArrRef<Plane3
 // ≈сли нарушение мало, то завершение программы
         if ( max < 1e-5 )
         {
-            Vector3d a ( best.d0, best.d1, best.d2 ), 
-                     b ( best.d3, best.d4, best.d5 ), 
-                     c ( best.d6, best.d7, best.d8 );
-            res = Parallelogram3d ( a - b - c, a + b - c, a + b + c );
             return true;
         }
 // ѕрименение ограничени€ к области допустимых преобразований
@@ -307,20 +313,13 @@ Def<Parallelogram3d> maxParallelogramInConvexPolyhedron ( const Polyhedron & pol
     coor[1] = Vector2d(-1,-1);
     coor[2] = Vector2d( 1,-1);
     coor[3] = Vector2d( 1, 1);
-    WireModel<9> model;
-    List< Vertex<9> > stor;
-    model.simplex ( 2*9, stor );
-    Double<9> dn;
-    dn.fill ( 1. );
-    dn.d3 = dn.d6 = 0;
-    model.vlist -= dn;
-    Double<10> g;
-    g.d3 = 1;
-    g.d6 = -1;
-    g.d0 = g.d1 = g.d2 = g.d4 = g.d5 = g.d7 = g.d8 = g.d9 = 0;
-    model.cut ( g, stor );
-    if ( maxParallelogramInConvexPolyhedron ( coor, plane, model, stor, func, res ) )
+    Double<9> best;
+    if ( maxParallelogramInConvexPolyhedron ( coor, plane, func, best ) )
     {
+        const Vector3d a ( best.d0, best.d1, best.d2 ), 
+                       b ( best.d3, best.d4, best.d5 ), 
+                       c ( best.d6, best.d7, best.d8 );
+        res = Parallelogram3d ( a - b - c, a + b - c, a + b + c );
         res.isDef = true;
         res *= ~conf;
     }
@@ -369,6 +368,99 @@ static bool maxParallelogramArea ( const WireModel<9> & model, Double<9> & best 
 Def<Parallelogram3d> maxParallelogramInConvexPolyhedronA ( const Polyhedron & poly )
 {
     return maxParallelogramInConvexPolyhedron ( poly, maxParallelogramArea );
+}
+
+//**************************** 08.04.2018 *********************************//
+//
+//      ћаксимальный пр€моугольник вписанный в выпуклый многогранник
+//
+//**************************** 16.12.2018 *********************************//
+
+static
+bool maxPolygon1pInConvexPolyhedron ( CCArrRef<Vector2d> & poly, CCArrRef<Plane3d> & plane, 
+                                          bool (*func) ( const WireModel<9> & model, Double<9> & best ),
+                                          Double<9> & best
+                                    )
+{
+    WireModel<9> model;
+    List< Vertex<9> > stor;
+    model.simplex ( 2*9, stor );
+    Double<9> dn;
+    dn.fill ( 1. );
+    dn.d3 = dn.d6 = 0;
+    model.vlist -= dn;
+    Double<10> g;
+    g.d3 = 1;
+    g.d6 = -1;
+    g.d0 = g.d1 = g.d2 = g.d4 = g.d5 = g.d7 = g.d8 = g.d9 = 0;
+    model.cut ( g, stor );
+    for ( nat i = 0; i < 1000; ++i )
+    {
+// ѕоиск максимального решени€
+        if ( ! func ( model, best ) ) return false;
+// ѕоиск максимального нарушени€ ограничений дл€ выбранного решени€
+        nat km;
+        Vector2d pm;
+        double max = 0.;
+        for ( nat j = 0; j < poly.size(); ++j )
+        {
+            const Vector2d & p = poly[j];
+            const Vector3d v ( best.d6*p.y + best.d3*p.x + best.d0,
+                               best.d7*p.y + best.d4*p.x + best.d1,
+                               best.d8*p.y + best.d5*p.x + best.d2 );
+            for ( nat k = 0; k < plane.size(); ++k )
+            {
+                const double t = plane[k] % v;
+                if ( max < t ) max = t, pm = p, km = k;
+            }
+        }
+// ≈сли нарушение мало, то завершение программы
+        if ( max < 1e-5 )
+        {
+            return true;
+        }
+// ѕрименение ограничени€ к области допустимых преобразований
+        const Vector3d & n = plane[km].norm;
+        Double<10> g;
+        g.d0 = n.x;
+        g.d1 = n.y;
+        g.d2 = n.z;
+        g.d3 = n.x * pm.x;
+        g.d4 = n.y * pm.x;
+        g.d5 = n.z * pm.x;
+        g.d6 = n.x * pm.y;
+        g.d7 = n.y * pm.y;
+        g.d8 = n.z * pm.y;
+        g.d9 = plane[km].dist;
+        model.cut ( g, stor );
+    }
+    return false;
+}
+
+bool maxPolygon1pInConvexPolyhedron ( CCArrRef<Vector2d> & plg, const Polyhedron & plh, ArrRef<Vector3d> & res )
+{
+// ѕриведение многогранника к стандартному положению
+    DynArray<Plane3d> plane ( plh.facet.size() );
+    nat i;
+    for ( i = 0; i < plh.facet.size(); ++i ) plane[i] = plh.facet[i].plane;
+    const Segment3d seg = dimensions ( plh.vertex );
+    const double max = normU ( seg );
+    if ( max == 0 ) return false;
+    const double coef = 2. / max;
+    const Conform3d conf ( -0.5 * coef * ( seg.a + seg.b ), coef );
+    plane *= Similar3d ( conf );
+    Double<9> best;
+    if ( maxPolygon1pInConvexPolyhedron ( plg, plane, maxParallelogramArea, best ) )
+    {
+        for ( i = 0; i < plg.size(); ++i )
+        {
+        const Vector3d a ( best.d0, best.d1, best.d2 ), 
+                       b ( best.d3, best.d4, best.d5 ), 
+                       c ( best.d6, best.d7, best.d8 );
+        }
+        //res *= ~conf;
+    }
+    return false;
 }
 
 //**************************** 01.10.2019 *********************************//

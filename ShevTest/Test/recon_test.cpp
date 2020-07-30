@@ -99,11 +99,12 @@ void testMarchingCubes()
 //if(code2) display << x0 << y0 << z0 << NL;
                     for ( nat l = 0; l < itog.size(); ++l )
                     {
+						nat m;
                         CArrRef<nat> index = itog[l];
                         vtemp.resize ( index.size() );
-                        for ( nat m = 0; m < vtemp.size(); ++m ) vtemp[m] = vert[index[m]];
+                        for ( m = 0; m < vtemp.size(); ++m ) vtemp[m] = vert[index[m]];
                         trian ( vtemp, ntemp );
-                        for ( nat m = 0; m < ntemp.size(); ++m )
+                        for ( m = 0; m < ntemp.size(); ++m )
                         {
                             const Set3<nat> & sj = ntemp[m];
                             Set3<Vector3d> sv;

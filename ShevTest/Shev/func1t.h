@@ -464,10 +464,10 @@ Def<T> selectR ( CCArrRef<T> & a, nat i )
 //              buf.size() >= 2 * a.size(),
 //              w.size() >= a.size()
 //
-//*********************** 03.12.2017 **************************//
+//*********************** 11.12.2019 **************************//
 
 template <class T1, class T2> 
-Def<nat> selectR ( CCArrRef<T1> & a, CCArrRef<T2> & w, double p, ArrRef<nat> & buf )
+Def<nat> selectR ( CCArrRef<T1> & a, CCArrRef<T2> & w, T2 p, ArrRef<nat> & buf )
 {
     Def<nat> res;
     const nat n = a.size();
@@ -549,7 +549,7 @@ Def<nat> selectR ( CCArrRef<T1> & a, CCArrRef<T2> & w, double p, ArrRef<nat> & b
 }
 
 template <class T1, class T2> inline
-Def<nat> selectR ( CCArrRef<T1> & a, CCArrRef<T2> & w, double p )
+Def<nat> selectR ( CCArrRef<T1> & a, CCArrRef<T2> & w, T2 p )
 {
     return selectR ( a, w, p, CmbArray<nat, 80> ( 2*a.size() ) );
 }

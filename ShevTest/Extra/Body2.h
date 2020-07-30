@@ -62,6 +62,7 @@ class BonePtrList : public List<BonePtr>
 public:
     BonePtrList & jump ( BonePtr * i ) { return (BonePtrList&) ShevList::jump (i); }
     BonePtrList & del  ( BonePtr * m ) { jump ( m ).outCur(); return *this; }
+    bool delCur_ () { bool res = curIsLas(); outCur(); return res; }
     void delFir () { outFir (); }
     void delLas () { outLas (); }
     void delCur () { outCur (); }

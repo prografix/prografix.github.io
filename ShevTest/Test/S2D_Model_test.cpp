@@ -48,7 +48,7 @@ template <nat N> void testSimplex ( S2D_Model<N> & model )
 
 template <nat N> void testModel ( S2D_Model<N> & model )
 {
-    nat nfe = 0;
+    nat i, j, nfe = 0;
     if ( model.sides.top() )
     do
     {
@@ -70,7 +70,7 @@ template <nat N> void testModel ( S2D_Model<N> & model )
         display << "!!! ne * (N-1) != nfe #" << model.edges.size() * (N-1) << nfe << NL;
     DynArray<const S2D_Vert<N> *> varr ( model.verts.size() );
     model.verts.top();
-    for ( nat i = 0; i < varr.size(); ++i )
+    for ( i = 0; i < varr.size(); ++i )
     {
         varr[i] = model.verts.cur();
         model.verts.next();
@@ -117,7 +117,7 @@ template <nat N> void testModel ( S2D_Model<N> & model )
             display << "!!! unknown e->v1" << NL;
     }
     while ( model.edges.next() );
-    for ( nat i = 0; i < earr.size(); ++i )
+    for ( i = 0; i < earr.size(); ++i )
     {
         Suite<const S2D_Edge<N> *> & arr = earr[i];
         nat n = arr.size();
@@ -125,7 +125,7 @@ template <nat N> void testModel ( S2D_Model<N> & model )
         {
             n = n;
             DynArray<Set2<Set4<const S2D_Plane<N> *> > > sarr ( n );
-            for ( nat j = 0; j < n; ++j )
+            for ( j = 0; j < n; ++j )
             {
                 Set2<Set4<const S2D_Plane<N> *> > & s = sarr[j];
                 const S2D_Edge<N> * e = arr[j];
@@ -151,7 +151,7 @@ template <nat N> void testModel ( S2D_Model<N> & model )
 //display << NL;
             }
             quickSort123 ( sarr );
-            for ( nat j = 0; j < n; ++j )
+            for ( j = 0; j < n; ++j )
             {
                 Set2<Set4<const S2D_Plane<N> *> > & s = sarr[j];
                 //display << nat(s.a.a) << nat(s.a.b) << nat(s.a.c) << nat(s.a.d) << 

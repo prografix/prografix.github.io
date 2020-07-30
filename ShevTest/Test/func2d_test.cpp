@@ -60,7 +60,7 @@ void convexPolygon_test()
 {
     FixArray<Vector2d,12> buf;
     DynArray<Vector2d> res;
-    for ( nat n = 0; n <= 300; ++n )
+    for ( nat n = 0; n <= 1000; ++n )
     {
         ArrRef<Vector2d> point ( buf, 0, n % 6 + 7 );
         randPolygon ( point );
@@ -90,8 +90,8 @@ void convexPolygon_test()
 
 void convexPolygon_test2()
 {
-//    const char * filename = "cont 99.txt";
-    const char * filename = "cont 707.txt";
+//    const char * filename = "data/cont 99.txt";
+    const char * filename = "data/cont 707.txt";
     RealFile file ( filename, "r" );
     if ( ! file.isValid() )
     {
@@ -1017,6 +1017,190 @@ void closestPoints2_test()
     }
 }
 
+class Otrezok : public ShevItem, public Segment2d
+{
+public:
+	Otrezok () {}
+	Otrezok ( const Vector2d & x, const Vector2d & y, int i = -123456789 ) : Segment2d(x,y), ShevItem(i) {}
+};
+
+class OList : public ListItem<List<Otrezok> >
+{
+    OList ( OList & );
+public:
+    OList () {}
+    OList ( const OList & list, OList & stor );
+};
+
+class ZOList : public OList
+{
+public:
+    ZOList () {}
+	ZOList ( CArrRef<Vector2d> vert, OList & stor );
+	ZOList & cut ( const Line2d & line, OList & stor, int mark = 0 );
+    double square () const;
+};
+
+ZOList::ZOList ( CArrRef<Vector2d> vert, OList & stor )
+{
+    Vector2d a = vert.las();
+    for ( nat i = 0; i < vert.size(); ++i )
+    {
+        const Vector2d & b = vert[i];
+        if ( a == b ) continue;
+        Otrezok * o = addNewAftLas ( stor );
+        o->a = a;
+        o->b = b;
+        a = b;
+    }
+}
+
+double ZOList::square () const
+{
+    double s = 0.;
+    Show<Otrezok> show ( *this );
+    if ( show.top() )
+    do
+    {
+        s += show.cur()->a % show.cur()->b;
+    }
+    while ( show.next() );
+    return s;
+}
+
+ZOList & ZOList::cut ( const Line2d & line, OList & stor, int mark )
+{
+    if ( top() )
+    {
+        double b = line % cur()->a;
+        for (;;)
+        {
+            double a = b;
+            Otrezok * t = cur ();
+            b = line % t->b;
+            if ( a >= 0 && b >= 0 )
+            {
+                if ( curIsLas() )
+                {
+                    movCurAftCur ( stor );
+                    break;
+                }
+                else
+                {
+                    movCurAftCur ( stor );
+                    continue;
+                }
+            }
+            if ( a < 0 && b > 0 )
+            {
+                Vector2d v = t->b - t->a;
+                v *= b / ( a - b );
+                t->b += v;
+            }
+            else
+            if ( a > 0 && b < 0 )
+            {
+                Vector2d v = t->b - t->a;
+                v *= a / ( a - b );
+                t->a += v;
+            }
+            if ( ! next() ) break;
+        }
+        if ( ! top() ) return *this;
+        Otrezok * t = cur();
+        while ( next() )
+        {
+            if ( t->b != cur()->a )
+            {
+                if ( stor.cur() == 0 )
+                {
+                    stor.addBefCur ( new Otrezok );
+                }
+                Otrezok * s = stor.cur();
+                s->a = t->b;
+                s->b = cur()->a;
+                s->info = mark;
+                stor.movCurBefCur ( *this );
+                next ();
+            }
+            t = cur();
+        }
+        top();
+        if ( t->b != cur()->a )
+        {
+            if ( stor.cur() == 0 )
+            {
+                stor.addBefCur ( new Otrezok );
+            }
+            Otrezok * s = stor.cur();
+            s->a = t->b;
+            s->b = cur()->a;
+            s->info = mark;
+            stor.movCurBefCur ( *this );
+        }
+    }
+    return *this;
+}
+
+void getSym ( nat n )
+{
+    nat i, j;
+    DynArray<Vector2d> poly ( n );
+    regularPolygon ( poly );
+    DynArray<Line2d> line ( poly.size() );
+    for ( i = 0; i < poly.size(); ++i ) line[i] = Line2d ( poly[i], poly.cnext(i) );
+    FixArray<double, 59> score;
+    OList stor;
+    const Spin2d spin ( M_PI / 380 );
+    for ( i = 0; i < 2; ++i )
+    {
+        ZOList zol ( poly, stor );
+        for ( j = 0; j < line.size(); ++j ) zol.cut ( line[j], stor );
+        score[i] = zol.square();
+if(i) display << n << 1-0.5*score[i] / area ( poly ) << NL;
+        zol.movAllAftLas ( stor );
+        poly *= spin;
+    }
+}
+
+void getSym()
+{
+    for ( nat i = 5; i <= 20; ++i ) getSym ( i );
+}
+
+void convexPolygon_test3()
+{
+    Suite<Vector2d> poly;
+    poly.inc() = Vector2d ( 801.086,	755.336 );
+    poly.inc() = Vector2d ( 774.739,	740.372 );
+    poly.inc() = Vector2d ( 752.073,	724.262 );
+    poly.inc() = Vector2d ( 746.41,	713.994 );
+    poly.inc() = Vector2d ( 743.192,	700.834 );
+    poly.inc() = Vector2d ( 744.725,	696.024 );
+    poly.inc() = Vector2d ( 879.09,	399.702 );
+    poly.inc() = Vector2d ( 917.446,	347.393 );
+    poly.inc() = Vector2d ( 1037.77,	371.827 );
+    poly.inc() = Vector2d ( 1164.13,	718.558 );
+    poly.inc() = Vector2d ( 1164.73,	722.026 );
+    poly.inc() = Vector2d ( 1157.9,	731.725 );
+    poly.inc() = Vector2d ( 1147.17,	739.308 );
+    poly.inc() = Vector2d ( 1109.59,	759.557 );
+    poly.inc() = Vector2d ( 1084.69,	770.499 );
+    poly.inc() = Vector2d ( 1058.51,	779.255 );
+    poly.inc() = Vector2d ( 1010.72,	790.155 );
+    poly.inc() = Vector2d ( 985.561,	793.076 );
+    poly.inc() = Vector2d ( 944.486,	793.772 );
+    poly.inc() = Vector2d ( 911.589,	790.772 );
+    poly.inc() = Vector2d ( 887.756,	786.559 );
+    poly.inc() = Vector2d ( 856.107,	778.111 );
+    poly.inc() = Vector2d ( 817.739,	763.351 );
+    poly.inc() = Vector2d ( 801.086,	755.336 );
+    Suite<Vector2d> conv;
+    bool b = isConvex ( poly );
+    convexPolygon ( poly, conv );
+    b = b;
+}
+
 } // end of namespace
 
 void func2d_test()
@@ -1024,12 +1208,13 @@ void func2d_test()
     drawNewList2d ();
 //    distanceElp_test();
 //    convex_test();
-//    convexPolygon_test2();
+    convexPolygon_test();
 //    isConvex_test();
 //    circle_test ();
 //    nearPoint_test1();
 //    minConvexPolygonDiameter_test2();
 //    simplify_test();
-    closestPoints2_test();
+//    closestPoints2_test();
+//    getSym();
     endNewList();
 }

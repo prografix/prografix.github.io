@@ -1209,7 +1209,7 @@ Def<Cuboid3d> minCuboidAroundPointsNR ( CArrRef<Vector3d> data )
 //
 //**************************** 22.11.2010 *********************************//
 
-void minRectangleAroundConvexPolygon ( CArrRef<Vector2d> inner, const MathFunc2 & func,
+void minRectangleAroundConvexPolygon ( CCArrRef<Vector2d> & inner, const MathFunc2 & func,
                                        Vector2d & ax, double & x1, double & x2,
                                        Vector2d & ay, double & y1, double & y2 );
 
