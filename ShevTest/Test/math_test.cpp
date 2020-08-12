@@ -885,7 +885,7 @@ void slu_ortho_test ()
     SMatrix<double, n, n> x;
     double b[n];
     double gmax = 0.;
-    for ( nat k = 0; k < 100; ++k )
+    for ( nat kk = 0; kk < 100; ++kk )
     {
         const nat m = 1 + rand.number ( n );
         HMatrix<double> mat ( m, n );

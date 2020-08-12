@@ -4,3 +4,13 @@
 *.log
 *.tlog
 *.htm
+*.db
+ShevTest/.vs/ShevTest/v16/.suo
+*.db-shm
+*.opendb
+*.ipch
+*.sarif
+*.xml
+*.sbr
+*.db-wal
+*.tmp
