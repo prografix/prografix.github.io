@@ -5,7 +5,7 @@
 *.tlog
 *.htm
 *.db
-ShevTest/.vs/ShevTest/v16/.suo
+*.suo
 *.db-shm
 *.opendb
 *.ipch
@@ -14,3 +14,7 @@ ShevTest/.vs/ShevTest/v16/.suo
 *.sbr
 *.db-wal
 *.tmp
+*.pdb
+*.pch
+*.pchast
+*.ilk
