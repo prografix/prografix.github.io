@@ -18,7 +18,6 @@
 #include "../Shev/intersect3d.h"
 #include "../Shev/WireModel.h"
 #include "../shev/S2D_Model.h"
-#include "../Shev/opti2d_3d.h"
 #include "../Shev/moment3d.h"
 #include "../Shev/RealFile.h"
 #include "../Shev/filePYH.h"
@@ -33,7 +32,6 @@ double timeInSec();
 bool maxConvexPolyhedronInPolyhedronNR ( const Polyhedron & inner, const Polyhedron & outer, 
                                          CArrRef<Vector3d> point, Conform3d & res );
 Def<Conform3d> maxPolyhedronInConvexPolyhedronNR ( const Vector4d & v0, double eps, CArrRef<Plane4d> plane );
-Def<Ellipse3d> maxEllipseInConvexPolyhedronA ( const Spin3d & spin, const Polyhedron & poly );
 
 inline 
 void _swap ( SortItem<double, SortItemPtr<SortItem<Set2<const Vertex<9> *>, Double<9> > > > & p1, 
@@ -2089,12 +2087,9 @@ void maxCylinder_test ()
     static Polyhedron poly;
     randPolyhedron ( 19, poly );
     double t0 = timeInSec();
-//    Def<Cylinder3d> fig = maxCylinderInConvexPolyhedronV ( poly );
+    Def<Cylinder3d> fig = maxCylinderInConvexPolyhedronV ( poly );
 //    Def<Cone3d> fig = maxConeInConvexPolyhedronV ( poly );
 //    Def<Ellipsoid3d> fig = maxSpheroidInConvexPolyhedronV ( poly );
-//    Def<Circle3d> fig = maxCircleInConvexPolyhedron ( poly );
-//    Def<Triangle3d> fig = maxTriangleInConvexPolyhedronA ( poly );
-    Def<Ellipse3d> fig = maxEllipseInConvexPolyhedronA ( Spin3d (), poly );
     double t1 = timeInSec();
     draw ( poly, 0, 1, 1, 1, VM_WIRE );
 //    draw ( fig, 1, 0.7f, 0.3f, 1, VM_FLAT );
@@ -2919,301 +2914,7 @@ for ( i = 0; i < 4; ++i ) vert[i] = back ( vpar[i] );
 display << "end" << NL;
 }
 
-void maxRectangle_test ()
-{
-    static PRandPoint3d rand;
-    static Polyhedron poly;
-    randPolyhedron ( 19, poly );
-    double t0 = timeInSec();
-    Def<Rectangle3d> fig1 = maxRectangleInConvexPolyhedronANR ( poly );
-    double t1 = timeInSec();
-    draw ( poly, 0, 1, 1, 1, VM_WIRE );
-    draw ( fig1, 1, 0.7f, 0.3f, 1, VM_FLAT );
-    draw ( fig1, 1, 0.7f, 0.3f, 1, VM_WIRE );
-display << "time =" << t1 - t0 << NL;
-}
-
-void maxRhombus_test ()
-{
-    static PRandPoint3d rand;
-    static Polyhedron poly;
-    randPolyhedron ( 19, poly );
-    double t0 = timeInSec();
-    Def<Rhombus3d> fig1 = maxRhombusInConvexPolyhedronANR ( poly );
-    double t1 = timeInSec();
-    draw ( poly, 0, 1, 1, 1, VM_WIRE );
-    draw ( fig1, 1, 0.7f, 0.3f, 1, VM_FLAT );
-    draw ( fig1, 1, 0.7f, 0.3f, 1, VM_WIRE );
-display << "time =" << t1 - t0 << NL;
-}
-
 } // namespace
-
-void maxParallelogram_test ()
-{
-	nat i;
-    static PRandPoint3d rand;
-    static Polyhedron poly;
-    randPolyhedron ( 19, poly );
-    double t0 = timeInSec();
-    Def<Parallelogram3d> fig1 = maxParallelogramInConvexPolyhedronP ( poly );
-    if ( ! fig1.isDef ) return;
-    double t1 = timeInSec();
-    FixArray<Vector3d, 4> vert;
-    fig1.getVerts ( vert() );
-    Def<Plane3d> plane = getPlane2 ( vert );
-    Suite<DynArray<Vector3d> > sect;
-    intersection ( poly, plane, sect );
-    Suite<Vector2d> vert2;
-    OrthoFunc3to2 func ( plane.norm );
-    vert2.inc() = func ( sect[0][0] );
-    for ( i = 1; i < sect[0].size(); ++i )
-    {
-        Vector2d v = func ( sect[0][i] );
-        if ( norm2 ( v - vert2.las() ) > 1e-9 ) vert2.inc() = v;
-    }
-    if ( norm2 ( vert2[0] - vert2.las() ) < 1e-9 ) vert2.dec();
-//display << sect[0].size() << vert2.size() << NL;
-    Def<Parallelogram2d> para = maxParallelogramInConvexPolygonP ( vert2 );
-    draw ( poly, 0, 1, 1, 1, VM_WIRE );
-    draw ( fig1, 1, 0.3f, 0.3f, 1, VM_FLAT );
-    draw ( fig1, 1, 0.3f, 0.3f, 1, VM_WIRE );
-    OrthoFunc2to3 back ( plane );
-    Vector2d vpar[4];
-    para.getVerts ( vpar );
-    for ( i = 0; i < 4; ++i ) vert[i] = back ( vpar[i] );
-    drawPolygon ( vert, 1, 0.7f, 0.3f );
-//display << "time =" << t1 - t0 << fig1.getArea() << para.getArea() << NL;
-display << "time =" << t1 - t0 << fig1.getPerimeter() << para.getPerimeter() << NL;
-}
-
-static
-bool maxPolygonInConvexPolyhedron ( CCArrRef<Vector2d> & poly, CCArrRef<Plane3d> & plane, 
-                                    S2D_Model<9> & model, S2D_ModelStor<9> & stor, Conform3d & res
-                                  )
-{
-    for ( nat i = 0; i < 1000; ++i )
-    {
-// ѕоиск максимального решени€
-        Double<9> best;
-//        if ( ! maxParallelogramArea ( model, best ) ) return false;
-// ѕоиск максимального нарушени€ ограничений дл€ выбранного решени€
-        nat km;
-        Vector2d pm;
-        double max = 0.;
-        for ( nat j = 0; j < poly.size(); ++j )
-        {
-            const Vector2d & p = poly[j];
-            const Vector3d v ( best.d6*p.y + best.d3*p.x + best.d0,
-                               best.d7*p.y + best.d4*p.x + best.d1,
-                               best.d8*p.y + best.d5*p.x + best.d2 );
-            for ( nat k = 0; k < plane.size(); ++k )
-            {
-                const double t = plane[k] % v;
-                if ( max < t ) max = t, pm = p, km = k;
-            }
-        }
-// ≈сли нарушение мало, то завершение программы
-        if ( max < 1e-5 )
-        {
-            Vector3d a ( best.d0, best.d1, best.d2 ), 
-                     b ( best.d3, best.d4, best.d5 ), 
-                     c ( best.d6, best.d7, best.d8 );
-//            res = Parallelogram3d ( a - b - c, a + b - c, a + b + c );
-//display << i+1 << model.vlist.size() << NL;
-            return true;
-        }
-// ѕрименение ограничени€ к области допустимых преобразований
-        const Vector3d & n = plane[km].norm;
-        Double<10> g;
-        g.d0 = n.x;
-        g.d1 = n.y;
-        g.d2 = n.z;
-        g.d3 = n.x * pm.x;
-        g.d4 = n.y * pm.x;
-        g.d5 = n.z * pm.x;
-        g.d6 = n.x * pm.y;
-        g.d7 = n.y * pm.y;
-        g.d8 = n.z * pm.y;
-        g.d9 = plane[km].dist;
-        model.cut ( g, stor );
-    }
-    return false;
-}
-
-static bool maxParallelogramArea ( const S2D_Model<9> & model, Double<9> & best )
-{
-    Show< S2D_Vert<9> > show ( model.verts );
-    double max = 0.;
-    if ( show.top() )
-    do
-    {
-        const Double<9> & pc = * show.cur();
-        const Vector3d a1 ( pc.d3, pc.d4, pc.d5 );
-        const Vector3d a2 ( pc.d6, pc.d7, pc.d8 );
-        const double t = qmod ( a1 % a2 );
-        if ( max < t ) max = t, best = pc;
-    }
-    while ( show.next() );
-    return max > 0;
-}
-
-bool maxPolygonInConvexPolyhedron ( CCArrRef<Vector2d> & inner, const Polyhedron & outer, Conform3d & res )
-{
-    nat i;
-// ѕриведение многогранника к стандартному положению
-    DynArray<Plane3d> plane ( outer.facet.size() );
-    for ( i = 0; i < outer.facet.size(); ++i ) plane[i] = outer.facet[i].plane;
-    const Segment3d seg = dimensions ( outer.vertex );
-    const double max = normU ( seg );
-    if ( max == 0 ) return false;
-    const double coef = 2. / max;
-    const Conform3d conf ( -0.5 * coef * ( seg.a + seg.b ), coef );
-    plane *= Similar3d ( conf );
-    FixArray<Vector2d, 4> coor;
-    coor[0] = Vector2d(-1, 1);
-    coor[1] = Vector2d(-1,-1);
-    coor[2] = Vector2d( 1,-1);
-    coor[3] = Vector2d( 1, 1);
-    S2D_Model<9> model;
-    S2D_ModelStor<9> stor;
-    model.makeSimplex ( 2*9, stor );
-    Double<9> dn;
-    dn.fill ( 1. );
-    dn.d3 = dn.d6 = 0;
-    model -= dn;
-    Double<10> g;
-    g.d3 = 1;
-    g.d6 = -1;
-    g.d0 = g.d1 = g.d2 = g.d4 = g.d5 = g.d7 = g.d8 = g.d9 = 0;
-    model.cut ( g, stor );
-    for ( i = 0; i < 1000; ++i )
-    {
-// ѕоиск максимального решени€
-        double max = 0.;
-        Double<9> best;
-        if ( model.sides.top() )
-        do
-        {
-            const S2D_Side<9> * s = model.sides.cur();
-            if ( max < s->value ) max = s->value, best = s->point;
-        }
-        while ( model.sides.next() );
-        if ( ! max ) return false;
-// ѕоиск максимального нарушени€ ограничений дл€ выбранного решени€
-        nat km;
-        Vector2d pm;
-        max = 0.;
-        for ( nat j = 0; j < coor.size(); ++j )
-        {
-            const Vector2d & p = coor[j];
-            const Vector3d v ( best.d6*p.y + best.d3*p.x + best.d0,
-                               best.d7*p.y + best.d4*p.x + best.d1,
-                               best.d8*p.y + best.d5*p.x + best.d2 );
-            for ( nat k = 0; k < plane.size(); ++k )
-            {
-                const double t = plane[k] % v;
-                if ( max < t ) max = t, pm = p, km = k;
-            }
-        }
-// ≈сли нарушение мало, то завершение программы
-        if ( max < 1e-5 )
-        {
-            Vector3d a ( best.d0, best.d1, best.d2 ), 
-                     b ( best.d3, best.d4, best.d5 ), 
-                     c ( best.d6, best.d7, best.d8 );
-//            res = Parallelogram3d ( a - b - c, a + b - c, a + b + c );
-//display << i+1 << model.vlist.size() << NL;
-            return true;
-        }
-// ѕрименение ограничени€ к области допустимых преобразований
-        const Vector3d & n = plane[km].norm;
-        Double<10> g;
-        g.d0 = n.x;
-        g.d1 = n.y;
-        g.d2 = n.z;
-        g.d3 = n.x * pm.x;
-        g.d4 = n.y * pm.x;
-        g.d5 = n.z * pm.x;
-        g.d6 = n.x * pm.y;
-        g.d7 = n.y * pm.y;
-        g.d8 = n.z * pm.y;
-        g.d9 = plane[km].dist;
-        model.cut ( g, stor );
-    }
-    return false;
-}
-
-bool maxPolygonInConvexPolyhedron ( CCArrRef<Vector2d> & inner, const Polyhedron & outer, ArrRef<Vector3d> & res )
-{
-    if ( inner.size() > res.size() ) return false;
-    Conform3d conf;
-    if ( ! maxPolygonInConvexPolyhedron ( inner, outer, conf ) ) return false;
-    const Similar3d sim ( conf );
-    for ( nat i = 0; i < inner.size(); ++i )
-    {
-        const Vector2d & v = inner[i];
-        res[i] = sim ( Vector3d ( v.x, v.y, 0 ) );
-    }
-    return true;
-}
-
-bool maxQuadrateInConvexPolyhedron ( const Polyhedron & outer, ArrRef<Vector3d> & res )
-{
-    FixArray<Vector2d, 4> inner;
-    if ( inner.size() > res.size() ) return false;
-    Conform3d conf;
-    if ( ! maxPolygonInConvexPolyhedron ( inner, outer, conf ) ) return false;
-    const Similar3d sim ( conf );
-    for ( nat i = 0; i < inner.size(); ++i )
-    {
-        const Vector2d & v = inner[i];
-        res[i] = sim ( Vector3d ( v.x, v.y, 0 ) );
-    }
-    return true;
-}
-
-void maxPolygon_test()
-{
-    static PRandPoint3d rand;
-    static Polyhedron poly;
-    for ( nat i = 0; i < 1; ++i ) randPolyhedron ( 11, poly );
-    double t0 = timeInSec();
-    Def<Parallelogram3d> fig1 = maxParallelogramInConvexPolyhedronA ( poly );
-//    Def<Ellipse3d> fig1 = maxEllipseInTetrahedronA ( poly.vertex[0], poly.vertex[1], poly.vertex[2], poly.vertex[3] );
-    if ( ! fig1.isDef ) return;
-    double t1 = timeInSec();
-//    Def<Parallelogram3d> fig2 = maxParallelogramInConvexPolyhedronP2 ( poly );
-//    if ( ! fig2.isDef ) return;
-    double t2 = timeInSec();
-    draw ( poly, 0, 1, 1, 1, VM_WIRE );
-//    draw ( fig1, 0.3f, 0.3f, 1, 1, VM_WIRE );
-    draw ( fig1, 1, 0.3f, 0.3f, 1, VM_WIRE );
-display << "time =" << t1 - t0 << NL;
-}
-
-Def<Parallelogram3d> maxParallelogramInConvexPolyhedronA2 ( const Polyhedron & poly );
-Def<Parallelogram3d> maxParallelogramInConvexPolyhedronP2 ( const Polyhedron & poly );
-
-void maxParallelogram_test2 ()
-{
-    static PRandPoint3d rand;
-    static Polyhedron poly;
-    randPolyhedron ( 19, poly );
-    double t0 = timeInSec();
-    Def<Parallelogram3d> fig1 = maxParallelogramInConvexPolyhedronP ( poly );
-    if ( ! fig1.isDef ) return;
-    double t1 = timeInSec();
-    Def<Parallelogram3d> fig2 = maxParallelogramInConvexPolyhedronP2 ( poly );
-    if ( ! fig2.isDef ) return;
-    double t2 = timeInSec();
-    draw ( poly, 0, 1, 1, 1, VM_WIRE );
-    draw ( fig1, 0.3f, 0.3f, 1, 1, VM_WIRE );
-    draw ( fig2, 1, 0.3f, 0.3f, 1, VM_WIRE );
-display << "A2 =" << t2 - t1 << fig2.getArea() - fig1.getArea() << NL;
-display << "A =" << t1 - t0 << fig1.getPerimeter()  - fig2.getPerimeter() << NL;
-display << (t2 - t1) / (t1 - t0) << NL;
-}
 
 Conform3d maxPointsInConvexPolyhedron1 ( CCArrRef<Vector3d> & inner, const Polyhedron & outer )
 {
@@ -4008,7 +3709,6 @@ void opti3d_test ()
 //    minSpherePlane_test();
 //    minSphereLine_test();
 //    maxCylinder_test();
-   maxPolygon_test();
 //    proba ();
     endNewList();
 }

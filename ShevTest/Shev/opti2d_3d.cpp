@@ -5,6 +5,7 @@
 #include "func2d.h"
 #include "func3d.h"
 #include "opti3d.h"
+#include "mathem.h"
 #include "Vector2d.h"
 #include "Vector3d.h"
 #include "WireModel.h"
@@ -370,14 +371,14 @@ Def<Parallelogram3d> maxParallelogramInConvexPolyhedronA ( const Polyhedron & po
     return maxParallelogramInConvexPolyhedron ( poly, maxParallelogramArea );
 }
 
-//**************************** 08.04.2018 *********************************//
+//**************************** 16.08.2020 *********************************//
 //
 //      ћаксимальный пр€моугольник вписанный в выпуклый многогранник
 //
-//**************************** 16.12.2018 *********************************//
+//**************************** 16.08.2020 *********************************//
 
 static
-bool maxPolygon1pInConvexPolyhedron ( CCArrRef<Vector2d> & poly, CCArrRef<Plane3d> & plane, 
+bool maxFigure1pInConvexPolyhedron ( CCArrRef<Vector2d> & poly, CCArrRef<Plane3d> & plane, 
                                           bool (*func) ( const WireModel<9> & model, Double<9> & best ),
                                           Double<9> & best
                                     )
@@ -397,7 +398,8 @@ bool maxPolygon1pInConvexPolyhedron ( CCArrRef<Vector2d> & poly, CCArrRef<Plane3
     for ( nat i = 0; i < 1000; ++i )
     {
 // ѕоиск максимального решени€
-        if ( ! func ( model, best ) ) return false;
+        if (!func(model, best))
+            return false;
 // ѕоиск максимального нарушени€ ограничений дл€ выбранного решени€
         nat km;
         Vector2d pm;
@@ -437,7 +439,8 @@ bool maxPolygon1pInConvexPolyhedron ( CCArrRef<Vector2d> & poly, CCArrRef<Plane3
     return false;
 }
 
-bool maxPolygon1pInConvexPolyhedron ( CCArrRef<Vector2d> & plg, const Polyhedron & plh, ArrRef<Vector3d> & res )
+bool maxFigure1pInConvexPolyhedron ( CCArrRef<Vector2d> & plg, const Polyhedron & plh,
+    bool (*func) (const WireModel<9>& model, Double<9>& best), Vector3d & o, Vector3d & a, Vector3d & b )
 {
 // ѕриведение многогранника к стандартному положению
     DynArray<Plane3d> plane ( plh.facet.size() );
@@ -450,17 +453,74 @@ bool maxPolygon1pInConvexPolyhedron ( CCArrRef<Vector2d> & plg, const Polyhedron
     const Conform3d conf ( -0.5 * coef * ( seg.a + seg.b ), coef );
     plane *= Similar3d ( conf );
     Double<9> best;
-    if ( maxPolygon1pInConvexPolyhedron ( plg, plane, maxParallelogramArea, best ) )
+    if ( maxFigure1pInConvexPolyhedron ( plg, plane, func, best ) )
     {
-        for ( i = 0; i < plg.size(); ++i )
-        {
-        const Vector3d a ( best.d0, best.d1, best.d2 ), 
-                       b ( best.d3, best.d4, best.d5 ), 
-                       c ( best.d6, best.d7, best.d8 );
-        }
-        //res *= ~conf;
+        o = Vector3d(best.d0, best.d1, best.d2);
+        a = Vector3d(best.d3, best.d4, best.d5);
+        b = Vector3d(best.d6, best.d7, best.d8);
+        o *= ~conf;
+        a /= coef;
+        b /= coef;
+        return true;
     }
     return false;
+}
+
+static bool maxRectangleArea ( const WireModel<9>& model, Double<9>& best )
+{
+    double x[2];
+    double max = 0.;
+    Show< Vertex<9> > show ( model.vlist );
+    if ( show.top() )
+    do
+    {
+        const Vertex<9> * p = show.cur();
+        const Double<9> & pc = p->coor;
+        const Vector3d v1 ( pc.d3, pc.d4, pc.d5 );
+        const Vector3d v2 ( pc.d6, pc.d7, pc.d8 );
+        const double s1 = v1 * v2;
+        for ( nat k = 0; k < 9; ++k )
+        {
+            const Vertex<9> * v = p->vertex[k];
+            if ( v < p ) continue;
+            const Double<9> & vc = v->coor;
+            const Vector3d u1 ( vc.d3, vc.d4, vc.d5 );
+            const Vector3d u2 ( vc.d6, vc.d7, vc.d8 );
+            const double s2 = u1 * u2;
+            const double s3 = v1 * u2 + u1 * v2;
+            const nat n = root2 ( s1 + s2 - s3, s3 - s1 - s1, s1, x );
+            for ( nat i = 0; i < n; ++i )
+            {
+                if ( x[i] < 0 || x[i] > 1 ) continue;
+                Double<9> dn = vc;
+                dn -= pc;
+                dn *= x[i];
+                dn += pc;
+                const double t = qmod ( Vector3d ( dn.d3, dn.d4, dn.d5 ) % Vector3d ( dn.d6, dn.d7, dn.d8 ) );
+                if ( max < t ) max = t, best = dn;
+            }
+        }
+    }
+    while ( show.next() );
+    return max > 0;
+}
+
+Def<Rectangle3d> maxRectangleInConvexPolyhedron ( const Polyhedron & outer )
+{
+    FixArray<Vector2d, 4> vert;
+    vert[0] = Vector2d( 1,  1);
+    vert[1] = Vector2d(-1,  1);
+    vert[2] = Vector2d(-1, -1);
+    vert[3] = Vector2d( 1, -1);
+    Vector3d o, a, b;
+    Def<Rectangle3d> res;
+    if (!maxFigure1pInConvexPolyhedron(vert, outer, maxRectangleArea, o, a, b)) return res;
+    res.o = o;
+    res.a = norm2 ( a );
+    res.b = norm2(b);
+    res.spin = Spin3d(a, b, a % b);
+    res.isDef = true;
+    return res;
 }
 
 //**************************** 01.10.2019 *********************************//

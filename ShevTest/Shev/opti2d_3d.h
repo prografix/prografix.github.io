@@ -60,6 +60,14 @@ Def<Triangle3d> maxTriangleInConvexPolyhedronA ( const Polyhedron & poly );
 Def<Rectangle3d> maxRectangleInConvexPolyhedronANR ( const Polyhedron & outer );
 
 
+//**************************** 16.08.2020 *********************************//
+//
+//      Максимальный прямоугольник вписанный в выпуклый многогранник
+//
+//**************************** 16.08.2020 *********************************//
+
+Def<Rectangle3d> maxRectangleInConvexPolyhedron ( const Polyhedron & outer );
+
 //**************************** 08.10.2018 *********************************//
 //
 //         Максимальный ромб вписанный в выпуклый многогранник

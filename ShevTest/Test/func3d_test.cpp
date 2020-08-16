@@ -6,6 +6,7 @@
 #include "../Shev/LinAlg.h"
 #include "../Shev/func2d.h"
 #include "../Shev/func3d.h"
+#include "../Shev/opti3d.h"
 #include "../Shev/mathem.h"
 #include "../Shev/moment3d.h"
 #include "../Shev/Vector2d.h"
@@ -26,8 +27,6 @@
 #include "display.h"
 
 double timeInSec();
-
-Def<Sphere3d> maxSphereInConvexPolyhedron ( const Segment3d & dim, CArrRef<const Plane3d *> plane );
 
 bool minConvexPolyhedronDiameter ( const Polyhedron & poly, Vector3d & dir, double & d1, double & d2 )
 {
@@ -112,6 +111,14 @@ inline void _swap ( SortItem<double, TrianFacet *> & p1, SortItem<double, TrianF
     _swap ( p1.tail->index, p2.tail->index );
 }
 
+void randPolyhedron(nat32 n, Polyhedron& poly)
+{
+    static PRandVector3d vrand;
+    DynArray<Vector3d> point(n);
+    point << vrand;
+    convexHull(point, poly);
+}
+
 namespace
 {
 
@@ -129,14 +136,6 @@ void randSegment3d ( ArrRef<Segment3d> p )
         p[i].a = rand();
         p[i].b = rand();
     }
-}
-
-void randPolyhedron ( nat32 n, Polyhedron & poly )
-{
-    static PRandVector3d vrand;
-    DynArray<Vector3d> point ( n );
-    point << vrand;
-    convexHull ( point, poly );
 }
 
 void center_test ()

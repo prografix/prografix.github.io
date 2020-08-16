@@ -47,7 +47,8 @@
     <OutDir>.\Release\</OutDir>
     <IntDir>.\Release\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <RunCodeAnalysis>true</RunCodeAnalysis>
+    <RunCodeAnalysis>false</RunCodeAnalysis>
+    <EnableMicrosoftCodeAnalysis>false</EnableMicrosoftCodeAnalysis>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>.\Debug\</OutDir>
@@ -97,11 +98,10 @@
     <ClCompile>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <InlineFunctionExpansion>Default</InlineFunctionExpansion>
-      <FunctionLevelLinking>false</FunctionLevelLinking>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
       <Optimization>Disabled</Optimization>
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <WarningLevel>Level3</WarningLevel>
-      <MinimalRebuild>true</MinimalRebuild>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AssemblerListingLocation>.\Debug\</AssemblerListingLocation>
@@ -142,12 +142,6 @@
     <ClCompile Include="ShevTest.cpp" />
     <ClCompile Include="ShevTestDoc.cpp" />
     <ClCompile Include="ShevTestView.cpp" />
-    <ClCompile Include="StdAfx.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h</PrecompiledHeaderFile>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
-      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">stdafx.h</PrecompiledHeaderFile>
-    </ClCompile>
     <ClCompile Include="Shev\acoder.cpp" />
     <ClCompile Include="Shev\approx.cpp" />
     <ClCompile Include="Shev\approx2d.cpp" />
@@ -199,6 +193,7 @@
     <ClCompile Include="Shev\Vector3d.cpp" />
     <ClCompile Include="Shev\Vector3f.cpp" />
     <ClCompile Include="Shev\Vector4d.cpp" />
+    <ClCompile Include="StdAfx.cpp" />
     <ClCompile Include="Test\approx2d_test.cpp" />
     <ClCompile Include="Test\approx3d_test.cpp" />
     <ClCompile Include="Test\approx_test.cpp" />
@@ -220,6 +215,7 @@
     <ClCompile Include="Test\matrix_test.cpp" />
     <ClCompile Include="Test\moment2d_test.cpp" />
     <ClCompile Include="Test\opti1d_test.cpp" />
+    <ClCompile Include="Test\opti2d_3d_test.cpp" />
     <ClCompile Include="Test\opti2d_test.cpp" />
     <ClCompile Include="Test\opti3d_test.cpp" />
     <ClCompile Include="Test\polyhedron_test.cpp" />

@@ -18,3 +18,9 @@
 *.pch
 *.pchast
 *.ilk
+*.recipe
+*.lastcodeanalysissucceeded
+ShevTest/Debug/ShevTest.vcxproj.FileListAbsolute.txt
+*.idb
+ShevTest/Release/CodeAnalysisResultManifest.txt
+ShevTest/Release/ShevTest.vcxproj.FileListAbsolute.txt
