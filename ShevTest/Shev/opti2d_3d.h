@@ -63,10 +63,12 @@ Def<Rectangle3d> maxRectangleInConvexPolyhedronANR ( const Polyhedron & outer );
 //**************************** 16.08.2020 *********************************//
 //
 //      ћаксимальный пр€моугольник вписанный в выпуклый многогранник
+//                      A - максимум площади 
 //
 //**************************** 16.08.2020 *********************************//
 
-Def<Rectangle3d> maxRectangleInConvexPolyhedron ( const Polyhedron & outer );
+Def<Rectangle3d> maxRectangleInConvexPolyhedronA ( const Polyhedron & outer );
+
 
 //**************************** 08.10.2018 *********************************//
 //
@@ -76,6 +78,16 @@ Def<Rectangle3d> maxRectangleInConvexPolyhedron ( const Polyhedron & outer );
 //**************************** 08.10.2018 *********************************//
 
 Def<Rhombus3d> maxRhombusInConvexPolyhedronANR ( const Polyhedron & outer );
+
+
+//**************************** 16.08.2020 *********************************//
+//
+//          ћаксимальный ромб вписанный в выпуклый многогранник
+//                      A - максимум площади 
+//
+//**************************** 16.08.2020 *********************************//
+
+Def<Rhombus3d> maxRhombusInConvexPolyhedronA ( const Polyhedron & outer );
 
 
 //**************************** 08.04.2018 *********************************//

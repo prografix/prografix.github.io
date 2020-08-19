@@ -374,14 +374,15 @@ Def<Parallelogram3d> maxParallelogramInConvexPolyhedronA ( const Polyhedron & po
 //**************************** 16.08.2020 *********************************//
 //
 //      ћаксимальный пр€моугольник вписанный в выпуклый многогранник
+//                      A - максимум площади 
 //
 //**************************** 16.08.2020 *********************************//
 
 static
 bool maxFigure1pInConvexPolyhedron ( CCArrRef<Vector2d> & poly, CCArrRef<Plane3d> & plane, 
-                                          bool (*func) ( const WireModel<9> & model, Double<9> & best ),
-                                          Double<9> & best
-                                    )
+                                     bool (*func) ( const WireModel<9> & model, Double<9> & best ),
+                                     Double<9> & best
+                                   )
 {
     WireModel<9> model;
     List< Vertex<9> > stor;
@@ -398,7 +399,7 @@ bool maxFigure1pInConvexPolyhedron ( CCArrRef<Vector2d> & poly, CCArrRef<Plane3d
     for ( nat i = 0; i < 1000; ++i )
     {
 // ѕоиск максимального решени€
-        if (!func(model, best))
+        if ( ! func ( model, best ) )
             return false;
 // ѕоиск максимального нарушени€ ограничений дл€ выбранного решени€
         nat km;
@@ -439,7 +440,7 @@ bool maxFigure1pInConvexPolyhedron ( CCArrRef<Vector2d> & poly, CCArrRef<Plane3d
     return false;
 }
 
-bool maxFigure1pInConvexPolyhedron ( CCArrRef<Vector2d> & plg, const Polyhedron & plh,
+bool maxPolygon1pInConvexPolyhedron ( CCArrRef<Vector2d> & plg, const Polyhedron & plh,
     bool (*func) (const WireModel<9>& model, Double<9>& best), Vector3d & o, Vector3d & a, Vector3d & b )
 {
 // ѕриведение многогранника к стандартному положению
@@ -466,7 +467,7 @@ bool maxFigure1pInConvexPolyhedron ( CCArrRef<Vector2d> & plg, const Polyhedron 
     return false;
 }
 
-static bool maxRectangleArea ( const WireModel<9>& model, Double<9>& best )
+bool maxRectangleArea ( const WireModel<9> & model, Double<9> & best )
 {
     double x[2];
     double max = 0.;
@@ -505,7 +506,7 @@ static bool maxRectangleArea ( const WireModel<9>& model, Double<9>& best )
     return max > 0;
 }
 
-Def<Rectangle3d> maxRectangleInConvexPolyhedron ( const Polyhedron & outer )
+Def<Rectangle3d> maxRectangleInConvexPolyhedronA ( const Polyhedron & outer )
 {
     FixArray<Vector2d, 4> vert;
     vert[0] = Vector2d( 1,  1);
@@ -514,11 +515,36 @@ Def<Rectangle3d> maxRectangleInConvexPolyhedron ( const Polyhedron & outer )
     vert[3] = Vector2d( 1, -1);
     Vector3d o, a, b;
     Def<Rectangle3d> res;
-    if (!maxFigure1pInConvexPolyhedron(vert, outer, maxRectangleArea, o, a, b)) return res;
+    if ( ! maxPolygon1pInConvexPolyhedron ( vert, outer, maxRectangleArea, o, a, b ) ) return res;
     res.o = o;
     res.a = norm2 ( a );
     res.b = norm2(b);
     res.spin = Spin3d(a, b, a % b);
+    res.isDef = true;
+    return res;
+}
+
+//**************************** 16.08.2020 *********************************//
+//
+//          ћаксимальный ромб вписанный в выпуклый многогранник
+//                      A - максимум площади 
+//
+//**************************** 16.08.2020 *********************************//
+
+Def<Rhombus3d> maxRhombusInConvexPolyhedronA ( const Polyhedron & outer )
+{
+    FixArray<Vector2d, 4> vert;
+    vert[0] = Vector2d ( 0, 1 );
+    vert[1] = Vector2d (-1, 0 );
+    vert[2] = Vector2d ( 0,-1 );
+    vert[3] = Vector2d ( 1, 0 );
+    Vector3d o, a, b;
+    Def<Rhombus3d> res;
+    if ( ! maxPolygon1pInConvexPolyhedron  ( vert, outer, maxRectangleArea, o, a, b ) ) return res;
+    res.o = o;
+    res.a = norm2(a);
+    res.b = norm2(b);
+    res.spin = Spin3d ( a, b, a % b );
     res.isDef = true;
     return res;
 }
