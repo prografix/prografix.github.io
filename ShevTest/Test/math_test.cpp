@@ -1699,7 +1699,7 @@ void test ( ArrRef2<double> & data, double * w, nat * index )
         {
             sum += rj[i] * w[i];
         }
-        if ( fabs ( sum ) > 1e-15 )
+        if ( fabs ( sum ) > 1e-12 )
             sum = sum;
     }
 }
@@ -1710,7 +1710,7 @@ bool maxNormUc ( ArrRef2<double> & data, double * w, nat * index )
     const nat nRow = data.size0();
     const nat nCol = data.size1();
     const nat nRow1 = nRow - 1;
-    CCArrRef<double> func = data[nRow1];
+    CCArrRef<double> & func = data[nRow1];
     if ( ! _sluGaussRow ( data, nRow, nCol, index, nRow1, nCol ) ) return false;
 // Заполнение весов
     for ( j = nRow1; j < nCol; ++j )
@@ -1778,74 +1778,43 @@ bool maxNormUc ( ArrRef2<double> & data, double * w, nat * index )
             rj[ijm] = 0;
         }
         _swap ( index[jm], index[im] );
-test ( data, w, index );
+//test ( data, w, index );
     }
 //
-    for ( nat k = 0; k < 1; ++k )
+    for ( nat k = 0; k < nCol; ++k )
     {
         bool noChange = true;
         for ( nat jj = nRow1; jj < nCol; ++jj )
         {
             const nat ij = index[jj];
-            const double v = w[ij];
             const double f = func[ij];
             if ( ! f ) continue;
-            nat im = 0;
-            double max = 0, sum = 0;
+            const double v = w[ij];
+            nat im = jj;
+            double vn = 1;
             if ( f < 0 )
             {
-                const double d = v + 1;
-                if ( d <= 0 ) continue;
-                for ( i = 0; i < nRow1; ++i )
-                {
-                    const double t = w[index[i]] + d * data[i][ij];
-                    const double a = fabs ( t );
-                    if ( max < a ) max = a, sum = t, im = i;
-                }
-                if ( max < 1 + 1e-9 )
-                {
-test ( data, w, index );
-                    for ( i = 0; i < nRow1; ++i ) w[index[i]] += d * data[i][ij];
-                    w[ij] = -1;
-test ( data, w, index );
-                    continue;
-                }
+                if ( v <= -1 ) continue;
+                vn = -1;
             }
             else
             {
-                const double d = 1 - v;
-                if ( d <= 0 ) continue;
-                for ( i = 0; i < nRow1; ++i )
-                {
-                    const double t = w[index[i]] - d * data[i][ij];
-                    const double a = fabs ( t );
-                    if ( max < a ) max = a, sum = t, im = i;
-                }
-                if ( max < 1 + 1e-9 )
-                {
-                    for ( i = 0; i < nRow1; ++i ) w[index[i]] -= d * data[i][ij];
-                    w[ij] = 1;
-test ( data, w, index );
-                    continue;
-                }
+                if ( v >= 1 ) continue;
             }
-test ( data, w, index );
+            for ( i = 0; i < nRow1; ++i )
+            {
+                const double wi = w[index[i]];
+                const double t = wi + ( v - vn ) * data[i][ij];
+                if (fabs(t) < 1 + 1e-9) continue;
+                vn = v - ((t > 0 ? 1. : -1.) - wi) / data[i][ij];
+                im = i;
+            }
+            for ( i = 0; i < nRow1; ++i ) w[index[i]] += (v - vn) * data[i][ij];
+            w[ij] = vn;
+//test(data, w, index);
+            if (im == jj)
+                continue;
             noChange = false;
-            if ( sum > 0 )
-            {
-                const double t = ( 1 - w[index[im]] ) / data[im][ij];
-                w[ij] += t;
-                for ( i = 0; i < nRow1; ++i ) w[index[i]] += t * data[i][ij];
-                //w[index[im]] = 1;
-            }
-            else
-            {
-                const double t = ( 1 - w[index[im]] ) / data[im][ij];
-                w[ij] += t;
-                for ( i = 0; i < nRow1; ++i ) w[index[i]] += t * data[i][ij];
-                //w[index[im]] = 1;
-            }
-test ( data, w, index );
             // Нормализация строки
             double * ri = data[im]();
             const nat iim = index[im];
@@ -1869,11 +1838,11 @@ test ( data, w, index );
                 rj[ijm] = 0;
             }
             _swap ( index[jj], index[im] );
-test ( data, w, index );
+//test ( data, w, index );
         }
         if ( noChange ) return true;
     }
-    return true;
+    return false;
 }
 
 bool minNorm1b ( CCArrRef2<double> & data, ArrRef<double> & x, ArrRef<nat> & index )
@@ -1942,53 +1911,43 @@ void minNorm_test3()
 {
     static PRand rand;
     static PRandVector3d vrand;
-    const nat nn = 5;//20;
-    FixArray<Plane3d, nn> plane;
+    const nat nn = 20;
     const double eps = 1e-13;
-    for ( nat n = 4; n <= nn; n += 1 )
+    double time1 = 0, time2 = 0;
+    for ( nat n = 6; n <= nn; n += 1 )
     {
-        DynArray2<double> data ( n, 4 );
+        DynArray2<double> data ( n, 5 );
         for ( nat j = 0; j < 500; ++j )
         {
             for ( nat i = 0; i < n; ++i )
             {
-                double t = rand();
-                plane[i].dist = 0.25 * t * t;
-                const Vector3d v = plane[i].norm = vrand();
                 ArrRef<double> r = data[i];
-                r[0] = v.x;
-                r[1] = v.y;
-                r[2] = v.z;
-                r[3] = - plane[i].dist;
+                r[0] = 2 * rand() - 1;
+                r[1] = 2 * rand() - 1;
+                r[2] = 2 * rand() - 1;
+                r[3] = 2 * rand() - 1;
+                r[4] = 2 * rand() - 1;
             }
-            FixArray<double, 3> x;
-            CArrRef<Plane3d> ref ( plane, 0, n );
-            Def<Vector3d> p = getNearPoint1 ( ref );
-            if ( ! p.isDef )
-            {
-                getNearPoint1 ( ref );
-                display << "err getNearPoint1" << n << j << NL;
-                continue;
-            }
+            FixArray<double, 4> x;
+            double t1 = timeInSec();
             if ( ! minNorm1 ( data, x ) )
             {
                 minNorm1 ( data, x );
                 display << "err minNorm1" << NL;
                 continue;
             }
-            if ( fabs ( p.x - x[0] ) > eps || fabs ( p.y - x[1] ) > eps || fabs ( p.z - x[2] ) > eps )
-                display << fabs ( p.x - x[0] ) << fabs ( p.y - x[1] ) << fabs ( p.z - x[2] ) << NL;
-            FixArray<nat, 3> index;
-if(j==99)
-j=j;
+            double t2 = timeInSec();
+            time1 += t2 - t1;
+            FixArray<nat, 4> index;
             double s1 = calcSum ( data, x );
+            t1 = timeInSec();
             if ( minNorm1b ( data, x, index ) )
             {
-                j=j;
-                if ( fabs ( p.x - x[0] ) > eps || fabs ( p.y - x[1] ) > eps || fabs ( p.z - x[2] ) > eps )
+                t2 = timeInSec();
+                time2 += t2 - t1;
                 {
                     double s2 = calcSum ( data, x );
-                    if ( s1 < s2 )
+                    if ( s1 != s2 )
                     {
                         display << n << j << s1 << s2 << NL;
                     //display << fabs ( p.x - x[0] ) << fabs ( p.y - x[1] ) << fabs ( p.z - x[2] ) << NL;
@@ -2001,23 +1960,10 @@ j=j;
                 display << n << j << NL;
                 minNorm1b ( data, x, index );
             }
-            /*p = getNearPointU ( ref );
-            if ( ! p.isDef )
-            {
-                getNearPointU ( ref );
-                display << "err getNearPointU" << n << j << NL;
-                continue;
-            }
-            if ( ! minNormU ( data, x ) )
-            {
-                minNormU ( data, x );
-                display << "err minNormU" << NL;
-                continue;
-            }
-            if ( fabs ( p.x - x[0] ) > eps || fabs ( p.y - x[1] ) > eps || fabs ( p.z - x[2] ) > eps )
-                display << fabs ( p.x - x[0] ) << fabs ( p.y - x[1] ) << fabs ( p.z - x[2] ) << NL;*/
         }
     }
+    display << "time1" << time1 << NL;
+    display << "time2" << time2 << NL;
     display << "end" << gg << NL;
 }
 
