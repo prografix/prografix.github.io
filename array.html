@@ -279,9 +279,13 @@ public:
 public:
 explicit DynArray ( nat n = 0 ) : DynArrRef&lt;T> ( n > 0 ? new T[n] : 0, n ) {}
 explicit DynArray ( CCArrRef&lt;T> & r ) : DynArrRef&lt;T> ( new T[r.size()], r.size() )
-     {
+    {
         for ( nat i = 0; i < _size; ++i ) _data.var[i] = r[i];
-     }
+    }
+    DynArray ( nat n, const T & a ) : DynArrRef&lt;T> ( n > 0 ? new T[n] : 0, n )
+    {
+        for ( nat i = 0; i < _size; ++i ) _data.var[i] = a;
+    }
 
     ~DynArray () { delete[] _data.var; }
 
@@ -332,9 +336,13 @@ template &lt;class T, nat N> class CmbArray : public DynArrRef&lt;T>
 public:
 explicit CmbArray ( nat n = 0 ) : DynArrRef&lt;T> ( n > N ? new T[n] : stor, n ) {}
 explicit CmbArray ( CCArrRef&lt;T> & r ) : DynArrRef&lt;T> ( r.size() > N ? new T[r.size()] : stor, r.size() )
-     {
+    {
         for ( nat i = 0; i < _size; ++i ) _data.var[i] = r[i];
-     }
+    }
+    CmbArray ( nat n, const T & a ) : DynArrRef<&lt;T> ( n > N ? new T[n] : stor, n )
+    {
+        for ( nat i = 0; i < _size; ++i ) _data.var[i] = a;
+    }
 
     ~CmbArray () { if ( _data.var != stor ) delete[] _data.var; }
 
