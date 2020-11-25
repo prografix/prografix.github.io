@@ -42,15 +42,13 @@ SuiteRef&lt;  nat   > & convexNlogN ( CArrRef&lt;Vector2d> vert, SuiteRef&lt;  n
 "Вычислительная геометрия" (Препарата, Шеймос) пункт 4.1.4:
 </p>
 <pre>
-SuiteRef&lt;nat> & convexPolygon ( CArrRef&lt;Vector2d> vert, SuiteRef&lt;nat> & index );
+SuiteRef&lt;nat> & convexPolygon ( CCArrRef&lt;Vector2d> & vert, SuiteRef&lt;nat> & index );
 
-DynArrRef&lt;Vector2d> & convexPolygon ( CArrRef&lt;Vector2d> vert, DynArrRef&lt;Vector2d> & res );
-
-SuiteRef&lt;Vector2d> & convexPolygon ( SuiteRef&lt;Vector2d> & vert );
+SuiteRef&lt;Vector2d> & convexPolygon ( CCArrRef&lt;Vector2d> & vert, SuiteRef&lt;Vector2d> & res );
 </pre>
 <p>Как обычно обход вершин полагается против часовой стрелки. 
 Во втором варианте алгоритма указатели vert и res могут указывать на один массив.</p>
-<p>Описание шаблонов классов CArrRef, DynArrRef и SuiteRef находится <a href=array.html>здесь</a>.
+<p>Описание шаблонов классов CArrRef и SuiteRef находится <a href=array.html>здесь</a>.
 <br>Описание класса Vector2d находится <a href="rus_vector2d.html">здесь</a>. 
 <p>Исходники алгоритмов находятся в файле <a href="source/source.zip">func2d.cpp</a>.</p>
 <a href="rus_geom.html">Наверх</a>
@@ -60,14 +58,5 @@ SuiteRef&lt;Vector2d> & convexPolygon ( SuiteRef&lt;Vector2d> & vert );
 
 </pre>
 </div>
-<script type="text/javascript">
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
-<script type="text/javascript">
-try {
-var pageTracker = _gat._getTracker("UA-10825496-1");
-pageTracker._trackPageview();
-} catch(err) {}</script>
 </body>
 </html>

@@ -29,20 +29,19 @@ Def&lt;Line3d> getLineU ( CArrRef&lt;Vector3d> point, double & r );
 ( <a href="mom3.html">момент 2-го порядка</a> ):
 </p>
 <pre>
-Def&lt;Plane3d> getPlane2 ( CArrRef&lt;Vector3d> point );
+Plane3d getPlane2 ( CCArrRef&lt;Vector3d> & point );
 
-Def&lt;Plane3d> getPlane2 ( CArrRef&lt;Vector3d> point, CArrRef&lt;double> mass );
+Plane3d getPlane2 ( CCArrRef&lt;Vector3d> & point, CCArrRef&lt;double> & mass );
 
-Def&lt;Plane3d> getPlane2 ( CArrRef&lt;Segment3d> segm );
+Plane3d getPlane2 ( CCArrRef&lt;Segment3d> & segm );
 </pre>
-<p>
-В случае невозможности вычисления возвращаемого объекта поле isDef равно false.
-</p>
 <p>Следующая функция находит плоскость минимизирующую максимальное расстояние до точек ( 
 <a href="normv.html">бесконечную норму</a> вектора отклонений ):
 </p>
 <pre>
-Plane3d getPlaneU ( CArrRef&lt;Vector3d> point, double & r );
+Plane3d getPlaneU ( CCArrRef&lt;Vector3d> & point, double & r );
+
+Plane3d getPlaneU ( CCArrRef&lt;Vector3d> & point );
 </pre>
 Описание класса Vector3d находится <a href="rus_vector.html">здесь</a>.
 <br>Описание классов Segment3d, Line3d и Plane3d находится <a href="figure3d.html">здесь</a>.

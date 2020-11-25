@@ -10,13 +10,13 @@
 <p>Функция area вычисляет площадь многоугольника:
 </p>
 <pre>
-double area ( CArrRef&lt;Vector2d> vert );
+double area ( CCArrRef&lt;Vector2d> & vert );
 </pre>
 <p>Знак площади зависит от направления обхода вершин. Для обхода против часовой стрелки площадь положительна.
 </p>
 <p>Функция perimeter вычисляет периметр многоугольника, который всегда неотрицателен:
 <pre>
-double perimeter ( CArrRef&lt;Vector2d> vert );
+double perimeter ( CCArrRef&lt;Vector2d> & vert );
 </pre>
 </p>
 <p>Функция isConvex проверяет многоугольник на выпуклость:
@@ -37,8 +37,15 @@ int loopNumber ( CArrRef&lt;Vector2d> vert );
 многоугольника poly и отличается от него не более, чем на eps. Если параметр closed = false, то входной массив вершин
 считается незамкнутой ломаной. В этом случае первая и последняя точки будут сохранены:
 <pre>
-DynArrRef&lt;  nat   > & simplify ( CArrRef&lt;Vector2d> poly, double eps, bool closed, DynArrRef&lt;  nat   > & res );
-DynArrRef&lt;Vector2d> & simplify ( CArrRef&lt;Vector2d> poly, double eps, bool closed, DynArrRef&lt;Vector2d> & res );
+DynArrRef&lt;  nat   > & simplify ( CCArrRef&lt;Vector2d> & poly, double eps, bool closed, DynArrRef&lt;  nat   > & res );
+DynArrRef&lt;Vector2d> & simplify ( CCArrRef&lt;Vector2d> & poly, double eps, bool closed, DynArrRef&lt;Vector2d> & res );
+</pre>
+</p>
+<p>Следующие функции упрощают многоугольники до заданного количества вершин ( nv ). 
+Массивы poly и res должны быть разными:
+<pre>
+DynArrRef<&lt;  nat   > & simplifyNV ( CCArrRef&lt;Vector2d> & poly, nat nv, bool closed, DynArrRef&lt;  nat   > & res );
+DynArrRef<&lt;Vector2d> & simplifyNV ( CCArrRef&lt;Vector2d> & poly, nat nv, bool closed, DynArrRef&lt;Vector2d> & res );
 </pre>
 </p>
 <p>Первый параметр у всех функций - это ссылка на массив вершин многоугольника.</p>
@@ -47,14 +54,5 @@ DynArrRef&lt;Vector2d> & simplify ( CArrRef&lt;Vector2d> poly, double eps, bool 
 <br>Исходники алгоритмов находятся в файле <a href="source/source.zip">func2d.cpp</a>.</p>
 <a href="rus_geom.html">Наверх</a></td>
 </table>
-<script type="text/javascript">
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
-<script type="text/javascript">
-try {
-var pageTracker = _gat._getTracker("UA-10825496-1");
-pageTracker._trackPageview();
-} catch(err) {}</script>
 </body>
 </html>
