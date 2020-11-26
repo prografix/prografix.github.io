@@ -13,33 +13,41 @@
 В этом разделе представлены функции, которые вписывают максимальную по размеру плоскую фигуру 
 ( чаще всего в этом качестве используется площадь ) в выпуклый многогранник:
 <p>
-&bull; Круг.
+&bull; Круг
 </p>
 <pre>Def&lt;Circle3d> maxCircleInConvexPolyhedron ( const Polyhedron & poly );
 </pre>
 <p>
-&bull; Эллипс в треугольнике.
+&bull; Эллипс в треугольнике
 </p>
 <pre>Def&lt;Ellipse3d> maxEllipseInTriangleA ( Vector3d p1, Vector3d p2, Vector3d p3 );
 </pre>
 <p>
-&bull; Эллипс в тетраэдре.
+&bull; Эллипс в тетраэдре
 </p>
 <pre>Def&lt;Ellipse3d> maxEllipseInTetrahedronA ( Vector3d p1, Vector3d p2, Vector3d p3, Vector3d p4 );
 </pre>
-&bull; Треугольник.
+&bull; Треугольник
 </p>
 <pre>Def&lt;Triangle3d> maxTriangleInConvexPolyhedronA ( const Polyhedron & poly );
 </pre>
-&bull; Прямоугольник без вращения.
+&bull; Прямоугольник без вращения
 </p>
 <pre>Def&lt;Rectangle3d> maxRectangleInConvexPolyhedronANR ( const Polyhedron & outer );
 </pre>
-&bull; Ромб без вращения.
+&bull; Прямоугольник с вращением
+</p>
+<pre>Def&lt;Rectangle3d> maxRectangleInConvexPolyhedronA ( const Polyhedron & outer );
+</pre>
+&bull; Ромб без вращения
 </p>
 <pre>Def&lt;Rhombus3d> maxRhombusInConvexPolyhedronANR ( const Polyhedron & outer );
 </pre>
-&bull; Параллелограмм (  A - максимум площади, P - максимум периметра ).
+&bull; Ромб с вращением
+</p>
+<pre>Def&lt;Rhombus3d> maxRhombusInConvexPolyhedronA ( const Polyhedron & outer );
+</pre>
+&bull; Параллелограмм (  A - максимум площади, P - максимум периметра )
 </p>
 <pre>Def&lt;Parallelogram3d> maxParallelogramInConvexPolyhedronA ( const Polyhedron & poly );
 Def&lt;Parallelogram3d> maxParallelogramInConvexPolyhedronP ( const Polyhedron & poly );
