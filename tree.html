@@ -16,12 +16,13 @@
 использовалась книга Н. Вирта "Алгоритмы и структуры данных":
 </p>
 <pre>
-template &lt;class T> class AVL_Tree
+template &lt;typename K, typename D = Void> class AVL_Tree
 {
 public:
     struct Node
     {
-        T key;
+        K key;
+        D data;
         Node * left, * right;
         int bal;
     };
@@ -34,42 +35,35 @@ public:
     };
 private:
     Node * root;
-    NodeStor * stor;
-
-    Здесь реализация следующих функций:
-
-    static const T & add ( const T & x, Node * & p, bool & h, NodeStor * stor )...
-
-    static bool delet ( const T & x, Node * & p, NodeStor * stor )...
-
-    static void delAll ( Node * p, NodeStor * stor )...
-
-    static unsigned countItems ( const Node * p )...
-
-    static bool test ( const Node * p )...
-
+    NodeStor & stor;
+    unsigned count;
+    bool isDel;
+// Здесь реализация функций:
+	.....
 public:
-    AVL_Tree ( NodeStor * p = 0 ) : root ( 0 ), stor ( p ) {}
+    explicit AVL_Tree ( NodeStor & s ) : root ( 0 ), stor ( s ), count ( 0 ) {}
 
     ~AVL_Tree ()
     {
-        delAll ( root, stor );
+        delAll ( root );
     }
 
-    const T & add ( const T & x )
+    D & add ( const K & x, const D & d )
     {
         bool h;
-        return add ( x, root, h, stor );
+        return add ( x, d, root, h );
     }
 
-    void del ( const T & x )
+    bool del ( const K & x )
     {
-        delet ( x, root, stor );
+        isDel = false;
+        delet ( x, root );
+        return isDel;
     }
 
-    const T * find ( const T & x ) const
+    D * find ( const K & x )
     {
-        const Node * p = root;
+        Node * p = root;
         while ( p )
         {
             if ( p->key > x )
@@ -78,76 +72,84 @@ public:
             if ( p->key < x )
                 p = p->right;
             else
-                return & p->key;
+                return & p->data;
         }
         return 0;
     }
 
-    unsigned countItems() const
+    unsigned size() const
     {
-        return countItems ( root );
+        return count;
     }
 
     bool test() const
     {
+        if ( count != countItems() )
+            return false;
         return test ( root );
     }
 };
 </pre>
 <p>
-Функция-член add возвращает ссылку на добавляемый элемент, если его ещё не было в дереве,
-или ссылку на элемент из дерева, если он уже там был.
+Функция-член add возвращает ссылку на данные нового элемента, если его ещё не было в дереве,
+или ссылку на данные элемента из дерева, если он уже там был.
 Функция-член del удаляет элемент с указанным ключём.
-Функция-член find возвращает указатель на элемент с указанным ключём, если он есть, и 0 - в противном случае.
-Функция-член countItems подсчитывает количество элементов в дереве.
+Функция-член find возвращает указатель на данные элемента с указанным ключём, если он есть, и 0 - в противном случае.
+Функция-член size возвращает количество элементов в дереве.
 Функция-член test проверяет дерево на корректность.
 </p>
 <p>
 Класс AVL_TreeNodeStor является хранилищем для узлов дерева, из которого их можно брать и возвращать обратно:
 <pre>
-template &lt;class T> class AVL_TreeNodeStor : public AVL_Tree&lt;T>::NodeStor
+template &lt;typename K, typename D = Void> 
+class AVL_TreeNodeStor : public AVL_Tree&lt;K, D>::NodeStor
 {
-    AVL_Tree&lt;T>::Node * data;
+    typename AVL_Tree&lt;K, D>::Node * ptr;
 public:
-    AVL_TreeNodeStor() : data(0) {}
+    AVL_TreeNodeStor() : ptr(0) {}
 
     ~AVL_TreeNodeStor()
     {
-        while ( data )
+        while ( ptr )
         {
-            AVL_Tree&lt;T>::Node * p = data->left;
-            delete data;
-            data = p;
+            AVL_Tree<K, D>::Node * p = ptr->left;
+            delete ptr;
+            ptr = p;
         }
     }
 
-    virtual AVL_Tree&lt;T>::Node * get()
+    virtual typename AVL_Tree&lt;K, D>::Node * get()
     {
-        if ( data )
+        if ( ptr )
         {
-            AVL_Tree&lt;T>::Node * p = data;
-            data = p->left;
+            AVL_Tree&lt;K, D>::Node * p = ptr;
+            ptr = p->left;
             return p;
         }
         else
-            return new AVL_Tree&lt;T>::Node;
+            return new AVL_Tree&lt;K, D>::Node;
     }
 
-    virtual void put ( AVL_Tree&lt;T>::Node * p )
+    virtual void put ( typename AVL_Tree&lt;K, D>::Node * p )
     {
-        p->left = data;
-        data = p;
+        p->left = ptr;
+        ptr = p;
     }
 
-    const T * find ( const T & x ) const
+    const D * find ( const K & x ) const
     {
-        const AVL_Tree&lt;T>::Node * p = data;
+        const AVL_Tree&lt;K, D>::Node * p = ptr;
         while ( p )
         {
-            if ( p->key == x ) return & p->key;
+            if ( p->key == x ) return & p->data;
             p = p->left;
         }
         return 0;
+    }
+
+    const D * first () const
+    {
+        return ptr ? & ptr->data : 0;
     }
 };
 </pre>
