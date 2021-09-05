@@ -480,6 +480,16 @@ public:
         return *this;
     }
 
+    bool delFirEqu ( const T & t )
+    {
+        for ( nat i = 0; i < _size; ++i )
+        {
+            if ( _data.var[i] == t ) _del ( i );
+            return true;
+        }
+        return false;
+    }
+
     SuiteRef & addAftLas ( CCArrRef&lt;T> & a )
     {
         const nat s = _size;
