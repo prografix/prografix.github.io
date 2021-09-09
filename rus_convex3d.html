@@ -12,7 +12,7 @@
 Результатом построения выпуклой оболочки будет многогранник. 
 В данном алгоритме все грани многогранника будут треугольными:
 <pre>
-Polyhedron & convexHull ( CArrRef&lt;Vector3d> point, Polyhedron & poly );
+Polyhedron & convexHull ( CCArrRef&lt;Vector3d> & point, Polyhedron & poly );
 </pre>
 <p>В начале программы строится простейшая трёхмерная фигура - тетраэдр. 
 В качестве первой вершины этого тетраэдра выбирается точка, самая удалённая от центра координат. 
@@ -37,6 +37,12 @@ Polyhedron & convexHull ( CArrRef&lt;Vector3d> point, Polyhedron & poly );
 </p>
 <p>Время работы алгоритма для точек равномерно-распределённых на сфере равно O ( n * log<sup>2</sup> ( n ) ).
 </p>
+<p>Если в результате нужены только плоскости или вершины выпуклой оболочки, то для этого есть отдельные функции:
+<pre>
+DynArrRef<Plane3d> & convexHull ( CCArrRef&lt;Vector3d> & point, DynArrRef&lt;Plane3d> & plane );
+
+DynArrRef<Vector3d> & convexHull ( CCArrRef&lt;Vector3d> & point, DynArrRef&lt;Vector3d> & vert );
+</pre>
 <p>Следующий алгоритм строит выпуклую оболочку многогранника:
 <pre>
 Polyhedron & convexHull ( const Polyhedron & inner, Polyhedron & outer );
@@ -49,9 +55,8 @@ Polyhedron & convexHull ( const Polyhedron & inner, Polyhedron & outer );
 bool isConvex ( const Polyhedron & poly );
 </pre>
 </p>
-<p>Описание шаблона классов CArrRef находится <a href=array.html>здесь</a>.
-<br>Описание класса Polyhedron находится <a href="rus_polyhedron.html">здесь</a>, 
-а описание класса Vector3d - <a href="rus_vector.html">здесь</a>.
+<p>Смотрите описания: <a href=array.html>CArrRef и DynArrRef</a>, <a href="rus_polyhedron.html">Polyhedron</a>, 
+<a href="rus_vector.html">Vector3d</a>, <a href="figure3d.html">Plane3d</a>.
 </p>
 <p>Исходники находятся в файле <a href="source/source.zip">func3d.cpp</a>.</p>
 <a href="rus_geom.html">Наверх</a>
@@ -60,15 +65,5 @@ bool isConvex ( const Polyhedron & poly );
 </pre>
 </td></div>
 </table>
-<script type="text/javascript">
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
-<script type="text/javascript">
-try {
-var pageTracker = _gat._getTracker("UA-10825496-1");
-pageTracker._trackPageview();
-} catch(err) {}
-</script>
 </body>
 </html>
