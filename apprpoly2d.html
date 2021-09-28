@@ -22,9 +22,17 @@ Def&lt;Rectangle2d> getRectanglePlg ( CArrRef&lt;Vector2d> poly );
 <p>Исходными данными для всех трёх функций является массив вершин многоугольника poly. 
 Направление обхода вершин многоугольника произвольно.
 </p>
+<p>Следующая функция совмещает два выпуклых многоугольника при помощи поворота и сдвига первого многоугольника. 
+Направление обхода вершин против часовой стрелки:
+</p>
+<pre>
+Def&lt;Conform2d> overlayConvexPolygons ( CCArrRef&lt;Vector2d> & vert1, 
+                                       CCArrRef&lt;Vector2d> & vert2 );
+</pre>
 <p>Описание классов Circle2d, Ellipse2d и Rectangle2d находится <a href="figure2d.html">здесь</a>.
 <br>Описание шаблона классов CArrRef находится <a href=array.html>здесь</a>.
 <br>Описание шаблона классов Def находится <a href="def.html">здесь</a>.
+<br>Описание класса Conform2d находится <a href="transform2d.html">здесь</a>.
 <br>Описание класса Vector2d находится <a href="rus_vector2d.html">здесь</a>.
 </p>
 <p>Исходники находятся в <a href="source/source.zip">approx2d.cpp</a></p>
