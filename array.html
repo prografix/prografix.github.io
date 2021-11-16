@@ -385,7 +385,7 @@ explicit CmbArray ( CCArrRef&lt;T> & r ) : DynArrRef&lt;T> ( r.size() > N ? new 
 <br>Функция-член inc ( increase ) с параметром увеличивает размер набора на величину параметра.
 <br>Функция-член dec ( decrease ) уменьшает размер набора на n ( по умолчанию на 1 ).
 <br>Функция-член del удаляет элемент по указанному индексу. Если он не последний в наборе, то его место занимает последний элемент.
-<br>Функция-член delAndShift удаляет элемент по указанному индексу, а стоящие после него элементы сдвигает на одну позицию.
+<br>Функция-член delAndShift удаляет группу элементов начиная с указанного индекса, а стоящие после них элементы сдвигаются.
 <br>Функция-член delFirEqu удаляет первый элемент равный указанному. Если он не последний в наборе, то его место занимает последний элемент.
 <br>Функция-член addAftLas добавляет множество элементов в конец набора. 
 <pre>template &lt;class T> class SuiteRef : public DynArrRef&lt;T>
@@ -464,15 +464,17 @@ public:
         return *this;
     }
 
-    SuiteRef & delAndShift ( nat i )
+    SuiteRef & delAndShift ( nat i, nat n = 1 )
     {
+        if ( ! n ) return *this;
         if ( i < _size )
         {
-            --_size;
+            n = _min ( _size - i, n );
+            _size -= n;
 #if _MSC_VER > 1200 // MS VC 6.0
-            for ( ; i < _size; ++i ) copyFunc ( _data.var[i], _data.var[i+1] );
+            for ( ; i < _size; ++i ) copyFunc ( _data.var[i], _data.var[i+n] );
 #else
-            for ( ; i < _size; ++i ) _data.var[i] = _data.var[i+1];
+            for ( ; i < _size; ++i ) _data.var[i] = _data.var[i+n];
 #endif
         }
 #ifdef ARRAY_TEST
