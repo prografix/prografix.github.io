@@ -30,6 +30,16 @@ public:
     {
         return ( b + a * ( par + par ) ).rightPerpendicular().setNorm2();
     }
+    Def&lt;double> getParFromX ( double x ) const;
+    Def&lt;double> getParFromY ( double y ) const;
+    double getX ( double par ) const
+    {
+        return c.x + ( b.x + a.x * par ) * par;
+    }
+    double getY ( double par ) const
+    {
+        return c.y + ( b.y + a.y * par ) * par;
+    }
     double getLength ( double par = 1 ) const;
     double getCurvature ( double par ) const;
     double getCurvatureAvg () const;
@@ -37,8 +47,11 @@ public:
 </pre>
 <p>Имеются две функции getPoint. Одна из них возвращает точку кривой с указанной нормалью, если такая есть,
 а вторая возвращает точку по параметру в диапазоне от 0 ( точка p1 ) до 1 ( точка p2 ).
-Функция getNormal возвращает нормаль, функция getLength - длину, функция getCurvature - кривизну кривой по параметру,
-а функция getCurvatureAvg - среднюю кривизну дуги.
+Функция getNormal возвращает нормаль к кривой. 
+Функции getParFromX и getParFromY находят значение параметра ( если оно существует ) для заданных координат x или y.
+Функции getX и getY возвращают значения координат точки кривой по параметру.
+Функция getLength находит длину, а функция getCurvature - кривизну кривой по параметру.
+Функция getCurvatureAvg возвращает среднюю кривизну дуги.
 </p>
 <p>Пример использования этого класса можно посмотреть в приложении <a href="demo/demo.html">DEMO</a>.</p>
 <p>
