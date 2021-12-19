@@ -11,21 +11,19 @@
 </div>
 <div align=left><td><br>
 <p>Здесь представлены шаблоны классов SLU2, SLU3 и SLU4, предназначенные для решения систем линейных уравнений 
-второго, третьего и четвёртого порядка, а также шаблоны классов Matrix3 и Matrix4, предназначенные для вычисления определителей:
+второго, третьего и четвёртого порядка:
 <pre>
 inline float qmod ( const float & x ) { return x * x; }
 inline double qmod ( const double & x ) { return x * x; }
-//************************ 20.11.2002 *************************//
-//
+
 // Решение систем линейных уравнений 2-го порядка методом Гаусса
-//         Выбор ведущего элемента по столбцам
-//
-//************************ 10.04.2015 *************************//
-template &lt;class T1, class T2 = T1> class SLU2
+// Выбор ведущего элемента по столбцам
+// aa * x + ab * y = ac
+// ba * x + bb * y = bc
+
+template &lt;class T1, class T2 = T1> class SLU2 : public Matrix2&lt;T1>
 {
 public:
-    T1 aa, ab, // aa * x + ab * y = ac
-       ba, bb; // ba * x + bb * y = bc
     T2 ac, bc;
 // Решение системы линейных уравнений 2-го порядка методом Гаусса
     bool gauss ( T2 & x, T2 & y ) const
@@ -57,45 +55,27 @@ public:
         ( x = v1 ) -= v2;
         return true;
     }
+
     SLU2 & fill ( const T1 & v1, const T2 & v2 )
     {
-        aa = ab =
-        ba = bb = v1;
+        set ( v1 );
         ac = bc = v2;
         return *this;
     }
 };
-//************************ 20.11.2002 *************************//
-//
+
 // Решение систем линейных уравнений 3-го порядка методом Гаусса
-//         Выбор ведущего элемента по столбцам
-//
-//************************ 24.04.2019 *************************//
+// Выбор ведущего элемента по столбцам
+// aa * x + ab * y + ac * z = ad
+// ba * x + bb * y + bc * z = bd
+// ca * x + cb * y + cc * z = cd
 
-template &lt;class T> class Matrix3
-{
-public:
-    T aa, ab, ac,
-      ba, bb, bc,
-      ca, cb, cc;
-
-    T determinant() const
-    {
-        return  ( ab * bc - ac * bb ) * ca +
-                ( ac * ba - aa * bc ) * cb +
-                ( aa * bb - ab * ba ) * cc;
-    }
-};
-
-template &lt;class T1, class T2 = T1> class SLU3 : public Matrix3<T1>
+template &lt;class T1, class T2 = T1> class SLU3 : public Matrix3&lt;T1>
 {
 public:
     T2 ad, bd, cd;
 
 // Решение системы линейных уравнений 3-го порядка методом Гаусса
-// aa * x + ab * y + ac * z = ad
-// ba * x + bb * y + bc * z = bd
-// ca * x + cb * y + cc * z = cd
     bool gauss ( T2 & x, T2 & y, T2 & z ) const
     {
         SLU2&lt;T1, T2> slu;
@@ -136,92 +116,28 @@ public:
         ( e = y ) *= b; z -= e;
         return true;
     }
+
     SLU3 & fill ( const T1 & v1, const T2 & v2 )
     {
-        aa = ab = ac = 
-        ba = bb = bc = 
-        ca = cb = cc = v1;
+        set ( v1 );
         ad = bd = cd = v2;
         return *this;
     }
 };
-//************************ 12.05.2012 *************************//
-//
+
 // Решение систем линейных уравнений 4-го порядка методом Гаусса
-//         Выбор ведущего элемента по столбцам
-//
-//************************ 24.04.2019 *************************//
+// Выбор ведущего элемента по столбцам
+// aa * xa + ab * xb + ac * xc + ad * xd = ae
+// ba * xa + bb * xb + bc * xc + bd * xd = be
+// ca * xa + cb * xb + cc * xc + cd * xd = ce
+// da * xa + db * xb + dc * xc + dd * xd = de
 
-template &lt;class T> class Matrix4
-{
-public:
-    T aa, ab, ac, ad,
-      ba, bb, bc, bd,
-      ca, cb, cc, cd,
-      da, db, dc, dd;
-
-    T determinant() const
-    {
-        Matrix3<T> m;
-        T a, b, c;
-        const double ma = qmod ( ad );
-        const double mb = qmod ( bd );
-        const double mc = qmod ( cd );
-        const double md = qmod ( dd );
-        if ( md >= mc && md >= mb && md >= ma )
-        {
-            if ( dd == 0 ) return 0;
-            a = da / dd;
-            b = db / dd;
-            c = dc / dd;
-            m.aa = aa - a * ad;   m.ab = ab - b * ad;   m.ac = ac - c * ad;
-            m.ba = ba - a * bd;   m.bb = bb - b * bd;   m.bc = bc - c * bd;
-            m.ca = ca - a * cd;   m.cb = cb - b * cd;   m.cc = cc - c * cd;
-            return dd * m.determinant();
-        }
-        if ( mc >= mb && mc >= ma )
-        {
-            a = ca / cd;
-            b = cb / cd;
-            c = cc / cd;
-            m.aa = aa - a * ad;   m.ab = ab - b * ad;   m.ac = ac - c * ad;
-            m.ba = ba - a * bd;   m.bb = bb - b * bd;   m.bc = bc - c * bd;
-            m.ca = da - a * dd;   m.cb = db - b * dd;   m.cc = dc - c * dd;
-            return -cd * m.determinant();
-        }
-        if ( mb >= ma )
-        {
-            a = ba / bd;
-            b = bb / bd;
-            c = bc / bd;
-            m.aa = aa - a * ad;   m.ab = ab - b * ad;   m.ac = ac - c * ad;
-            m.ba = ca - a * cd;   m.bb = cb - b * cd;   m.bc = cc - c * cd;
-            m.ca = da - a * dd;   m.cb = db - b * dd;   m.cc = dc - c * dd;
-            return bd * m.determinant();
-        }
-        else
-        {
-            a = aa / ad;
-            b = ab / ad;
-            c = ac / ad;
-            m.aa = ba - a * bd;   m.ab = bb - b * bd;   m.ac = bc - c * bd;
-            m.ba = ca - a * cd;   m.bb = cb - b * cd;   m.bc = cc - c * cd;
-            m.ca = da - a * dd;   m.cb = db - b * dd;   m.cc = dc - c * dd;
-            return -ad * m.determinant();
-        }
-    }
-};
-
-template &lt;class T1, class T2 = T1> class SLU4 : public Matrix4<T1>
+template &lt;class T1, class T2 = T1> class SLU4 : public Matrix4&lt;T1>
 {
 public:
     T2 ae, be, ce, de;
 
 // Решение системы линейных уравнений 4-го порядка методом Гаусса
-// aa * xa + ab * xb + ac * xc + ad * xd = ae
-// ba * xa + bb * xb + bc * xc + bd * xd = be
-// ca * xa + cb * xb + cc * xc + cd * xd = ce
-// da * xa + db * xb + dc * xc + dd * xd = de
     bool gauss ( T2 & xa, T2 & xb, T2 & xc, T2 & xd ) const
     {
         SLU3&lt;T1, T2> slu;
@@ -293,12 +209,10 @@ public:
         f = xc; f *= c; xd -= f;
         return true;
     }
+
     SLU4 & fill ( const T1 & v1, const T2 & v2 )
     {
-        aa = ab = ac = ad =
-        ba = bb = bc = bd =
-        ca = cb = cc = cd =
-        da = db = dc = dd = v1;
+        set ( v1 );
         ae = be = ce = de = v2;
         return *this;
     }
@@ -308,7 +222,8 @@ public:
 В качестве типа Т2, кроме одиночных чисел, можно задавать наборы чисел, такие как: <a href="rus_vector2d.html">Vector2d</a>, 
 <a href="rus_vector.html">Vector3d</a>, <a href="vector4d.html">Vector4d</a>, <a href="array.html">FixArray</a> и т. д.
 </p>
-<p>Исходники находятся в файле <a href="source/source.zip">LinAlg.h</a>.</p>
+<p>Исходники находятся в файле <a href="source/source.zip">LinAlg.h</a>.
+<br>Описание шаблонов классов Matrix2, Matrix3 и Matrix4 находится <a href="qmatrix.html">здесь</a></p>
 <a href="rus_lin_alg.html">Наверх</a>
 </pre>
 

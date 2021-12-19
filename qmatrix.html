@@ -1,0 +1,158 @@
+﻿<html>
+<head><title>Квадратные матрицы</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><center>
+<table width="680" cellspacing="0" cellpadding="0">
+<div align=center>
+<font color="" style="font-size: 20pt">
+<br>Квадратные матрицы
+</font>
+</div>
+<div align=left><td><br>
+Для квадратной матрицы 2-го порядка определены: заполнение матрицы указанным значением, вычисление детерминанта, операторы умножения и взятия обратной матрицы.
+<pre>
+template &lt;class T> class Matrix2
+{
+public:
+    T aa, ab,
+      ba, bb;
+
+    Matrix2 & set ( const T & v )
+    {
+        aa = ab =
+        ba = bb = v;
+        return *this;
+    }
+
+    Def&lt;Matrix2> operator ~ () const
+    {
+        SLU2&lt;T> slu;
+        slu.matrix() = *this;
+        slu.ac = 1; slu.bc = 0;
+        Def&lt;Matrix2> m;
+        if ( ! slu.gauss ( m.aa, m.ba ) ) return m;
+        slu.ac = 0; slu.bc = 1; 
+        m.isDef = slu.gauss ( m.ab, m.bb );
+        return m;
+    }
+
+    T determinant() const
+    {
+        return aa * bb - ab * ba;
+    }
+};
+
+template &lt;class T> Matrix2&lt;T> operator * ( const Matrix2&lt;T> & l, const Matrix2&lt;T> & r )
+{
+    Matrix2&lt;T> m;
+    m.aa = l.aa * r.aa + l.ab * r.ba; m.ab = l.aa * r.ab + l.ab * r.bb;
+    m.ba = l.ba * r.aa + l.bb * r.ba; m.bb = l.ba * r.ab + l.bb * r.bb;
+    return m;
+}
+</pre>
+Для квадратной матрицы 3-го порядка определены: заполнение матрицы указанным значением и вычисление детерминанта.
+<pre>
+template &lt;class T> class Matrix3
+{
+public:
+    T aa, ab, ac,
+      ba, bb, bc,
+      ca, cb, cc;
+
+    Matrix3 & set ( const T & v )
+    {
+        aa = ab = ac = 
+        ba = bb = bc = 
+        ca = cb = cc = v;
+        return *this;
+    }
+
+    T determinant() const
+    {
+        return  ( ab * bc - ac * bb ) * ca +
+                ( ac * ba - aa * bc ) * cb +
+                ( aa * bb - ab * ba ) * cc;
+    }
+};
+</pre>
+Для квадратной матрицы 4-го порядка определены: заполнение матрицы указанным значением и вычисление детерминанта.
+<pre>
+template &lt;class T> class Matrix4
+{
+public:
+    T aa, ab, ac, ad,
+      ba, bb, bc, bd,
+      ca, cb, cc, cd,
+      da, db, dc, dd;
+
+    Matrix4 & set ( const T & v )
+    {
+        aa = ab = ac = ad =
+        ba = bb = bc = bd =
+        ca = cb = cc = cd =
+        da = db = dc = dd = v;
+        return *this;
+    }
+
+    T determinant() const
+    {
+        Matrix3&lt;T> m;
+        T a, b, c;
+        const double ma = qmod ( ad );
+        const double mb = qmod ( bd );
+        const double mc = qmod ( cd );
+        const double md = qmod ( dd );
+        if ( md >= mc && md >= mb && md >= ma )
+        {
+            if ( dd == 0 ) return 0;
+            a = da / dd;
+            b = db / dd;
+            c = dc / dd;
+            m.aa = aa - a * ad;   m.ab = ab - b * ad;   m.ac = ac - c * ad;
+            m.ba = ba - a * bd;   m.bb = bb - b * bd;   m.bc = bc - c * bd;
+            m.ca = ca - a * cd;   m.cb = cb - b * cd;   m.cc = cc - c * cd;
+            return dd * m.determinant();
+        }
+        if ( mc >= mb && mc >= ma )
+        {
+            a = ca / cd;
+            b = cb / cd;
+            c = cc / cd;
+            m.aa = aa - a * ad;   m.ab = ab - b * ad;   m.ac = ac - c * ad;
+            m.ba = ba - a * bd;   m.bb = bb - b * bd;   m.bc = bc - c * bd;
+            m.ca = da - a * dd;   m.cb = db - b * dd;   m.cc = dc - c * dd;
+            return -cd * m.determinant();
+        }
+        if ( mb >= ma )
+        {
+            a = ba / bd;
+            b = bb / bd;
+            c = bc / bd;
+            m.aa = aa - a * ad;   m.ab = ab - b * ad;   m.ac = ac - c * ad;
+            m.ba = ca - a * cd;   m.bb = cb - b * cd;   m.bc = cc - c * cd;
+            m.ca = da - a * dd;   m.cb = db - b * dd;   m.cc = dc - c * dd;
+            return bd * m.determinant();
+        }
+        else
+        {
+            a = aa / ad;
+            b = ab / ad;
+            c = ac / ad;
+            m.aa = ba - a * bd;   m.ab = bb - b * bd;   m.ac = bc - c * bd;
+            m.ba = ca - a * cd;   m.bb = cb - b * cd;   m.bc = cc - c * cd;
+            m.ca = da - a * dd;   m.cb = db - b * dd;   m.cc = dc - c * dd;
+            return -ad * m.determinant();
+        }
+    }
+};
+</pre>
+<p>Исходники находятся в файле <a href="source/source.zip">LinAlg.h</a>.</p>
+<a href="template.html">Наверх</a>
+</pre>
+
+<pre>
+</td></div>
+</table>
+</body>
+</html>
