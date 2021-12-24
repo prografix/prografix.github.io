@@ -128,10 +128,10 @@ public:
 <pre>
 class PseudoReadSeekFile : public IReadSeekFile
 {
-    CArrRef&lt;bit8> buf;
+    CCArrRef&lt;bit8> buf;
     nat pos;
 public:
-    explicit PseudoReadSeekFile ( CArrRef&lt;bit8> p ) : buf(p), pos(0) {}
+    explicit PseudoReadSeekFile ( CCArrRef&lt;bit8> & p ) : buf(p), pos(0) {}
     nat read(void * p, const nat size, const nat count);
     bool getc(void * p);
     bool seek_set(long offset);

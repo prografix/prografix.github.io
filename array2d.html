@@ -9,22 +9,11 @@
 <br><font color="" style="font-size: 20pt">Двухмерные массивы</font>
 </div>
 <div align=left><td>
-<p><br>Шаблон классов CArrRef2 представляет собой ссылку на константный двухмерный массив. 
+<p><br>Шаблон классов ArrRef2 представляет собой ссылку на неконстантный двухмерный массив. 
 У него можно узнать размеры массива и получить доступ к <a href="array.html">одномерному массиву</a> по индексу:
-<pre>template &lt;class T> class CArrRef2
-{
-    void operator= ( CCArrRef2 & );
-    CArrRef&lt;T> _data;
-    nat _size0, _size1;
-public:
-    CArrRef2 ( const ArrRef2&lt;T> & a ) : _data ( a(), a._size0 * a._size1 ), _size0 ( a._size0 ), _size1 ( a._size1 ) {}
-    CArrRef&lt;T> operator[] ( nat i ) const { return CArrRef&lt;T> ( _data, i * _size1, _size1 ); }
-    nat size0 () const { return _size0; }
-    nat size1 () const { return _size1; }
-};
-</pre>
-Шаблон классов ArrRef2 представляет собой ссылку на неконстантный двухмерный массив:
-<pre>template &lt;class T> class ArrRef2 : protected ArrRef&lt;T>
+<pre>#define CArrRef2 const ArrRef2
+
+template &lt;class T> class ArrRef2 : protected ArrRef&lt;T>
 {
     void operator= ( const ArrRef2 & );
 protected:
@@ -41,8 +30,7 @@ public:
         ArrRef&lt;T>::fill ( p );
         return *this;
     }
-    CArrRef2&lt;T> operator* () const { return CArrRef2&lt;T> ( *this ); }
-friend class CArrRef2&lt;T>;
+    CArrRef2&lt;T> operator* () const { return *this; }
 };
 </pre>
 Шаблон классов FixArray2 представляет собой двухмерный массив постоянного размера:
@@ -71,7 +59,7 @@ public:
 
     ~DynArray2 () { delete[] _data.var; }
 
-    DynArray2 & operator= ( CCArrRef2&lt;T> & r )
+    DynArray2 & operator= ( CArrRef2&lt;T> & r )
     {
         const T * p = r[0]();
         if ( _data.var == p ) return *this;
@@ -113,7 +101,7 @@ public:
 
     ~CmbArray2 () { if ( _data.var != stor ) delete[] _data.var; }
 
-    CmbArray2 & operator= ( CCArrRef2&lt;T> & r )
+    CmbArray2 & operator= ( CArrRef2&lt;T> & r )
     {
         const T * p = r[0]();
         if ( _data.var == p ) return *this;

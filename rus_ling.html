@@ -53,8 +53,8 @@ public:
 <p>Второй вариант реализации метода Гаусса в отличии от первого не использует операторы new-delete:
 </p>
 <pre>
-bool slu_gauss ( ArrRef2&lt;double> data ); // несколько правых столбцов
-bool slu_gauss ( ArrRef2&lt;double> data, double * x ); // один правый столбец
+bool slu_gauss ( ArrRef2&lt;double> & data ); // несколько правых столбцов
+bool slu_gauss ( ArrRef2&lt;double> & data, double * x ); // один правый столбец
 </pre>
 <p>Здесь квадратная матрица и столбцы свободных членов записаны в один <a href=array2d.html>двухмерный массив</a> data, 
 который в процессе вычислений изменяется, и на месте правых столбцов будут находится столбцы с решениями.
@@ -71,7 +71,7 @@ bool slu_gauss ( ArrRef2&lt;double> data, double * x ); // один правый
 //
 //*************************** 24.03.2011 ******************************//
 
-bool slu_gauss ( ArrRef2&lt;double> data, const nat nc, ArrRef&lt;nat> col );
+bool slu_gauss ( ArrRef2&lt;double> & data, const nat nc, ArrRef&lt;nat> & col );
 </pre>
 <p>Исходники находятся в файле <a href="source/source.zip">mathem.cpp</a>.</p>
 <p>Следущий вариант метода Гаусса выбирает ведущие элементы по строкам:

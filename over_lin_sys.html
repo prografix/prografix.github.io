@@ -24,22 +24,22 @@
 решение которых будет минимизировать вектор невязок исходной системы. Назовём эти уравнения главными.
 <br>Следующие функции находят решение с минимальной 1-нормой:
 <pre>
-    bool minNorm1 ( CArrRef2&lt;double> data, ArrRef&lt;double> x, ArrRef&lt;nat> index );
-    bool minNorm1 ( CArrRef2&lt;double> data, ArrRef&lt;double> x );
-    bool minNorm1 ( CArrRef2&lt;double> data, ArrRef&lt;nat> index );
+    bool minNorm1 ( CArrRef2&lt;double> & data, ArrRef&lt;double> & x, ArrRef&lt;nat> & index );
+    bool minNorm1 ( CArrRef2&lt;double> & data, ArrRef&lt;double> & x );
+    bool minNorm1 ( CArrRef2&lt;double> & data, ArrRef&lt;nat> & index );
 </pre>Здесь data - это двухмерный массив ( n * (m+1) ) с исходными данными, в последнем столбце которого записан вектор b, 
 x - ссылка на массив решения, index - ссылка на массив в который запишутся индексы главных уравнений.
 В этих функциях вначале определяются главные уравнения, а затем, если нужно, по ним методом исключений ( 
 или <a href="rus_ling.html">Гаусса</a> ) находится решение х.
 <br><br>Следующая функция находит решение с минимальной 2-нормой:
 <pre>
-    bool minNorm2 ( CArrRef2&lt;double> data, ArrRef&lt;double> x );
+    bool minNorm2 ( CArrRef2&lt;double> & data, ArrRef&lt;double> & x );
 </pre>Здесь вначале строится система нормальных уравнений, а затем она решается методом Гаусса.
 <br><br>При использовании бесконечной нормы минимизируется максимальное значение невязок.  
 Следующие функции находят решение с минимальной &#8734;-нормой:
 <pre>
-    bool minNormU ( CArrRef2&lt;double> data, ArrRef&lt;double> x, ArrRef&lt;nat> index );
-    bool minNormU ( CArrRef2&lt;double> data, ArrRef&lt;double> x );
+    bool minNormU ( CArrRef2&lt;double> & data, ArrRef&lt;double> & x, ArrRef&lt;nat> & index );
+    bool minNormU ( CArrRef2&lt;double> & data, ArrRef&lt;double> & x );
 </pre>Эти функции определяют m + 1 главных уравнений, для которых невязки будут равны максимальному значению,
 а для остальных уранений невязки будут меньше или равны максимальному значению.
 </p>
