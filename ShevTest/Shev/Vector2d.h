@@ -372,6 +372,8 @@ public:
         return Segment2d ( (*this) ( p.a ), (*this) ( p.b ) );
     }
 
+    Line2d operator() ( const Line2d & p ) const;
+
     LinTran2d & operator *= ( double d )
     {
         x *= d; y *= d; return *this;
@@ -429,6 +431,8 @@ public:
     {
         return Segment2d ( (*this) ( p.a ), (*this) ( p.b ) );
     }
+
+    Line2d operator() ( const Line2d & p ) const;
 
     Def<Affin2d> operator ~ () const
     {

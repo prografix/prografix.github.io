@@ -168,6 +168,42 @@ const Spin2d Spin2d::d300 ( 0.5, R3H );
 const Spin2d Spin2d::d315 ( R2H, R2H );
 const Spin2d Spin2d::d330 ( R3H, 0.5 );
 
+////////////////////////// Линейное преобразование ////////////////////////////
+
+Line2d LinTran2d::operator() ( const Line2d & p ) const
+{
+    Line2d res ( null2d, 0 );
+    Def<LinTran2d> back = ~(*this);
+    if ( ! back.isDef ) return res;
+    res.norm.x = p.norm.x * back.x.x + p.norm.y * back.y.x;
+    res.norm.y = p.norm.x * back.x.y + p.norm.y * back.y.y;
+    double d = norm2 ( res.norm );
+    if ( ! d ) return res;
+    d = 1 / d;
+    res.norm.x *= d;
+    res.norm.y *= d;
+    res.dist = p.dist * d;
+    return res;
+}
+
+////////////////////////// Аффинное преобразование ////////////////////////////
+
+Line2d Affin2d::operator() ( const Line2d & p ) const
+{
+    Line2d res ( null2d, 0 );
+    Def<Affin2d> back = ~(*this);
+    if ( ! back.isDef ) return res;
+    res.norm.x = p.norm.x * back.t.x.x + p.norm.y * back.t.y.x;
+    res.norm.y = p.norm.x * back.t.x.y + p.norm.y * back.t.y.y;
+    double d = norm2 ( res.norm );
+    if ( ! d ) return res;
+    d = 1 / d;
+    res.norm.x *= d;
+    res.norm.y *= d;
+    res.dist = ( p.norm * back.s + p.dist ) * d;
+    return res;
+}
+
 ///////////////////////////////// Круг ////////////////////////////////////////
 
 // Площадь

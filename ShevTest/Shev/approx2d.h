@@ -52,6 +52,7 @@ Line2d getLineU ( CCArrRef<Vector2d> & point )
 //************************* 11.12.2019 ******************************//
 
 Def<Line2d> getLineR ( CCArrRef<Vector2d> & point, ArrRef<double> & mass );
+Def<Line2d> getLineRM( CCArrRef<Vector2d> & point, ArrRef<double> & mass );
 
 
 //************************* 06.12.2006 ******************************//
@@ -121,6 +122,26 @@ Def<Ellipse2d> getEllipsePlg ( CArrRef<Vector2d> poly );
 //************************ 06.09.2010 *******************************//
 
 Def<Rectangle2d> getRectanglePlg ( CArrRef<Vector2d> poly );
+
+
+//************************ 27.09.2021 *******************************//
+//
+//             Совмещение двух выпуклых многоугольников
+//
+//************************ 27.09.2021 *******************************//
+
+Def<Conform2d> overlayConvexPolygons ( CCArrRef<Vector2d> & vert1, CCArrRef<Vector2d> & vert2 );
+
+
+//************************ 07.02.2022 *******************************//
+//
+//         Наложение группы точек на выпуклый многоугольник
+//          при помощи преобразования сохраняющего площадь
+//
+//************************ 07.02.2022 *******************************//
+
+bool overlayPointsOnConvexPolygon ( CCArrRef<Vector2d> & point, CCArrRef<Line2d> & line, LinTran2d & res );
+bool overlayPointsOnConvexPolygon ( CCArrRef<Vector2d> & point, CCArrRef<Line2d> & line, Affin2d & res );
 
 
 //************************ 13.07.2005 *******************************//
@@ -214,7 +235,7 @@ Def<Vector2d> getNearPointU ( CArrRef<Vector2d> point );
 //
 //                     Сплайн второго порядка
 //
-//************************* 30.07.2017 ******************************//
+//************************* 30.11.2021 ******************************//
 
 class Spline2d
 {
@@ -233,6 +254,16 @@ public:
     Vector2d getNormal ( double par ) const
     {
         return ( b + a * ( par + par ) ).rightPerpendicular().setNorm2();
+    }
+    Def<double> getParFromX ( double x ) const;
+    Def<double> getParFromY ( double y ) const;
+    double getX ( double par ) const
+    {
+        return c.x + ( b.x + a.x * par ) * par;
+    }
+    double getY ( double par ) const
+    {
+        return c.y + ( b.y + a.y * par ) * par;
     }
     double getLength ( double par = 1 ) const;
     double getCurvature ( double par ) const;

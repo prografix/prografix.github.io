@@ -1,4 +1,5 @@
 
+#include "tune.h"
 #include "math.h"
 #include "approx.h"
 #include "LinAlg.h"
@@ -12,10 +13,10 @@
 #include "moment2d.h"
 #include "approx2d.h"
 #include "Vector2d.h"
+#include "Vector4d.h"
 #include "ShevArray.h"
 #include "intersect2d.h"
-
-const double M_PI = 3.14159265358979323846;
+#include "WireModel.h"
 
 //************************* 01.08.2006 ******************************//
 //
@@ -366,6 +367,13 @@ Def<Line2d> getLineR ( CCArrRef<Vector2d> & arr, ArrRef<double> & mass )
     return res;
 }
 
+Def<Line2d> getLineRM ( CCArrRef<Vector2d> & arr, ArrRef<double> & mass )
+{
+    Def<Line2d> res;
+    //approxRM ( arr, mass, res );
+    return res;
+}
+
 //************************* 06.12.2006 ******************************//
 //
 //           Аппроксимация прямой набора из n отрезков
@@ -544,6 +552,356 @@ Def<Ellipse2d> getEllipsePlg ( CArrRef<Vector2d> poly )
 Def<Rectangle2d> getRectanglePlg ( CArrRef<Vector2d> poly )
 {
     return getRectangle ( momentum2plg ( poly ) );
+}
+
+//************************ 27.09.2021 *******************************//
+//
+//             Совмещение двух выпуклых многоугольников
+//
+//************************ 27.09.2021 *******************************//
+
+Def<Vector4d> overlayConvexPolygon ( const double a, const double b, CCArrRef<Vector2d> & vert, CCArrRef<Line2d> & line ) 
+{
+    Vector4d arr[5];
+    arr[0] = Vector4d ( 1, 1, 1, 1 );
+    arr[1] = Vector4d ( -1., 0., 0., 0. );
+    arr[2] = Vector4d ( 0., -1., 0., 0. );
+    arr[3] = Vector4d ( 0., 0., -1., 0. );
+    arr[4] = Vector4d ( 0., 0., 0., -1. );
+    for ( nat k = 0; k < 100; ++k )
+    {
+        Vector4d & a0 = arr[0];
+        const Vector2d o ( a0.x1, a0.x2 );
+        const Vector2d w ( a + b * a0.x3, b - a * a0.x3 );
+        double max = -1;
+        nat i, im, km;
+        for ( i = 0; i < line.size(); ++i )
+        {
+            const Line2d & li = line[i];
+            const Vector2d u ( w * li.norm, w % li.norm );
+            nat jm = 0;
+            double pmax = u * vert[0];
+            for ( nat j = 1; j < vert.size(); ++j )
+            {
+                const double p = u * vert[j];
+                if ( pmax < p ) pmax = p, jm = j;
+            }
+            pmax += li % o;
+            if ( max < pmax ) max = pmax, im = i, km = jm;
+        }
+        const double dist = max + a0.x4;
+        if ( dist < 1e-4 )
+            return a0;
+        const Line2d & li = line[im];
+        const Vector2d & vm = vert[km];
+        const Vector4d cor ( li.norm.x, li.norm.y, li.norm * vm * b + li.norm % vm * a, 1. );
+        nat ib = 0;
+        double sg;
+        for ( i = 1; i <= 4; ++i )
+        {
+            const Vector4d & v = arr[i];
+            double t = cor * v;
+            if ( t > -1e-8 ) continue;
+            t = 1./ t;
+            if ( ib == 0 )
+            {
+                max = v.x4 * t;
+                ib = i;
+                sg = t;
+            }
+            else
+            {
+                const double s = v.x4 * t;
+                if ( s < max ) max = s, ib = i, sg = t;
+            }
+        }
+        if ( ib == 0 )
+        {
+            return Def<Vector4d>();
+        }
+        const Vector4d & v = arr[ib];
+        a0 -= v * ( dist * sg );
+        for ( i = 1; i <= 4; ++i )
+        {
+            if ( i == ib ) continue;
+            Vector4d & ai = arr[i];
+            ai -= v * ( ( cor * ai ) * sg );
+            ai *= ( 1./ sqrt ( ai * ai ) );
+        }
+    }
+    return Def<Vector4d>();
+}
+
+Def<Conform2d> overlayConvexPolygon ( CCArrRef<Vector2d> & vert1, CCArrRef<Vector2d> & vert2 )
+{
+    nat i;
+    Def<Conform2d> res;
+// Приведём многоугольники к стандартному виду
+    const Def<Vector2d> o1 = centerPlg ( vert1 );
+    if ( ! o1.isDef ) return res;
+    const Def<Vector2d> o2 = centerPlg ( vert2 );
+    if ( ! o2.isDef ) return res;
+    DynArray<Vector2d> poly1 ( vert1.size() ), poly2 ( vert2.size() );
+    for ( i = 0; i < vert1.size(); ++i ) poly1[i] = vert1[i] - o1;
+    for ( i = 0; i < vert2.size(); ++i ) poly2[i] = vert2[i] - o2;
+    double d = norm2 ( poly2[0] );
+    for ( i = 1; i < poly2.size(); ++i )
+    {
+        double t = norm2 ( poly2[i] );
+        if ( d < t ) d = t;
+    }
+    if ( ! d ) return res;
+    const double c = 1 / d;
+    const Conform2d magn ( Spin2d(), null2d, c );
+    const Conform2d conf1 = magn * Conform2d ( Spin2d(), -o1 );
+    const Conform2d conf2 = magn * Conform2d ( Spin2d(), -o2 );
+    poly1 *= c;
+    poly2 *= c;
+// Получение границ многоугольника в виде прямых линий
+    DynArray<Line2d> line ( poly2.size() );
+    if ( ! points2lines ( poly2, line ) ) return res;
+// Выбор лучшего решения из n вариантов
+    const nat n = 40;
+    const double step = M_2PI / n;
+    double max = -1e9;
+    nat im;
+    for ( i = 0; i < n; ++i )
+    {
+        const double a = i * step;
+        const double cosa = cos(a);
+        const double sina = sin(a);
+        Def<Vector4d> d = overlayConvexPolygon ( cosa, sina, poly1, line );
+        if ( d.isDef && max < d.x4 )
+        {
+            max = d.x4;
+            res.spin = Spin2d ( atan2 ( sina - cosa * d.x3, cosa + sina * d.x3 ) );
+            res.trans.x = d.x1;
+            res.trans.y = d.x2;
+            im = i;
+        }
+    }
+    if ( max > -1e9 ) res = ~conf2 * res * conf1;
+    return res;
+}
+
+Def<Conform2d> overlayConvexPolygons ( CCArrRef<Vector2d> & vert1, CCArrRef<Vector2d> & vert2 )
+{
+    Def<Conform2d> res;
+    if ( vert1.size() < 3 || vert2.size() < 3 ) return res;
+// Сделаем так, чтобы вершины меньшего по площади многоугольника выходили
+// за пределы большего многоугольника минимальным образом.
+    const double area1 = area ( vert1 );
+    const double area2 = area ( vert2 );
+    if ( area1 < area2 )
+    {
+        if ( area2 <= 0 ) return res;
+        res = overlayConvexPolygon ( vert1, vert2 );
+    }
+    else
+    {
+        if ( area1 <= 0 ) return res;
+        res = overlayConvexPolygon ( vert2, vert1 );
+        if ( res.isDef ) res = ~res;
+    }
+    return res;
+}
+
+//************************ 07.02.2022 *******************************//
+//
+//         Наложение группы точек на выпуклый многоугольник
+//          при помощи преобразования сохраняющего площадь
+//
+//************************ 07.02.2022 *******************************//
+
+bool overlayPointsOnConvexPolygon ( CCArrRef<Vector2d> & point, CCArrRef<Line2d> & line, LinTran2d & res )
+{
+    if ( point.size() < 3 || line.size() < 3 ) return false;
+// Инициализация области допустимых преобразований
+    List< Vertex<5> > stor;
+    WireModel<5> model;
+    model.simplex ( 4*(5+1), stor );
+    Double<5> dn;
+    dn.fill ( 2 );
+    model.vlist -= dn;
+// Поиск оптимального преобразования
+    for ( nat i = 0; i < 1000; ++i )
+    {
+// Поиск максимального решения
+        Double<5> best;
+        best.d4 = -1e9;
+        Show< Vertex<5> > show ( model.vlist );
+        if ( show.top() )
+        do
+        {
+            const Vertex<5> * p = show.cur();
+            const Double<5> & pc = p->coor;
+            const double c = pc.d0 * pc.d3 - pc.d1 * pc.d2 - 1;
+            for ( nat k = 0; k < 5; ++k )
+            {
+                const Vertex<5> * v = p->vertex[k];
+                if ( v < p ) continue;
+                const Double<5> & vc = v->coor;
+                const double a0 = vc.d0 - pc.d0;
+                const double a1 = vc.d1 - pc.d1;
+                const double a2 = vc.d2 - pc.d2;
+                const double a3 = vc.d3 - pc.d3;
+                const double a = a0 * a3 - a1 * a2;
+                const double b = a0 * pc.d3 + a3 * pc.d0 - a1 * pc.d2 - a2 * pc.d1;
+                double r[2];
+                const nat n = root2 ( a, b, c, r );
+                for ( nat j = 0; j < n; ++j )
+                {
+                    const double t = r[j];
+                    if ( t >= 0 && t <= 1 )
+                    {
+                        const double h = pc.d4 + t * ( vc.d4 - pc.d4 );
+                        if ( best.d4 < h )
+                        {
+                            best.d4 = h;
+                            best.d0 = pc.d0 + t * a0;
+                            best.d1 = pc.d1 + t * a1;
+                            best.d2 = pc.d2 + t * a2;
+                            best.d3 = pc.d3 + t * a3;
+                        }
+                    }
+                }
+            }
+        }
+        while ( show.next() );
+// Поиск максимального нарушения ограничений для выбранного решения
+        nat km;
+        Vector2d pm;
+        double max = 0.;
+        for ( nat j = 0; j < point.size(); ++j )
+        {
+            const Vector2d & p = point[j];
+            const Vector2d p1 ( best.d0*p.x + best.d1*p.y,
+                                best.d2*p.x + best.d3*p.y );
+            for ( nat k = 0; k < line.size(); ++k )
+            {
+                const double t = line[k] % p1;
+                if ( max < t ) max = t, pm = p, km = k;
+            }
+        }
+        max += best.d4;
+// Если нарушение мало, то завершение программы
+        if ( max < 1e-5 )
+        {
+            res.x = Vector2d ( best.d0, best.d1 ); 
+            res.y = Vector2d ( best.d2, best.d3 );
+            return true;
+        }
+// Применение ограничения к области допустимых преобразований
+        const double nx = line[km].norm.x;
+        const double ny = line[km].norm.y;
+        Double<6> plane;
+        plane.d0 = nx * pm.x;
+        plane.d1 = nx * pm.y;
+        plane.d2 = ny * pm.x;
+        plane.d3 = ny * pm.y;
+        plane.d4 = 1;
+        plane.d5 = line[km].dist;
+        model.cut ( plane, stor );
+    }
+    return false;
+}
+
+bool overlayPointsOnConvexPolygon ( CCArrRef<Vector2d> & point, CCArrRef<Line2d> & line, Affin2d & res )
+{
+    if ( point.size() < 3 || line.size() < 3 ) return false;
+// Инициализация области допустимых преобразований
+    List< Vertex<7> > stor;
+    WireModel<7> model;
+    model.simplex ( 4*(7+1), stor );
+    Double<7> dn;
+    dn.fill ( 2 );
+    model.vlist -= dn;
+// Поиск оптимального преобразования
+    for ( nat i = 0; i < 1000; ++i )
+    {
+// Поиск максимального решения
+        Double<7> best;
+        best.d6 = -1e9;
+        Show< Vertex<7> > show ( model.vlist );
+        if ( show.top() )
+        do
+        {
+            const Vertex<7> * p = show.cur();
+            const Double<7> & pc = p->coor;
+            const double c = pc.d0 * pc.d4 - pc.d1 * pc.d3 - 1;
+            for ( nat k = 0; k < 7; ++k )
+            {
+                const Vertex<7> * v = p->vertex[k];
+                if ( v < p ) continue;
+                const Double<7> & vc = v->coor;
+                const double a0 = vc.d0 - pc.d0;
+                const double a1 = vc.d1 - pc.d1;
+                const double a3 = vc.d3 - pc.d3;
+                const double a4 = vc.d4 - pc.d4;
+                const double a = a0 * a4 - a1 * a3;
+                const double b = a0 * pc.d4 + a4 * pc.d0 - a1 * pc.d3 - a3 * pc.d1;
+                double r[2];
+                const nat n = root2 ( a, b, c, r );
+                for ( nat j = 0; j < n; ++j )
+                {
+                    const double t = r[j];
+                    if ( t >= 0 && t <= 1 )
+                    {
+                        const double h = pc.d6 + t * ( vc.d6 - pc.d6 );
+                        if ( best.d6 < h )
+                        {
+                            best.d6 = h;
+                            best.d0 = pc.d0 + t * a0;
+                            best.d1 = pc.d1 + t * a1;
+                            best.d2 = pc.d2 + t * ( vc.d2 - pc.d2 );
+                            best.d3 = pc.d3 + t * a3;
+                            best.d4 = pc.d4 + t * a4;
+                            best.d5 = pc.d5 + t * ( vc.d5 - pc.d5 );
+                        }
+                    }
+                }
+            }
+        }
+        while ( show.next() );
+// Поиск максимального нарушения ограничений для выбранного решения
+        nat km;
+        Vector2d pm;
+        double max = 0.;
+        for ( nat j = 0; j < point.size(); ++j )
+        {
+            const Vector2d & p = point[j];
+            const Vector2d p1 ( best.d0*p.x + best.d1*p.y + best.d2,
+                                best.d3*p.x + best.d4*p.y + best.d5 );
+            for ( nat k = 0; k < line.size(); ++k )
+            {
+                const double t = line[k] % p1;
+                if ( max < t ) max = t, pm = p, km = k;
+            }
+        }
+        max += best.d6;
+// Если нарушение мало, то завершение программы
+        if ( max < 1e-5 )
+        {
+            res.t.x = Vector2d ( best.d0, best.d1 ); 
+            res.t.y = Vector2d ( best.d3, best.d4 );
+            res.s   = Vector2d ( best.d2, best.d5 );
+            return true;
+        }
+// Применение ограничения к области допустимых преобразований
+        const double nx = line[km].norm.x;
+        const double ny = line[km].norm.y;
+        Double<8> plane;
+        plane.d0 = nx * pm.x;
+        plane.d1 = nx * pm.y;
+        plane.d2 = nx;
+        plane.d3 = ny * pm.x;
+        plane.d4 = ny * pm.y;
+        plane.d5 = ny;
+        plane.d6 = 1;
+        plane.d7 = line[km].dist;
+        model.cut ( plane, stor );
+    }
+    return false;
 }
 
 //************************* 13.07.2005 ******************************//
@@ -1376,7 +1734,7 @@ Def<Vector2d> getNearPointU ( CArrRef<Vector2d> p )
 //
 //                     Сплайн второго порядка
 //
-//************************* 30.07.2017 ******************************//
+//************************* 30.11.2021 ******************************//
 
 Spline2d::Spline2d ( const Vector2d & p1, const Vector2d & p2, const Vector2d & n1, const Vector2d & n2 ) : c(p1), isDef(false)
 {
@@ -1405,6 +1763,28 @@ Def<Vector2d> Spline2d::getPoint ( const Vector2d & norm ) const
     const double s = norm * a;
     if ( s != 0 ) res = getPoint ( -0.5 * ( norm * b ) / s );
     return res;
+}
+
+Def<double> Spline2d::getParFromX ( double x ) const
+{
+    double p[2];
+    switch ( root2 ( a.x, b.x, c.x - x, p ) )
+    {
+    case 1: return p[0];
+    case 2: return fabs ( p[0] - 0.5 ) < fabs ( p[1] - 0.5 ) ? p[0] : p[1];
+    }
+    return Def<double>();
+}
+
+Def<double> Spline2d::getParFromY ( double y ) const
+{
+    double p[2];
+    switch ( root2 ( a.y, b.y, c.y - y, p ) )
+    {
+    case 1: return p[0];
+    case 2: return fabs ( p[0] - 0.5 ) < fabs ( p[1] - 0.5 ) ? p[0] : p[1];
+    }
+    return Def<double>();
 }
 
 inline double funcX ( double a, double b, double c, double x )
