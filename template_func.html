@@ -133,6 +133,20 @@ const T & _max ( const T & i1, const T & i2, const T & i3, const T & i4, const T
     return _max ( i1, _max ( i2, i3, i4, i5 ) );
 }
 </pre>
+Минимум и максимум с присваиванием первому элементу:
+<pre>
+template<class T> inline 
+bool _mina ( T & i1, const T & i2 )
+{
+    return i1 > i2 ? i1 = i2, true : false;
+}
+
+template<class T> inline 
+bool _maxa ( T & i1, const T & i2 )
+{
+    return i1 < i2 ? i1 = i2, true : false;
+}
+</pre>
 </p>
 <p>
 Исходники находятся в файле <a href="source/source.zip">Template.h</a>.
@@ -144,14 +158,5 @@ const T & _max ( const T & i1, const T & i2, const T & i3, const T & i4, const T
 </td></div>
 </table>
 </div>
-<script type="text/javascript">
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
-<script type="text/javascript">
-try {
-var pageTracker = _gat._getTracker("UA-10825496-1");
-pageTracker._trackPageview();
-} catch(err) {}</script>
 </body>
 </html>
