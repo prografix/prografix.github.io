@@ -18,6 +18,8 @@
 #include "intersect2d.h"
 #include "WireModel.h"
 
+bool points2lines ( CCArrRef<Vector2d> & poly, ArrRef<Line2d> & line );
+
 //************************* 01.08.2006 ******************************//
 //
 //    Аппроксимация прямой набора из n двухмерных точек

@@ -115,6 +115,18 @@ const T & _max ( const T & i1, const T & i2, const T & i3, const T & i4, const T
     return _max ( i1, _max ( i2, i3, i4, i5 ) );
 }
 
+template<class T> inline 
+bool _mina ( T & i1, const T & i2 )
+{
+    return i1 > i2 ? i1 = i2, true : false;
+}
+
+template<class T> inline 
+bool _maxa ( T & i1, const T & i2 )
+{
+    return i1 < i2 ? i1 = i2, true : false;
+}
+
 /************************ Set1 ***************************/
 
 template<class A>
@@ -452,6 +464,7 @@ template <class T> inline T & operator <= ( T & v, const NegXY & ) { v.x = - v.x
 /************************* Def ***************************/
 
 template <class T> struct BaseType { typedef T type; };
+template <> struct BaseType <int> { typedef Set1<int> type; };
 template <> struct BaseType <nat> { typedef Set1<nat> type; };
 template <> struct BaseType <bool> { typedef Set1<bool> type; };
 template <> struct BaseType <double> { typedef Set1<double> type; };

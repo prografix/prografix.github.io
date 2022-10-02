@@ -139,10 +139,156 @@ void momentum4pnt_test()
     }
 }
 
+double func1 ( nat n, const Vector2d * p, Vector2d & o )
+{
+    double sum = 0;
+    for ( nat i = 0; i < n; ++i ) sum += norm2 ( p[i] - o );
+    return sum;
+}
+
+double func3 ( nat n, const Vector2d * p, Vector2d & o )
+{
+    double sum = 0;
+    for ( nat i = 0; i < n; ++i ) sum += _pow3 ( norm2 ( p[i] - o ) );
+    return sum;
+}
+
+double func4 ( nat n, const Vector2d * p, Vector2d & o )
+{
+    double sum = 0;
+    for ( nat i = 0; i < n; ++i ) sum += _pow2 ( qmod ( p[i] - o ) );
+    return sum;
+}
+
+Def<Vector2d> centerPnt3p ( CCArrRef<Vector2d> & point, double a )
+{
+    const nat n = point.size();
+    if ( ! n ) return Def<Vector2d>();
+    nat i;
+    Vector2d o ( 0, 0 );
+    for ( nat i = 0; i < n; ++i ) o += point[i];
+    o /= n;
+    for ( i = 0; i < 6; ++i )
+    {
+        Vector2d o1 ( 0, 0 );
+        double c = 0;
+        for ( nat j = 0; j < n; ++j )
+        {
+            double d = norm2 ( point[j] - o );
+            o1 += d * ( a * point[j] + (1-a) * o );
+            c += d;
+        }
+        if ( c ) o1 /= c;
+        o = o1;
+    }
+    return o;
+}
+
+Def<Vector2d> center3pnt ( CCArrRef<Vector2d> & point )
+{
+    const nat n = point.size();
+    if ( ! n ) return Def<Vector2d>();
+    nat i;
+    Vector2d o ( 0, 0 );
+    for ( i = 0; i < n; ++i ) o += point[i];
+    o /= n;
+    for ( i = 0; i < 19; ++i )
+    {
+        Vector2d o1 ( 0, 0 );
+        double c = 0;
+        for ( nat j = 0; j < n; ++j )
+        {
+            double d = norm2 ( point[j] - o );
+            o1 += d * ( 2 * point[j] + o );
+            c += d;
+        }
+        if ( c ) o1 /= 3 * c;
+        if ( i > 10 && norm2 (o-o1) < 1e-4 )
+        {
+            display << i << NL; break;
+        }
+//display << i << norm2 ( o - o1 ) << NL;
+        o = o1;
+    }
+    return o;
+}
+
+Def<Vector2d> center4pnt ( CCArrRef<Vector2d> & point, double a )
+{
+    const nat n = point.size();
+    if ( ! n ) return Def<Vector2d>();
+    nat i;
+    Vector2d o ( 0, 0 );
+    for ( i = 0; i < n; ++i ) o += point[i];
+    o /= n;
+    for ( i = 0; i < 6; ++i )
+    {
+        Vector2d o1 ( 0, 0 );
+        double c = 0;
+        for ( nat j = 0; j < n; ++j )
+        {
+            double d = qmod ( point[j] - o );
+            o1 += d * ( a * point[j] + (1-a) * o );
+            c += d;
+        }
+        if ( c ) o1 /= c;
+ //display << i << norm2 ( o- o1 ) << NL;
+        if ( norm2 ( o- o1 ) < 1e-4 ) break;
+        o = o1;
+    }
+    if(i>9 )
+        i=i;
+    return o;
+}
+
+void testmom ()
+{
+    nat i;
+    static PRand rand;
+    const nat n = 9;
+    FixArray<Vector2d, n> p;
+    /*p[0] = Vector2d ( 0, 0 );
+    p[1] = Vector2d ( 1, 0 );
+    p[2] = Vector2d ( 0, 1 );
+    p[3] = 
+    p[4] = 
+    p[5] = Vector2d ( 100, 100 );*/
+    //Vector2d o = centerPnt4p ( p );
+    //double f = func4 ( n, p(), o );
+    for ( nat j = 0; j < 100; ++j )
+    {
+        for ( i = 0; i < n; ++i )
+        {
+            p[i].x = 9*rand();
+            p[i].y = 6*rand();
+        }
+        if ( j == 54 )
+        {
+            Vector2d o = center4pnt ( p );
+            drawPoint ( o, 1, 0, 0 );
+            drawPoints  ( p, 0, 1, 1 );
+        }
+ //break;
+        /*double f = func4 ( n, p(), o );
+        double f1 = func4 ( n, p(), Vector2d ( o.x+1e-4, o.y ) ) - f;
+        double f2 = func4 ( n, p(), Vector2d ( o.x, o.y+1e-4 ) ) - f;
+        double f3 = func4 ( n, p(), Vector2d ( o.x-1e-4, o.y ) ) - f;
+        double f4 = func4 ( n, p(), Vector2d ( o.x, o.y-1e-4 ) ) - f;
+        display << f1 << f2 << f3 << f4 << NL;
+        /*
+        double a = 1.5 + i*0.01;
+        Vector2d o1 = centerPnt4p ( p, a );
+        display << a << func1 ( n, p(), o1 ) - f << NL;*/
+    }
+    display << NL;
+}
+
+
 void momentum2d_test()
 {
     drawNewList2d ();
 //    momentum2pnt_test();
-    momentum4pnt_test();
+    testmom ();
+//    momentum4pnt_test();
     endNewList();
 }
