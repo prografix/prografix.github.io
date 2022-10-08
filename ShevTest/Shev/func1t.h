@@ -400,16 +400,16 @@ ArrRef<T> mergeSort321 ( ArrRef<T> & arr, ArrRef<T> & buf )
 //*********************** 30.08.2006 **************************//
 //
 //          Порядковые статистики ( 0 <= i < a.size() )
+//              buf.size() >= 2 * a.size(),
 //
-//*********************** 23.01.2016 **************************//
+//*********************** 11.12.2019 **************************//
 
 template <class T> 
-Def<T> selectR ( CCArrRef<T> & a, nat i )
+Def<T> selectR ( CCArrRef<T> & a, nat i, ArrRef<nat> & buf )
 {
     Def<T> res;
     nat n = a.size();
     if ( i >= n ) return res;
-    CmbArray<nat, 80> buf ( n + n );
     nat * buf1 = buf(0);
     nat * buf2 = buf(n);
     nat * s = buf1;
@@ -455,6 +455,12 @@ Def<T> selectR ( CCArrRef<T> & a, nat i )
         d = d == buf1 ? buf2 : buf1;
     }
     return res;
+}
+
+template <class T> inline
+Def<T> selectR ( CCArrRef<T> & a, nat i )
+{
+    return selectR ( a, i, CmbArray<nat, 80> ( 2*a.size() ) );
 }
 
 //*********************** 30.08.2006 **************************//

@@ -58,17 +58,21 @@ public:
 
 class PNormalRand : public NormalRand
 {
+    bool ready;
+    double v;
     PRand rand;
 public:
-    explicit PNormalRand ( nat32 u = 0 ) : rand ( u ) {}
+    explicit PNormalRand ( nat32 u = 0 ) : ready ( false ), rand ( u ) {}
     double operator() ();
 };
 
 class QNormalRand : public NormalRand
 {
+    bool ready;
+    double v;
     QRand q1, q2;
 public:
-    explicit QNormalRand ( nat32 p1 = 2, nat32 p2 = 3 ) : q1(p1), q2(p2) {}
+    explicit QNormalRand ( nat32 p1 = 2, nat32 p2 = 3 ) : ready ( false ), q1(p1), q2(p2) {}
     double operator() ();
 };
 

@@ -1,11 +1,163 @@
 
 #pragma once
 
-#include "typedef.h"
+#include "template.h"
 
 inline float qmod ( const float & x ) { return x * x; }
 
 inline double qmod ( const double & x ) { return x * x; }
+
+
+//************************ 15.12.2021 *************************//
+//
+//              Квадратная матрица 2-го порядка 
+//
+//************************ 15.12.2021 *************************//
+
+template <class T> class Matrix2
+{
+public:
+    T aa, ab,
+      ba, bb;
+
+    Matrix2 & set ( const T & v )
+    {
+        aa = ab =
+        ba = bb = v;
+        return *this;
+    }
+
+    Def<Matrix2> operator ~ () const
+    {
+        SLU2<T> slu;
+        slu.matrix() = *this;
+        slu.ac = 1; slu.bc = 0;
+        Def<Matrix2> m;
+        if ( ! slu.gauss ( m.aa, m.ba ) ) return m;
+        slu.ac = 0; slu.bc = 1; 
+        m.isDef = slu.gauss ( m.ab, m.bb );
+        return m;
+    }
+
+    T determinant() const
+    {
+        return aa * bb - ab * ba;
+    }
+};
+
+template <class T> Matrix2<T> operator * ( const Matrix2<T> & l, const Matrix2<T> & r )
+{
+    Matrix2<T> m;
+    m.aa = l.aa * r.aa + l.ab * r.ba; m.ab = l.aa * r.ab + l.ab * r.bb;
+    m.ba = l.ba * r.aa + l.bb * r.ba; m.bb = l.ba * r.ab + l.bb * r.bb;
+    return m;
+}
+
+
+//*************************************************************//
+//
+//              Квадратная матрица 3-го порядка 
+//
+//************************ 15.12.2021 *************************//
+
+template <class T> class Matrix3
+{
+public:
+    T aa, ab, ac,
+      ba, bb, bc,
+      ca, cb, cc;
+
+    Matrix3 & set ( const T & v )
+    {
+        aa = ab = ac = 
+        ba = bb = bc = 
+        ca = cb = cc = v;
+        return *this;
+    }
+
+    T determinant() const
+    {
+        return  ( ab * bc - ac * bb ) * ca +
+                ( ac * ba - aa * bc ) * cb +
+                ( aa * bb - ab * ba ) * cc;
+    }
+};
+
+
+//*************************************************************//
+//
+//              Квадратная матрица 4-го порядка 
+//
+//************************ 15.12.2021 *************************//
+
+template <class T> class Matrix4
+{
+public:
+    T aa, ab, ac, ad,
+      ba, bb, bc, bd,
+      ca, cb, cc, cd,
+      da, db, dc, dd;
+
+    Matrix4 & set ( const T & v )
+    {
+        aa = ab = ac = ad =
+        ba = bb = bc = bd =
+        ca = cb = cc = cd =
+        da = db = dc = dd = v;
+        return *this;
+    }
+
+    T determinant() const
+    {
+        Matrix3<T> m;
+        T a, b, c;
+        const double ma = qmod ( ad );
+        const double mb = qmod ( bd );
+        const double mc = qmod ( cd );
+        const double md = qmod ( dd );
+        if ( md >= mc && md >= mb && md >= ma )
+        {
+            if ( ! dd ) return 0;
+            a = da / dd;
+            b = db / dd;
+            c = dc / dd;
+            m.aa = aa - a * ad;   m.ab = ab - b * ad;   m.ac = ac - c * ad;
+            m.ba = ba - a * bd;   m.bb = bb - b * bd;   m.bc = bc - c * bd;
+            m.ca = ca - a * cd;   m.cb = cb - b * cd;   m.cc = cc - c * cd;
+            return dd * m.determinant();
+        }
+        if ( mc >= mb && mc >= ma )
+        {
+            a = ca / cd;
+            b = cb / cd;
+            c = cc / cd;
+            m.aa = aa - a * ad;   m.ab = ab - b * ad;   m.ac = ac - c * ad;
+            m.ba = ba - a * bd;   m.bb = bb - b * bd;   m.bc = bc - c * bd;
+            m.ca = da - a * dd;   m.cb = db - b * dd;   m.cc = dc - c * dd;
+            return -cd * m.determinant();
+        }
+        if ( mb >= ma )
+        {
+            a = ba / bd;
+            b = bb / bd;
+            c = bc / bd;
+            m.aa = aa - a * ad;   m.ab = ab - b * ad;   m.ac = ac - c * ad;
+            m.ba = ca - a * cd;   m.bb = cb - b * cd;   m.bc = cc - c * cd;
+            m.ca = da - a * dd;   m.cb = db - b * dd;   m.cc = dc - c * dd;
+            return bd * m.determinant();
+        }
+        else
+        {
+            a = aa / ad;
+            b = ab / ad;
+            c = ac / ad;
+            m.aa = ba - a * bd;   m.ab = bb - b * bd;   m.ac = bc - c * bd;
+            m.ba = ca - a * cd;   m.bb = cb - b * cd;   m.bc = cc - c * cd;
+            m.ca = da - a * dd;   m.cb = db - b * dd;   m.cc = dc - c * dd;
+            return -ad * m.determinant();
+        }
+    }
+};
 
 //************************ 20.11.2002 *************************//
 //
@@ -14,11 +166,9 @@ inline double qmod ( const double & x ) { return x * x; }
 //
 //************************ 10.04.2015 *************************//
 
-template <class T1, class T2 = T1> class SLU2
+template <class T1, class T2 = T1> class SLU2 : public Matrix2<T1>
 {
 public:
-    T1 aa, ab, // aa * x + ab * y = ac
-       ba, bb; // ba * x + bb * y = bc
     T2 ac, bc;
 
 // Решение системы линейных уравнений 2-го порядка методом Гаусса
@@ -42,7 +192,7 @@ public:
         {
             const T1 c = bb / ba;
             const T1 a = ab - c * aa;
-            if ( a == 0 ) return false;
+            if ( ! a ) return false;
             ( v1 = bc ) /= ba;
             ( v2 = v1 ) *= aa;
             ( ( y = ac ) -= v2 ) /= a;
@@ -54,10 +204,15 @@ public:
 
     SLU2 & fill ( const T1 & v1, const T2 & v2 )
     {
-        aa = ab =
-        ba = bb = v1;
+        set ( v1 );
         ac = bc = v2;
         return *this;
+    }
+
+    Matrix2<T1> & matrix ()
+    {
+        
+        return (Matrix2<T1> &) *this;
     }
 };
 
@@ -67,21 +222,6 @@ public:
 //         Выбор ведущего элемента по столбцам
 //
 //************************ 24.04.2019 *************************//
-
-template <class T> class Matrix3
-{
-public:
-    T aa, ab, ac,
-      ba, bb, bc,
-      ca, cb, cc;
-
-    T determinant() const
-    {
-        return  ( ab * bc - ac * bb ) * ca +
-                ( ac * ba - aa * bc ) * cb +
-                ( aa * bb - ab * ba ) * cc;
-    }
-};
 
 template <class T1, class T2 = T1> class SLU3 : public Matrix3<T1>
 {
@@ -135,9 +275,7 @@ public:
 
     SLU3 & fill ( const T1 & v1, const T2 & v2 )
     {
-        aa = ab = ac = 
-        ba = bb = bc = 
-        ca = cb = cc = v1;
+        set ( v1 );
         ad = bd = cd = v2;
         return *this;
     }
@@ -149,66 +287,6 @@ public:
 //         Выбор ведущего элемента по столбцам
 //
 //************************ 24.04.2019 *************************//
-
-template <class T> class Matrix4
-{
-public:
-    T aa, ab, ac, ad,
-      ba, bb, bc, bd,
-      ca, cb, cc, cd,
-      da, db, dc, dd;
-
-    T determinant() const
-    {
-        Matrix3<T> m;
-        T a, b, c;
-        const double ma = qmod ( ad );
-        const double mb = qmod ( bd );
-        const double mc = qmod ( cd );
-        const double md = qmod ( dd );
-        if ( md >= mc && md >= mb && md >= ma )
-        {
-            if ( dd == 0 ) return 0;
-            a = da / dd;
-            b = db / dd;
-            c = dc / dd;
-            m.aa = aa - a * ad;   m.ab = ab - b * ad;   m.ac = ac - c * ad;
-            m.ba = ba - a * bd;   m.bb = bb - b * bd;   m.bc = bc - c * bd;
-            m.ca = ca - a * cd;   m.cb = cb - b * cd;   m.cc = cc - c * cd;
-            return dd * m.determinant();
-        }
-        if ( mc >= mb && mc >= ma )
-        {
-            a = ca / cd;
-            b = cb / cd;
-            c = cc / cd;
-            m.aa = aa - a * ad;   m.ab = ab - b * ad;   m.ac = ac - c * ad;
-            m.ba = ba - a * bd;   m.bb = bb - b * bd;   m.bc = bc - c * bd;
-            m.ca = da - a * dd;   m.cb = db - b * dd;   m.cc = dc - c * dd;
-            return -cd * m.determinant();
-        }
-        if ( mb >= ma )
-        {
-            a = ba / bd;
-            b = bb / bd;
-            c = bc / bd;
-            m.aa = aa - a * ad;   m.ab = ab - b * ad;   m.ac = ac - c * ad;
-            m.ba = ca - a * cd;   m.bb = cb - b * cd;   m.bc = cc - c * cd;
-            m.ca = da - a * dd;   m.cb = db - b * dd;   m.cc = dc - c * dd;
-            return bd * m.determinant();
-        }
-        else
-        {
-            a = aa / ad;
-            b = ab / ad;
-            c = ac / ad;
-            m.aa = ba - a * bd;   m.ab = bb - b * bd;   m.ac = bc - c * bd;
-            m.ba = ca - a * cd;   m.bb = cb - b * cd;   m.bc = cc - c * cd;
-            m.ca = da - a * dd;   m.cb = db - b * dd;   m.cc = dc - c * dd;
-            return -ad * m.determinant();
-        }
-    }
-};
 
 template <class T1, class T2 = T1> class SLU4 : public Matrix4<T1>
 {
@@ -231,7 +309,7 @@ public:
         const double md = qmod ( dd );
         if ( md >= mc && md >= mb && md >= ma )
         {
-            if ( dd == 0 ) return false;
+            if ( ! dd ) return false;
             a = da / dd;
             b = db / dd;
             c = dc / dd;
@@ -294,10 +372,7 @@ public:
 
     SLU4 & fill ( const T1 & v1, const T2 & v2 )
     {
-        aa = ab = ac = ad =
-        ba = bb = bc = bd =
-        ca = cb = cc = cd =
-        da = db = dc = dd = v1;
+        set ( v1 );
         ae = be = ce = de = v2;
         return *this;
     }
@@ -333,7 +408,7 @@ bool _sluGaussRow ( Matrix & data, nat nRow, nat nCol, nat index[], nat mRow, na
             const double t = fabs ( rk[index[i]] );
             if ( max < t ) max = t, im = i;
         }
-        if ( max == 0 ) return false;
+        if ( ! max ) return false;
         _swap ( index[k], index[im] );
         const nat ik = index[k];
 // Нормализация строки

@@ -27,3 +27,6 @@
 // Натуральное число
     typedef unsigned int nat;
 
+// Пустой тип
+    struct Void {};
+

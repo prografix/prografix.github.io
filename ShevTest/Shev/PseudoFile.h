@@ -28,10 +28,10 @@ public:
 
 class PseudoReadSeekFile : public IReadSeekFile
 {
-    CArrRef<bit8> buf;
+    CCArrRef<bit8> buf;
     nat pos;
 public:
-    explicit PseudoReadSeekFile ( CArrRef<bit8> p ) : buf(p), pos(0) {}
+    explicit PseudoReadSeekFile ( CCArrRef<bit8> & p ) : buf(p), pos(0) {}
     nat read(void * p, const nat size, const nat count);
     bool getc(void * p);
     bool seek_set(long offset);

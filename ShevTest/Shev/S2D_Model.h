@@ -13,28 +13,19 @@ public:
 
     bool operator == ( const Kit & k ) const
     {
-        for ( nat j = 0; j < N; ++j )
-            if ( a[j] != k.a[j] ) return false;
+        for ( nat j = 0; j < N; ++j ) if ( a[j] != k.a[j] ) return false;
         return true;
     }
 
     bool operator > ( const Kit & k ) const
     {
-        for ( nat j = 0; j < N; ++j )
-        {
-            if ( a[j] > k.a[j] ) return true;
-            if ( a[j] < k.a[j] ) return false;
-        }
+        for ( nat j = 0; j < N; ++j ) if ( a[j] != k.a[j] ) return a[j] > k.a[j];
         return false;
     }
 
     bool operator < ( const Kit & k ) const
     {
-        for ( nat j = 0; j < N; ++j )
-        {
-            if ( a[j] < k.a[j] ) return true;
-            if ( a[j] > k.a[j] ) return false;
-        }
+        for ( nat j = 0; j < N; ++j ) if ( a[j] != k.a[j] ) return a[j] < k.a[j];
         return false;
     }
 };
@@ -117,7 +108,7 @@ public:
     List<S2D_Edge<N> > edges;
     List<S2D_Side<N> > sides;
     List<S2D_Plane<N> > planes;
-    AVL_TreeNodeStor<SortItem<Kit<S2D_Plane<N> *, N-3>, S2D_Side<N> *> > nodes;
+    AVL_TreeNodeStor<Kit<S2D_Plane<N> *, N-3>, S2D_Side<N> *> nodes;
 };
 
 template <nat N> class S2D_Model
@@ -372,7 +363,7 @@ S2D_Model<N> & S2D_Model<N>::cut ( const Double<N+1> & plane, S2D_ModelStor<N> &
 
     List<S2D_Side<N> > stemp;
     CmbSuite<S2D_Vert<N> *, 8> varr;
-    AVL_Tree<SortItem<Kit<S2D_Plane<N> *, N-3>, S2D_Side<N> *> > tree ( & stor.nodes );
+    AVL_Tree<Kit<S2D_Plane<N> *, N-3>, S2D_Side<N> *> tree ( stor.nodes );
     for ( sides.top();; )
     {
         S2D_Side<N> * s = sides.cur();
@@ -428,11 +419,10 @@ if ( varr.size() > 2 )
                     ++k;
                 }
 //double t1 = timeInSec();
-                const SortItem<Kit<S2D_Plane<N> *, N-3>, S2D_Side<N> *> * si = 
-                    tree.find ( SortItem<Kit<S2D_Plane<N> *, N-3>, S2D_Side<N> *> ( key ) );
+                S2D_Side<N> ** si = tree.find ( key );
                 if ( si )
                 {
-                    S2D_Side<N> * p = e->side[i] = si->tail;
+                    S2D_Side<N> * p = e->side[i] = *si;
                     p->addAftLas ( & e->edgePtr[i] );
                 }
                 else
@@ -441,7 +431,7 @@ if ( varr.size() > 2 )
                     for ( nat j = 0; j < N-3; ++j ) p->plane[j] = key.a[j];
                     p->plane[N-3] = planes.las();
                     p->addAftLas ( & e->edgePtr[i] );
-                    tree.add ( SortItem<Kit<S2D_Plane<N> *, N-3>, S2D_Side<N> *> ( key, p ) );
+                    tree.add ( key, p );
                 }
             }
         }

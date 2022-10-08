@@ -8,8 +8,6 @@
 #include "../Shev/Vector4d.h"
 #include "../Shev/ShevList.h"
 #include "../Shev/ShevArray.h"
-//#include "PolyhedronErrorRecipient.h"
-//#include "../Shev/Polyhedron.h"
 #include "../Shev/DoubleN.h"
 #include "../Shev/lists.h"
 #include "../Shev/heap.h"
@@ -19,31 +17,69 @@
 
 double timeInSec();
 
-namespace
-{
-
-class TrianFacet
+class TetraFacet
 {
 public:
-    nat vertex[3], facet[3], edge[3], index;
-    Plane3d plane;
-    List1d list;
+    Vector4d vertex[4];
+    /*Plane4d plane;
+
+    bool initPlane ()
+    {
+        const Vector4d & v0 = vertex[0];
+        FixArray2<double, 3, 4> data;
+        FixArray<nat, 4> index;
+        for ( nat i = 0; i < 3; ++i )
+        {
+            const Vector4d & v = vertex[i+1];
+            ArrRef<double> & r = data[i];
+            r[0] = v.x1 - v0.x1;
+            r[1] = v.x2 - v0.x2;
+            r[2] = v.x3 - v0.x3;
+            r[3] = v.x4 - v0.x4;
+        }
+        if ( ! sluGaussRow ( data, 3, 4, index(), 3, 4 ) ) return false;
+        const nat ii = index[3];
+        double sum = 1;
+        for ( nat j = 0; j < 3; ++j ) sum += _pow2 ( data[j][ii] );
+        sum = 1 / sqrt ( sum );
+        double * p = & plane.norm.x1;
+        for ( nat k = 0; k < 3; ++k ) p[index[k]] = data[k][ii] * sum;
+        p[index[3]] = - sum;
+        const double d = plane.norm * v0;
+        if ( d < 0 )
+        {
+            plane.norm = - plane.norm;
+            plane.dist = d;
+        }
+        else
+            plane.dist = - d;
+        return true;
+    }*/
 };
 
+double volume ( const TetraFacet & t )
+{
+    const Vector4d a = t.vertex[1] - t.vertex[0];
+    const Vector4d b = t.vertex[2] - t.vertex[0];
+    const Vector4d c = t.vertex[3] - t.vertex[0];
+    Matrix3<double> m;
+    m.aa = a * a; m.ab = a * b; m.ac = a * c;
+    m.ba = m.ab;  m.bb = b * b; m.bc = b * c;
+    m.ca = m.ac;  m.cb = m.bc;  m.cc = c * c;
+    return sqrt ( fabs ( m.determinant() ) ) / 6;
 }
 
-inline void _swap ( SortItem<double, TrianFacet *> & p1, SortItem<double, TrianFacet *> & p2 )
+double volume ( CCArrRef<TetraFacet> & arr )
 {
-    const SortItem<double, TrianFacet *> p ( p1 );
-    p1 = p2;
-    p2 = p;
-    _swap ( p1.tail->index, p2.tail->index );
+    double sum = 0;
+    for ( nat k = 0; k < arr.size(); ++k ) sum += volume ( arr[k] );
+    return sum;
 }
 
 namespace
 {
 
-bool convexHull ( CArrRef<Vector4d> point, nat & nv, ArrRef<nat> & iv, nat & nf, ArrRef<TrianFacet> & facet )
+bool convexHull ( CArrRef<Vector4d> point, nat & nv, ArrRef<nat> & iv, nat & nf, ArrRef<TetraFacet> & facet )
 {
     const nat n = point.size();
     if ( n < 5 ) return false;
@@ -100,8 +136,265 @@ bool convexHull ( CArrRef<Vector4d> point, nat & nv, ArrRef<nat> & iv, nat & nf,
     return false;
 }
 
+void test ( const TetraFacet & t )
+{
+    nat i;
+    double max = 0, max2 = 0;
+    for ( i = 0; i < 4; ++i )
+    {
+        double /*d = fabs ( t.plane % t.vertex[i] );
+        if ( max < d ) max = d;*/
+        d = norm2 ( t.vertex[i] ) - 1;
+        if ( max2 < d ) max2 = d;
+    }
+    //if ( max > 1e-12 )
+    //    display << "plane =" << max << NL;
+    if ( max2 > 1e-12 )
+        display << "norm - 1 =" << max2 << NL;
+    double min = 9;
+    max = 0;
+    for ( i = 0; i < 3; ++i )
+    {
+        for ( nat j = i+1; j < 4; ++j )
+        {
+            double d = norm2 ( t.vertex[j] - t.vertex[i] );
+            if ( max < d ) max = d;
+            if ( min > d ) min = d;
+        }
+    }
+    display << "edge" << max / min << NL;
+}
+
+void test ( CCArrRef<TetraFacet> & arr )
+{
+    if ( ! arr.size() ) return;
+    double sum = 0, minv = 99, maxv = 0;
+    for ( nat k = 0; k < arr.size(); ++k )
+    {
+        const TetraFacet & t = arr[k];
+        double max = 0;
+        double min = 9;
+        for ( nat i = 0; i < 3; ++i )
+        {
+            for ( nat j = i+1; j < 4; ++j )
+            {
+                double d = norm2 ( t.vertex[j] - t.vertex[i] );
+                if ( max < d ) max = d;
+                if ( min > d ) min = d;
+            }
+        }
+        sum += max / min;
+        const double v = volume ( t );
+        if ( maxv < v ) maxv = v;
+        if ( minv > v ) minv = v;
+    }
+    display << "edge" << arr.size() << sum / arr.size() << NL;
+    display << "volume" << maxv / minv << NL;
+//    display << volume ( arr ) << NL;
+}
+
+void test2 ( CCArrRef<TetraFacet> & arr )
+{
+    if ( ! arr.size() ) return;
+    static nat c = 0;
+    for ( nat k = 0; k < arr.size(); ++k )
+    {
+        const TetraFacet & t = arr[k];
+        if ( k == c ) 
+        for ( nat i = 0; i < 4; ++i )
+        {
+            const Vector4d & v = t.vertex[i];
+            Spin3d spin ( v.x1, v.x2, v.x3, v.x4 );
+            Ortho3d ortho ( spin );
+            drawPoint ( ortho ( Vector3d ( 1,0,0 ) ), 0, 1, 1 );
+            drawPoint ( ortho ( Vector3d ( 0,1,0 ) ), 1, 0, 0 );
+            drawPoint ( ortho ( Vector3d ( 0,0,1 ) ), 0, 1, 0 );
+        }
+    }
+    if ( ++c == arr.size() ) c = 0;
+    display << arr.size() << NL;
+}
+
+Vector4d getVector4d ( double a, double b, double c )
+{
+    if ( a < 0 ) a = 0; else
+    if ( a > 1 ) a = 1;
+    const double s = sqrt (   a   );
+    const double q = sqrt ( 1 - a );
+    b *= M_PI;
+    c *= M_PI;
+    return Vector4d ( s*sin(b+c), s*cos(b+c), q*cos(b-c), q*sin(b-c) );
+}
+
+void divide ( const TetraFacet & t, Suite<TetraFacet> & arr )
+{
+    Suite<Vector4d> vertex ( 6 );
+    for ( nat i = 0; i < 3; ++i )
+    {
+        for ( nat j = i+1; j < 4; ++j )
+        {
+            vertex.inc() = ( t.vertex[j] + t.vertex[i] ).setNorm2();
+        }
+    }
+    TetraFacet & t0 = arr.inc();
+    t0.vertex[0] = t.vertex[0];
+    t0.vertex[1] = vertex[0];
+    t0.vertex[2] = vertex[1];
+    t0.vertex[3] = vertex[2];
+    TetraFacet & t1 = arr.inc();
+    t1.vertex[0] = t.vertex[1];
+    t1.vertex[1] = vertex[4];
+    t1.vertex[2] = vertex[3];
+    t1.vertex[3] = vertex[0];
+    TetraFacet & t2 = arr.inc();
+    t2.vertex[0] = t.vertex[2];
+    t2.vertex[1] = vertex[1];
+    t2.vertex[2] = vertex[3];
+    t2.vertex[3] = vertex[5];
+    TetraFacet & t3 = arr.inc();
+    t3.vertex[0] = t.vertex[3];
+    t3.vertex[1] = vertex[5];
+    t3.vertex[2] = vertex[4];
+    t3.vertex[3] = vertex[2];
+//return;
+    const double q0 = qmod ( vertex[0] - vertex[5] );
+    const double q1 = qmod ( vertex[1] - vertex[4] );
+    const double q2 = qmod ( vertex[2] - vertex[3] );
+    if ( q0 <= q1 && q0 <= q2 )
+    {
+        TetraFacet & t0 = arr.inc();
+        t0.vertex[0] = vertex[0];
+        t0.vertex[1] = vertex[5];
+        t0.vertex[2] = vertex[1];
+        t0.vertex[3] = vertex[2];
+        TetraFacet & t1 = arr.inc();
+        t1.vertex[0] = vertex[0];
+        t1.vertex[1] = vertex[5];
+        t1.vertex[2] = vertex[2];
+        t1.vertex[3] = vertex[4];
+        TetraFacet & t2 = arr.inc();
+        t2.vertex[0] = vertex[0];
+        t2.vertex[1] = vertex[5];
+        t2.vertex[2] = vertex[4];
+        t2.vertex[3] = vertex[3];
+        TetraFacet & t3 = arr.inc();
+        t3.vertex[0] = vertex[0];
+        t3.vertex[1] = vertex[5];
+        t3.vertex[2] = vertex[3];
+        t3.vertex[3] = vertex[1];
+    }
+    else
+    if ( q1 <= q2 )
+    {
+        TetraFacet & t0 = arr.inc();
+        t0.vertex[0] = vertex[1];
+        t0.vertex[1] = vertex[4];
+        t0.vertex[2] = vertex[0];
+        t0.vertex[3] = vertex[2];
+        TetraFacet & t1 = arr.inc();
+        t1.vertex[0] = vertex[1];
+        t1.vertex[1] = vertex[4];
+        t1.vertex[2] = vertex[2];
+        t1.vertex[3] = vertex[5];
+        TetraFacet & t2 = arr.inc();
+        t2.vertex[0] = vertex[1];
+        t2.vertex[1] = vertex[4];
+        t2.vertex[2] = vertex[5];
+        t2.vertex[3] = vertex[3];
+        TetraFacet & t3 = arr.inc();
+        t3.vertex[0] = vertex[1];
+        t3.vertex[1] = vertex[4];
+        t3.vertex[2] = vertex[3];
+        t3.vertex[3] = vertex[0];
+    }
+    else
+    {
+        TetraFacet & t0 = arr.inc();
+        t0.vertex[0] = vertex[2];
+        t0.vertex[1] = vertex[3];
+        t0.vertex[2] = vertex[0];
+        t0.vertex[3] = vertex[1];
+        TetraFacet & t1 = arr.inc();
+        t1.vertex[0] = vertex[2];
+        t1.vertex[1] = vertex[3];
+        t1.vertex[2] = vertex[1];
+        t1.vertex[3] = vertex[5];
+        TetraFacet & t2 = arr.inc();
+        t2.vertex[0] = vertex[2];
+        t2.vertex[1] = vertex[3];
+        t2.vertex[2] = vertex[5];
+        t2.vertex[3] = vertex[4];
+        TetraFacet & t3 = arr.inc();
+        t3.vertex[0] = vertex[2];
+        t3.vertex[1] = vertex[3];
+        t3.vertex[2] = vertex[4];
+        t3.vertex[3] = vertex[0];
+    }
+}
+
 void convexHull_test()
 {
+    nat i;
+    const nat n = 5;
+    Vector4d vert[n];
+    /*QRand q5(5);
+    double b = 0;
+    for ( nat k = 0; k < n; ++k )
+    {
+        const double a = ( 0.5 + k ) / n;
+        if ( ( b += 0.61803398874989484820 ) > 1 ) b -= 1;
+        const double c = q5();
+        vert[k] = getVector4d ( a, b, c );
+    }*/
+    draw ( Sphere3d ( 1, null3d ), 0.3f, 0.3f, 0.3f, 1, VM_WIRE );
+    const double a = 0.25;
+    const double b = a * sqrt(5.);
+    vert[0] = Vector4d ( a, b, b, b );
+    vert[1] = Vector4d ( a, b,-b,-b );
+    vert[2] = Vector4d ( a,-b, b,-b );
+    vert[3] = Vector4d ( a,-b,-b, b );
+    vert[4] = Vector4d (-1, 0, 0, 0 );
+    Suite<TetraFacet> facet1 ( n, n );
+    for ( i = 0; i < n; ++i )
+    {
+        TetraFacet & t = facet1[i];
+        for ( nat k = 0, j = 0; k < n; ++k )
+        {
+            if ( k == i ) continue;
+            t.vertex[j++] = vert[k];
+        }
+    }
+    //test2 ( facet1 );
+    Suite<TetraFacet> facet2 ( 8*n );
+    for ( i = 0; i < facet1.size(); ++i )
+    {
+        divide ( facet1[i], facet2 );
+    }
+    facet1.swap ( facet2 );
+    facet2.resize(0);
+    //test2 ( facet1 );
+    for ( i = 0; i < facet1.size(); ++i )
+    {
+        divide ( facet1[i], facet2 );
+    }
+    facet1.swap ( facet2 );
+    facet2.resize(0);
+    //test2 ( facet1 );
+    for ( i = 0; i < facet1.size(); ++i )
+    {
+        divide ( facet1[i], facet2 );
+    }
+    facet1.swap ( facet2 );
+    facet2.resize(0);
+    //test2 ( facet1 );
+    for ( i = 0; i < facet1.size(); ++i )
+    {
+        divide ( facet1[i], facet2 );
+    }
+    facet1.swap ( facet2 );
+    facet2.resize(0);
+    test2 ( facet1 );
+display << "end" << NL;
 }
 
 void intersection_test ()
@@ -457,6 +750,100 @@ void getNearPointU_test()
     display << "end" << NL;
 }
 
+Conform3d maxPointsInConvexPolyhedron1 ( CCArrRef<Vector3d> & inner, CCArrRef<Plane3d> & outer, const Vector4d & s )
+{
+    const nat N = 7;
+    Double<N> con[N+1];
+    Double<N> func;
+    func.d0 = 
+    func.d1 = 
+    func.d2 = 0;
+    func.d3 = s.x1;
+    func.d4 = s.x2;
+    func.d5 = s.x3;
+    func.d6 = s.x4;
+    const Vector3d axt (  s.x1, -s.x4,  s.x3 );
+    const Vector3d ayt (  s.x4,  s.x1, -s.x1 );
+    const Vector3d azt ( -s.x3,  s.x1,  s.x1 );
+    const Vector3d axx (  s.x1,  s.x3,  s.x4 );
+    const Vector3d ayx (  s.x3, -s.x1, -s.x1 );
+    const Vector3d azx (  s.x4,  s.x1, -s.x1 );
+    const Vector3d axy ( -s.x3,  s.x1,  s.x1 );
+    const Vector3d ayy (  s.x1,  s.x3,  s.x4 );
+    const Vector3d azy ( -s.x1,  s.x4, -s.x3 );
+    const Vector3d axz ( -s.x4, -s.x1,  s.x1 );
+    const Vector3d ayz (  s.x1, -s.x4,  s.x3 );
+    const Vector3d azz (  s.x1,  s.x3,  s.x4 );
+    Conform3d conf ( 0 );
+    Double<N> & res = con[0];
+    for ( nat k = 0; k < 2; ++k )
+    {
+        Double<N> b;
+        b.fill(1);
+        const Vector3d vx = axt * b.d3 + axx * b.d4 + axy * b.d5 + axz * b.d6;
+        const Vector3d vy = ayt * b.d3 + ayx * b.d4 + ayy * b.d5 + ayz * b.d6;
+        const Vector3d vz = azt * b.d3 + azx * b.d4 + azy * b.d5 + azz * b.d6;
+        nat i, im = 0, jm = 0;
+        double max = 0;
+        for ( i = 0; i < inner.size(); ++i )
+        {
+            const Vector3d & v = inner[i];
+            const Vector3d u ( vx * v + b.d0, vy * v + b.d1, vz * v + b.d2 );
+            for ( nat j = 0; j < outer.size(); ++j )
+            {
+                const double t = outer[j] % u;
+                if ( max < t ) max = t, im = i, jm = j;
+            }
+        }
+        const double dist = max;
+        const Vector3d & u = inner[im];
+        const Plane3d & p = outer[jm];
+        Double<N> norm;
+        norm.d0 = p.norm.x;
+        norm.d1 = p.norm.y;
+        norm.d2 = p.norm.z;
+        norm.d3 = Vector3d ( axt * u, ayt * u, azt * u ) * p.norm;
+        norm.d4 = Vector3d ( axx * u, ayx * u, azx * u ) * p.norm;
+        norm.d5 = Vector3d ( axy * u, ayy * u, azy * u ) * p.norm;
+        norm.d6 = Vector3d ( axz * u, ayz * u, azz * u ) * p.norm;
+        const double lvl = -1e-8 * sqrt ( norm * norm );
+        nat ib = 0;
+        double sm = 0; // для оптимизатора
+        for ( i = 1; i <= N; ++i )
+        {
+            const Double<N> & v = con[i];
+            double t = norm * v;
+            if ( t > lvl ) continue;
+            t = -1./ t;
+            if ( !ib )
+            {
+                max = ( func * v ) * t;
+                ib = i;
+                sm = t;
+            }
+            else
+            {
+                const double s = ( func * v ) * t;
+                if ( max < s ) max = s, ib = i, sm = t;
+            }
+        }
+        if ( !ib )
+        {
+            return conf;
+        }
+        const Double<N> & v = con[ib];
+        res += v * ( dist * sm );
+        for ( i = 1; i <= N; ++i )
+        {
+            if ( i == ib ) continue;
+            Double<N> & ai = con[i];
+            ai += v * ( ( norm * ai ) * sm );
+            ai *= ( 1./ sqrt ( ai * ai ) );
+        }
+    }
+    return conf;
+}
+
 
 } // namespace
 
@@ -464,7 +851,7 @@ void func4d_test ()
 {
     drawNewList2d();
 //    intersection_test();
-    getNearPointU_test();
-//    convexHull_test();
+//    getNearPointU_test();
+    convexHull_test();
     endNewList ();
 }

@@ -1,8 +1,7 @@
 
 // 13.03.2004, 27.03.2004, 05.06.2004, 26.06.2004, 25.02.2006, 20.10.2012, 02.02.2013
 
-#ifndef MATRIX_H
-#define MATRIX_H
+#pragma once
 
 #include "template.h"
 
@@ -226,5 +225,3 @@ double normU ( const IMatrix<double> & ); // бесконечна€ норма
 // Cингул€рное разложение: A = U * W * V
 
 bool svd ( const IMatrix<double> & A, IMatrix<double> & U, IMatrix<double> & W, IMatrix<double> & V ); 
-
-#endif

@@ -5,6 +5,67 @@
 #include "Vector4d.h"
 #include "DoubleN.h"
 
+// Задание векторных норм
+
+Vector4d & Vector4d::setNorm1 ( double p ) // единичная норма
+{
+    const double t = fabs ( x1 ) + fabs ( x2 ) + fabs ( x3 ) + fabs ( x4 );
+    if ( t > 0 )
+    {
+        p /= t;
+        x1 *= p;
+        x2 *= p;
+        x3 *= p;
+        x4 *= p;
+    }
+    return * this;
+}
+
+Vector4d & Vector4d::setNorm2 ( double p ) // квадратичная норма
+{
+    const double t = x1 * x1 + x2 * x2 + x3 * x3 + x4 * x4;
+    if ( t > 0 )
+    {
+        p /= sqrt ( t );
+        x1 *= p;
+        x2 *= p;
+        x3 *= p;
+        x4 *= p;
+    }
+    return * this;
+}
+
+Vector4d & Vector4d::setNormU ( double p ) // бесконечная норма
+{
+    const double t = _max ( fabs ( x1 ), fabs ( x2 ), fabs ( x3 ), fabs ( x4 ) );
+    if ( t > 0 )
+    {
+        p /= t;
+        x1 *= p;
+        x2 *= p;
+        x3 *= p;
+        x4 *= p;
+    }
+    return * this;
+}
+
+// Вычисление векторных норм
+
+double norm1 ( const Vector4d & v ) // единичная норма
+{
+    return fabs ( v.x1 ) + fabs ( v.x2 ) + fabs ( v.x3 ) + fabs ( v.x4 );
+}
+
+double norm2 ( const Vector4d & v ) // квадратичная норма
+{
+    return sqrt ( v.x1 * v.x1 + v.x2 * v.x2 + v.x3 * v.x3 + v.x4 * v.x4 );
+}
+
+double normU ( const Vector4d & v ) // бесконечная норма
+{
+    return _max ( fabs ( v.x1 ), fabs ( v.x2 ), fabs ( v.x3 ), fabs ( v.x4 ) );
+}
+
 //**************************** 22.04.2019 *********************************//
 //
 //                Пересечение четырёх гиперплоскостей

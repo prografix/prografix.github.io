@@ -630,7 +630,7 @@ double SLU_Gauss::determinant () const
 //
 //*************************** 27.04.2016 ******************************//
 
-bool slu_gauss ( ArrRef2<double> data )
+bool slu_gauss ( ArrRef2<double> & data )
 {
     const nat n = data.size0();
     const nat n1 = data.size1();
@@ -686,7 +686,7 @@ bool slu_gauss ( ArrRef2<double> data )
     return true;
 }
 
-bool slu_gauss ( ArrRef2<double> data, ArrRef<double> x )
+bool slu_gauss ( ArrRef2<double> & data, ArrRef<double> & x )
 {
     const nat n = data.size0();
     if (  data.size1() != n + 1 || x.size() < n || ! slu_gauss ( data ) ) return false;
@@ -703,7 +703,7 @@ bool slu_gauss ( ArrRef2<double> data, ArrRef<double> x )
 //
 //*************************** 24.03.2011 ******************************//
 
-bool slu_gauss ( ArrRef2<double> data, const nat nc, ArrRef<nat> col )
+bool slu_gauss ( ArrRef2<double> & data, const nat nc, ArrRef<nat> & col )
 {
     const nat nr = data.size0();
     const nat nn = data.size1();
@@ -1090,7 +1090,7 @@ double SM_LDLt::determinant () const
 //      Переопределённые системы линейных уравнений ( n > m ).
 //      Минимум 1-нормы вектора невязок.
 //
-//*********************** 04.02.2020 **************************//
+//*********************** 24.12.2021 **************************//
 
 bool minNorm1_Dual ( ArrRef2<double> & data, ArrRef<nat> & res )
 {
@@ -1101,7 +1101,24 @@ bool minNorm1_Dual ( ArrRef2<double> & data, ArrRef<nat> & res )
     DynArray<nat> index ( nCol );
     DynArray<double> w ( nCol );
     ArrRef<double> func = data[nRow1];
+    double max1 = 0;
+    for ( j = 0; j < nCol; ++j )
+    {
+        const double t = fabs ( func[j] );
+        if ( max1 < t ) max1 = t;
+    }
     if ( ! _sluGaussRow ( data, nRow, nCol, index(), nRow1, nCol ) ) return false;
+    double max2 = 0;
+    for ( j = nRow1; j < nCol; ++j )
+    {
+        const double t = fabs ( func[index[j]] );
+        if ( max2 < t ) max2 = t;
+    }
+    if ( max2 <= 1e-12 * max1 )
+    {
+        for ( i = 0; i < nRow1; ++i ) res[i] = index[i];
+        return true;
+    }
     for ( k = 0; k < 2*nCol; ++k )
     {
         for ( j = nRow1; j < nCol; ++j )
@@ -1168,7 +1185,7 @@ bool minNorm1_Dual ( ArrRef2<double> & data, ArrRef<nat> & res )
     return false;
 }
 
-bool minNorm1 ( CCArrRef2<double> & data, ArrRef<double> & x, ArrRef<nat> & index )
+bool minNorm1 ( CArrRef2<double> & data, ArrRef<double> & x, ArrRef<nat> & index )
 {
     const nat nRow = data.size0();
     const nat nCol = data.size1();
@@ -1194,14 +1211,14 @@ bool minNorm1 ( CCArrRef2<double> & data, ArrRef<double> & x, ArrRef<nat> & inde
     return slu_gauss ( ref2, x );
 }
 
-bool minNorm1 ( CCArrRef2<double> & data, ArrRef<double> & x )
+bool minNorm1 ( CArrRef2<double> & data, ArrRef<double> & x )
 {
     const nat nCol = data.size1();
     if ( nCol < 2 ) return false;
     return minNorm1 ( data, x, DynArray<nat>(nCol-1) );
 }
 
-bool minNorm1 ( CCArrRef2<double> & data, ArrRef<nat> & index )
+bool minNorm1 ( CArrRef2<double> & data, ArrRef<nat> & index )
 {
     return minNorm1 ( data, ArrRef<double>(), index );
 }
@@ -1213,7 +1230,7 @@ bool minNorm1 ( CCArrRef2<double> & data, ArrRef<nat> & index )
 //
 //*********************** 12.11.2011 **************************//
 
-bool minNorm2 ( CArrRef2<double> data, ArrRef<double> x )
+bool minNorm2 ( CArrRef2<double> & data, ArrRef<double> & x )
 {
     const nat nRow = data.size0();
     const nat nCol = data.size1();
@@ -1246,7 +1263,7 @@ bool minNorm2 ( CArrRef2<double> data, ArrRef<double> x )
 //
 //*********************** 12.11.2011 **************************//
 
-bool minNormU ( CArrRef2<double> data, ArrRef<double> x, ArrRef<nat> index )
+bool minNormU ( CArrRef2<double> & data, ArrRef<double> & x, ArrRef<nat> & index )
 {
     const nat nRow = data.size0();
     const nat nCol = data.size1();
@@ -1418,7 +1435,7 @@ bool minNormU ( CArrRef2<double> data, ArrRef<double> x, ArrRef<nat> index )
     return false;
 }
 
-bool minNormU ( CArrRef2<double> data, ArrRef<double> x )
+bool minNormU ( CArrRef2<double> & data, ArrRef<double> & x )
 {
     return minNormU ( data, x, ArrRef<nat>() );
 }

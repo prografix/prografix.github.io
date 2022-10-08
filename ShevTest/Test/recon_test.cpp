@@ -414,7 +414,8 @@ void recon ( IVertFunc & func, Poly3gon<Vector3d, void> & poly3gon )
     Vector3d vert[12];
     Suite<Vector3d> vertex;
     Suite<Trigon<void> > facet;
-    AVL_Tree<SortItem<nat32,nat> > tree;
+    AVL_TreeNodeStor<nat32, nat> stor;
+    AVL_Tree<nat32, nat> tree ( stor );
     DynArray2<bool> arr0 ( nj+nj+1, nk+nk+1 );
     DynArray2<bool> arr1 ( nj+nj+1, nk+nk+1 );
     for ( i = -ni; i <= ni; ++i )
@@ -447,26 +448,23 @@ void recon ( IVertFunc & func, Poly3gon<Vector3d, void> & poly3gon )
                     const nat code = getCode ( arr0, arr1, jj, kk );
                     fillVert ( func, code, Vector3d ( x0, y0, z0 ), Vector3d ( x1, y1, z1 ), vert );
                     CArrRef<Set3<nat> > itog = mc[code];
-                    SortItem<nat32,nat> si1, si2;
+                    nat32 key, data;
                     for ( l = 0; l < itog.size(); ++l )
                     {
                         const Set3<nat> index = itog[l];
-                        si1.head = encode ( ii, jj, kk, index.a );
-                        si1.tail = vertex.size();
-                        si2 = tree.add ( si1 );
-                        if ( si1.tail == si2.tail ) vertex.inc() = vert[index.a];
-                        const nat a = si2.tail;
-                        si1.head = encode ( ii, jj, kk, index.b );
-                        si1.tail = vertex.size();
-                        si2 = tree.add ( si1 );
-                        if ( si1.tail == si2.tail ) vertex.inc() = vert[index.b];
-                        const nat b = si2.tail;
+                        key = encode ( ii, jj, kk, index.a );
+                        data = vertex.size();
+                        const nat a = tree.add ( key, data );
+                        if ( data == a ) vertex.inc() = vert[index.a];
+                        key = encode ( ii, jj, kk, index.b );
+                        data = vertex.size();
+                        const nat b = tree.add ( key, data );
+                        if ( data == b ) vertex.inc() = vert[index.b];
                         if ( a == b ) continue;
-                        si1.head = encode ( ii, jj, kk, index.c );
-                        si1.tail = vertex.size();
-                        si2 = tree.add ( si1 );
-                        if ( si1.tail == si2.tail ) vertex.inc() = vert[index.c];
-                        const nat c = si2.tail;
+                        key = encode ( ii, jj, kk, index.c );
+                        data = vertex.size();
+                        const nat c = tree.add ( key, data );
+                        if ( data == c ) vertex.inc() = vert[index.c];
                         if ( b == c ) continue;
                         if ( c == a ) continue;
                         Trigon<void> & tri = facet.inc();

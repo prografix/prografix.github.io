@@ -52,7 +52,6 @@ Line2d getLineU ( CCArrRef<Vector2d> & point )
 //************************* 11.12.2019 ******************************//
 
 Def<Line2d> getLineR ( CCArrRef<Vector2d> & point, ArrRef<double> & mass );
-Def<Line2d> getLineRM( CCArrRef<Vector2d> & point, ArrRef<double> & mass );
 
 
 //************************* 06.12.2006 ******************************//
@@ -140,8 +139,7 @@ Def<Conform2d> overlayConvexPolygons ( CCArrRef<Vector2d> & vert1, CCArrRef<Vect
 //
 //************************ 07.02.2022 *******************************//
 
-bool overlayPointsOnConvexPolygon ( CCArrRef<Vector2d> & point, CCArrRef<Line2d> & line, LinTran2d & res );
-bool overlayPointsOnConvexPolygon ( CCArrRef<Vector2d> & point, CCArrRef<Line2d> & line, Affin2d & res );
+Def<Affin2d> overlayPointsOnConvexPolygon ( CCArrRef<Vector2d> & point, CCArrRef<Line2d> & line );
 
 
 //************************ 13.07.2005 *******************************//

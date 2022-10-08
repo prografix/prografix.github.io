@@ -15,7 +15,6 @@
 #include "../Shev/Polyhedron.h"
 #include "../Shev/intersect3d.h"
 #include "../Shev/WireModel.h"
-#include "../shev/S2D_Model.h"
 #include "../Shev/opti2d_3d.h"
 #include "../Shev/trans.h"
 #include "../Shev/HeapAndTree.h"

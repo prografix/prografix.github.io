@@ -26,3 +26,8 @@ ShevTest/Release/CodeAnalysisResultManifest.txt
 ShevTest/Release/ShevTest.vcxproj.FileListAbsolute.txt
 ShevTest/Release/ShevTest.res
 ShevTest/Debug/ShevTest.res
+ShevTest/TextFile3.txt
+ShevTest/TextFile2.txt
+ShevTest/TextFile1.txt
+*.vsidx
+*.vsidx

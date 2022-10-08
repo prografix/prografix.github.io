@@ -644,7 +644,7 @@ static void moveVert ( TrianFacet & fa, nat i, ArrRef<TrianFacet> facet, CArrRef
     }
 }
 
-bool convexHull ( CArrRef<Vector3d> point, nat & nv, ArrRef<nat> & iv, nat & nf, ArrRef<TrianFacet> & facet )
+bool convexHull ( CCArrRef<Vector3d> & point, nat & nv, ArrRef<nat> & iv, nat & nf, ArrRef<TrianFacet> & facet )
 {
     const nat n = point.size();
     if ( n < 4 ) return false;
@@ -867,8 +867,9 @@ bool convexHull ( CArrRef<Vector3d> point, nat & nv, ArrRef<nat> & iv, nat & nf,
     return true;
 }
 
-Polyhedron & convexHull ( CArrRef<Vector3d> point, Polyhedron & poly )
+Polyhedron & convexHull ( CCArrRef<Vector3d> & point, Polyhedron & poly )
 {
+    if ( point.size() < 4 ) return poly.makeVoid();
     nat i, nf, nv;
     DynArray<nat> iv ( point.size() );
     DynArray<TrianFacet> facet ( 2*point.size() - 4 );
@@ -902,8 +903,9 @@ Polyhedron & convexHull ( CArrRef<Vector3d> point, Polyhedron & poly )
 //
 //****************** 03.01.2011 *******************************//
 
-DynArrRef<Plane3d> & convexHull ( CArrRef<Vector3d> point, DynArrRef<Plane3d> & plane )
+DynArrRef<Plane3d> & convexHull ( CCArrRef<Vector3d> & point, DynArrRef<Plane3d> & plane )
 {
+    if ( point.size() < 4 ) return plane.resize();
     nat nf, nv;
     DynArray<nat> iv ( point.size() );
     DynArray<TrianFacet> facet ( 2*point.size() - 4 );
@@ -915,6 +917,26 @@ DynArrRef<Plane3d> & convexHull ( CArrRef<Vector3d> point, DynArrRef<Plane3d> & 
     plane.resize ( nf );
     for ( nat i = 0; i < nf; ++i ) plane[i] = facet[i].plane;
     return plane;
+}
+
+//****************** 07.09.2021 *******************************//
+//
+//      Получение вершин выпуклой оболочки
+//
+//****************** 07.09.2021 *******************************//
+
+DynArrRef<Vector3d> & convexHull ( CCArrRef<Vector3d> & point, DynArrRef<Vector3d> & vert )
+{
+    if ( point.size() < 4 ) return vert.resize();
+    nat nf, nv;
+    DynArray<nat> iv ( point.size() );
+    DynArray<TrianFacet> facet ( 2*point.size() - 4 );
+// Выпуклая оболочка
+    if ( ! convexHull ( point, nv, iv, nf, facet ) ) return vert.resize();
+// Заполнение массива вершин
+    vert.resize ( nv );
+    for ( nat i = 0; i < nv; ++i ) vert[i] = point[iv[i]];
+    return vert;
 }
 
 //****************** 04.11.2014 *******************************//
@@ -950,9 +972,10 @@ inline double qArea ( const TrianFacet & fa, CArrRef<Vector3d> vert )
 
 Polyhedron & convexHull ( const Polyhedron & inner, Polyhedron & outer )
 {
+    if ( inner.vertex.size() < 4 ) return outer.makeVoid();
     nat i, j, nf, nv;
     DynArray<nat> iv ( inner.vertex.size() );
-    DynArray<TrianFacet> facet ( 2*inner.vertex.size() - 4 );
+    DynArray<TrianFacet> facet ( 2*iv.size() - 4 );
     if ( ! convexHull ( inner.vertex, nv, iv, nf, facet ) ) return outer.makeVoid();
 // Создание массивов рёбер
     Suite<SortItem<Set2<nat>, nat> > isi;
@@ -1142,7 +1165,6 @@ m1: outer.facet.resize ( nf );
     }
     return outer;
 }
-
 
 //****************** 21.08.2012 *******************************//
 //

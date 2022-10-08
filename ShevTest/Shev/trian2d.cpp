@@ -1728,6 +1728,7 @@ class Polygon
 public:
     nat size, vert;
 };
+
 void triangulate_monotone_polygons ( CCArrRef<Polygon> & monpolys, CCArrRef<ChainNode> & node, CCArrRef<Vector2d> & vertex, SuiteRef<Set3<nat> > & res )
 {
     Suite<nat> buf;
@@ -2085,7 +2086,6 @@ SuiteRef<Set3<nat> > & trianSweepLine ( CCArrRef<nat> & cntr, CCArrRef<Vector2d>
             case NEXT_BEFORE: nextBefore ( node, v ); break;
             case BOTH_BEFORE: bothBefore ( node, v, sweepLine, stor3n ); break;
             }
-//test ( vertex, node, sweepLine );
         }
     }
 // Выделение монотонных многоугольников

@@ -453,21 +453,33 @@ public:
         return *this;
     }
 
-    SuiteRef & delAndShift ( nat i )
+    SuiteRef & delAndShift ( nat i, nat n = 1 )
     {
+        if ( ! n ) return *this;
         if ( i < _size )
         {
-            --_size;
+            n = _min ( _size - i, n );
+            _size -= n;
 #if _MSC_VER > 1200 // MS VC 6.0
-            for ( ; i < _size; ++i ) copyFunc ( _data.var[i], _data.var[i+1] );
+            for ( ; i < _size; ++i ) copyFunc ( _data.var[i], _data.var[i+n] );
 #else
-            for ( ; i < _size; ++i ) _data.var[i] = _data.var[i+1];
+            for ( ; i < _size; ++i ) _data.var[i] = _data.var[i+n];
 #endif
         }
 #ifdef ARRAY_TEST
         else outOfRange ( "SuiteRef::delAndShift", _size, i );
 #endif ARRAY_TEST
         return *this;
+    }
+
+    bool delFirEqu ( const T & t )
+    {
+        for ( nat i = 0; i < _size; ++i )
+        {
+            if ( _data.var[i] == t ) _del ( i );
+            return true;
+        }
+        return false;
     }
 
     SuiteRef & addAftLas ( CCArrRef<T> & a )

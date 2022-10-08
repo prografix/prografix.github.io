@@ -1140,6 +1140,7 @@ Def<Ellipse> maxEllipseIn4gon ( const Line2d & line1, const Line2d & line2,
     b -= x * y;
     a += y * y;
     d = a * c - b * b;
+    if ( d <= 0 ) return res;
     res.a = a / d;
     res.b = b / d;
     res.c = c / d;
@@ -1372,13 +1373,59 @@ Def<Ellipse2d> maxEllipseInConvexPolygonA ( CCArrRef<Vector2d> & vert )
 {
     Def<Ellipse2d> res;
     const nat n = vert.size();
-    if ( n < 3 ) return res;
+    if ( n < 2 ) return res;
+	// Найдём точку самую удалённую от центра координат
+    nat i, i1 = 0;
+    double max = qmod ( vert[0] );
+    for ( i = 1; i < n; ++i )
+    {
+        double q = qmod ( vert[i] );
+        if ( max < q ) max = q, i1 = i;
+    }
+    const Vector2d & v1 = vert[i1];
+	// Найдём точку самую удалённую от первой точки
+    nat i2 = 0;
+    max = qmod ( vert[0] - v1 );
+    for ( i = 1; i < n; ++i )
+    {
+        double q = qmod ( vert[i] - v1 );
+        if ( max < q ) max = q, i2 = i;
+    }
+    // Если все точки многоугольника совпадают, то создаём эллипс с двумя нулевыми осями
+    if ( ! max )
+    {
+        res.a = 0;
+        res.b = 0;
+        res.o = v1;
+        res.isDef = true;
+        return res;
+    }
+    const Vector2d & v2 = vert[i2];
+	// Найдём максимальное отклонение от прямой
+    const Line2d line ( v1, v2 );
+    double maxd = fabs ( line % vert[0] );
+    for ( i = 1; i < n; ++i )
+    {
+        double d = fabs ( line % vert[i] );
+        if ( maxd < d ) maxd = d;
+    }
+    const double a = sqrt ( max );
+    // Если многоугольник вырожден в отрезок, то создаём эллипс с одной нулевой осью
+    if ( maxd < 1e-14 * a )
+    {
+        res.a = a;
+        res.b = 0;
+        res.o = 0.5 * ( v1 + v2 );
+        res.spin = Spin2d ( atan2 ( v2.y - v1.y, v2.x - v1.x ) );
+        res.isDef = true;
+        return res;
+    }
     if ( n == 3 ) return maxEllipseInTriangleA ( vert[0], vert[1], vert[2] );
-    const nat n1 = n - 1;
 // Для каждой стороны вычислим параметры уравнения прямой
 // Уравнение прямой имеет вид: norm.x * x + norm.y * y + dist = 0
+    const nat n1 = n - 1;
     DynArray<Edge> edge ( n );
-    for ( nat i = 0; i < n; ++i )
+    for ( i = 0; i < n; ++i )
     {
         Edge & e = edge[i];
         const Vector2d & v2 = vert[i<n1?i+1:0];

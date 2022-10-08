@@ -1122,7 +1122,7 @@ double normU ( CArrRef2<double> data, double * x )
     return res;
 }
 
-bool minNormU2 ( CCArrRef2<double> & matr, ArrRef<double> & x )
+bool minNormU2 ( CArrRef2<double> & matr, ArrRef<double> & x )
 {
     const nat nRow = matr.size0();
     const nat nCol = matr.size1();
@@ -1845,7 +1845,7 @@ bool maxNormUc ( ArrRef2<double> & data, double * w, nat * index )
     return false;
 }
 
-bool minNorm1b ( CCArrRef2<double> & data, ArrRef<double> & x, ArrRef<nat> & index )
+bool minNorm1b ( CArrRef2<double> & data, ArrRef<double> & x, ArrRef<nat> & index )
 {
     const nat nRow = data.size0();
     const nat nCol = data.size1();
@@ -1888,7 +1888,7 @@ bool minNorm1b ( CCArrRef2<double> & data, ArrRef<double> & x, ArrRef<nat> & ind
     return slu_gauss ( ref2, x );
 }
 
-double calcSum ( CCArrRef2<double> & data, ArrRef<double> & x )
+double calcSum ( CArrRef2<double> & data, ArrRef<double> & x )
 {
     double sum = 0;
     const nat nRow = data.size0();

@@ -261,29 +261,22 @@ m2:     Vector3d v = data[1] - data[0];
 //
 //************************* 29.09.2010 ******************************//
 
-inline Def<Plane3d> getPlane2 ( const Def<Mom3d> & mom )
+inline Plane3d getPlane2 ( const Def<Mom3d> & mom )
 {
-    Def<Plane3d> res;
-    if ( mom.isDef )
-    {
-        res.norm = mom.minNorm;
-        res.dist = -(mom.minNorm*mom.o);
-        res.isDef = true;
-    }
-    return res;
+    return mom.isDef ? Plane3d ( mom.minNorm, -mom.minNorm*mom.o ) : Plane3d ( null3d, 0 );
 }
 
-Def<Plane3d> getPlane2 ( CArrRef<Vector3d> point )
+Plane3d getPlane2 ( CCArrRef<Vector3d> & point )
 {
     return getPlane2 ( momentum2pnt ( point ) );
 }
 
-Def<Plane3d> getPlane2 ( CArrRef<Vector3d> point, CArrRef<double> mass )
+Plane3d getPlane2 ( CCArrRef<Vector3d> & point, CCArrRef<double> & mass )
 {
     return getPlane2 ( momentum2pnt ( point, mass ) );
 }
 
-Def<Plane3d> getPlane2 ( CArrRef<Segment3d> segm )
+Plane3d getPlane2 ( CCArrRef<Segment3d> & segm )
 {
     return getPlane2 ( momentum2sgm ( segm ) );
 }
@@ -335,7 +328,7 @@ Plane3d getPlaneU ( CCArrRef<Vector3d> & point, double & r )
 {
     r = 0;
     const nat n = point.size();
-    if ( ! n ) return Plane3d ( Vector3d ( 0, 0, 1 ), 0 );
+    if ( ! n ) return Plane3d ( null3d, 0 );
 // Находим первую начальную точку
     nat i, i0 = 0;
     double max = 0;
@@ -346,7 +339,7 @@ Plane3d getPlaneU ( CCArrRef<Vector3d> & point, double & r )
     }
     if ( ! max )
     {
-        return Plane3d ( Vector3d ( 0, 0, 1 ), 0 );
+        return Plane3d ( Vector3d ( 0, 0, 1 ), -point[0].z );
     }
 // Находим вторую начальную точку
     nat i1 = 0;
@@ -514,6 +507,12 @@ Plane3d getPlaneU ( CCArrRef<Vector3d> & point, double & r )
         model.cut ( fillData ( plane, point[im], d5 ), stor );
     }
     return plane;
+}
+
+Plane3d getPlaneU ( CCArrRef<Vector3d> & point )
+{
+    double r;
+    return getPlaneU ( point, r );
 }
 
 //************************ 23.06.2005 *******************************//

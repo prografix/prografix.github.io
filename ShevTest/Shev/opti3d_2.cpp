@@ -3,6 +3,7 @@
 
 #include "tune.h"
 #include "rand.h"
+#include "heap.h"
 #include "Mathem.h"
 #include "func3d.h"
 #include "opti1d.h"
@@ -1036,6 +1037,205 @@ Def<Ellipsoid3d> maxEllipsoidInConvexPolyhedronV ( const Polyhedron & poly )
             if ( act[i] ) support2.inc() = support1[i];
         }
         support1 = support2;
+    }
+    return res;
+}
+
+//**************************** 24.10.2021 *********************************//
+//
+//      Максимальный по объёму прямоугольный параллелепипед
+//        вписанный в выпуклый многогранник без вращения
+//
+//**************************** 24.10.2021 *********************************//
+
+void divide4 ( const Triangle3d & trian1, Triangle3d trian2[4] )
+{
+    trian2[0].a = 0.5 * ( trian1.a + trian1.b );
+    trian2[0].b = 0.5 * ( trian1.b + trian1.c );
+    trian2[0].c = 0.5 * ( trian1.c + trian1.a );
+    trian2[1].a = trian1.a;
+    trian2[1].b = trian2[0].a;
+    trian2[1].c = trian2[0].c;
+    trian2[2].a = trian1.b;
+    trian2[2].b = trian2[0].b;
+    trian2[2].c = trian2[0].a;
+    trian2[3].a = trian1.c;
+    trian2[3].b = trian2[0].c;
+    trian2[3].c = trian2[0].b;
+}
+
+struct MaxCuboid
+{
+    Double<6> func, con[7];
+    FixArray<Double<7>, 3> cor;
+    void init ( const Segment3d & seg, const Triangle3d & trian )
+    {
+        Double<6> & vn = con[0];
+        vn.d0 = seg.b.x - seg.a.x;
+        vn.d1 = seg.b.y - seg.a.y;
+        vn.d2 = seg.b.z - seg.a.z;
+        vn.d3 = seg.b.x;
+        vn.d4 = seg.b.y;
+        vn.d5 = seg.b.z;
+        for ( nat l = 1; l <= 6; ++l )
+        {
+            con[l].fill(0);
+            (&con[l].d0)[l-1] = -1;
+        }
+        {
+            Triangle3d t = trian;
+            t.a /= root3 ( t.a.x * t.a.y * t.a.z );
+            t.b /= root3 ( t.b.x * t.b.y * t.b.z );
+            t.c /= root3 ( t.c.x * t.c.y * t.c.z );
+            const Vector3d u = t.getNormal();
+            const double c = 1 / ( u * t.a );
+            func.d0 = c * u.x;
+            func.d1 = c * u.y;
+            func.d2 = c * u.z;
+            func.d3 = func.d4 = func.d5 = 0;
+        }
+        {
+            const Vector3d v = ( trian.b % trian.a ).setNorm2 ( 1e6 );
+            Double<7> & dn = cor[0];
+            dn.d0 = v.x;
+            dn.d1 = v.y;
+            dn.d2 = v.z;
+            dn.d3 = dn.d4 = dn.d5 = dn.d6 = 0;
+        }
+        {
+            const Vector3d v = ( trian.c % trian.b ).setNorm2 ( 1e6 );
+            Double<7> & dn = cor[1];
+            dn.d0 = v.x;
+            dn.d1 = v.y;
+            dn.d2 = v.z;
+            dn.d3 = dn.d4 = dn.d5 = dn.d6 = 0;
+        }
+        {
+            const Vector3d v = ( trian.a % trian.c ).setNorm2 ( 1e6 );
+            Double<7> & dn = cor[2];
+            dn.d0 = v.x;
+            dn.d1 = v.y;
+            dn.d2 = v.z;
+            dn.d3 = dn.d4 = dn.d5 = dn.d6 = 0;
+        }
+    }
+};
+
+Def<Cuboid3d> maxCuboidInConvexPolyhedronNR ( const Polyhedron & poly, const Spin3d & spin )
+{
+    Def<Cuboid3d> res;
+    const nat nf = poly.facet.size();
+    const nat nv = poly.vertex.size();
+    if ( nf < 4 || nv < 4 ) return res;
+    Vector3d ax, ay, az;
+    (~spin).getReper ( ax, ay, az );
+    DynArray<Double<7> > cor ( nf );
+    for ( nat l = 0; l < nf; ++l )
+    {
+        const Plane3d & p = poly.facet[l].plane;
+        Double<7> & c = cor[l];
+        c.d0 = fabs ( p.norm * ax );
+        c.d1 = fabs ( p.norm * ay );
+        c.d2 = fabs ( p.norm * az );
+        c.d3 = p.norm.x;
+        c.d4 = p.norm.y;
+        c.d5 = p.norm.z;
+        c.d6 = p.dist;
+    }
+    Suite<Triangle3d> trian1, trian2;
+    Triangle3d & t = trian1.inc();
+    t.a = Vector3d ( 0.998, 1e-3, 1e-3 );
+    t.b = Vector3d ( 1e-3, 0.998, 1e-3 );
+    t.c = Vector3d ( 1e-3, 1e-3, 0.998 );
+    for ( nat i = 0; i < 5; ++i )
+    {
+        trian2.resize ( 4*trian1.size() );
+        for ( nat j = 0; j < trian1.size(); ++j ) divide4 ( trian1[j], trian2(4*j) );
+        trian1.swap ( trian2 );
+    }
+    const nat nn = trian1.size();
+    DynArray<MaxCuboid> variant ( nn );
+    MaxHeap<SortItem<double,nat> > heap ( nn );
+    Def<Segment3d> seg = dimensions ( poly.vertex );
+    for ( nat k = 0; k < nn; ++k )
+    {
+        MaxCuboid & var = variant[k];
+        var.init ( seg, trian1[k] );
+        heap << SortItem<double,nat> ( var.func * var.con[0], k );
+    }
+    const double eps = 1e-9;
+    for ( nat j = 0; j < nn*nf; ++j )
+    {
+        MaxCuboid & var = variant[heap[0]->tail];
+        Double<6> & r = var.con[0];
+        double max = var.cor[0] % r;
+        nat i, im = 0;
+        Double<6> norm;
+        for ( i = 1; i < 3; ++i )
+        {
+            const double t = var.cor[i] % r;
+            if ( max < t ) max = t, im = i;
+        }
+        if ( max <= eps )
+        {
+            for ( i = 0; i < nf; ++i )
+            {
+                const double t = cor[i] % r;
+                if ( max < t ) max = t, im = i;
+            }
+            if ( max <= eps )
+            {
+                res.a = r.d0;
+                res.b = r.d1;
+                res.c = r.d2;
+                res.o.x = r.d3;
+                res.o.y = r.d4;
+                res.o.z = r.d5;
+                res.spin = spin;
+                res.isDef = true;
+                return res;
+            }
+            norm = ( const Double<6> & ) cor[im];
+        }
+        else
+            norm = ( const Double<6> & ) var.cor[im];
+        const double dist = max;
+        const double lvl = -1e-8 * sqrt ( norm * norm );
+        nat ib = 0;
+        double sm = 0; // для оптимизатора
+        for ( i = 1; i <= 6; ++i )
+        {
+            const Double<6> & v = var.con[i];
+            double t = norm * v;
+            if ( t > lvl ) continue;
+            t = -1./ t;
+            if ( !ib )
+            {
+                max = ( var.func * v ) * t;
+                ib = i;
+                sm = t;
+            }
+            else
+            {
+                const double s = ( var.func * v ) * t;
+                if ( max < s ) max = s, ib = i, sm = t;
+            }
+        }
+        if ( !ib )
+        {
+            return res;
+        }
+        const Double<6> & v = var.con[ib];
+        r += v * ( dist * sm );
+        for ( i = 1; i <= 6; ++i )
+        {
+            if ( i == ib ) continue;
+            Double<6> & ai = var.con[i];
+            ai += v * ( ( norm * ai ) * sm );
+            ai *= ( 1./ sqrt ( ai * ai ) );
+        }
+        heap[0]->head = var.func * r;
+        heap.down ( 0 );
     }
     return res;
 }

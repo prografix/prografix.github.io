@@ -27,6 +27,7 @@
 #include "display.h"
 
 double timeInSec();
+extern double time1;
 
 bool minConvexPolyhedronDiameter ( const Polyhedron & poly, Vector3d & dir, double & d1, double & d2 )
 {
@@ -1043,6 +1044,36 @@ void convexHull_test()
     display << "outer" << outer.vertex.size() << outer.facet.size() << NL; ::check ( outer, rec );
 }
 
+void linkFacets_test()
+{
+    Polyhedron inner;
+    Suite<const char *> name;
+    name.inc() = "data/sample_helium_princess.pyh";
+    name.inc() = "data/sample_helium_emerald.pyh";
+    name.inc() = "data/sample_helium_brilliant.pyh";
+    name.inc() = "data/octo0684.pyh";
+    name.inc() = "data/boart0858.pyh";
+    name.inc() = "data/boart1246.pyh";
+    name.inc() = "data/boart1467.pyh";
+    name.inc() = "data/new_large_5313_1.pyh";
+    name.inc() = "data/new_large_9080_2.pyh";
+    for ( nat i = 0; i < name.size(); ++i )
+    {
+        RealFile file ( name[i], "rb" );
+        if ( ! loadPYH (  file, inner ) )
+        {
+            display << "Not load" << name[i] << NL;
+            continue;
+        }
+        time1 = 0;
+        inner.linkFacets();
+        nat n1, n2;
+        inner.countEdges ( n1, n2 );
+        display << n1 << n2 << time1 << NL;
+    }
+    display << "end" << NL;
+}
+
 void getDistance2test ()
 {
     static PRandPoint3d rand;
@@ -1202,8 +1233,9 @@ void func3d_test ()
 //    spherePPPP_test();
 //    isConvex_test();
 //    convexHull_test();
+    linkFacets_test();
 //    getDistance2test();
 //    makeSpin_test();
-    overlap_test();
+//    overlap_test();
     endNewList ();
 }

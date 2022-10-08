@@ -208,12 +208,58 @@ void breakthrough_test()
     display << "end" << NL;
 }
 
+class Spline3p
+{
+    double a, b, c, d, x01;
+public:
+    Spline3p ( double x0, double x1, double y0, double y1, double p0, double p1  );
+    double getY ( double x ) const
+    {
+        return x * ( x * ( x * a + b ) + c ) + d;
+    }
+    double getX ( double y ) const;
+};
+
+Spline3p::Spline3p ( double x0, double x1, double y0, double y1, double p0, double p1  )
+{
+    SLU4<double> slu;
+    slu.aa = x0*x0*x0; slu.ab = x0*x0; slu.ac = x0; slu.ad = 1; slu.ae = y0;
+    slu.ba = x1*x1*x1; slu.bb = x1*x1; slu.bc = x1; slu.bd = 1; slu.be = y1;
+    slu.ca = 3.*x0*x0; slu.cb = 2.*x0; slu.cc = 1.; slu.cd = 0; slu.ce = p0;
+    slu.da = 3.*x1*x1; slu.db = 2.*x1; slu.dc = 1.; slu.dd = 0; slu.de = p1;
+    slu.gauss ( a, b, c, d );
+}
+
+void spline_test()
+{
+    Vector2d v0(1, 1), v1(1.05, 1.05), v2(1.1,1.07);
+    Vector2d u1 = v1 - v0;
+    Vector2d u2 = v2 - v1;
+    Vector2d w0 = u1 - 0.2*u2;
+    Vector2d w1 = u1 + u2;
+    Vector2d w2 = u2 - 0.2*u1;
+    Spline3p spline1 ( v0.x, v1.x, v0.y, v1.y, w0.y/w0.x, w1.y/w1.x );
+    int i;
+    for ( i = 90; i <= 105; i+=1 )
+    {
+        double x = 0.01*i;
+        display << x << spline1.getY(x) << NL;
+    }
+    Spline3p spline2 ( v1.x, v2.x, v1.y, v2.y, w1.y/w1.x, w2.y/w2.x );
+    for ( i = 106; i <= 120; i+=1 )
+    {
+        double x = 0.01*i;
+        display << x << spline2.getY(x) << NL;
+    }
+}
+
 } // end of namespace
 
 void approx_test ()
 {
     drawNewList2d();
 //    harmAppr_test();
-    breakthrough_test();
+//    breakthrough_test();
+    spline_test();
     endNewList();
 }

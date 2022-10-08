@@ -324,12 +324,6 @@ public:
         return res;
     }
 
-    Line2d operator() ( const Line2d & p ) const
-    {
-        const Vector2d v = spin ( p.norm );
-        return Line2d ( v, magn * p.dist - v * trans );
-    }
-
     Vector2d operator() ( const Vector2d & v ) const
     {
         return spin ( v ) * magn + trans;
@@ -338,6 +332,12 @@ public:
     Segment2d operator () ( const Segment2d & p ) const
     {
         return Segment2d ( (*this) ( p.a ), (*this) ( p.b ) );
+    }
+
+    Line2d operator() ( const Line2d & p ) const
+    {
+        const Vector2d v = spin ( p.norm );
+        return Line2d ( v, magn * p.dist - v * trans );
     }
 };
 

@@ -1,12 +1,15 @@
 
 #pragma once
 
-template <class T> class AVL_Tree
+#include "typedef.h"
+
+template <typename K, typename D = Void> class AVL_Tree
 {
 public:
     struct Node
     {
-        T key;
+        K key;
+        D data;
         Node * left, * right;
         int bal;
     };
@@ -19,22 +22,26 @@ public:
     };
 private:
     Node * root;
-    NodeStor * stor;
+    NodeStor & stor;
+    unsigned count;
+    bool isDel;
 
-    static const T & add ( const T & x, Node * & p, bool & h, NodeStor * stor )
+    D & add ( const K & x, const D & d, Node * & p, bool & h )
     {
         if ( ! p )
         {
-            p = stor ? stor->get() : new Node;
+            p = stor.get();
+            ++count;
             p->key = x;
+            p->data = d;
             p->left = p->right = 0;
             p->bal = 0;
             h = true;
-            return p->key;
+            return p->data;
         }
         if ( p->key > x )
         {
-            const T & res = add ( x, p->left, h, stor );
+            D & res = add ( x, d, p->left, h );
             if ( h )
             {
                 switch ( p->bal )
@@ -71,7 +78,7 @@ private:
         }
         if ( p->key < x )
         {
-            const T & res = add ( x, p->right, h, stor );
+            D & res = add ( x, d, p->right, h );
             if ( h )
             {
                 switch ( p->bal )
@@ -107,7 +114,8 @@ private:
             return res;
         }
         h = false;
-        return p->key;
+        p->data = d;
+        return p->data;
     }
 
     static bool balanceL ( Node * & p ) // Левая ветвь стала короче
@@ -232,7 +240,7 @@ private:
         return true;
     }
 
-    static bool delet ( const T & x, Node * & p, NodeStor * stor )
+    bool delet ( const K & x, Node * & p )
     {
         if ( ! p )
         {
@@ -241,13 +249,13 @@ private:
         bool h;
         if ( p->key > x )
         {
-            h = delet ( x, p->left, stor );
+            h = delet ( x, p->left );
             if ( h ) h = balanceL ( p );
         }
         else
         if ( p->key < x )
         {
-            h = delet ( x, p->right, stor );
+            h = delet ( x, p->right );
             if ( h ) h = balanceR ( p );
         }
         else
@@ -275,23 +283,19 @@ private:
                 p->right = q->right;
                 if ( h ) h = balanceL ( p );
             }
-            if ( stor )
-                stor->put ( q );
-            else
-                delete q;
+            stor.put ( q );
+            --count;
+            isDel = true;
         }
         return h;
     }
 
-    static void delAll ( Node * p, NodeStor * stor )
+    void delAll ( Node * p )
     {
         if ( ! p ) return;
-        delAll ( p->left, stor );
-        delAll ( p->right, stor );
-        if ( stor )
-            stor->put ( p );
-        else
-            delete p;
+        delAll ( p->left );
+        delAll ( p->right );
+        stor.put ( p );
     }
 
     static int height ( const Node * p )
@@ -308,6 +312,11 @@ private:
         return 1 + countItems ( p->left ) + countItems ( p->right );
     }
 
+    unsigned countItems() const
+    {
+        return countItems ( root );
+    }
+
     static bool test ( const Node * p )
     {
         if ( ! p ) return true;
@@ -318,27 +327,36 @@ private:
         return test ( p->left ) && test ( p->right );
     }
 public:
-    AVL_Tree ( NodeStor * p = 0 ) : root ( 0 ), stor ( p ) {}
+    explicit AVL_Tree ( NodeStor & s ) : root ( 0 ), stor ( s ), count ( 0 ) {}
 
     ~AVL_Tree ()
     {
-        delAll ( root, stor );
+        delAll ( root );
     }
 
-    const T & add ( const T & x )
+    D & add ( const K & x, const D & d )
     {
         bool h;
-        return add ( x, root, h, stor );
+        return add ( x, d, root, h );
     }
 
-    void del ( const T & x )
+    D & add ( const K & x )
     {
-        delet ( x, root, stor );
+        D d;
+        bool h;
+        return add ( x, d, root, h );
     }
 
-    const T * find ( const T & x ) const
+    bool del ( const K & x )
     {
-        const Node * p = root;
+        isDel = false;
+        delet ( x, root );
+        return isDel;
+    }
+
+    D * find ( const K & x )
+    {
+        Node * p = root;
         while ( p )
         {
             if ( p->key > x )
@@ -347,64 +365,72 @@ public:
             if ( p->key < x )
                 p = p->right;
             else
-                return & p->key;
+                return & p->data;
         }
         return 0;
     }
 
-    unsigned countItems() const
+    unsigned size() const
     {
-        return countItems ( root );
+        return count;
     }
 
     bool test() const
     {
+        if ( count != countItems() )
+            return false;
         return test ( root );
     }
 };
 
-template <class T> class AVL_TreeNodeStor : public AVL_Tree<T>::NodeStor
+template <typename K, typename D = Void> 
+class AVL_TreeNodeStor : public AVL_Tree<K, D>::NodeStor
 {
-    typename AVL_Tree<T>::Node * data;
+    typename AVL_Tree<K, D>::Node * ptr;
 public:
-    AVL_TreeNodeStor() : data(0) {}
+    AVL_TreeNodeStor() : ptr(0) {}
 
     ~AVL_TreeNodeStor()
     {
-        while ( data )
+        while ( ptr )
         {
-            AVL_Tree<T>::Node * p = data->left;
-            delete data;
-            data = p;
+            AVL_Tree<K, D>::Node * p = ptr->left;
+            delete ptr;
+            ptr = p;
         }
     }
 
-    virtual typename AVL_Tree<T>::Node * get()
+    virtual typename AVL_Tree<K, D>::Node * get()
     {
-        if ( data )
+        if ( ptr )
         {
-            AVL_Tree<T>::Node * p = data;
-            data = p->left;
+            AVL_Tree<K, D>::Node * p = ptr;
+            ptr = p->left;
             return p;
         }
         else
-            return new AVL_Tree<T>::Node;
+            return new AVL_Tree<K, D>::Node;
     }
 
-    virtual void put ( typename AVL_Tree<T>::Node * p )
+    virtual void put ( typename AVL_Tree<K, D>::Node * p )
     {
-        p->left = data;
-        data = p;
+        p->left = ptr;
+        ptr = p;
     }
 
-    const T * find ( const T & x ) const
+    const D * find ( const K & x ) const
     {
-        const AVL_Tree<T>::Node * p = data;
+        const AVL_Tree<K, D>::Node * p = ptr;
         while ( p )
         {
-            if ( p->key == x ) return & p->key;
+            if ( p->key == x ) return & p->data;
             p = p->left;
         }
         return 0;
+    }
+
+    const D * first () const
+    {
+        return ptr ? & ptr->data : 0;
     }
 };

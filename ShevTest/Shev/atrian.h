@@ -60,19 +60,22 @@ public:
 //
 //              Локальная оптимизация заданной триангуляции optiL1
 //
-//************************************ 23.08.2018 *****************************************//
+//************************************ 08.01.2021 *****************************************//
+
+template <class T> class TriDiag
+{
+public:
+    T value; // Качество диагонали
+    nat rib, facet1, facet2; // Индексы полуребра и соседних граней
+};
 
 template <class T>
-void maxL1 ( const Func3a<T,nat> & quality, const Func2a<T,T> & merge, ArrRef<SemiRib> rib )
+void maxL1 ( const Func3a<T,nat> & quality, const Func2a<T,T> & merge, ArrRef<SemiRib> & rib )
 {
     const nat nr = rib.size();
     if ( nr < 6 || nr % 3 != 0 ) return;
     const nat nf = nr / 3;
-    typedef ListItemA<T> Item;
-    DynArray<Item*> diag ( nr );
-    DynArray<nat> finx ( nr );
-    DynArray<T> value ( nf );
-    List<Item> list;
+    DynArray<T> value ( nf ); // Массив качества граней
     nat i;
     for ( i = 0; i < nf; ++i )
     {
@@ -81,6 +84,8 @@ void maxL1 ( const Func3a<T,nat> & quality, const Func2a<T,T> & merge, ArrRef<Se
         const SemiRib & c = rib[b.next];
         value[i] = quality ( a.vert, b.vert, c.vert );
     }
+    DynArray<nat> dinx ( nr, nr );
+    Suite<TriDiag<T> > diag ( nr/2 ); // Массив диагоналей
     for ( i = 0; i < nf; ++i )
     {
         const nat ia = 3 * i;
@@ -91,53 +96,52 @@ void maxL1 ( const Func3a<T,nat> & quality, const Func2a<T,T> & merge, ArrRef<Se
         const SemiRib & c = rib[ic];
         if ( a.twin < nr )
         {
-            list.addAftCur ( diag[ia] = diag[a.twin] = new Item ( merge ( value[i], value[a.twin/3] ) ) );
-            list.cur()->info = ia;
-        }
-        else
-        {
-            diag[ia] = 0;
+            dinx[ia] = dinx[a.twin] = diag.size();
+            TriDiag<T> & d = diag.inc();
+            d.value = merge ( value[d.facet1=i], value[d.facet2=a.twin/3] );
+            d.rib = ia;
         }
         if ( b.twin < nr )
         {
-            list.addAftCur ( diag[ib] = diag[b.twin] = new Item ( merge ( value[i], value[b.twin/3] ) ) );
-            list.cur()->info = ib;
-        }
-        else
-        {
-            diag[ib] = 0;
+            dinx[ib] = dinx[b.twin] = diag.size();
+            TriDiag<T> & d = diag.inc();
+            d.value = merge ( value[d.facet1=i], value[d.facet2=b.twin/3] );
+            d.rib = ib;
         }
         if ( c.twin < nr )
         {
-            list.addAftCur ( diag[ic] = diag[c.twin] = new Item ( merge ( value[i], value[c.twin/3] ) ) );
-            list.cur()->info = ic;
+            dinx[ic] = dinx[c.twin] = diag.size();
+            TriDiag<T> & d = diag.inc();
+            d.value = merge ( value[d.facet1=i], value[d.facet2=c.twin/3] );
+            d.rib = ic;
         }
-        else
-        {
-            diag[ic] = 0;
-        }
-        finx[ia] = i;
-        finx[ib] = i;
-        finx[ic] = i;
     }
-    list.top();
-    do
+    const nat nd = diag.size();
+    Suite<nat> stack ( nd, nd ); // Очередь на проверку оптимальности диагоналей
+    for ( i = 0; i < nd; ++i ) stack[i] = i;
+    while ( stack.size() > 0 )
     {
-        Item * item = list.cur();
-        const nat a1 = item->info;
+        TriDiag<T> & d = diag[stack.las()];
+        stack.dec();
+        const nat a1 = d.rib;
         const nat b1 = rib[a1].next;
         const nat c1 = rib[b1].next;
         const nat a2 = rib[a1].twin;
         const nat b2 = rib[a2].next;
         const nat c2 = rib[b2].next;
         const T q3 = quality ( rib[c2].vert, rib[b1].vert, rib[c1].vert );
+        if ( d.value >= q3 )
+        {
+            d.rib += nr;
+            continue;
+        }
         const T q4 = quality ( rib[c1].vert, rib[b2].vert, rib[c2].vert );
         const T qq = merge ( q3, q4 );
-        if ( item->a < qq )
+        if ( d.value < qq )
         {
-            item->a = qq;
-            value[finx[c2] = finx[a1]] = q3;
-            value[finx[c1] = finx[a2]] = q4;
+            d.value = qq;
+            value[d.facet1] = q3;
+            value[d.facet2] = q4;
             rib[a1].vert = rib[c1].vert;
             rib[a1].next = c2;
             rib[c2].next = b1;
@@ -146,55 +150,55 @@ void maxL1 ( const Func3a<T,nat> & quality, const Func2a<T,T> & merge, ArrRef<Se
             rib[a2].next = c1;
             rib[c1].next = b2;
             rib[b2].next = a2;
-            Item * it = diag[c1];
-            if ( it != 0 )
+            i = dinx[c1];
+            if ( i < nr )
             {
-                if ( (nat) it->info >= nr )
+                TriDiag<T> & di = diag[i];
+                if ( di.rib >= nr )
                 {
-                    it->info -= nr;
-                    list.jump ( it );
-                    list.movCurAftLas ( list );
+                    di.rib -= nr;
+                    stack.inc() = i;
                 }
-                it->a = merge ( value[finx[it->info]], value[finx[rib[it->info].twin]] );
+                ( di.facet1 == d.facet1 ? di.facet1 : di.facet2 ) = d.facet2;
+                di.value = merge ( value[di.facet1], value[di.facet2] );
             }
-            it = diag[b1];
-            if ( it != 0 )
+            i = dinx[b1];
+            if ( i < nr )
             {
-                if ( (nat) it->info >= nr )
+                TriDiag<T> & di = diag[i];
+                if ( di.rib >= nr )
                 {
-                    it->info -= nr;
-                    list.jump ( it );
-                    list.movCurAftLas ( list );
+                    di.rib -= nr;
+                    stack.inc() = i;
                 }
-                it->a = merge ( value[finx[it->info]], value[finx[rib[it->info].twin]] );
+                di.value = merge ( value[di.facet1], value[di.facet2] );
             }
-            it = diag[c2];
-            if ( it != 0 )
+            i = dinx[c2];
+            if ( i < nr )
             {
-                if ( (nat) it->info >= nr )
+                TriDiag<T> & di = diag[i];
+                if ( di.rib >= nr )
                 {
-                    it->info -= nr;
-                    list.jump ( it );
-                    list.movCurAftLas ( list );
+                    di.rib -= nr;
+                    stack.inc() = i;
                 }
-                it->a = merge ( value[finx[it->info]], value[finx[rib[it->info].twin]] );
+                ( di.facet1 == d.facet2 ? di.facet1 : di.facet2 ) = d.facet1;
+                di.value = merge ( value[di.facet1], value[di.facet2] );
             }
-            it = diag[b2];
-            if ( it != 0 )
+            i = dinx[b2];
+            if ( i < nr )
             {
-                if ( (nat) it->info >= nr )
+                TriDiag<T> & di = diag[i];
+                if ( di.rib >= nr )
                 {
-                    it->info -= nr;
-                    list.jump ( it );
-                    list.movCurAftLas ( list );
+                    di.rib -= nr;
+                    stack.inc() = i;
                 }
-                it->a = merge ( value[finx[it->info]], value[finx[rib[it->info].twin]] );
+                di.value = merge ( value[di.facet1], value[di.facet2] );
             }
-            list.jump ( item );
         }
-        item->info += nr;
+        d.rib += nr;
     }
-    while ( list.next() );
 }
 
 //************************************ 18.07.2007 *****************************************//

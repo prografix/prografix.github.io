@@ -59,12 +59,24 @@ void convex_test()
 void convexPolygon_test()
 {
     FixArray<Vector2d,12> buf;
-    DynArray<Vector2d> res;
+    Suite<Vector2d> res;
+    double time = 0;
     for ( nat n = 0; n <= 1000; ++n )
     {
         ArrRef<Vector2d> point ( buf, 0, n % 6 + 7 );
         randPolygon ( point );
-        convexPolygon ( point, res );
+        Suite<Vector2d> temp;
+        for ( nat i = 0; i < point.size(); ++i )
+        {
+            temp.inc() = point[i];
+            temp.inc() = point[i];
+            temp.inc() = point[i];
+        }
+        temp <<= 1;
+        double t0 = timeInSec();
+        convexPolygon ( temp, res );
+        double t1 = timeInSec();
+        time += t1 - t0;
         if ( ! isConvex ( res ) )
         {
             display << n << NL;
@@ -85,7 +97,7 @@ void convexPolygon_test()
             }
         }
     }
-    display << "end" << NL;
+    display << "end" << time << NL;
 }
 
 void convexPolygon_test2()

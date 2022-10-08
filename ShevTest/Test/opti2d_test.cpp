@@ -46,28 +46,6 @@ bool loadPgn ( const char * name, SuiteRef<Vector2d> & vert )
 
 namespace
 {
-    bool points2lines ( CArrRef<Vector2d> poly, ArrRef<Line2d> line )
-    {
-    // Для каждой стороны вычислим параметры уравнения прямой
-    // Уравнение прямой имеет вид: norm.x * x + norm.y * y + dist = 0
-        for ( nat i = 0; i < poly.size(); ++i )
-        {
-            const Vector2d & v2 = poly[i+1<poly.size()?i+1:0];
-            const Vector2d & v1 = poly[i];
-            Line2d & linei = line[i];
-            Vector2d & norm = linei.norm;
-            norm.x = v2.y - v1.y;
-            norm.y = v1.x - v2.x;
-            const double q = norm * norm;
-            if ( q == 0 ) return false;
-            norm /= sqrt ( q );
-            const double d1 = norm * v1;
-            const double d2 = norm * v2;
-            linei.dist = d1 > d2 ? - d1 : - d2;
-        }
-        return true;
-    }
-
     bool points2lines ( CArrRef<Vector2d> poly, Conform2d & conf, ArrRef<Line2d> line )
     {
     // Определение габаритов многоугольника

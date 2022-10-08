@@ -1126,7 +1126,7 @@ template <class T> inline T _median13 ( const T * a )
 //          если j < i, то a[j] <= a[i],
 //          если j > i, то a[j] >= a[i]
 //
-//*********************** 23.01.2016 **************************//
+//*********************** 29.12.2021 **************************//
 
 template <class T> bool select ( ArrRef<T> a, nat i )
 {
@@ -1148,7 +1148,7 @@ template <class T> bool select ( ArrRef<T> a, nat i )
             if ( j < n1 ) _swap ( b[n1], b[j] );
             break;
         }
-        if ( n < 6 )
+        if ( n < 7 )
         {
             switch ( n )
             {

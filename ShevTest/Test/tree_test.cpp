@@ -61,7 +61,7 @@ void tree_test1()
     {
         for ( nat i = 1; i <= n; ++i )
         {
-            AVL_Tree<nat> tree ( & stor );
+            AVL_Tree<nat> tree ( stor );
             for ( nat j = 1; j <= n; ++j )
             {
                 tree.add ( j );
@@ -111,7 +111,7 @@ void heap_test1()
     display << "end" << NL;
 }
 
-template <class T>  void MaxHeapAndTree_test()
+template <class T> void MaxHeapAndTree_test()
 {
     const nat nn = 17;
     for ( nat n = nn; n <= nn; ++n )

@@ -35,6 +35,15 @@ double getPerimeter ( const Rhombus2d       & );
 double getPerimeter ( const Parallelogram2d & );
 
 
+//**************************** 19.09.2021 *********************************//
+//
+//            Построение прямых по вершинам многоугольника
+//
+//**************************** 19.09.2021 *********************************//
+
+bool points2lines ( CCArrRef<Vector2d> & poly, ArrRef<Line2d> & line );
+
+
 //**************************** 17.10.2008 *********************************//
 //
 //            Определение габаритов множества точек
@@ -253,17 +262,14 @@ SuiteRef<Vector2d> & convexMN ( SuiteRef<Vector2d> & point );
 //**************************** 14.08.2006 *********************************//
 //
 //      Выпуклая оболочка вершин многоугольника за время O ( n ).
-//      Обход вершин против часовой стрелки.
-//      vert и res должны быть разными массивами.
-//      Возвращается false, если площадь многоугольника меньше или равна 0.
+//      Обход вершин против часовой стрелки, иначе вызывается convexNlogN.
+//      vert и res могут совпадать.
 //
-//**************************** 12.06.2020 *********************************//
+//**************************** 12.11.2020 *********************************//
 
-bool convexPolygon ( CCArrRef<Vector2d> & vert, SuiteRef<nat> & index );
+SuiteRef<nat> & convexPolygon ( CCArrRef<Vector2d> & vert, SuiteRef<nat> & index );
 
-bool convexPolygon ( CCArrRef<Vector2d> & vert, DynArrRef<Vector2d> & res );
-
-bool convexPolygon ( SuiteRef<Vector2d> & vert );
+SuiteRef<Vector2d> & convexPolygon ( CCArrRef<Vector2d> & vert, SuiteRef<Vector2d> & res );
 
 
 //**************************** 23.08.2003 *********************************//
@@ -369,8 +375,20 @@ ArrRef<Vector2d> regularPolygon ( ArrRef<Vector2d> poly, double r = 1 );
 //**************************** 25.06.2013 *********************************//
 //
 //                      Упрощение многоугольника
+//                  poly и res должны быть разными
 //
 //**************************** 06.07.2013 *********************************//
 
-DynArrRef<  nat   > & simplify ( CArrRef<Vector2d> poly, double eps, bool closed, DynArrRef<  nat   > & res );
-DynArrRef<Vector2d> & simplify ( CArrRef<Vector2d> poly, double eps, bool closed, DynArrRef<Vector2d> & res );
+DynArrRef<  nat   > & simplify ( CCArrRef<Vector2d> & poly, double eps, bool closed, DynArrRef<  nat   > & res );
+DynArrRef<Vector2d> & simplify ( CCArrRef<Vector2d> & poly, double eps, bool closed, DynArrRef<Vector2d> & res );
+
+
+//**************************** 05.10.2020 *********************************//
+//
+//           Упрощение многоугольника до заданного к-ва вершин
+//                  poly и res должны быть разными
+//
+//**************************** 05.10.2020 *********************************//
+
+DynArrRef<  nat   > & simplifyNV ( CCArrRef<Vector2d> & poly, nat nv, bool closed, DynArrRef<  nat   > & res );
+DynArrRef<Vector2d> & simplifyNV ( CCArrRef<Vector2d> & poly, nat nv, bool closed, DynArrRef<Vector2d> & res );

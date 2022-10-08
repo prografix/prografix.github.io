@@ -1,4 +1,5 @@
 
+#include <windows.h>
 #include "math.h"
 
 #include "../Shev/tune.h"
@@ -16,8 +17,8 @@
 #include "../Shev/ShevArray2.h"
 #include "../Shev/Polyhedron.h"
 #include "../Shev/intersect3d.h"
+#include "../Shev/Facet2Model.h"
 #include "../Shev/WireModel.h"
-#include "../shev/S2D_Model.h"
 #include "../Shev/moment3d.h"
 #include "../Shev/RealFile.h"
 #include "../Shev/filePYH.h"
@@ -27,6 +28,7 @@
 #include "../draw.h"
 
 #include "display.h"
+double time1=0, time2=0, time3=0, time4=0;
 
 double timeInSec();
 bool maxConvexPolyhedronInPolyhedronNR ( const Polyhedron & inner, const Polyhedron & outer, 
@@ -2347,65 +2349,66 @@ m2:     Vector3d v = data[1] - data[0];
 
 inline void check ( const Vector3d & a1, const Vector3d & a2,
                     const Vector3d & b1, const Vector3d & b2,
-                    const Double<9> & pc, const Double<9> & vc,
+                    const Vector3d & c1, const Vector3d & c2,
                     double t, double & max, Double<9> & best )
 {
-    const Vector3d e1 = a1 + b1 * t;
-    const Vector3d e2 = a2 + b2 * t;
-    const double q = qmod ( e1 % e2 );
-    if ( q > max )
+    const Vector3d a = a1 + b2 * t;
+    const Vector3d b = a1 + b2 * t;
+    const Vector3d c = c1 + c2 * t;
+    const double v = a % b * c;
+    if ( v > max )
     {
-        max = q;
-        const double s = 1 - t;
-        best.d0 = pc.d0 * s + vc.d0 * t;
-        best.d1 = pc.d1 * s + vc.d1 * t;
-        best.d2 = pc.d2 * s + vc.d2 * t;
-        best.d3 = e1.x;
-        best.d4 = e1.y;
-        best.d5 = e1.z;
-        best.d6 = e2.x;
-        best.d7 = e2.y;
-        best.d8 = e2.z;
+        max = v;
+        best.d0 = a.x;
+        best.d1 = a.y;
+        best.d2 = a.z;
+        best.d3 = b.x;
+        best.d4 = b.y;
+        best.d5 = b.z;
+        best.d6 = c.x;
+        best.d7 = c.y;
+        best.d8 = c.z;
     }
 }
 
-static bool maxParallelogramArea ( const WireModel<9> & model, Double<9> & best )
+static bool maxVolume ( const WireModel<9> & model, Double<9> & best )
 {
+    Double<9> dt;
+    Vector3d & a = ( Vector3d & ) dt.d0;
+    Vector3d & b = ( Vector3d & ) dt.d3;
+    Vector3d & c = ( Vector3d & ) dt.d6;
     Show< Vertex<9> > show ( model.vlist );
     double max = 0.;
-    Polynom3 func;
     if ( show.top() )
     do
     {
-        const Vertex<9> * p = show.cur();
-        const Double<9> & pc = p->coor;
-        const Vector3d a1 ( pc.d3, pc.d4, pc.d5 );
-        const Vector3d a2 ( pc.d6, pc.d7, pc.d8 );
-        const double t = qmod ( a1 % a2 );
-        if ( max < t ) max = t, best = pc;
-continue;
-        for ( nat k = 0; k < 0; ++k )
+        const Vertex<9> * v0 = show.cur();
+        const Double<9> & p0 = v0->coor;
+        const Vector3d & a0 = ( const Vector3d & ) p0.d0;
+        const Vector3d & b0 = ( const Vector3d & ) p0.d3;
+        const Vector3d & c0 = ( const Vector3d & ) p0.d6;
+        const double t = a0 % b0 * c0;
+        if ( max < t ) max = t, best = p0;
+        for ( nat i = 0; i < 8; ++i )
         {
-            const Vertex<9> * v = p->vertex[k];
-            if ( v < p ) continue;
-            const Double<9> & vc = v->coor;
-            const Vector3d b1 = Vector3d ( vc.d3, vc.d4, vc.d5 ) - a1;
-            const Vector3d b2 = Vector3d ( vc.d6, vc.d7, vc.d8 ) - a2;
-            const Vector3d v0 = a1 % a2;
-            const Vector3d v1 = a1 % b2 + b1 % a2;
-            const Vector3d v2 = b1 % b2;
-            func.a = v2 * v2 * 2;
-            func.b = v1 * v2 * 3;
-            func.c = v1 * v1 + v0 * v2 * 2;
-            func.d = v0 * v1;
-            if ( ! func.a ) continue;
-            double x[3];
-            const nat n = root3 ( func.b / func.a, func.c / func.a, func.d / func.a, x );
-            if ( n < 3 ) continue;
-            for ( nat i = 0; i < n; ++i )
+            const Vertex<9> * vi = v0->vertex[i];
+            const Double<9> & pi = vi->coor;
+            const Vector3d & ai = ( const Vector3d & ) pi.d0;
+            const Vector3d & bi = ( const Vector3d & ) pi.d3;
+            const Vector3d & ci = ( const Vector3d & ) pi.d6;
+            for ( nat j = i+1; j < 9; ++j )
             {
-                if ( x[i] > 0 && x[i] < 1 )
-                    check ( a1, a2, b1, b2, pc, vc, x[i], max, best );
+                const Vertex<9> * vj = v0->vertex[j];
+                const Double<9> & pj = vj->coor;
+                const Vector3d & aj = ( const Vector3d & ) pj.d0;
+                const Vector3d & bj = ( const Vector3d & ) pj.d3;
+                const Vector3d & cj = ( const Vector3d & ) pj.d6;
+                a = ( a0 + ai + aj ) / 3;
+                b = ( b0 + bi + bj ) / 3;
+                c = ( c0 + ci + cj ) / 3;
+                const double t = a % b * c;
+                if ( max < t )
+                    max = t, best = dt;
             }
         }
     }
@@ -2413,505 +2416,640 @@ continue;
     return max > 0;
 }
 
-static
-bool maxParallelogramInConvexPolyhedron ( CCArrRef<Vector2d> & poly, CCArrRef<Plane3d> & plane, 
-                                          WireModel<9> & model, List< Vertex<9> > & stor,
-                                          Parallelogram3d & res
-                                        )
+struct MaxVolumePar
 {
-    for ( nat i = 0; i < 1000; ++i )
+    const List< Vertex<9> > * vlist;
+    Double<9> best;
+    double max;
+    nat nk, ik;
+};
+
+
+DWORD WINAPI maxVolumePara ( LPVOID lpParam ) 
+{
+    MaxVolumePar * par = ( MaxVolumePar * ) lpParam;
+    Show< Vertex<9> > show ( par->vlist[0] );
+    if ( ! show.top() ) return 0;
+    Double<9> & best = par->best;
+    const nat ik = par->ik;
+    const nat nk = par->nk;
+    Double<9> dt;
+    Vector3d & a = ( Vector3d & ) dt.d0;
+    Vector3d & b = ( Vector3d & ) dt.d3;
+    Vector3d & c = ( Vector3d & ) dt.d6;
+    double max = 0.;
+    const nat n = show.size();
+    for ( nat k = 0; k < n; ++k )
     {
-// ѕоиск максимального решени€
-        Double<9> best;
-        if ( ! maxParallelogramArea ( model, best ) ) return false;
-// ѕоиск максимального нарушени€ ограничений дл€ выбранного решени€
-        nat km;
-        Vector2d pm;
-        double max = 0.;
-        for ( nat j = 0; j < poly.size(); ++j )
+        if ( k % nk == ik )
         {
-            const Vector2d & p = poly[j];
-            const Vector3d v ( best.d6*p.y + best.d3*p.x + best.d0,
-                               best.d7*p.y + best.d4*p.x + best.d1,
-                               best.d8*p.y + best.d5*p.x + best.d2 );
-            for ( nat k = 0; k < plane.size(); ++k )
+            const Vertex<9> * v0 = show.cur();
+            const Double<9> & p0 = v0->coor;
+            const Vector3d & a0 = ( const Vector3d & ) p0.d0;
+            const Vector3d & b0 = ( const Vector3d & ) p0.d3;
+            const Vector3d & c0 = ( const Vector3d & ) p0.d6;
+            const double t = a0 % b0 * c0;
+            if ( max < t ) max = t, best = p0;
+            for ( nat i = 0; i < 8; ++i )
             {
-                const double t = plane[k] % v;
-                if ( max < t ) max = t, pm = p, km = k;
+                const Vertex<9> * vi = v0->vertex[i];
+                const Double<9> & pi = vi->coor;
+                const Vector3d & ai = ( const Vector3d & ) pi.d0;
+                const Vector3d & bi = ( const Vector3d & ) pi.d3;
+                const Vector3d & ci = ( const Vector3d & ) pi.d6;
+                for ( nat j = i+1; j < 9; ++j )
+                {
+                    const Vertex<9> * vj = v0->vertex[j];
+                    const Double<9> & pj = vj->coor;
+                    const Vector3d & aj = ( const Vector3d & ) pj.d0;
+                    const Vector3d & bj = ( const Vector3d & ) pj.d3;
+                    const Vector3d & cj = ( const Vector3d & ) pj.d6;
+                    a = ( a0 + ai + aj ) / 3;
+                    b = ( b0 + bi + bj ) / 3;
+                    c = ( c0 + ci + cj ) / 3;
+                    const double t = a % b * c;
+                    if ( max < t )
+                        max = t, best = dt;
+                }
             }
         }
+        show.next();
+    }
+    par->max = max;
+    return 0;
+}
+
+static bool maxVolume ( const List< Vertex<9> > & vlist, Double<9> & best )
+{
+    nat i;
+    const nat nt = 4;
+    HANDLE handle[nt];
+    DWORD threadId[nt];
+    MaxVolumePar par[nt];
+    for ( i = 0; i < nt; ++i )
+    {
+        MaxVolumePar & p = par[i];
+        p.vlist = & vlist;
+        p.nk = nt;
+        p.ik = i;
+        handle[i] = CreateThread ( 0, 0, maxVolumePara, par+i, 0, threadId+i );
+    }
+    WaitForMultipleObjects ( nt, handle, TRUE, INFINITE );
+    double max = 0;
+    for ( i = 0; i < nt; ++i )
+    {
+        CloseHandle ( handle[i] );
+        const MaxVolumePar & p = par[i];
+        if ( max < p.max ) max = p.max, best = p.best;
+    }
+    return max > 0;
+}
+
+bool maxPolyhedronInConvexPolyhedronNM ( const Polyhedron & inner, const Polyhedron & outer, LinTran3d & res )
+{
+    CCArrRef<Vector3d> & vert = inner.vertex;
+    CCArrRef<Facet> & facet = outer.facet;
+    const double d = 99;
+    WireModel<9> model;
+    List< Vertex<9> > stor;
+    model.simplex ( d*9, stor );
+    model.vlist -= Double<9>().fill(d);
+    Double<10> g;
+time1=0, time2=0, time3=0, time4=0;
+    for ( nat i = 0; i < 120; ++i )
+    {
+double t0 = timeInSec();
+// ѕоиск максимального решени€
+        Double<9> best;
+//        if ( ! maxVolume ( model, best ) ) return false;
+        if ( ! maxVolume ( model.vlist, best ) ) return false;
+// ѕоиск максимального нарушени€ ограничений дл€ выбранного решени€
+double t1 = timeInSec();time1 += t1-t0;
+display << model.vlist.size() << t1-t0 << NL;
+        nat km;
+        Vector3d pm;
+        double max = 0.;
+        for ( nat j = 0; j < vert.size(); ++j )
+        {
+            const Vector3d & v = vert[j];
+            const Vector3d u ( best.d0*v.x + best.d1*v.y + best.d2*v.z,
+                               best.d3*v.x + best.d4*v.y + best.d5*v.z,
+                               best.d6*v.x + best.d7*v.y + best.d8*v.z );
+            for ( nat k = 0; k < facet.size(); ++k )
+            {
+                const double t = facet[k].plane % u;
+                if ( max < t ) max = t, pm = v, km = k;
+            }
+        }
+double t2 = timeInSec();time2 += t2-t1;
 // ≈сли нарушение мало, то завершение программы
         if ( max < 1e-5 )
         {
-            Vector3d a ( best.d0, best.d1, best.d2 ), 
-                     b ( best.d3, best.d4, best.d5 ), 
-                     c ( best.d6, best.d7, best.d8 );
-            res = Parallelogram3d ( a - b - c, a + b - c, a + b + c );
-//display << i+1 << model.vlist.size() << NL;
+            res.x = Vector3d ( best.d0, best.d1, best.d2 ), 
+            res.y = Vector3d ( best.d3, best.d4, best.d5 ), 
+            res.z = Vector3d ( best.d6, best.d7, best.d8 );
+//display << time1 << time2 << time3 << time4 << NL;
             return true;
         }
+//0.008 0.035 0.115 0 
+//display << i << max << model.vlist.size() << NL;
 // ѕрименение ограничени€ к области допустимых преобразований
-        const Vector3d & n = plane[km].norm;
-        Double<10> g;
-        g.d0 = n.x;
-        g.d1 = n.y;
-        g.d2 = n.z;
-        g.d3 = n.x * pm.x;
-        g.d4 = n.y * pm.x;
-        g.d5 = n.z * pm.x;
-        g.d6 = n.x * pm.y;
-        g.d7 = n.y * pm.y;
-        g.d8 = n.z * pm.y;
-        g.d9 = plane[km].dist;
+        const Vector3d & n = facet[km].plane.norm;
+        g.d0 = n.x * pm.x;
+        g.d1 = n.x * pm.y;
+        g.d2 = n.x * pm.z;
+        g.d3 = n.y * pm.x;
+        g.d4 = n.y * pm.y;
+        g.d5 = n.y * pm.z;
+        g.d6 = n.z * pm.x;
+        g.d7 = n.z * pm.y;
+        g.d8 = n.z * pm.z;
+        g.d9 = facet[km].plane.dist;
         model.cut ( g, stor );
+double t3 = timeInSec();time3 += t3-t2;
     }
     return false;
 }
-/*
-class NewVertFuncParallelogram : public NewVertFunc<9>
-{
-    MaxHeapAndTree<SortItem<Set2<const Vertex<9> *>, Double<9> > > & mhat;
-public:
-    NewVertFuncParallelogram ( MaxHeapAndTree<SortItem<Set2<const Vertex<9> *>, Double<9> > > & r ) : mhat ( r ) {}
-    virtual void operator() ( const List< Vertex<9> > & vlist )
-    {
-        Polynom3 func;
-        SortItem<Set2<const Vertex<9> *>, Double<9> > si;
-        Show< Vertex<9> > show ( vlist );
-        if ( show.top() )
-        do
-        {
-            const Vertex<9> * p = show.cur();
-            const Double<9> & pc = p->coor;
-            const Vector3d a1 ( pc.d3, pc.d4, pc.d5 );
-            const Vector3d a2 ( pc.d6, pc.d7, pc.d8 );
-            const Vector3d v0 = a1 % a2;
-            const double v00 = v0 * v0;
-            for ( nat k = 0; k < 9; ++k )
-            {
-                const Vertex<9> * v = p->vertex[k];
-                if ( v < p )
-                {
-                    if ( v->data == 0 ) continue;
-                    si.head.a = v;
-                    si.head.b = p;
-                }
-                else
-                {
-                    si.head.a = p;
-                    si.head.b = v;
-                }
-                const Double<9> & vc = v->coor;
-                Vector3d b1 ( vc.d3, vc.d4, vc.d5 );
-                Vector3d b2 ( vc.d6, vc.d7, vc.d8 );
-                const double q = qmod ( b1 % b2 );
-                double max = v00 > q ? ( si.tail = pc, v00 ) : ( si.tail = vc, q );
-                /*b1 -= a1;
-                b2 -= a2;
-                const Vector3d v1 = a1 % b2 + b1 % a2;
-                const Vector3d v2 = b1 % b2;
-                const double v22 = v2 * v2;
-                func.a = v2 * v2 * 2;
-                func.b = v1 * v2 * 3;
-                func.c = v1 * v1 + v0 * v2 * 2;
-                func.d = v0 * v1;
-                if ( func.a )
-                {
-                    double x[3];
-                    const nat n = root3 ( func.b / func.a, func.c / func.a, func.d / func.a, x );
-                    if ( n < 3 )
-                    for ( nat i = 0; i < n; ++i )
-                    {
-                        if ( x[i] > 0 && x[i] < 1 )
-                            check ( a1, a2, b1, b2, pc, vc, x[i], max, si.tail );
-                    }
-                }*
-                if ( ! mhat.add ( max, si ) )
-                {
-                    k=k;
-                }
-//    checkMHAT ( mhat );
-            }
-        }
-        while ( show.next() );
-    }
-};
 
-class DelVertFuncParallelogram : public DelVertFunc<9>
-{
-    MaxHeapAndTree<SortItem<Set2<const Vertex<9> *>, Double<9> > > & mhat;
-    nat count;
-public:
-    DelVertFuncParallelogram ( MaxHeapAndTree<SortItem<Set2<const Vertex<9> *>, Double<9> > > & r ) : mhat ( r ), count(0) {}
-    virtual void operator() ( const List< Vertex<9> > & vlist )
-    {
-        SortItem<Set2<const Vertex<9> *>, Double<9> > si;
-        Show< Vertex<9> > show ( vlist );
-        if ( show.top() )
-        do
-        {
-            const Vertex<9> * p = show.cur();
-            for ( nat k = 0; k < 9; ++k )
-            {
-                const Vertex<9> * v = p->vertex[k];
-                if ( v < p )
-                {
-                    if ( v->data >= 0 ) continue;
-                    si.head.a = v;
-                    si.head.b = p;
-                }
-                else
-                {
-                    si.head.a = p;
-                    si.head.b = v;
-                }
-                if ( ! mhat.del ( si ) )
-                {
-                    p = p;
-                }
-            }
-        }
-        while ( show.next() );
-    }
-};
+typedef Set2<double, Double<9> > VolValue9;
 
-static
-bool maxParallelogramInConvexPolyhedron2 ( CCArrRef<Vector2d> & poly, CCArrRef<Plane3d> & plane, 
-                                          WireModel<9> & model, List< Vertex<9> > & stor,
-                                          Parallelogram3d & res
-                                        )
+static bool maxVolume ( WireModelEx<9, VertexEx<9, VolValue9> > & model, Double<9> & best )
 {
-    MaxHeapAndTree<SortItem<Set2<const Vertex<9> *>, Double<9> > > mhat;
-    NewVertFuncParallelogram newVertFunc ( mhat );
-    DelVertFuncParallelogram delVertFunc ( mhat );
-    model.newVertFunc = & newVertFunc;
-    model.delVertFunc = & delVertFunc;
+    Double<9> dt;
+    Vector3d & a = ( Vector3d & ) dt.d0;
+    Vector3d & b = ( Vector3d & ) dt.d3;
+    Vector3d & c = ( Vector3d & ) dt.d6;
+    double max = 0.;
     if ( model.vlist.top() )
     do
     {
-        model.vlist.cur()->data = 0;
-    }
-    while ( model.vlist.next() );
-    newVertFunc ( model.vlist );
-    checkMHAT ( mhat );
-    for ( nat i = 0; i < 90; ++i )
-    {
-// ѕоиск максимального решени€
-        const SortItem<Set2<const Vertex<9> *>, Double<9> > * p = mhat.maxItem();
-        if ( ! p ) return false;
-        const Double<9> & best = p->tail;
-// ѕоиск максимального нарушени€ ограничений дл€ выбранного решени€
-        nat km;
-        Vector2d pm;
-        double max = 0.;
-        for ( nat j = 0; j < poly.size(); ++j )
+        VertexEx<9, VolValue9> * v0 = model.vlist.cur();
+        if ( v0->extra.a == -1e300 )
         {
-            const Vector2d & p = poly[j];
-            const Vector3d v ( best.d6*p.y + best.d3*p.x + best.d0,
-                               best.d7*p.y + best.d4*p.x + best.d1,
-                               best.d8*p.y + best.d5*p.x + best.d2 );
-            for ( nat k = 0; k < plane.size(); ++k )
+            const Double<9> & p0 = v0->coor;
+            const Vector3d & a0 = ( const Vector3d & ) p0.d0;
+            const Vector3d & b0 = ( const Vector3d & ) p0.d3;
+            const Vector3d & c0 = ( const Vector3d & ) p0.d6;
+            v0->extra.a = a0 % b0 * c0;
+            v0->extra.b = p0;
+            for ( nat i = 0; i < 8; ++i )
             {
-                const double t = plane[k] % v;
-                if ( max < t ) max = t, pm = p, km = k;
-            }
-        }
-// ≈сли нарушение мало, то завершение программы
-        if ( max < 1e-5 )
-        {
-            Vector3d a ( best.d0, best.d1, best.d2 ), 
-                     b ( best.d3, best.d4, best.d5 ), 
-                     c ( best.d6, best.d7, best.d8 );
-            res = Parallelogram3d ( a - b - c, a + b - c, a + b + c );
-//display << i+1 << model.vlist.size() << NL;
-            return true;
-        }
-// ѕрименение ограничени€ к области допустимых преобразований
-        const Vector3d & n = plane[km].norm;
-        Double<10> g;
-        g.d0 = n.x;
-        g.d1 = n.y;
-        g.d2 = n.z;
-        g.d3 = n.x * pm.x;
-        g.d4 = n.y * pm.x;
-        g.d5 = n.z * pm.x;
-        g.d6 = n.x * pm.y;
-        g.d7 = n.y * pm.y;
-        g.d8 = n.z * pm.y;
-        g.d9 = plane[km].dist;
-        model.cut ( g, stor );
-    }
-    return false;
-}*/
-
-void check ( const Polyhedron & poly, const Vector3d * vert )
-{
-    double max = 0;
-    for ( nat i = 0; i < poly.facet.size(); ++i )
-    {
-        const Plane3d & plane = poly.facet[i].plane;
-        for ( nat j = 0; j < 4; ++j )
-        {
-            double t = plane % vert[j];
-            max = _max ( max, t );
-        }
-    }
-display << max << NL;
-}
-/*
-void maxParallelogram_test2 ()
-{
-    static PRandPoint3d rand;
-    static Polyhedron poly;
-    for ( nat k = 0; k < 50; ++k )
-    {
-        randPolyhedron ( 19, poly );
-//if(k!=122) continue;
-        double t0 = timeInSec();
-        Def<Parallelogram3d> fig1 = maxParallelogramInConvexPolyhedronA ( poly );
-        double t1 = timeInSec();
-        FixArray<Vector3d, 4> vert;
-        fig1.getVerts ( vert() );
-//check ( poly, vert() );
-        Def<Plane3d> plane = getPlane2 ( vert );
-        Suite<DynArray<Vector3d> > sect;
-        intersection ( poly, plane, sect );
-        Suite<Vector2d> vert2;
-        OrthoFunc3to2 func ( plane.norm );
-        vert2.inc() = func ( sect[0][0] );
-        for ( nat i = 1; i < sect[0].size(); ++i )
-        {
-            Vector2d v = func ( sect[0][i] );
-            if ( norm2 ( v - vert2.las() ) > 1e-9 ) vert2.inc() = v;
-        }
-        if ( norm2 ( vert2[0] - vert2.las() ) < 1e-9 ) vert2.dec();
-        Def<Parallelogram2d> para = maxParallelogramInConvexPolygonA ( vert2 );
-OrthoFunc2to3 back ( plane );
-Vector2d vpar[4];
-para.getVerts ( vpar );
-for ( i = 0; i < 4; ++i ) vert[i] = back ( vpar[i] );
-//check ( poly, vert() );
- //       if ( fabs ( fig1.getArea() - para.getArea() ) > 1e-4 )
- //           display << k << "time =" << t1 - t0 << fig1.getArea() << para.getArea() << fig1.getArea() - para.getArea() << NL;
- display << k << "time =" << t1 - t0 << 1000 * fig1.getArea() << NL;
-    }
-display << "end" << NL;
-}
-*/
-static bool maxParallelogramArea ( const WireModel<7> & model, Double<7> & best )
-{
-    Show< Vertex<7> > show ( model.vlist );
-    double max = 0.;
-    if ( show.top() )
-    do
-    {
-        const Vertex<7> * p = show.cur();
-        const Double<7> & pc = p->coor;
-        const Vector2d a1 ( pc.d3, pc.d4 );
-        const Vector2d a2 ( pc.d5, pc.d6 );
-        const double t = fabs ( a1 % a2 );
-        if ( max < t ) max = t, best = pc;
-        for ( nat k = 0; k < 7; ++k )
-        {
-            const Vertex<7> * v = p->vertex[k];
-            if ( v < p ) continue;
-            const Double<7> & vc = v->coor;
-            const Vector2d b1 = Vector2d ( vc.d3, vc.d4 ) - a1;
-            const Vector2d b2 = Vector2d ( vc.d5, vc.d6 ) - a2;
-            const double c = b1 % b2;
-            if ( c == 0 ) continue;
-            const double t = - 0.5 * ( a1 % b2 + b1 % a2 ) / c;
-            if ( t > 0 && t < 1 )
-            {
-                const Vector2d e1 = a1 + b1 * t;
-                const Vector2d e2 = a2 + b2 * t;
-                const double q = fabs ( e1 % e2 );
-                if ( q > max )
+                const Double<9> & pi = v0->vertex[i]->coor;
+                const Vector3d & ai = ( const Vector3d & ) pi.d0;
+                const Vector3d & bi = ( const Vector3d & ) pi.d3;
+                const Vector3d & ci = ( const Vector3d & ) pi.d6;
+                for ( nat j = i+1; j < 9; ++j )
                 {
-                    max = q;
-                    const double s = 1 - t;
-                    best.d0 = pc.d0 * s + vc.d0 * t;
-                    best.d1 = pc.d1 * s + vc.d1 * t;
-                    best.d2 = pc.d2 * s + vc.d2 * t;
-                    best.d3 = e1.x;
-                    best.d4 = e1.y;
-                    best.d5 = e2.x;
-                    best.d6 = e2.y;
+                    const Double<9> & pj = v0->vertex[j]->coor;
+                    const Vector3d & aj = ( const Vector3d & ) pj.d0;
+                    const Vector3d & bj = ( const Vector3d & ) pj.d3;
+                    const Vector3d & cj = ( const Vector3d & ) pj.d6;
+                    a = ( a0 + ai + aj ) / 3;
+                    b = ( b0 + bi + bj ) / 3;
+                    c = ( c0 + ci + cj ) / 3;
+                    const double t = a % b * c;
+                    if ( v0->extra.a < t ) v0->extra.a = t, v0->extra.b = dt;
                 }
             }
         }
+        if ( max < v0->extra.a )
+            max = v0->extra.a, best = v0->extra.b;
     }
-    while ( show.next() );
+    while ( model.vlist.next() );
     return max > 0;
 }
 
-static
-bool maxParallelogramInConvexPolyhedronFN ( CArrRef<Vector2d> poly, CArrRef<Plane3d> plane, 
-                                          WireModel<7> & model, List< Vertex<7> > & stor,
-                                          Parallelogram3d & res
-                                        )
+void fillNewVert ( List< VertexEx<9, VolValue9> > & vlist )
 {
-    for ( nat i = 0; i < 1000; ++i )
+    if ( vlist.top() )
+    do
     {
-// ѕоиск максимального решени€
-        Double<7> best;
-        if ( ! maxParallelogramArea ( model, best ) ) return false;
-// ѕоиск максимального нарушени€ ограничений дл€ выбранного решени€
-        nat km;
-        Vector2d pm;
-        double max = 0.;
-        for ( nat j = 0; j < poly.size(); ++j )
+        VertexEx<9, VolValue9> ** v = vlist.cur()->vertex;
+        for ( nat i = 0; i < 9; ++i ) v[i]->extra.a = -1e300;
+    }
+    while ( vlist.next() );
+/*    ListIter< VertexEx<9, VolValue9> > iter ( vlist );
+    if ( iter.top() )
+    do
+    {
+        VertexEx<9, VolValue9> ** v = iter.cur()->vertex;
+        for ( nat i = 0; i < 9; ++i ) v[i]->extra.a = -1e300;
+    }
+    while ( iter.next() );*/
+}
+
+struct MaxVolumeParEx
+{
+    List< VertexEx<9, VolValue9> > * vlist;
+    Double<9> best;
+    double max;
+    nat nk, ik;
+};
+
+DWORD WINAPI maxVolumeParaEx ( LPVOID lpParam ) 
+{
+    MaxVolumeParEx * par = ( MaxVolumeParEx * ) lpParam;
+/*    ListIter< VertexEx<9, VolValue9> > iter ( * par->vlist );
+    if ( ! iter.top() ) return 0;
+    Double<9> & best = par->best;
+    const nat ik = par->ik;
+    const nat nk = par->nk;
+    Double<9> dt;
+    Vector3d & a = ( Vector3d & ) dt.d0;
+    Vector3d & b = ( Vector3d & ) dt.d3;
+    Vector3d & c = ( Vector3d & ) dt.d6;
+    double max = 0.;
+    const nat n = iter.size();
+    for ( nat k = 0; k < n; ++k )
+    {
+        if ( k % nk == ik )
         {
-            const Vector2d & p = poly[j];
-            const Vector3d v ( best.d0 + best.d3*p.x + best.d5*p.y,
-                               best.d1 + best.d4*p.x + best.d6*p.y,
-                               best.d2 );
-            for ( nat k = 0; k < plane.size(); ++k )
+            VertexEx<9, VolValue9> * v0 = iter.cur();
+            if ( v0->extra.a == -1e300 )
             {
-                const double t = plane[k] % v;
-                if ( max < t ) max = t, pm = p, km = k;
+                const Double<9> & p0 = v0->coor;
+                const Vector3d & a0 = ( const Vector3d & ) p0.d0;
+                const Vector3d & b0 = ( const Vector3d & ) p0.d3;
+                const Vector3d & c0 = ( const Vector3d & ) p0.d6;
+                v0->extra.a = a0 % b0 * c0;
+                v0->extra.b = p0;
+                for ( nat i = 0; i < 8; ++i )
+                {
+                    const Double<9> & pi = v0->vertex[i]->coor;
+                    const Vector3d & ai = ( const Vector3d & ) pi.d0;
+                    const Vector3d & bi = ( const Vector3d & ) pi.d3;
+                    const Vector3d & ci = ( const Vector3d & ) pi.d6;
+                    for ( nat j = i+1; j < 9; ++j )
+                    {
+                        const Double<9> & pj = v0->vertex[j]->coor;
+                        const Vector3d & aj = ( const Vector3d & ) pj.d0;
+                        const Vector3d & bj = ( const Vector3d & ) pj.d3;
+                        const Vector3d & cj = ( const Vector3d & ) pj.d6;
+                        a = ( a0 + ai + aj ) / 3;
+                        b = ( b0 + bi + bj ) / 3;
+                        c = ( c0 + ci + cj ) / 3;
+                        double t = a % b * c;
+                        if ( v0->extra.a < t ) v0->extra.a = t, v0->extra.b = dt;
+                        /*
+                        a = ( ai + ai + aj ) / 3;
+                        b = ( bi + bi + bj ) / 3;
+                        c = ( ci + ci + cj ) / 3;
+                        t = a % b * c;
+                        if ( v0->extra.a < t ) v0->extra.a = t, v0->extra.b = dt;
+                        a = ( aj + ai + aj ) / 3;
+                        b = ( bj + bi + bj ) / 3;
+                        c = ( cj + ci + cj ) / 3;
+                        t = a % b * c;
+                        if ( v0->extra.a < t ) v0->extra.a = t, v0->extra.b = dt;*
+                    }
+                }
+            }
+            if ( max < v0->extra.a )
+                max = v0->extra.a, best = v0->extra.b;
+        }
+        iter.next();
+    }
+    par->max = max;*/
+    return 0;
+}
+
+static bool maxVolume ( List< VertexEx<9, VolValue9> > & vlist, Double<9> & best )
+{
+    nat i;
+    const nat nt = 2;
+    HANDLE handle[nt];
+    DWORD threadId[nt];
+    MaxVolumeParEx par[nt];
+    for ( i = 0; i < nt; ++i )
+    {
+        MaxVolumeParEx & p = par[i];
+        p.vlist = & vlist;
+        p.nk = nt;
+        p.ik = i;
+        handle[i] = CreateThread ( 0, 0, maxVolumeParaEx, par+i, 0, threadId+i );
+    }
+    WaitForMultipleObjects ( nt, handle, TRUE, INFINITE );
+    double max = 0;
+    for ( i = 0; i < nt; ++i )
+    {
+        CloseHandle ( handle[i] );
+        const MaxVolumeParEx & p = par[i];
+        if ( max < p.max ) max = p.max, best = p.best;
+    }
+    return max > 0;
+}
+/*
+2.954 3.475e-003 2.389 0 
+66 79620 
+0.283 
+end 5.613 
+3.278 3.771e-003 2.481 0 
+72 102110 
+0.342 
+end 6.064 
+2.606 3.961e-003 2.009 0 
+67 84186 
+0.385 
+end 4.853 
+*/
+
+struct LinkParEx
+{
+    typedef SegmentEnd<9, VertexEx<9, VolValue9> > SegmEnd;
+    SegmEnd * table;
+    SegmEnd ** entry;
+    List< VertexEx<9, VolValue9> > * vlist;
+    nat nk, ik;
+    long * count;
+};
+
+//static FixArray<nat, 128> nentry;
+double tim1=0, tim2=0;
+
+DWORD WINAPI newLink1 ( LPVOID lpParam ) 
+{
+//double t0 = timeInSec();
+    LinkParEx * par = ( LinkParEx * ) lpParam;
+/*    ListIter< VertexEx<9, VolValue9> > iter ( * par->vlist );
+    if ( ! iter.top() ) return 0;
+    typedef SegmentEnd<9, VertexEx<9, VolValue9> > SegmEnd;
+    SegmEnd  * table = par->table;
+    //DynArray<SegmEnd> table ( ( 9 - 1 ) * iter.size() / 2 );
+    SegmEnd ** entry = par->entry;
+    const nat ik = par->ik;
+    const nat nk = par->nk;
+    do
+    {
+        VertexEx<9, VolValue9> * vert = iter.cur();
+        for ( nat16 i = 0; i < 9-1; ++i )
+        {
+            const SegmentId<9> id ( i, vert->nfacet );
+            const nat16 k = id.summa & 127;
+//++nentry[k];
+            if ( k % nk == ik )
+            {
+//double ti0 = timeInSec();
+                SegmEnd ** pre = & entry[k];
+                SegmEnd * sb = *pre;
+                while ( sb != 0 )
+                {
+                    if ( sb->id == id )
+                    {
+                        *sb->link = vert;
+                        vert->vertex[i] = sb->parent;
+                        *pre = sb->next;
+                        goto m1;
+                    }
+                    pre = &sb->next;
+                    sb = sb->next;
+                }
+                sb = & table[InterlockedIncrement(par->count)];
+                sb->id = id;
+                sb->parent = vert;
+                sb->link = vert->vertex + i;
+                sb->next = entry[k];
+                entry[k] = sb;
+m1:;
+//double ti1 = timeInSec();tim2 += ti1-ti0;
             }
         }
+    }
+    while ( iter.next() );
+//double t1 = timeInSec();tim1 += t1-t0;*/
+    return 0;
+}
+
+static void newLink ( List< VertexEx<9, VolValue9> > & vlist )
+{
+    nat i;
+    const nat nt = 2;
+    long count = -1;
+    HANDLE handle[nt];
+    DWORD threadId[nt];
+    LinkParEx par[nt];
+    typedef SegmentEnd<9, VertexEx<9, VolValue9> > SegmEnd;
+    DynArray<SegmEnd> table ( ( 9 - 1 ) * vlist.size() / 2 );
+    FixArray<SegmEnd *, 128> entry;
+    entry.fill ( 0 );
+    for ( i = 0; i < nt; ++i )
+    {
+        LinkParEx & p = par[i];
+        p.vlist = & vlist;
+        p.table = table();
+        p.entry = entry();
+        p.count = & count;
+        p.nk = nt;
+        p.ik = i;
+        handle[i] = CreateThread ( 0, 0, newLink1, par+i, 0, threadId+i );
+    }
+    WaitForMultipleObjects ( nt, handle, TRUE, INFINITE );
+    for ( i = 0; i < nt; ++i ) CloseHandle ( handle[i] );
+}
+
+static void newLink2 ( List< VertexEx<9, VolValue9> > & list )
+{
+//double t0 = timeInSec();
+    const nat16 N = 9;
+    typedef SegmentEnd<N, VertexEx<9, VolValue9> > SegmEnd;
+    DynArray<SegmEnd> table ( ( N - 1 ) * list.size() / 2 );
+    FixArray<SegmEnd *, 128> entry;
+    entry.fill ( 0 );
+    nat n = 0;
+    list.top();
+    do
+    {
+        VertexEx<9, VolValue9> * vert = list.cur();
+        for ( nat16 i = 0; i < N-1; ++i )
+        {
+//double ti0 = timeInSec();
+            const SegmentId<N> id ( i, vert->nfacet );
+//double ti1 = timeInSec();tim2 += ti1-ti0;
+            const nat16 k = id.summa & 127;
+            SegmEnd ** pre = & entry[k];
+            SegmEnd * sb = *pre;
+            while ( sb != 0 )
+            {
+                if ( sb->id == id )
+                {
+                    *sb->link = vert;
+                    vert->vertex[i] = sb->parent;
+                    *pre = sb->next;
+                    goto m1;
+                }
+                pre = &sb->next;
+                sb = sb->next;
+            }
+            sb = & table[n++];
+            sb->id = id;
+            sb->parent = vert;
+            sb->link = vert->vertex + i;
+            sb->next = entry[k];
+            entry[k] = sb;
+m1:;    }
+    }
+    while ( list.next() );
+//double t1 = timeInSec();tim1 += t1-t0;
+}
+
+bool maxPolyhedronInConvexPolyhedronNM2 ( const Polyhedron & inner, const Polyhedron & outer, LinTran3d & res )
+{
+//nentry.fill ( 0 );
+    CCArrRef<Vector3d> & vert = inner.vertex;
+    CCArrRef<Facet> & facet = outer.facet;
+    const double d = 99;
+    Facet2Model<9, VertexEx<9, VolValue9> > model;
+//    WireModelEx<9, VertexEx<9, VolValue9> > model;
+    List< VertexEx<9, VolValue9> > stor;
+    model.simplex ( d*9, stor );
+    model.vlist -= Double<9>().fill(d);
+    model.vlist.top();
+    do
+    {
+        model.vlist.cur()->extra.a = -1e300;
+    }
+    while ( model.vlist.next() );
+    model.newVertFunc = fillNewVert;
+    model.newLinkFunc = newLink2;
+    Double<10> g;
+time1=0, time2=0, time3=0, time4=0;
+    for ( nat i = 0; i < 200; ++i )
+    {
+double t0 = timeInSec();
+// ѕоиск максимального решени€
+        Double<9> best;
+//        if ( ! maxVolume ( model, best ) ) return false;
+        if ( ! maxVolume ( model.vlist, best ) ) return false;
+// ѕоиск максимального нарушени€ ограничений дл€ выбранного решени€
+double t1 = timeInSec();time1 += t1-t0;
+        nat km;
+        Vector3d pm;
+        double max = 0.;
+        for ( nat j = 0; j < vert.size(); ++j )
+        {
+            const Vector3d & v = vert[j];
+            const Vector3d u ( best.d0*v.x + best.d1*v.y + best.d2*v.z,
+                               best.d3*v.x + best.d4*v.y + best.d5*v.z,
+                               best.d6*v.x + best.d7*v.y + best.d8*v.z );
+            for ( nat k = 0; k < facet.size(); ++k )
+            {
+                const double t = facet[k].plane % u;
+                if ( max < t ) max = t, pm = v, km = k;
+            }
+        }
+double t2 = timeInSec();time2 += t2-t1;
 // ≈сли нарушение мало, то завершение программы
         if ( max < 1e-5 )
         {
-            if ( best.d3 * best.d6 < best.d4 * best.d5 )
-            {
-                _swap ( best.d3, best.d5 );
-                _swap ( best.d4, best.d6 );
-            }
-            res = Parallelogram3d ( Vector3d ( best.d0 + best.d3 + best.d5, best.d1 + best.d4 + best.d6, best.d2 ),
-                                    Vector3d ( best.d0 - best.d3 + best.d5, best.d1 - best.d4 + best.d6, best.d2 ),
-                                    Vector3d ( best.d0 - best.d3 - best.d5, best.d1 - best.d4 - best.d6, best.d2 ) );
+            res.x = Vector3d ( best.d0, best.d1, best.d2 ), 
+            res.y = Vector3d ( best.d3, best.d4, best.d5 ), 
+            res.z = Vector3d ( best.d6, best.d7, best.d8 );
+display << time1 << time2 << time3 << time4 << NL;
+//display << tim1 << tim2 << NL;
+display << i << model.vlist.size() << NL;
             return true;
         }
+//display << i << max << model.vlist.size() << NL;
 // ѕрименение ограничени€ к области допустимых преобразований
-        const Vector3d & n = plane[km].norm;
-        Double<8> g;
-        g.d0 = n.x;
-        g.d1 = n.y;
-        g.d2 = n.z;
-        g.d3 = n.x * pm.x;
-        g.d4 = n.y * pm.x;
-        g.d5 = n.x * pm.y;
-        g.d6 = n.y * pm.y;
-        g.d7 = plane[km].dist;
+        const Vector3d & n = facet[km].plane.norm;
+        g.d0 = n.x * pm.x;
+        g.d1 = n.x * pm.y;
+        g.d2 = n.x * pm.z;
+        g.d3 = n.y * pm.x;
+        g.d4 = n.y * pm.y;
+        g.d5 = n.y * pm.z;
+        g.d6 = n.z * pm.x;
+        g.d7 = n.z * pm.y;
+        g.d8 = n.z * pm.z;
+        g.d9 = facet[km].plane.dist;
         model.cut ( g, stor );
+    /*model.vlist.top();
+    do
+    {
+        model.vlist.cur()->extra.a = -1e300;
+    }
+    while ( model.vlist.next() );*/
+double t3 = timeInSec();time3 += t3-t2;
     }
     return false;
 }
+/*
+3.000 0.013 2.661 0 
+72 103906 
+0.934 
+end 6.019 
+18.803 0.018 33.972 0 
+142 552202 
+0.625 
+end 54.826 
+16.782 0.020 31.364 0 
+134 448252 
+0.642 
+end 49.697 
 
-Def<Parallelogram3d> maxParallelogramInConvexPolyhedronAFN ( const Polyhedron & poly )
-{
-    Def<Parallelogram3d> res;
-// ѕриведение многоугольника к стандартному положению
-    DynArray<Plane3d> plane ( poly.facet.size() );
-    nat i;
-    for ( i = 0; i < poly.facet.size(); ++i ) plane[i] = poly.facet[i].plane;
-    const Segment3d seg = dimensions ( poly.vertex );
-    const double max = normU ( seg );
-    if ( max == 0 ) return res;
-    const double coef = 2. / max;
-    const Conform3d conf ( -0.5 * coef * ( seg.a + seg.b ), coef );
-    plane *= Similar3d ( conf );
-    FixArray<Vector2d, 4> coor;
-    coor[0] = Vector2d(-1, 1);
-    coor[1] = Vector2d(-1,-1);
-    coor[2] = Vector2d( 1,-1);
-    coor[3] = Vector2d( 1, 1);
-    WireModel<7> model;
-    List< Vertex<7> > stor;
-    model.simplex ( 2*7, stor );
-    Double<7> dn;
-    dn.fill ( 1. );
-    model.vlist -= dn;
-    Double<8> g;
-    g.d3 = 1;
-    g.d5 = -1;
-    g.d0 = g.d1 = g.d2 = g.d4 = g.d5 = g.d7 = 0;
-    model.cut ( g, stor );
-    if ( maxParallelogramInConvexPolyhedronFN ( coor, plane, model, stor, res ) )
-    {
-        res.isDef = true;
-        res *= ~conf;
-    }
-    return res;
-}
+5.945 0.015 2.007 0 
+70 86022 
+0.934 
+end 8.227 
+59.908 0.023 55.501 0 
+153 684770 
+0.625 
+end 118.027 
+35.448 0.024 25.271 0 
+128 439886 
+0.642 
+end 62.216 
+*/
 
-void maxParallelogramFN_test ()
+void maxPolyhedronInConvexPolyhedronNM_test()
 {
-	nat i;
-    static PRandPoint3d rand;
-    static Polyhedron poly;
-    randPolyhedron ( 19, poly );
-    double t0 = timeInSec();
-    Def<Parallelogram3d> fig1 = maxParallelogramInConvexPolyhedronAFN ( poly );
-    double t1 = timeInSec();
-    FixArray<Vector3d, 4> vert;
-    fig1.getVerts ( vert() );
-    Def<Plane3d> plane = getPlane2 ( vert );
-    Suite<DynArray<Vector3d> > sect;
-    intersection ( poly, plane, sect );
-    Suite<Vector2d> vert2;
-    OrthoFunc3to2 func ( plane.norm );
-    vert2.inc() = func ( sect[0][0] );
-    for ( i = 1; i < sect[0].size(); ++i )
-    {
-        Vector2d v = func ( sect[0][i] );
-        if ( norm2 ( v - vert2.las() ) > 1e-9 ) vert2.inc() = v;
-    }
-    if ( norm2 ( vert2[0] - vert2.las() ) < 1e-9 ) vert2.dec();
-display << sect[0].size() << vert2.size() << NL;
-    Def<Parallelogram2d> para = maxParallelogramInConvexPolygonA ( vert2 );
-    draw ( poly, 0, 1, 1, 1, VM_WIRE );
-    draw ( fig1, 1, 0.3f, 0.3f, 1, VM_FLAT );
-    draw ( fig1, 1, 0.3f, 0.3f, 1, VM_WIRE );
-    OrthoFunc2to3 back ( plane );
-    Vector2d vpar[4];
-    para.getVerts ( vpar );
-    for ( i = 0; i < 4; ++i ) vert[i] = back ( vpar[i] );
-    drawPolygon ( vert, 1, 0.7f, 0.3f );
-display << "time =" << t1 - t0 << fig1.getArea() - para.getArea() << NL;
-}
-
-void maxParallelogramFN_test2 ()
-{
-	nat i;
-    static PRandPoint3d rand;
-    static Polyhedron poly;
-    for ( nat k = 0; k < 750; ++k )
-    {
-        randPolyhedron ( 19, poly );
-//if(k!=122) continue;
-        double t0 = timeInSec();
-        Def<Parallelogram3d> fig1 = maxParallelogramInConvexPolyhedronAFN ( poly );
+    static PRandVector3d rand;
+    const Spin3d spin ( rand(), rand() );
+    double time = 0;
+//    for ( nat k = 0; k < 340; ++k )
+//    {
+        const nat np = 8;//4 + prand.number(nn-3);
+        Polyhedron inner, outer;
+#if 0
+        RealFile file1 ( "data/inner130007.pyh", "rb" );
+        loadPYH (  file1, inner );
+        RealFile file2 ( "data/outer130007.pyh", "rb" );
+        loadPYH (  file2, outer );
+#else
+        inner.makeCube ( 1 );
+        randPolyhedron ( np, outer );
+        inner = outer;
+        inner *= spin;
+#endif
+        inner -= inner.centerOfMass();
+        inner *= 1 / root3 ( inner.volume() );
+        outer -= outer.centerOfMass();
+        outer *= 1 / root3 ( outer.volume() );
+        draw ( outer, 0, 1, 1, 0, VM_WIRE );
         double t1 = timeInSec();
-        FixArray<Vector3d, 4> vert;
-        fig1.getVerts ( vert() );
-//check ( poly, vert() );
-        Def<Plane3d> plane = getPlane2 ( vert );
-        Suite<DynArray<Vector3d> > sect;
-        intersection ( poly, plane, sect );
-        Suite<Vector2d> vert2;
-        OrthoFunc3to2 func ( plane.norm );
-        vert2.inc() = func ( sect[0][0] );
-        for ( i = 1; i < sect[0].size(); ++i )
+        LinTran3d lin;
+        bool ok = maxPolyhedronInConvexPolyhedronNM2 ( inner, outer, lin );
+        double t2 = timeInSec();
+        time += t2 - t1;
+        if ( ok ) 
         {
-            Vector2d v = func ( sect[0][i] );
-            if ( norm2 ( v - vert2.las() ) > 1e-9 ) vert2.inc() = v;
+            inner *= lin;
+            draw ( inner, 1, 1, 0, 0, VM_WIRE );
+            display << inner.volume() / outer.volume() << NL;
+//for ( nat k = 0; k < nentry.size(); ++k ) display << k << nentry[k] << NL;
         }
-        if ( norm2 ( vert2[0] - vert2.las() ) < 1e-9 ) vert2.dec();
-        Def<Parallelogram2d> para = maxParallelogramInConvexPolygonA ( vert2 );
-OrthoFunc2to3 back ( plane );
-Vector2d vpar[4];
-para.getVerts ( vpar );
-for ( i = 0; i < 4; ++i ) vert[i] = back ( vpar[i] );
-//check ( poly, vert() );
-        if ( fabs ( fig1.getArea() - para.getArea() ) > 1e-4 )
-            display << k << "time =" << t1 - t0 << fig1.getArea() << para.getArea() << 
-            para.getArea() / fig1.getArea() - 1 << NL;
-    }
-display << "end" << NL;
+        else
+        {
+            display << "error" << NL;
+        }
+//    }
+    display << "end" << time << NL;
+/*
+    List<VertexEx<9, VolValue9> > stor;
+    Facet2Model<9, VertexEx<9, VolValue9> > model;
+    model.simplex ( 1, stor );
+    Double<10> g;
+    g.fill(0);
+    model.cut ( g, stor );*/
 }
 
 } // namespace
@@ -3512,23 +3650,66 @@ void minTetrahedronAroundPoints_test1()
 //    display << outer.volume() << NL;
 }
 
-void divide4 ( const Triangle3d & trian1, Triangle3d trian2[4] )
-{
-    trian2[0].a = 0.5 * ( trian1.a + trian1.b );
-    trian2[0].b = 0.5 * ( trian1.b + trian1.c );
-    trian2[0].c = 0.5 * ( trian1.c + trian1.a );
-    trian2[1].a = trian1.a;
-    trian2[1].b = trian2[0].a;
-    trian2[1].c = trian2[0].c;
-    trian2[2].a = trian1.b;
-    trian2[2].b = trian2[0].b;
-    trian2[2].c = trian2[0].a;
-    trian2[3].a = trian1.c;
-    trian2[3].b = trian2[0].c;
-    trian2[3].c = trian2[0].b;
-}
+void divide4 ( const Triangle3d & trian1, Triangle3d trian2[4] );
 
-Def<Cuboid3d> maxCuboidInConvexPolyhedron ( const Spin3d & spin, const Polyhedron & poly )
+struct MaxCuboid
+{
+    Double<6> func, con[7];
+    FixArray<Double<7>, 3> cor;
+    void init ( const Segment3d & seg, const Triangle3d & trian )
+    {
+        Double<6> & vn = con[0];
+        vn.d0 = seg.b.x - seg.a.x;
+        vn.d1 = seg.b.y - seg.a.y;
+        vn.d2 = seg.b.z - seg.a.z;
+        vn.d3 = seg.b.x;
+        vn.d4 = seg.b.y;
+        vn.d5 = seg.b.z;
+        for ( nat l = 1; l <= 6; ++l )
+        {
+            con[l].fill(0);
+            (&con[l].d0)[l-1] = -1;
+        }
+        {
+            Triangle3d t = trian;
+            t.a /= root3 ( t.a.x * t.a.y * t.a.z );
+            t.b /= root3 ( t.b.x * t.b.y * t.b.z );
+            t.c /= root3 ( t.c.x * t.c.y * t.c.z );
+            const Vector3d u = t.getNormal();
+            const double c = 1 / ( u * t.a );
+            func.d0 = c * u.x;
+            func.d1 = c * u.y;
+            func.d2 = c * u.z;
+            func.d3 = func.d4 = func.d5 = 0;
+        }
+        {
+            const Vector3d v = ( trian.b % trian.a ).setNorm2 ( 1e6 );
+            Double<7> & dn = cor[0];
+            dn.d0 = v.x;
+            dn.d1 = v.y;
+            dn.d2 = v.z;
+            dn.d3 = dn.d4 = dn.d5 = dn.d6 = 0;
+        }
+        {
+            const Vector3d v = ( trian.c % trian.b ).setNorm2 ( 1e6 );
+            Double<7> & dn = cor[1];
+            dn.d0 = v.x;
+            dn.d1 = v.y;
+            dn.d2 = v.z;
+            dn.d3 = dn.d4 = dn.d5 = dn.d6 = 0;
+        }
+        {
+            const Vector3d v = ( trian.a % trian.c ).setNorm2 ( 1e6 );
+            Double<7> & dn = cor[2];
+            dn.d0 = v.x;
+            dn.d1 = v.y;
+            dn.d2 = v.z;
+            dn.d3 = dn.d4 = dn.d5 = dn.d6 = 0;
+        }
+    }
+};
+
+Def<Cuboid3d> maxCuboidInConvexPolyhedron ( const Polyhedron & poly, const Spin3d & spin = Spin3d() )
 {
     Def<Cuboid3d> res;
     const nat nf = poly.facet.size();
@@ -3536,31 +3717,11 @@ Def<Cuboid3d> maxCuboidInConvexPolyhedron ( const Spin3d & spin, const Polyhedro
     if ( nf < 4 || nv < 4 ) return res;
     Vector3d ax, ay, az;
     (~spin).getReper ( ax, ay, az );
-    double x1, x2, y1, y2, z1, z2;
-    x1 = x2 = poly.vertex[0].x;
-    y1 = y2 = poly.vertex[0].y;
-    z1 = z2 = poly.vertex[0].z;
-    for ( nat j = 1; j < nv; ++j )
-    {
-        const Vector3d & v = poly.vertex[j];
-        if ( x1 > v.x ) x1 = v.x; else
-        if ( x2 < v.x ) x2 = v.x;
-        if ( y1 > v.y ) y1 = v.y; else
-        if ( y2 < v.y ) y2 = v.y;
-        if ( z1 > v.z ) z1 = v.z; else
-        if ( z2 < v.z ) z2 = v.z;
-    }
-    Triangle3d trian1, trian2[4];
-    trian1.a = Vector3d ( 0.998, 1e-3, 1e-3 );
-    trian1.b = Vector3d ( 1e-3, 0.998, 1e-3 );
-    trian1.c = Vector3d ( 1e-3, 1e-3, 0.998 );
-    const nat N = 6;
-    Double<N> con[N+1];
-    DynArray<Double<N+1> > cor ( nf + 3 );
+    DynArray<Double<7> > cor ( nf );
     for ( nat l = 0; l < nf; ++l )
     {
         const Plane3d & p = poly.facet[l].plane;
-        Double<N+1> & c = cor[l];
+        Double<7> & c = cor[l];
         c.d0 = fabs ( p.norm * ax );
         c.d1 = fabs ( p.norm * ay );
         c.d2 = fabs ( p.norm * az );
@@ -3569,93 +3730,117 @@ Def<Cuboid3d> maxCuboidInConvexPolyhedron ( const Spin3d & spin, const Polyhedro
         c.d5 = p.norm.z;
         c.d6 = p.dist;
     }
-    double max = 0;
-    for ( nat i = 0; i < 4; ++i )
+    Suite<Triangle3d> trian1, trian2;
+    Triangle3d & t = trian1.inc();
+    t.a = Vector3d ( 0.998, 1e-3, 1e-3 );
+    t.b = Vector3d ( 1e-3, 0.998, 1e-3 );
+    t.c = Vector3d ( 1e-3, 1e-3, 0.998 );
+    for ( nat i = 0; i < 5; ++i )
     {
-        divide4 ( trian1, trian2 );
-        for ( nat j = 0; j < 4; ++j )
+        trian2.resize ( 4*trian1.size() );
+        for ( nat j = 0; j < trian1.size(); ++j ) divide4 ( trian1[j], trian2(4*j) );
+        trian1.swap ( trian2 );
+    }
+    const nat nn = trian1.size();
+    DynArray<MaxCuboid> variant ( nn );
+    MaxHeap<SortItem<double,nat> > heap ( nn );
+    Def<Segment3d> seg = dimensions ( poly.vertex );
+    for ( nat k = 0; k < nn; ++k )
+    {
+        MaxCuboid & var = variant[k];
+        var.init ( seg, trian1[k] );
+        heap << SortItem<double,nat> ( var.func * var.con[0], k );
+    }
+    const double eps = 1e-9;
+    for ( nat j = 0; j < nn*nf; ++j )
+    {
+        MaxCuboid & var = variant[heap[0]->tail];
+        Double<6> & r = var.con[0];
+        double max = var.cor[0] % r;
+        nat i, im = 0;
+        Double<6> norm;
+        for ( i = 1; i < 3; ++i )
         {
-            Double<N> & vn = con[0];
-            vn.d0 = x2 - x1;
-            vn.d1 = y2 - y1;
-            vn.d2 = z2 - z1;
-            vn.d3 = x2;
-            vn.d4 = y2;
-            vn.d5 = z2;
-            for ( nat l = 1; l <= N; ++l )
+            const double t = var.cor[i] % r;
+            if ( max < t ) max = t, im = i;
+        }
+        if ( max <= eps )
+        {
+            for ( i = 0; i < nf; ++i )
             {
-                con[l].fill(0);
-                (&con[l].d0)[l-1] = -1;
+                const double t = cor[i] % r;
+                if ( max < t ) max = t, im = i;
             }
-            const Triangle3d & trian = trian2[j];
-            Double<N> func;
+            if ( max <= eps )
             {
-                Triangle3d t = trian;
-                t.a /= root3 ( t.a.x * t.a.y * t.a.z );
-                t.b /= root3 ( t.b.x * t.b.y * t.b.z );
-                t.c /= root3 ( t.c.x * t.c.y * t.c.z );
-                const Vector3d u = t.getNormal();
-                func.d0 = u.x;
-                func.d1 = u.y;
-                func.d2 = u.z;
-                func.d3 = func.d4 = func.d5 = 0;
+                res.a = r.d0;
+                res.b = r.d1;
+                res.c = r.d2;
+                res.o.x = r.d3;
+                res.o.y = r.d4;
+                res.o.z = r.d5;
+                res.spin = spin;
+                res.isDef = true;
+                return res;
             }
+            norm = ( const Double<6> & ) cor[im];
+        }
+        else
+            norm = ( const Double<6> & ) var.cor[im];
+        const double dist = max;
+        const double lvl = -1e-8 * sqrt ( norm * norm );
+        nat ib = 0;
+        double sm = 0; // дл€ оптимизатора
+        for ( i = 1; i <= 6; ++i )
+        {
+            const Double<6> & v = var.con[i];
+            double t = norm * v;
+            if ( t > lvl ) continue;
+            t = -1./ t;
+            if ( !ib )
             {
-                const Vector3d v = ( trian.b % trian.a ).setNorm2 ( 1e6 );
-                Double<N+1> & dn = cor[nf];
-                dn.d0 = v.x;
-                dn.d1 = v.y;
-                dn.d2 = v.z;
-                dn.d3 = dn.d4 = dn.d5 = dn.d6 = 0;
+                max = ( var.func * v ) * t;
+                ib = i;
+                sm = t;
             }
+            else
             {
-                const Vector3d v = ( trian.c % trian.b ).setNorm2 ( 1e6 );
-                Double<N+1> & dn = cor[nf+1];
-                dn.d0 = v.x;
-                dn.d1 = v.y;
-                dn.d2 = v.z;
-                dn.d3 = dn.d4 = dn.d5 = dn.d6 = 0;
-            }
-            {
-                const Vector3d v = ( trian.a % trian.c ).setNorm2 ( 1e6 );
-                Double<N+1> & dn = cor[nf+2];
-                dn.d0 = v.x;
-                dn.d1 = v.y;
-                dn.d2 = v.z;
-                dn.d3 = dn.d4 = dn.d5 = dn.d6 = 0;
-            }
-            if ( ! findMax ( cor, func, 1e-9, con ) )
-                continue;
-            const double t = vn.d0 * vn.d1 * vn.d2;
-            if ( max < t )
-            {
-                max = t;
-                trian1 = trian;
-                res.a = vn.d0;
-                res.b = vn.d1;
-                res.c = vn.d2;
-                res.o.x = vn.d3;
-                res.o.y = vn.d4;
-                res.o.z = vn.d5;
+                const double s = ( var.func * v ) * t;
+                if ( max < s ) max = s, ib = i, sm = t;
             }
         }
+        if ( !ib )
+        {
+            return res;
+        }
+        const Double<6> & v = var.con[ib];
+        r += v * ( dist * sm );
+        for ( i = 1; i <= 6; ++i )
+        {
+            if ( i == ib ) continue;
+            Double<6> & ai = var.con[i];
+            ai += v * ( ( norm * ai ) * sm );
+            ai *= ( 1./ sqrt ( ai * ai ) );
+        }
+        heap[0]->head = var.func * r;
+        heap.down ( 0 );
     }
-    res.spin = spin;
-    res.isDef = true;
     return res;
 }
-/*
-end 4.786e-004 0.103 
-end 9.002e-004 0.262 
-end 7.120e-004 0.242 
-end 6.475e-004 0.294 
-end 6.560e-004 0.159 
-end 5.595e-004 0.471 
-end 8.193e-004 0.293 
-end 5.585e-004 0.289 
-end 6.656e-004 0.487 
-end 4.862e-004 0.313 
-*/
+
+void makeRRHset ( nat nsym, Suite<Triangle3d> & trian )
+{
+    const nat n = 16;
+    DynArray<DynArray<Vector3d> > vert ( n-1 );
+    for ( nat i = 0; i < n-1; ++i )
+    {
+        DynArray<Vector3d> & vi = vert[i];
+        vi.resize ( n-i );
+        for ( nat j = 0; j < vi.size(); ++j )
+        {
+        }
+    }
+}
 
 void maxCuboidInConvexPolyhedron_test()
 {
@@ -3671,23 +3856,19 @@ void maxCuboidInConvexPolyhedron_test()
 //        display << k << NL;
         draw ( outer, 0, 1, 1, 0, VM_WIRE );
         double t1 = timeInSec();
-        Def<Cuboid3d> cube = maxCuboidInConvexPolyhedron ( spin, outer );
+        Def<Cuboid3d> cube = maxCuboidInConvexPolyhedronNR ( outer );
         double t2 = timeInSec();
         time += t2 - t1;
         if ( cube.isDef ) 
         {
-            draw ( cube, 1, 0, 0, 1, VM_WIRE );
-            Polyhedron inner ( cube );
-            Def<Conform3d> conf = maxPolyhedronInConvexPolyhedronNR ( inner, outer );
-            inner *= conf;
-            draw ( inner, 1, 1, 1, 0, VM_WIRE );
+            draw ( cube, 1, 1, 0, 1, VM_WIRE );
         }
         else
         {
             display << "error" << NL;
         }
 //    }
-    display << "end" << time << volume(cube) << NL;
+    display << "end" << time << NL;
 }
 
 void opti3d_test ()
@@ -3698,7 +3879,7 @@ void opti3d_test ()
 //    minTetrahedronAroundPoints_test1();
 //    minEllipsoid_test();
 //    maxEllipsoidInConvexPolyhedron_test();
-//    maxCuboidInConvexPolyhedron_test();
+    maxCuboidInConvexPolyhedron_test();
 //    maxPolyhedronInConvexPolyhedron_test();
 //    maxConvexPolyhedronInPolyhedronNR_test();
 //    maxPolyhedronInConvexPolyhedron1R_test();
@@ -3710,5 +3891,6 @@ void opti3d_test ()
 //    minSphereLine_test();
 //    maxCylinder_test();
 //    proba ();
+//    maxPolyhedronInConvexPolyhedronNM_test();
     endNewList();
 }

@@ -34,8 +34,6 @@ double QRand::operator() ()
 
 double PNormalRand::operator() ()
 {
-    static bool ready = false;
-    static double v;
     if ( ready )
     {
         ready = false;
@@ -50,8 +48,6 @@ double PNormalRand::operator() ()
 
 double QNormalRand::operator() ()
 {
-    static bool ready = false;
-    static double v;
     if ( ready )
     {
         ready = false;

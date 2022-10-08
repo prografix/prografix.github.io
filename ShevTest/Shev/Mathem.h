@@ -103,8 +103,8 @@ public:
 //
 //*************************** 09.03.2011 ******************************//
 
-bool slu_gauss ( ArrRef2<double> data ); // несколько правых столбцов
-bool slu_gauss ( ArrRef2<double> data, ArrRef<double> x ); // один правый столбец
+bool slu_gauss ( ArrRef2<double> & data ); // несколько правых столбцов
+bool slu_gauss ( ArrRef2<double> & data, ArrRef<double> & x ); // один правый столбец
 
 
 //*************************** 24.03.2011 ******************************//
@@ -116,7 +116,7 @@ bool slu_gauss ( ArrRef2<double> data, ArrRef<double> x ); // один правый столбе
 //
 //*************************** 24.03.2011 ******************************//
 
-bool slu_gauss ( ArrRef2<double> data, const nat nc, ArrRef<nat> col );
+bool slu_gauss ( ArrRef2<double> & data, const nat nc, ArrRef<nat> & col );
 
 
 //*********************************************************************//
@@ -187,11 +187,11 @@ public:
 //      Переопределённые системы линейных уравнений ( n > m ).
 //      Минимум 1-нормы вектора невязок.
 //
-//*********************** 04.02.2020 **************************//
+//*********************** 24.12.2021 **************************//
 
-bool minNorm1 ( CCArrRef2<double> & data, ArrRef<double> & x, ArrRef<nat> & index );
-bool minNorm1 ( CCArrRef2<double> & data, ArrRef<double> & x );
-bool minNorm1 ( CCArrRef2<double> & data, ArrRef<nat> & index );
+bool minNorm1 ( CArrRef2<double> & data, ArrRef<double> & x, ArrRef<nat> & index );
+bool minNorm1 ( CArrRef2<double> & data, ArrRef<double> & x );
+bool minNorm1 ( CArrRef2<double> & data, ArrRef<nat> & index );
 
 
 //*********************** 24.07.2010 **************************//
@@ -201,7 +201,7 @@ bool minNorm1 ( CCArrRef2<double> & data, ArrRef<nat> & index );
 //
 //*********************** 12.11.2011 **************************//
 
-bool minNorm2 ( CArrRef2<double> data, ArrRef<double> x );
+bool minNorm2 ( CArrRef2<double> & data, ArrRef<double> & x );
 
 
 //*********************** 17.07.2010 **************************//
@@ -211,8 +211,8 @@ bool minNorm2 ( CArrRef2<double> data, ArrRef<double> x );
 //
 //*********************** 12.11.2011 **************************//
 
-bool minNormU ( CArrRef2<double> data, ArrRef<double> x, ArrRef<nat> index );
-bool minNormU ( CArrRef2<double> data, ArrRef<double> x );
+bool minNormU ( CArrRef2<double> & data, ArrRef<double> & x, ArrRef<nat> & index );
+bool minNormU ( CArrRef2<double> & data, ArrRef<double> & x );
 
 
 //****************************** 07.03.2003 *********************************//

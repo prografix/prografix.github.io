@@ -45,11 +45,11 @@ Line3d getLineU ( CCArrRef<Vector3d> & data, double & r );
 //
 //************************* 29.09.2010 ******************************//
 
-Def<Plane3d> getPlane2 ( CArrRef<Vector3d> point );
+Plane3d getPlane2 ( CCArrRef<Vector3d> & point );
 
-Def<Plane3d> getPlane2 ( CArrRef<Vector3d> point, CArrRef<double> mass );
+Plane3d getPlane2 ( CCArrRef<Vector3d> & point, CCArrRef<double> & mass );
 
-Def<Plane3d> getPlane2 ( CArrRef<Segment3d> segm );
+Plane3d getPlane2 ( CCArrRef<Segment3d> & segm );
 
 
 //************************ 05.02.2010 *******************************//
@@ -60,12 +60,8 @@ Def<Plane3d> getPlane2 ( CArrRef<Segment3d> segm );
 //************************ 09.12.2017 *******************************//
 
 Plane3d getPlaneU ( CCArrRef<Vector3d> & point, double & r );
-inline
-Plane3d getPlaneU ( CCArrRef<Vector3d> & point )
-{
-    double r;
-    return getPlaneU ( point, r );
-}
+
+Plane3d getPlaneU ( CCArrRef<Vector3d> & point );
 
 
 //************************ 23.06.2005 *******************************//

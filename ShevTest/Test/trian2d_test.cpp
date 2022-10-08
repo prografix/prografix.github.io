@@ -13,8 +13,8 @@
 #include "../Shev/opti2d.h"
 #include "../Shev/Vector2d.h"
 #include "../Shev/RealFile.h"
-#include "../Shev/ShevList.h"
 #include "../Shev/ShevArray.h"
+#include "../Shev/moment2d.h"
 #include "../draw.h"
 
 #include "display.h"
@@ -1368,6 +1368,317 @@ void trianSeidel_test2()
     trianSeidel_test2 ( Spin2d::d270, "data/cont 707.txt" );
 }
 
+void splitFacet1 ( CCArrRef<nat> & cntr, CCArrRef<Vector2d> & vert, CCArrRef<Set3<nat> > & trian, Suite<Set2<nat> > & res )
+{
+    nat i;
+// Найдём две самые удалённые друг от друга вершины внутреннего многоугольника
+    const nat nv = cntr[0] + cntr[1];
+    CCArrRef<Vector2d> poly ( vert, cntr[0], cntr[1] );
+    const Vector2d o = centerPlg ( poly );
+    nat ia1 = cntr[0];
+    double max = qmod ( vert[ia1] - o );
+    for ( i = ia1+1; i < nv; ++i )
+    {
+        const double t = qmod ( vert[i] - o );
+        if ( max < t ) max = t, ia1 = i;
+    }
+    nat ib1 = ia1;
+    max = 0;
+    for ( i = cntr[0]; i < nv; ++i )
+    {
+        const double t = qmod ( vert[i] - vert[ia1] );
+        if ( max < t ) max = t, ib1 = i;
+    }
+    const Vector2d dir = vert[ib1] - vert[ia1];
+    Suite<nat> set ( nv );
+    for ( i = 0; i < cntr.size(); ++i )
+    {
+        const nat n = cntr[i];
+        for ( nat j = 0; j < n; ++j ) set.inc() = i;
+    }
+    double min = 1e300;
+    nat polyid = 0, ia2, ib2;
+    for ( i = 0; i < trian.size(); ++i )
+    {
+        const Set3<nat> & s = trian[i];
+        if ( ia1 == s.b && set[s.a] == polyid )
+        {
+            const double t = dir * ( vert[s.a] - vert[ia1] ).setNorm2();
+            if ( min > t ) min = t, ia2 = s.a;
+        }
+        if ( ia1 == s.c && set[s.b] == polyid )
+        {
+            const double t = dir * ( vert[s.b] - vert[ia1] ).setNorm2();
+            if ( min > t ) min = t, ia2 = s.b;
+        }
+        if ( ia1 == s.a && set[s.c] == polyid )
+        {
+            const double t = dir * ( vert[s.c] - vert[ia1] ).setNorm2();
+            if ( min > t ) min = t, ia2 = s.c;
+        }
+    }
+    min = 1e300;
+    for ( i = 0; i < trian.size(); ++i )
+    {
+        const Set3<nat> & s = trian[i];
+        if ( ib1 == s.b && set[s.a] == polyid )
+        {
+            const double t = dir * ( vert[ib1] - vert[s.a] ).setNorm2();
+            if ( min > t ) min = t, ib2 = s.a;
+        }
+        if ( ib1 == s.c && set[s.b] == polyid )
+        {
+            const double t = dir * ( vert[ib1] - vert[s.b] ).setNorm2();
+            if ( min > t ) min = t, ib2 = s.b;
+        }
+        if ( ib1 == s.a && set[s.c] == polyid )
+        {
+            const double t = dir * ( vert[ib1] - vert[s.c] ).setNorm2();
+            if ( min > t ) min = t, ib2 = s.c;
+        }
+    }
+    res.resize ( 2 );
+    res[0] = Set2<nat> ( ia2, ia1 );
+    res[1] = Set2<nat> ( ib1, ib2 );
+}
+
+void splitFacetN ( CCArrRef<nat> & cntr, CCArrRef<Vector2d> & vert, CCArrRef<Set3<nat> > & trian, Suite<Set2<nat> > & res )
+{
+    nat i, k = cntr[0];
+// Находим две самые удалённые друг от друга вершины внутренних многоугольников
+    Vector2d o = null2d;
+    double area = 0;
+    for ( i = 1; i < cntr.size(); ++i )
+    {
+        const nat n = cntr[i];
+        CCArrRef<Vector2d> poly ( vert, k, n );
+        const double a = fabs ( ::area ( poly ) );
+        o += a * centerPlg ( poly );
+        area += a;
+        k += n;
+    }
+    if ( area > 0 ) o /= area;
+    nat ia1 = cntr[0];
+    double max = qmod ( vert[ia1] - o );
+    for ( i = ia1+1; i < vert.size(); ++i )
+    {
+        const double t = qmod ( vert[i] - o );
+        if ( max < t ) max = t, ia1 = i;
+    }
+    nat ib1 = ia1;
+    max = 0;
+    for ( i = cntr[0]; i < vert.size(); ++i )
+    {
+        const double t = qmod ( vert[i] - vert[ia1] );
+        if ( max < t ) max = t, ib1 = i;
+    }
+    const Vector2d dir = vert[ib1] - vert[ia1];
+    Suite<nat> set ( k );
+    for ( i = 0; i < cntr.size(); ++i )
+    {
+        const nat n = cntr[i];
+        for ( nat j = 0; j < n; ++j ) set.inc() = i;
+    }
+    DynArray<Suite<nat> > diag ( vert.size() );
+    if(1)
+    for ( nat i = 0; i < trian.size(); ++i )
+    {
+        const Set3<nat> & s = trian[i];
+        if ( set[s.a] != set[s.b] )
+        draw ( Segment2d ( vert[s.a], vert[s.b] ), 0, 1, 1 );
+        if ( set[s.b] != set[s.c] )
+        draw ( Segment2d ( vert[s.b], vert[s.c] ), 0, 1, 1 );
+        if ( set[s.c] != set[s.a] )
+        draw ( Segment2d ( vert[s.c], vert[s.a] ), 0, 1, 1 );
+    }
+    double min = 1e300;
+    nat polyid = 0, ia2, ib2;
+    for ( i = 0; i < trian.size(); ++i )
+    {
+        const Set3<nat> & s = trian[i];
+        if ( ia1 == s.b && set[s.a] == polyid )
+        {
+            const double t = dir * ( vert[s.a] - vert[ia1] ).setNorm2();
+            if ( min > t ) min = t, ia2 = s.a;
+        }
+        if ( ia1 == s.c && set[s.b] == polyid )
+        {
+            const double t = dir * ( vert[s.b] - vert[ia1] ).setNorm2();
+            if ( min > t ) min = t, ia2 = s.b;
+        }
+        if ( ia1 == s.a && set[s.c] == polyid )
+        {
+            const double t = dir * ( vert[s.c] - vert[ia1] ).setNorm2();
+            if ( min > t ) min = t, ia2 = s.c;
+        }
+    }
+    res.resize ( 0 );
+    res.inc() = Set2<nat> ( ia2, ia1 );
+//draw ( Segment2d ( vert[ia1], vert[ia2] ), 1, 1, 0 );
+    DynArray<nat> index ( cntr.size() );
+    index[0] = cntr[0];
+    for ( i = 1; i < cntr.size(); ++i ) index[i] = index[i-1] + cntr[i];
+    for(nat j=0;;++j)
+    {
+        polyid = set[ia1];
+        max = 0;
+        for ( i = index[polyid-1]; i < index[polyid]; ++i )
+        {
+            const double t = dir * ( vert[i] - vert[ia1] );
+            if ( max < t ) max = t, ib1 = i;
+        }
+//draw ( Segment2d ( vert[ia1], vert[ib1] ), 1, 1, 0 );
+        max = 0;
+        for ( i = 0; i < trian.size(); ++i )
+        {
+            const Set3<nat> & s = trian[i];
+            if ( ib1 == s.b && set[s.a] != polyid )
+            {
+                const double t = dir * ( vert[s.a] - vert[ib1] ).setNorm2();
+                if ( max < t ) max = t, ib2 = s.a;
+            }
+            if ( ib1 == s.c && set[s.b] != polyid )
+            {
+                const double t = dir * ( vert[s.b] - vert[ib1] ).setNorm2();
+                if ( max < t ) max = t, ib2 = s.b;
+            }
+            if ( ib1 == s.a && set[s.c] != polyid )
+            {
+                const double t = dir * ( vert[s.c] - vert[ib1] ).setNorm2();
+                if ( max < t ) max = t, ib2 = s.c;
+            }
+        }
+//draw ( Segment2d ( vert[ib1], vert[ib2] ), 1, 1, 0 );
+        res.inc() = Set2<nat> ( ib1, ib2 );
+        if ( set[ib2] == 0 ) break;
+        ia1 = ib2;
+    }
+}
+
+void addIndex ( CCArrRef<nat> & cntr, nat a, nat b, Suite<nat> & res )
+{
+    nat i = 0, m = cntr[0];
+    while ( m < a )
+    {
+        ++i;
+        m += cntr[i];
+    }
+    if ( a < b )
+    {
+        for ( i = a; i <= b; ++i ) res.inc() = i;
+    }
+    else
+    {
+        const nat n = cntr[i];
+        for ( i = a; i <= b+n; ++i ) res.inc() = i >= m ? i - n : i;
+    }
+}
+
+void splitFacet ( CCArrRef<nat> & cntr, CCArrRef<Vector2d> & vert, Suite<Suite<nat> > & res )
+{
+    Suite<Set3<nat> > trian;
+    ::trianSweepLine ( cntr, vert, trian );
+    rebuildDelauney ( vert, trian );
+    Suite<Set2<nat> > segm;
+    if ( cntr.size() == 2 )
+        splitFacet1 ( cntr, vert, trian, segm );
+    else
+        splitFacetN ( cntr, vert, trian, segm );
+    nat i;
+    res.resize ( 2 );
+    for ( i = 0; i < segm.size(); ++i )
+    {
+        addIndex ( cntr, segm.cprev(i).b, segm[i].a, res[0] );
+    }
+    segm.reverse();
+    for ( i = 0; i < segm.size(); ++i )
+    {
+        addIndex ( cntr, segm[i].a, segm.cprev(i).b, res[1] );
+    }
+}
+
+void splitFacet ( const Spin2d & spin, const char * filename )
+{
+    RealFile file ( filename, "r" );
+    if ( ! file.isValid() )
+    {
+        display << "Not open file" << filename << NL;
+        return;
+    }
+    nat32 nv;
+    Suite<Vector2d> vert;
+    Suite<DynArray<Vector2d> > poly;
+    while ( readIntDec ( file, nv ) )
+    {
+        vert.resize ( nv );
+        int32 x, y;
+        nat32 i;
+        for ( i = 0; i < nv; ++i )
+        {
+            if ( ! readIntDec ( file, x ) || ! readIntDec ( file, y ) ) break;
+            vert[i].x = x/400.-1;
+            vert[i].y = y/400.-0.7;
+        }
+        if ( i != nv )
+        {
+            display << "error" << NL;
+            return;
+        }
+        double ar = area ( vert );
+        if ( ar > 0.7 || ( ar < 2.62e-3 && ar > 2.4e-3 ) )
+        {
+//display << area ( vert ) << NL;
+            //drawPolygon ( vert, 0, 1, 1 );
+            vert *= spin;
+            poly.inc() = vert;
+        }
+    }
+    poly.reverse();
+ //   _swap ( poly[1], poly[2] );
+ //   poly.dec();
+    vert.resize();
+    Suite<nat> set;
+    DynArray<nat> cntr ( poly.size() );
+    nat i;
+    for ( i = 0; i < poly.size(); ++i )
+    {
+        const nat n = cntr[i] = poly[i].size();
+        if ( i ) poly[i].reverse();
+        vert.addAftLas ( poly[i] );
+        for ( nat j = 0; j < n; ++j ) set.inc() = i;
+    }
+    const Vector2d * p = vert();
+    for ( i = 0; i < cntr.size(); ++i )
+    {
+        drawPolygon ( CArrRef<Vector2d>(p, cntr[i]), 0, 1, 1 );
+        p += cntr[i];
+    }
+//display << vert.size() << NL;
+    Suite<Suite<nat> > res;
+    splitFacet ( cntr, vert, res );
+    for ( i = 0; i < res.size(); ++i )
+    {
+        CCArrRef<nat> & poly = res[i];
+        for ( nat j = 0; j < poly.size(); ++j )
+        {
+            draw ( Segment2d ( vert[poly[j]], vert[poly.cnext(j)] ), 1, 1, 0 );
+        }
+    }
+    /*        double t0 = timeInSec();
+    ::trianSweepLine ( cntr, vert, res );
+            double t1 = timeInSec();
+    rebuildDelauney ( vert, res );
+            double t2 = timeInSec();
+    vert *= ~spin;*/
+}
+
+void splitFacet_test()
+{
+    splitFacet ( Spin2d(), "data/cont 99.txt" );
+//    splitFacet ( Spin2d::d090, "data/cont 99.txt" );
+//    splitFacet ( Spin2d()    , "data/cont 707.txt" );
+}
+
 } // namespace
 
 using namespace Test;
@@ -1377,7 +1688,8 @@ void trian2d_test ()
     drawNewList2d();
 //    trian_test2();
 //    convexParts_test();
-    trianSeidel_test2();
+//    trianSeidel_test2();
 //    trianSweepLine_test();
+    splitFacet_test();
     endNewList();
 }

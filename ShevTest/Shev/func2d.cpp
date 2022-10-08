@@ -33,6 +33,31 @@ double getPerimeter ( const Rectangle2d     & fig ) { return fig.getPerimeter();
 double getPerimeter ( const Rhombus2d       & fig ) { return fig.getPerimeter(); }
 double getPerimeter ( const Parallelogram2d & fig ) { return fig.getPerimeter(); }
 
+//**************************** 17.10.2008 *********************************//
+//
+//           Построение прямых по вершинам многоугольника
+//
+//**************************** 21.08.2011 *********************************//
+
+bool points2lines ( CCArrRef<Vector2d> & poly, ArrRef<Line2d> & line )
+{
+    for ( nat i = 0; i < poly.size(); ++i )
+    {
+        const Vector2d & v2 = poly[i+1<poly.size()?i+1:0];
+        const Vector2d & v1 = poly[i];
+        Line2d & linei = line[i];
+        Vector2d & norm = linei.norm;
+        norm.x = v2.y - v1.y;
+        norm.y = v1.x - v2.x;
+        const double q = norm * norm;
+        if ( q == 0 ) return false;
+        norm /= sqrt ( q );
+        const double d1 = norm * v1;
+        const double d2 = norm * v2;
+        linei.dist = d1 > d2 ? - d1 : - d2;
+    }
+    return true;
+}
 
 //**************************** 17.10.2008 *********************************//
 //
@@ -955,45 +980,41 @@ SuiteRef<Vector2d> & convexMN ( SuiteRef<Vector2d> & point )
 //**************************** 14.08.2006 *********************************//
 //
 //      Выпуклая оболочка вершин многоугольника за время O ( n ).
-//      Обход вершин против часовой стрелки.
-//      vert и res должны быть разными массивами.
-//      Возвращается false, если площадь многоугольника меньше или равна 0.
+//      Обход вершин против часовой стрелки, иначе вызывается convexNlogN.
+//      vert и res могут совпадать.
 //
-//**************************** 12.06.2020 *********************************//
+//**************************** 12.11.2020 *********************************//
 
-inline nat nextIndex ( nat i, nat n, const Vector2d * v )
+inline nat nextIndex ( nat i, nat n )
 {
-    nat j = i;
-m1: if ( ++j == n ) j = 0;
-    if ( v[i] == v[j] ) goto m1;
-    return j;
+    return ++i == n ? 0 : i;
 }
 
-void convexPolygon ( nat a, nat b, CArrRef<Vector2d> vert, SuiteRef<nat> & index )
+void convexPolygon ( nat a, nat b, CCArrRef<nat> & vi, CCArrRef<Vector2d> & vert, SuiteRef<nat> & index )
 {
-    const nat n = vert.size();
+    const nat n = vi.size();
     index.inc() = a;
-    a = nextIndex ( a, n, vert() );
+    a = nextIndex ( a, n );
     if ( a == b ) return;
     index.inc() = a;
     for(;;)
     {
-        a = nextIndex ( a, n, vert() );
-m1:     const Vector2d & qi = vert[index.las(0)]; // последняя выпуклая вершина
-        const Vector2d & q1 = vert[index.las(1)]; // предпоследняя выпуклая вершина
-        const Vector2d & v = vert[a]; // исходная вершина после qi
+        a = nextIndex ( a, n );
+m1:     const Vector2d & qi = vert[vi[index.las(0)]]; // последняя выпуклая вершина
+        const Vector2d & q1 = vert[vi[index.las(1)]]; // предпоследняя выпуклая вершина
+        const Vector2d & v = vert[vi[a]]; // исходная вершина после qi
         if ( ( v - qi ) % ( v - q1 ) < 0 )
         {
             if ( a == b ) break;
-            const Vector2d & u = index.las() > 0 ? vert[index.las()-1] : vert.las(); // исходная вершина перед qi
+            const Vector2d & u = vert[vi.cprev(index.las())]; // исходная вершина перед qi
             if ( ( v - qi ) % ( v - u ) >= 0 )
             {
                 do
                 {
-                    a = nextIndex ( a, n, vert() );
+                    a = nextIndex ( a, n );
                     if ( a == b ) goto m1;
                 }
-                while ( ( vert[a] - qi ) % ( qi - q1 ) <= 0 );
+                while ( ( vert[vi[a]] - qi ) % ( qi - q1 ) <= 0 );
                 goto m1;
             }
         }
@@ -1001,8 +1022,8 @@ m1:     const Vector2d & qi = vert[index.las(0)]; // последняя выпуклая вершина
         {
             while ( index.size() > 1 )
             {
-                const Vector2d & qi = vert[index.las(0)];
-                const Vector2d & q1 = vert[index.las(1)];
+                const Vector2d & qi = vert[vi[index.las(0)]];
+                const Vector2d & q1 = vert[vi[index.las(1)]];
                 if ( ( v - qi ) % ( q1 - qi ) > 0 ) break;
                 index.dec();
             }
@@ -1012,73 +1033,102 @@ m1:     const Vector2d & qi = vert[index.las(0)]; // последняя выпуклая вершина
     }
 }
 
-bool convexPolygon ( CCArrRef<Vector2d> & vert, SuiteRef<nat> & index )
+SuiteRef<nat> & convexPolygon ( CCArrRef<Vector2d> & vert, SuiteRef<nat> & index )
 {
-    if ( area ( vert ) <= 0 ) return false;
+    index.resize ( 0 );
     const nat n = vert.size();
+    switch ( n )
+    {
+    case 2:
+        if ( vert[0] != vert[1] ) index.inc() = 1;
+    case 1:
+        index.inc() = 0;
+    case 0:
+        return index;
+    }
+    if ( area ( vert ) <= 0 ) return convexNlogN ( vert, index );
     if ( n == 3 )
     {
         index.resize ( n );
         for ( nat i = 0; i < n; ++i ) index[i] = i;
-        return true;
+        return index;
+    }
+// Выбираем не повторяющиеся вершины
+    Suite<nat> temp ( n );
+    temp.inc() = 0;
+    nat i;
+    for ( i = 1; i < n; ++i )
+    {
+        if ( vert[temp.las()] != vert[i] ) temp.inc() = i;
+    }
+    if ( vert[temp.las()] == vert[0] ) temp.dec();
+    const nat m = temp.size();
+    if ( m == 3 )
+    {
+        index = temp;
+        return index;
     }
 // Поиск крайних точек по X
-    nat i, a = 0, b = 0;
-    for ( i = n; --i > 0; )
+    nat a = 0, b = 0;
+    for ( i = 1; i < m; ++i )
     {
-        if ( vert[a].x > vert[i].x ) a = i;
+        const Vector2d & va = vert[temp[a]];
+        const Vector2d & vb = vert[temp[b]];
+        const Vector2d & vi = vert[temp[i]];
+        if ( va.x > vi.x ) a = i;
         else
-        if ( vert[b].x < vert[i].x ) b = i;
+        if ( vb.x < vi.x ) b = i;
         else
-        if ( vert[a].x == vert[i].x && vert[a].y > vert[i].y ) a = i;
+        if ( va.x == vi.x && va.y > vi.y ) a = i;
         else
-        if ( vert[b].x == vert[i].x && vert[b].y < vert[i].y ) b = i;
+        if ( vb.x == vi.x && vb.y < vi.y ) b = i;
     }
 // Поиск остальных точек
-    index.resize ( 0 );
-    convexPolygon ( b, a, vert, index );
-    convexPolygon ( a, b, vert, index );
-    return true;
+    convexPolygon ( b, a, temp, vert, index );
+    convexPolygon ( a, b, temp, vert, index );
+    for ( i = 0; i < index.size(); ++i ) index[i] = temp[index[i]];
+    return index;
 }
 
-bool convexPolygon ( CCArrRef<Vector2d> & vert, DynArrRef<Vector2d> & res )
+SuiteRef<Vector2d> & convexPolygon ( CCArrRef<Vector2d> & vert, SuiteRef<Vector2d> & res )
 {
     const nat n = vert.size();
-    Suite<nat> index ( n );
-    if ( ! convexPolygon ( vert, index ) ) return false;
-    const nat m = index.size();
-    if ( res.size() != m ) res.resize ( m );
-    if ( m < n )
+    if ( ! n )
     {
+        res.resize(); return res;
+    }
+    Suite<nat> index ( n );
+    convexPolygon ( vert, index );
+    const nat m = index.size();
+    if ( vert() == res() )
+    {
+        if ( vert.size() == m ) return res;
         nat k = firMin ( index );
         for ( nat i = 0; i < m; ++i )
         {
             res[i] = vert[index[k]];
             if ( ++k == m ) k = 0;
         }
+        res.resize ( m );
     }
     else
     {
-        res = vert;
+        if ( res.size() != m ) res.resize ( m );
+        if ( m < n )
+        {
+            nat k = firMin ( index );
+            for ( nat i = 0; i < m; ++i )
+            {
+                res[i] = vert[index[k]];
+                if ( ++k == m ) k = 0;
+            }
+        }
+        else
+        {
+            res = vert;
+        }
     }
-    return true;
-}
-
-bool convexPolygon ( SuiteRef<Vector2d> & vert )
-{
-    const nat n = vert.size();
-    Suite<nat> index ( n );
-    if ( ! convexPolygon ( vert, index ) ) return false;
-    const nat m = index.size();
-    if ( vert.size() == m ) return true;
-    nat k = firMin ( index );
-    for ( nat i = 0; i < m; ++i )
-    {
-        vert[i] = vert[index[k]];
-        if ( ++k == m ) k = 0;
-    }
-    vert.resize ( m );
-    return true;
+    return res;
 }
 
 //**************************** 23.08.2003 *********************************//
@@ -1395,7 +1445,7 @@ FixArrRef<Vector2d, 4> & makePolygon ( const Rectangle2d & fig, FixArrRef<Vector
 
 //**************************** 20.10.2015 *********************************//
 //
-//                  Вычисление вершин прямоугольника
+//                      Вычисление вершин ромба
 //
 //**************************** 20.10.2015 *********************************//
 
@@ -1530,8 +1580,8 @@ void _swap ( SortItem<double, Set4<nat>*> & p1, SortItem<double, Set4<nat>*> & p
     ::_swap ( p1.tail, p2.tail );
     ::_swap ( p1.head, p2.head );
 }
-static 
-double recalc ( CArrRef<Vector2d> poly, const Set4<nat> & set )
+
+static double recalc ( CCArrRef<Vector2d> & poly, const Set4<nat> & set )
 {
     double max = 0;
     const Line2d line ( poly[set.a], poly[set.c] );
@@ -1544,8 +1594,8 @@ double recalc ( CArrRef<Vector2d> poly, const Set4<nat> & set )
     }
     return max;
 }
-static 
-void simplify ( CArrRef<Vector2d> poly, double eps, ArrRef< Set4<nat> > arr, MinHeap< SortItem<double, Set4<nat>*> > & heap, bool closed )
+
+static void simplify ( CCArrRef<Vector2d> & poly, double eps, ArrRef< Set4<nat> > & arr, MinHeap< SortItem<double, Set4<nat>*> > & heap, bool closed )
 {
     const nat n = poly.size();
     nat i, j = n - 1;
@@ -1585,7 +1635,7 @@ void simplify ( CArrRef<Vector2d> poly, double eps, ArrRef< Set4<nat> > arr, Min
     }
 }
 
-DynArrRef<nat> & simplify ( CArrRef<Vector2d> poly, double eps, bool closed, DynArrRef<nat> & res )
+DynArrRef<nat> & simplify ( CCArrRef<Vector2d> & poly, double eps, bool closed, DynArrRef<nat> & res )
 {
     const nat n = poly.size();
     if ( n < 4 )
@@ -1620,7 +1670,7 @@ DynArrRef<nat> & simplify ( CArrRef<Vector2d> poly, double eps, bool closed, Dyn
     return res;
 }
 
-DynArrRef<Vector2d> & simplify ( CArrRef<Vector2d> poly, double eps, bool closed, DynArrRef<Vector2d> & res )
+DynArrRef<Vector2d> & simplify ( CCArrRef<Vector2d> & poly, double eps, bool closed, DynArrRef<Vector2d> & res )
 {
     const nat n = poly.size();
     if ( n < 4 )
@@ -1630,6 +1680,125 @@ DynArrRef<Vector2d> & simplify ( CArrRef<Vector2d> poly, double eps, bool closed
     DynArray< Set4<nat> > arr ( n );
     MinHeap< SortItem<double, Set4<nat>*> > heap ( n );
     simplify ( poly, eps, arr, heap, closed );
+    if ( closed )
+    {
+        res.resize ( heap.size() );
+        nat j = heap[0]->tail->b;
+        for ( nat i = 0; i < res.size(); ++i )
+        {
+            res[i] = poly[j];
+            j = arr[j].c;
+        }
+    }
+    else
+    {
+        res.resize ( heap.size() + 2 );
+        nat j = arr[0].b;
+        for ( nat i = 0; i < res.size(); ++i )
+        {
+            res[i] = poly[j];
+            j = arr[j].c;
+        }
+    }
+    return res;
+}
+
+//**************************** 05.10.2020 *********************************//
+//
+//           Упрощение многоугольника до заданного к-ва вершин
+//
+//**************************** 05.10.2020 *********************************//
+
+inline double area ( CCArrRef<Vector2d> & poly, const Set4<nat> & set )
+{
+    return fabs ( ( poly[set.a] - poly[set.b] ) % ( poly[set.c] - poly[set.b] ) );
+}
+
+static void simplifyNV ( CCArrRef<Vector2d> & poly, nat nv, ArrRef< Set4<nat> > & arr, MinHeap< SortItem<double, Set4<nat>*> > & heap, bool closed )
+{
+    const nat n = poly.size();
+    nat i, j = n - 1;
+    for ( i = 0; i < n; ++i )
+    {
+        arr[i] = Set4<nat> ( j, i, i + 1, i );
+        j = i;
+    }
+    arr.las().c = 0;
+    for ( i = 0; i < n; ++i ) heap << SortItem<double, Set4<nat>*> ( area ( poly, arr[i] ), arr(i) );
+    nat k = nv;
+    if ( ! closed )
+    {
+        k -= 2;
+        heap.del ( arr[0].d );
+        heap.del ( arr.las().d );
+    }
+    while ( heap.size() > k )
+    {
+        SortItem<double, Set4<nat>*> si;
+        heap >> si;
+        Set4<nat> & s1 = *si.tail;
+        Set4<nat> & s2 = arr[s1.a];
+        Set4<nat> & s3 = arr[s1.c];
+        s2.c = s1.c;
+        s3.a = s1.a;
+        if ( s2.d < heap.size() )
+        {
+            heap[s2.d]->head = area ( poly, s2 );
+            heap.down ( s2.d );
+        }
+        if ( s3.d < heap.size() )
+        {
+            heap[s3.d]->head = area ( poly, s3 );
+            heap.down ( s3.d );
+        }
+    }
+}
+
+DynArrRef<nat> & simplifyNV ( CCArrRef<Vector2d> & poly, nat nv, bool closed, DynArrRef<nat> & res )
+{
+    const nat n = poly.size();
+    if ( n <= nv )
+    {
+        res.resize ( n );
+        for ( nat i = 0; i < n; ++i ) res[i] = i;
+        return res;
+    }
+    DynArray< Set4<nat> > arr ( n );
+    MinHeap< SortItem<double, Set4<nat>*> > heap ( n );
+    simplifyNV ( poly, nv, arr, heap, closed );
+    if ( closed )
+    {
+        res.resize ( heap.size() );
+        nat j = heap[0]->tail->b;
+        for ( nat i = 0; i < res.size(); ++i )
+        {
+            res[i] = j;
+            j = arr[j].c;
+        }
+    }
+    else
+    {
+        res.resize ( heap.size() + 2 );
+        nat j = arr[0].b;
+        for ( nat i = 0; i < res.size(); ++i )
+        {
+            res[i] = j;
+            j = arr[j].c;
+        }
+    }
+    return res;
+}
+
+DynArrRef<Vector2d> & simplifyNV ( CCArrRef<Vector2d> & poly, nat nv, bool closed, DynArrRef<Vector2d> & res )
+{
+    const nat n = poly.size();
+    if ( n <= nv )
+    {
+        return res = poly;
+    }
+    DynArray< Set4<nat> > arr ( n );
+    MinHeap< SortItem<double, Set4<nat>*> > heap ( n );
+    simplifyNV ( poly, nv, arr, heap, closed );
     if ( closed )
     {
         res.resize ( heap.size() );

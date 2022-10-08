@@ -59,6 +59,11 @@ public:
     {
         return !x1 && !x2 && !x3 && !x4;
     }
+
+// Задание векторных норм
+    Vector4d & setNorm1 ( double p = 1 ); // единичная норма
+    Vector4d & setNorm2 ( double p = 1 ); // квадратичная норма
+    Vector4d & setNormU ( double p = 1 ); // бесконечная норма
 };
 
 inline Vector4d operator + ( const Vector4d & a, const Vector4d & b )
@@ -105,6 +110,14 @@ inline bool operator != ( const Vector4d & a, const Vector4d & b )
 {
     return a.x1 != b.x1 || a.x2 != b.x2 || a.x3 != b.x3 || a.x4 != b.x4;
 }
+
+// Вычисление векторных норм
+
+double norm1 ( const Vector4d & v ); // единичная норма
+double norm2 ( const Vector4d & v ); // квадратичная норма
+double normU ( const Vector4d & v ); // бесконечная норма
+
+///////////////////////////// Плоскость ///////////////////////////////////////
 
 class Plane4d
 {

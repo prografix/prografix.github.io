@@ -20,7 +20,7 @@
 
 #include "display.h"
 
-#define sprintf sprintf_s
+//#define sprintf sprintf_s
 
 namespace {
 
@@ -552,7 +552,81 @@ void calc ( CCArrRef<Vector3d> & point1, CCArrRef<Vector3d> & point2, double & u
     s.norm();
     u = q.norm();
     q = s * q;
-//display << RAD * acos ( s.ro ) << NL;return;
+display << 2*RAD * acos ( q.ro ) << NL;return;
+//display << m.aa << m.bb << m.cc << NL;
+    if ( 0)//max < 0 )
+    {
+        q.la = - q.la;
+        q.mu = - q.mu;
+        m.ca = - m.ca;
+        m.cb = - m.cb;
+        m.ac = - m.ac;
+        m.bc = - m.bc;
+    }
+    q.getMatr ( m );
+}
+
+void calc2 ( CCArrRef<Vector3d> & point1, CCArrRef<Vector3d> & point2, double & u, Matrix3<double> & m )
+{
+    nat i;
+    Vector3d r1, r2;
+    calc1 ( point1, point2, r1, r2 );
+//display << r1 << NL << r2 << NL << NL;
+    Quater q;
+    q.init ( r1, r2 );
+    q.getMatr ( m );
+    DynArray<Vector3d> point3 ( point1.size() );
+    for ( i = 0; i < point1.size(); ++i )
+    {
+        const Vector3d & v = point1[i];
+        point3[i] = m * Vector3d ( v.x, v.y, 0 );
+    }
+    //display << calcDif ( point2, point3 );
+    double sum = 0;
+    for ( i = 0; i < point1.size(); ++i )
+    {
+        const Vector3d & v = point1[i];
+        double t1 = point2[i].x - ( m.aa * v.x + m.ab * v.y );
+        double t2 = point2[i].y - ( m.ba * v.x + m.bb * v.y );
+        double z = ( m.ac * t1 + m.bc * t2 ) / ( m.ac * m.ac + m.bc * m.bc );
+        point3[i] = m * Vector3d ( v.x, v.y, z );
+    }
+    //display << calcDif ( point2, point3 ) << NL;
+    SLU4<double> slu;
+    slu.fill ( 0, 0 );
+    for ( i = 0; i < point1.size(); ++i )
+    {
+        const Vector3d & v = point3[i];
+        const Vector3d & u = point2[i];
+        double a = v.x * q.nu + v.y * q.ro - v.z * q.la;
+        double b = v.x * q.mu - v.y * q.la - v.z * q.ro;
+        double c = v.x * q.la + v.y * q.nu + v.z * q.mu;
+        double d = v.x * q.ro + v.y * q.mu - v.z * q.nu;
+        slu.aa += a * a + d * d;
+        slu.ab += a * b + c * d;
+        slu.ac += a * c - b * d;
+        slu.bb += b * b + c * c;
+        slu.ae += u.x*v.x + u.y*v.y;
+        slu.be -= u.x*v.y - u.y*v.x;
+        slu.ce += u.x*v.z;
+        slu.de -= u.y*v.z;
+    }
+    slu.dd = slu.aa;
+    slu.cc = slu.bb;
+    slu.bd = -slu.ac;
+    slu.dc = slu.cd = slu.ba = slu.ab;
+    slu.ca = slu.ac;
+    slu.db = slu.bd;
+    Quater s;
+    slu.gauss ( s.ro, s.la, s.mu, s.nu );
+    s.ro = sqrt ( s.ro );
+    s.la /= s.ro + s.ro;
+    s.mu /= s.ro + s.ro;
+    s.nu /= s.ro + s.ro;
+    s.norm();
+    u = q.norm();
+    q = s * q;
+display << 2*RAD * acos ( q.ro ) << NL;return;
 //display << m.aa << m.bb << m.cc << NL;
     if ( 0)//max < 0 )
     {
@@ -594,8 +668,32 @@ void drawFrame ( const Frame & f, float r, float g, float b )
 
 void test ()
 {
+    FixArray<Vector2d, 4> poly1;
+    poly1[0] = Vector2d ( -81,-44 );
+    poly1[1] = Vector2d ( -81, 44 );
+    poly1[2] = Vector2d (  81, 44 );
+    poly1[3] = Vector2d (  81,-44 );
+    poly1 /= 60;
+    drawPolygon ( poly1, 0, 1, 1 );
+    FixArray<Vector2d, 4> poly2;
+    poly2[0] = Vector2d ( -18,-28 );
+    poly2[1] = Vector2d ( -18,-20 );
+    poly2[2] = Vector2d (  18,-20 );
+    poly2[3] = Vector2d (  18,-28 );
+    poly2 /= 60;
+    drawPolygon ( poly2, 1, 0, 0 );
+    FixArray<Vector2d, 4> poly3;
+    double h = 6;
+    poly3[0] = Vector2d ( -58,-34+h );
+    poly3[1] = Vector2d ( -58, 34+h );
+    poly3[2] = Vector2d (  58, 34+h );
+    poly3[3] = Vector2d (  58,-34+h );
+    poly3 /= 60;
+    drawPolygon ( poly3, 1, 1, 0 );
+    return;
     nat i;
-    RealFile file ( "D:/PROJECTS/temp/DATA/VID_20220203_122000.mp4.log.json", "r" );
+    RealFile file ( "D:/PROJECTS/temp/DATA/vid_1.mp4.log.json", "r" );
+    //RealFile file ( "D:/PROJECTS/temp/DATA/VID_20220203_122000.mp4.log.json", "r" );
     //RealFile file ( "D:/PROJECTS/temp/DATA/VID_21_11_21_c.mp4.log.json", "r" );
     JNode json;
     loadJSON ( file, json );
@@ -611,19 +709,21 @@ void test ()
     double u;
     Matrix3<double> m;
     double max = 0, min = 2;
+//display << frame.size() << NL;
     for ( i = 1; i < frame.size(); ++i )
     {
 //if(i!=10) continue;
         const Frame & f1 = frame[0];
         const Frame & f2 = frame[i];
+display << f2.angle1;
         compare ( f1, f2, u, m );
-        if ( max < u ) max = u;
+        /*if ( max < u ) max = u;
         if ( min > u ) min = u;
     
     double sy = sqrt ( m.aa * m.aa + m.ba * m.ba );
     double x = RAD * atan2 ( m.cb, m.cc );
-    double y = RAD * atan2 (-m.ca, sy );
-display << i << f2.angle1 << f2.angle2 << y << -x << NL;
+    double y = RAD * atan2 (-m.ca, sy );*/
+//display << i << f2.angle1 << f2.angle2 << NL;
 //if(i==352) break;
     }
 //display << min << max << NL;

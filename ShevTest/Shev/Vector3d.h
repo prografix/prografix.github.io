@@ -18,6 +18,13 @@ class Vector3d
         y *= d;
         z *= d;
     }
+
+    template <typename T> void mul ( const T & t, const Vector3d & v )
+    {
+        x *= v.x;
+        y *= v.y;
+        z *= v.z;
+    }
 public :
     double x, y, z;
 
@@ -42,14 +49,6 @@ public :
         x -= v.x;
         y -= v.y;
         z -= v.z;
-        return * this;
-    }
-
-    Vector3d & operator *= ( const Vector3d & v )
-    {
-        x *= v.x;
-        y *= v.y;
-        z *= v.z;
         return * this;
     }
 

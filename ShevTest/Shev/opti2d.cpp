@@ -965,9 +965,7 @@ Def<Triangle2d> minTriangleAroundConvexPolygonA ( CCArrRef<Vector2d> & poly )
 
 Def<Triangle2d> minTriangleAroundPolygonA ( CCArrRef<Vector2d> & inner )
 {
-    DynArray<Vector2d> convex;
-    if ( ! convexPolygon ( inner, convex ) ) return Def<Triangle2d>();
-    return minTriangleAroundConvexPolygonA ( convex );
+    return minTriangleAroundConvexPolygonA ( convexPolygon ( inner, Suite<Vector2d> ( inner.size() ) ) );
 }
 
 // Множество точек
@@ -1130,16 +1128,12 @@ Def<Rectangle2d> minRectangleAroundConvexPolygonP ( CArrRef<Vector2d> inner )
 
 Def<Rectangle2d> minRectangleAroundPolygonA ( CArrRef<Vector2d> inner )
 {
-    DynArray<Vector2d> convex;
-    if ( ! convexPolygon ( inner, convex ) ) return Def<Rectangle2d>();
-    return minRectangleAroundConvexPolygonA ( convex );
+    return minRectangleAroundConvexPolygonA ( convexPolygon ( inner, Suite<Vector2d> ( inner.size() ) ) );
 }
 
 Def<Rectangle2d> minRectangleAroundPolygonP ( CArrRef<Vector2d> inner )
 {
-    DynArray<Vector2d> convex;
-    if ( ! convexPolygon ( inner, convex ) ) return Def<Rectangle2d>();
-    return minRectangleAroundConvexPolygonP ( convex );
+    return minRectangleAroundConvexPolygonP ( convexPolygon ( inner, Suite<Vector2d> ( inner.size() ) ) );
 }
 
 // Множество точек
@@ -1341,8 +1335,7 @@ Def<Parallelogram2d> minParallelogramAroundConvexPolygonA ( CCArrRef<Vector2d> &
 
 Def<Parallelogram2d> minParallelogramAroundPolygonA ( CCArrRef<Vector2d> & inner )
 {
-    DynArray<Vector2d> convex;
-    return convexPolygon ( inner, convex ) ? minParallelogramAroundConvexPolygonA ( convex ) : Def<Parallelogram2d>();
+    return minParallelogramAroundConvexPolygonA ( convexPolygon ( inner, Suite<Vector2d> ( inner.size() ) ) );
 }
 
 // Множество точек
@@ -1432,8 +1425,7 @@ bool minTrapezoidAroundConvexPolygonA ( FixArrRef<Vector2d, 4> & outer, CCArrRef
 
 bool minTrapezoidAroundPolygonA ( FixArrRef<Vector2d, 4> & outer, CCArrRef<Vector2d> & inner )
 {
-    DynArray<Vector2d> convex;
-    return convexPolygon ( inner, convex ) && minTrapezoidAroundConvexPolygonA ( outer, convex );
+    return minTrapezoidAroundConvexPolygonA ( outer, convexPolygon ( inner, Suite<Vector2d> ( inner.size() ) ) );
 }
 
 // Множество точек
@@ -1769,8 +1761,7 @@ bool minNgonAroundConvexPolygonA ( ArrRef<Vector2d> outer, CArrRef<Vector2d> inn
 
 bool minNgonAroundPolygonA ( ArrRef<Vector2d> & outer, CCArrRef<Vector2d> & inner )
 {
-    DynArray<Vector2d> convex;
-    return convexPolygon ( inner, convex ) && minNgonAroundConvexPolygonA ( outer, convex );
+    return minNgonAroundConvexPolygonA ( outer, convexPolygon ( inner, Suite<Vector2d> ( inner.size() ) ) );
 }
 
 // Множество точек
@@ -1826,8 +1817,7 @@ bool minEquianglarPolygonAroundConvexPolygonA ( ArrRef<Vector2d> & outer, CCArrR
 
 bool minEquianglarPolygonAroundPolygonA ( ArrRef<Vector2d> & outer, CCArrRef<Vector2d> & inner )
 {
-    DynArray<Vector2d> convex;
-    return convexPolygon ( inner, convex ) && minEquianglarPolygonAroundConvexPolygonA ( outer, convex );
+    return minEquianglarPolygonAroundConvexPolygonA ( outer, convexPolygon ( inner, Suite<Vector2d> ( inner.size() ) ) );
 }
 
 // Множество точек

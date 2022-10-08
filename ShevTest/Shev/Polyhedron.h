@@ -136,7 +136,7 @@ namespace Shev
             return makeCuboid ( r, r, r );
         }
         // Призма
-        Polyhedron & makePrism ( CArrRef<Vector2d> vert, double z );
+        Polyhedron & makePrism ( CCArrRef<Vector2d> & vert, double z );
         // Эллипсоид ( x, y, z - половины осей )
         Polyhedron & makeEllipsoid ( nat n, double x, double y, double z, RandVector3d & qrv );
         Polyhedron & makeEllipsoid ( double x, double y, double z, nat n = 1095 );

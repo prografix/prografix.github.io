@@ -3,24 +3,7 @@
 
 #include "ShevArray.h"
 
-#define CCArrRef2 const CArrRef2
-
-template <class T> class ArrRef2;
-
-/**************************** СArrRef2 *****************************/
-/************* Ссылка на константный двухмерный массив *************/
-
-template <class T> class CArrRef2
-{
-    void operator= ( CCArrRef2 & );
-    CArrRef<T> _data;
-    nat _size0, _size1;
-public:
-    CArrRef2 ( const ArrRef2<T> & a ) : _data ( a(), a._size0 * a._size1 ), _size0 ( a._size0 ), _size1 ( a._size1 ) {}
-    CArrRef<T> operator[] ( nat i ) const { return CArrRef<T> ( _data, i * _size1, _size1 ); }
-    nat size0 () const { return _size0; }
-    nat size1 () const { return _size1; }
-};
+#define CArrRef2 const ArrRef2
 
 /***************************** ArrRef2 *****************************/
 /****************** Ссылка на двухмерный массив ********************/
@@ -42,8 +25,7 @@ public:
         ArrRef<T>::fill ( p );
         return *this;
     }
-    CArrRef2<T> operator* () const { return CArrRef2<T> ( *this ); }
-friend class CArrRef2<T>;
+    CArrRef2<T> & operator* () const { return *this; }
 };
 
 /**************************** FixArray2 ****************************/
@@ -73,7 +55,7 @@ public:
 
     ~DynArray2 () { delete[] _data.var; }
 
-    DynArray2 & operator= ( CCArrRef2<T> & r )
+    DynArray2 & operator= ( CArrRef2<T> & r )
     {
         const T * p = r[0]();
         if ( _data.var == p ) return *this;
@@ -117,7 +99,7 @@ public:
 
     ~CmbArray2 () { if ( _data.var != stor ) delete[] _data.var; }
 
-    CmbArray2 & operator= ( CCArrRef2<T> & r )
+    CmbArray2 & operator= ( CArrRef2<T> & r )
     {
         const T * p = r[0]();
         if ( _data.var == p ) return *this;

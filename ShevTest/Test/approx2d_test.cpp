@@ -17,6 +17,7 @@
 #include "../Shev/func3d.h"
 #include "../Shev/Polyhedron.h"
 #include "../Shev/Vector2d.h"
+#include "../Shev/Vector4d.h"
 #include "../Shev/ShevArray.h"
 #include "../Shev/intersect2d.h"
 #include "../Shev/WireModel.h"
@@ -1174,6 +1175,35 @@ void spline_test2()
     drawPoints ( polygon, 0, 1, 1 );
 }
 
+void spline_test3()
+{
+//    Vector2d v0(1, 1), v1(1.05, 1.05), v2(1.1,1.07);
+    Vector2d v0(1.0000000, 1.0000002), v1(1.0500000, 1.0499438), v2(1.1000000, 1.0998841);
+    Vector2d u1 = (v1 - v0).leftPerpendicular();
+    Vector2d u2 = (v2 - v1).leftPerpendicular();
+    Spline2d spline1 ( v0, v1, u1-0.2*u2, u1+u2 );
+    double x = 1.025;
+    Def<double> p = spline1.getParFromX ( x );
+    double y = spline1.getY(p);
+    Def<double> p1 = spline1.getParFromY ( y );
+    double x1 = spline1.getX(p1);
+    double t=x-x1;
+    t=t;
+    /*for ( int i = 90; i <= 105; i+=1 )
+    {
+        double x = 0.01*i;
+        Def<double> p = spline1.getParFromX ( x );
+        display << x << spline1.getY(p) << NL;
+    }
+    Spline2d spline2 ( v1, v2, u1+u2, u2-0.2*u1 );
+    for ( i = 106; i <= 120; i+=1 )
+    {
+        double x = 0.01*i;
+        Def<double> p = spline2.getParFromX ( x );
+        display << x << spline2.getY(p) << NL;
+    }*/
+}
+
 Line2d getLineUL ( CArrRef<Vector2d> point, const Vector2d & norm, double & r )
 {
     r = 0;
@@ -1220,9 +1250,177 @@ Line2d getLineUL ( CArrRef<Vector2d> point, const Vector2d & norm, double & r )
     return line;
 }
 
+struct OCP_data
+{
+    double cosa, sina;
+    Vector4d arr[5];
+};
+
+Def<Conform2d> overlayConvexPolygon ( MaxHeap<SortItem<double,nat> > & heap, ArrRef<OCP_data> & data,
+                                      CCArrRef<Vector2d> & vert, CCArrRef<Line2d> & line ) 
+{
+    for ( nat k = 0; k < 1000; ++k )
+    {
+        SortItem<double,nat> & si = * heap[0];
+        OCP_data & dt = data[si.tail];
+        Vector4d & a0 = dt.arr[0];
+        const Vector2d o ( a0.x1, a0.x2 );
+        const Vector2d w ( dt.cosa + dt.sina * a0.x3, dt.sina - dt.cosa * a0.x3 );
+        double max = -1;
+        nat i, im, km;
+        for ( i = 0; i < line.size(); ++i )
+        {
+            const Line2d & li = line[i];
+            const Vector2d u ( w * li.norm, w % li.norm );
+            nat jm = 0;
+            double pmax = u * vert[0];
+            for ( nat j = 1; j < vert.size(); ++j )
+            {
+                const double p = u * vert[j];
+                if ( pmax < p ) pmax = p, jm = j;
+            }
+            pmax += li % o;
+            if ( max < pmax ) max = pmax, im = i, km = jm;
+        }
+        const double dist = max + a0.x4;
+        if ( dist < 1e-4 )
+        {
+            Conform2d res;
+            res.spin = Spin2d ( atan2 ( dt.sina - dt.cosa * a0.x3, dt.cosa + dt.sina * a0.x3 ) );
+            res.trans.x = a0.x1;
+            res.trans.y = a0.x2;
+            return res;
+        }
+        const Line2d & li = line[im];
+        const Vector2d & vm = vert[km];
+        const Vector4d cor ( li.norm.x, li.norm.y, li.norm * vm * dt.sina + li.norm % vm * dt.cosa, 1. );
+        nat ib = 0;
+        double sg;
+        for ( i = 1; i <= 4; ++i )
+        {
+            const Vector4d & v = dt.arr[i];
+            double t = cor * v;
+            if ( t > -1e-8 ) continue;
+            t = 1./ t;
+            if ( ib == 0 )
+            {
+                max = v.x4 * t;
+                ib = i;
+                sg = t;
+            }
+            else
+            {
+                const double s = v.x4 * t;
+                if ( s < max ) max = s, ib = i, sg = t;
+            }
+        }
+        if ( ib == 0 )
+        {
+            return Def<Conform2d>();
+        }
+        const Vector4d & v = dt.arr[ib];
+        a0 -= v * ( dist * sg );
+        for ( i = 1; i <= 4; ++i )
+        {
+            if ( i == ib ) continue;
+            Vector4d & ai = dt.arr[i];
+            ai -= v * ( ( cor * ai ) * sg );
+            ai *= ( 1./ sqrt ( ai * ai ) );
+        }
+        si.head = a0.x4;
+        heap.down(0);
+    }
+    return Def<Conform2d>();
+}
+
+Def<Conform2d> overlayConvexPolygon2 ( CCArrRef<Vector2d> & vert1, CCArrRef<Vector2d> & vert2 )
+{
+    nat i;
+    Def<Conform2d> res;
+// Приведём многоугольники к стандартному виду
+    const Def<Vector2d> o1 = centerPlg ( vert1 );
+    if ( ! o1.isDef ) return res;
+    const Def<Vector2d> o2 = centerPlg ( vert2 );
+    if ( ! o2.isDef ) return res;
+    DynArray<Vector2d> poly1 ( vert1.size() ), poly2 ( vert2.size() );
+    for ( i = 0; i < vert1.size(); ++i ) poly1[i] = vert1[i] - o1;
+    for ( i = 0; i < vert2.size(); ++i ) poly2[i] = vert2[i] - o2;
+    double d = norm2 ( poly2[0] );
+    for ( i = 1; i < poly2.size(); ++i )
+    {
+        double t = norm2 ( poly2[i] );
+        if ( d < t ) d = t;
+    }
+    if ( ! d ) return res;
+    const double c = 1 / d;
+    const Conform2d magn ( Spin2d(), null2d, c );
+    const Conform2d conf1 = magn * Conform2d ( Spin2d(), -o1 );
+    const Conform2d conf2 = magn * Conform2d ( Spin2d(), -o2 );
+    poly1 *= c;
+    poly2 *= c;
+// Получение границ многоугольника в виде прямых линий
+    DynArray<Line2d> line ( poly2.size() );
+    if ( ! points2lines ( poly2, line ) ) return res;
+// Организация очереди с приоритетом
+    const nat n = 40;
+    const double step = M_2PI / n;
+    DynArray<OCP_data> data ( n );
+    MaxHeap<SortItem<double,nat> > heap ( n );
+    for ( i = 0; i < n; ++i )
+    {
+        const double a = i * step;
+        OCP_data & d = data[i];
+        d.cosa = cos(a);
+        d.sina = sin(a);
+        d.arr[0] = Vector4d ( 1, 1, 1, 1 );
+        d.arr[1] = Vector4d (-1, 0, 0, 0 );
+        d.arr[2] = Vector4d ( 0,-1, 0, 0 );
+        d.arr[3] = Vector4d ( 0, 0,-1, 0 );
+        d.arr[4] = Vector4d ( 0, 0, 0,-1 );
+        heap << SortItem<double,nat> ( 1, i );
+    }
+    res = overlayConvexPolygon ( heap, data, poly1, line );
+    if ( res.isDef ) res = ~conf2 * res * conf1;
+    return res;
+}
+
+void overlayConvexPolygons_test()
+{
+    Suite<Vector2d> poly1;
+    poly1.resize ( 9 );
+    randConvexPolygon ( poly1 );
+    Suite<Vector2d> poly2;
+    poly2.resize ( 9 );
+    randConvexPolygon ( poly2 );
+drawPolygon ( poly2, 0, 1, 1 );
+    DynArray<Line2d> line ( poly2.size() );
+    if ( ! points2lines ( poly2, line ) ) return;
+double t0 = timeInSec ();
+    Def<Conform2d> conf = overlayConvexPolygons ( poly1, poly2 );
+double t1 = timeInSec ();
+    Def<Affin2d> aff = overlayPointsOnConvexPolygon ( poly1, line );
+double t2 = timeInSec ();
+display << t1-t0 << t2-t1 << NL;
+    Suite<Vector2d> tmp;
+    if ( conf.isDef )
+    {
+        tmp = poly1;
+        tmp *= conf;
+display << area ( tmp ) << NL;
+drawPolygon ( tmp, 1, 1, 0 );
+    }
+    if ( aff.isDef )
+    {
+        tmp = poly1;
+        tmp *= aff;
+display << area ( tmp ) << NL;
+drawPolygon ( tmp, 1, 0, 0 );
+    }
+}
+
 } // end of namespace
 
-void approx2d_test ()
+void approx2d_test()
 {
     drawNewList2d();
 //    getCirclePnt_test2();
@@ -1233,12 +1431,13 @@ void approx2d_test ()
 //    getLine2sgm3_test();
 //    getPlane2_test();
 //    getLineSegment_test();
-    getLinePoint_test();
+//    getLinePoint_test();
 //    getLine1a_test();
 //    center_test ();
 //    calcLine7_test();
 //    getCircle1_test1();
 //    getNearPoint2_test1();
-//    spline_test();
+//    spline_test3();
+    overlayConvexPolygons_test();
     endNewList();
 }

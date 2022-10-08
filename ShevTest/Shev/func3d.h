@@ -1,11 +1,7 @@
 
 #pragma once
 
-#include "typedef.h"
-#include "template.h"
-
-template <class T> class CArrRef;
-template <class T> class DynArrRef;
+#include "ShevArray.h"
 
 class Cone3d;
 class Spin3d;
@@ -158,7 +154,7 @@ Def<Sphere3d> spherePPPP ( const Plane3d & a, const Plane3d & b, const Plane3d &
 //
 //****************** 23.01.2010 *******************************//
 
-Polyhedron & convexHull ( CArrRef<Vector3d> vert, Polyhedron & poly );
+Polyhedron & convexHull ( CCArrRef<Vector3d> & vert, Polyhedron & poly );
 
 
 //****************** 20.11.2003 *******************************//
@@ -167,7 +163,16 @@ Polyhedron & convexHull ( CArrRef<Vector3d> vert, Polyhedron & poly );
 //
 //****************** 03.01.2011 *******************************//
 
-DynArrRef<Plane3d> & convexHull ( CArrRef<Vector3d> point, DynArrRef<Plane3d> & plane );
+DynArrRef<Plane3d> & convexHull ( CCArrRef<Vector3d> & point, DynArrRef<Plane3d> & plane );
+
+
+//****************** 07.09.2021 *******************************//
+//
+//      Получение вершин выпуклой оболочки
+//
+//****************** 07.09.2021 *******************************//
+
+DynArrRef<Vector3d> & convexHull ( CCArrRef<Vector3d> & point, DynArrRef<Vector3d> & vert );
 
 
 //****************** 04.11.2014 *******************************//

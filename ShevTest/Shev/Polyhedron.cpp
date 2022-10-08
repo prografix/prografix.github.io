@@ -447,11 +447,13 @@ Polyhedron & Polyhedron::makeCuboid ( double sx, double sy, double sz )
 //
 //                          Создание призмы
 //
-//**************************** 11.02.2014 ****************************
+//**************************** 03.12.2020 ****************************
 
-Polyhedron & Polyhedron::makePrism ( CArrRef<Vector2d> vert, double z )
+Polyhedron & Polyhedron::makePrism ( CCArrRef<Vector2d> & vert, double z )
 {
     const nat n = vert.size();
+    if ( n < 3 ) return makeVoid();
+
     vertex.resize ( n + n );
     facet .resize ( n + 2 );
     nat * s;

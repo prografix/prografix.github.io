@@ -6,6 +6,7 @@
 #include "../Shev/PseudoFile.h"
 #include "../Shev/ShevArray.h"
 #include "../Shev/Complex.h"
+#include "../Shev/LinAlg.h"
 
 #include "display.h"
 
@@ -303,12 +304,37 @@ double B6 ( double x ) { return x*x*x*x*x*x - 3*x*x*x*x*x + 5*x*x*x*x/2 - x*x/2 
 */
 double zeta ( int k )
 {
+    switch ( k )
+    {
+    case 2:
+        return 1.64493406684822643647;
+    case 3:
+        return 1.20205690315959428540;
+    case 4:
+        return 1.08232323371113819152;
+    case 5:
+        return 1.03692775514336992631;
+    case 6:
+        return 1.01734306198444913971;
+    case 7:
+        return 1.00834927738192282683;
+    case 8:
+        return 1.00407735619794433937;
+    case 9:
+        return 1.00200839282608221441;
+    case 10:
+        return 1.00099457512781808533;
+    case 11:
+        return 1.00049418860411946455;
+    case 12:
+        return 1.00024608655330804829;
+    }
     double s = 1;
-    for ( nat i = 2; i <= 32000; i+=1 )
+    for ( nat i = 2; i < 20; i+=1 )
     {
         double t = pow ( 1./i, k );
         s += t;
-        if ( t < 1e-9 ) break;
+        if ( t < 1e-16 ) break;
     }
     return s;
 }
@@ -320,77 +346,88 @@ double zeta2 ( int k )
     return s / 2;
 }
 
-double func0 ( double x )
+double func0 ( MuFunc & mu, double x )
 {
     double s = 0;
-    for ( nat j = 0; j <= 1000; j+=1 )
+    for ( nat n = 1; n < 30000; n+=1 )
     {
-        nat j2 = j + j + 1;
-        double zj = j & 1 ? -1 : 1;
-        s += zj / sinh ( M_PI * j2 * x );
+        double t = pow ( 1./n, x );
+        if ( n % 2 )
+        s += mu(n) * t;
+        else
+        s -= mu(n) * t;
+        if ( t < 1e-16 ) break;
     }
     return s;
 }
 
-double func1 ( double x )
+double factor ( nat n )
 {
-    double s = 0;
-    for ( nat j = 0; j <= 1000; j+=1 )
+    double s = 1;
+    for ( nat i = 2; i <= n; i+=1 )
     {
-        nat j2 = j + j + 1;
-        double zj = j & 1 ? -1 : 1;
-        s += zj * ( cosh ( M_PI * j2 * x / 2 ) - 1 ) / sinh ( M_PI * j2 * x );
-        if ( sinh ( M_PI * j2 * x ) > 1e16 ) break;
+        s *= i;
     }
     return s;
 }
 
-double func2 ( double x )
+double func1 ( LaFunc & mu, nat k )
 {
-    return func0 (1/x);
+    double s = 0;
+    for ( nat n = 1; n <= 40; ++n )
+    {
+        double t = pow ( n, double(k) ) / exp ( n );
+        s += mu(n) * t;
+    }
+ //   display << k << s / factor (k) << NL;
+    return s / factor (k);
 }
 
+template <class T>
+double func2 ( T & mu, double x )
+{
+    double s = 0, c = cos(M_PI*x);
+    nat n = 1;
+    for ( ; n <= 40000; ++n )
+    {
+        double t = pow ( c, n );
+        s += mu(n) * t;
+        if ( fabs(t) < 1e-5 ) break;
+    }
+display << x << s << n << NL;
+    return s;
+}
+
+double func3 ( nat n )
+{
+    double s = 0, c = M_PI;
+    for ( nat i = 0; i < n; i+=1 )
+    {
+        nat j = 2*(n-i);
+        double u = zeta(2*j)/zeta(j)*c;
+        if ( i % 2 == 1 )
+            s -= u;
+        else
+            s += u;
+        c *= M_PI * M_PI / ( ( i + i + 2 ) * ( i + i + 3 ) );
+    }
+    return s;
+}
 
 void func_test()
 {
-//    LaFunc mu;
-    for ( int i = 1; i <= 50; i+=1 )
+    MuFunc mu;
+    for ( int i = 1; i <= 99; i+=1 )
     {
-        double x = 0.1 * i;
-        display << x << x*(0.5*func0 ( 0.5 * x ) - func0 ( x )) << 0.5 * func0 ( 0.5 / x ) - func0 ( 1/x ) << NL;
-        display << x << x*func1 ( x ) << func1 ( 1/x ) << NL;
-//        printf ( display.file, "%d %.7f %.7f\n", i, T ( mu, i ), T ( i ) );
+        double x = 0.01*i;
+        double s = func2 ( mu, x );
+        //printf ( display.file, "%d %.4e\n", i, s );
     }
+    //display << pow (0.9,50)<<pow (0.9,30)<<NL;
 }
 
 } // namespace
 
-enum EmptyEnum {};
-
-template <typename CTag, typename VTag = EmptyEnum> class ParList
-{
-public:
-    virtual const void * operator () ( CTag ) { return 0; }
-    virtual       void * operator () ( VTag ) { return 0; }
-    template <typename T> void operator () ( CTag tag, const T * & ptr )
-    {
-        (*this) ( tag, (const T *) ptr );
-    }
-    template <typename T> void operator () ( VTag tag, T * & ptr )
-    {
-        (*this) ( tag, (T *) ptr );
-    }
-    typedef CTag _CTag;
-    typedef VTag _VTag;
-};
-
-template <typename CTag, typename VTag = EmptyEnum> class BackParList
-{
-public:
-    virtual void operator () ( ParList<CTag, VTag> * ptr ) = 0;
-    typedef CTag _CTag;
-    typedef VTag _VTag;
-};
 
 void calc_test ()
 {
