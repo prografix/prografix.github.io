@@ -2,13 +2,13 @@
 <head><title>Преобразования на плоскости</title>
 <link rel="stylesheet" type="text/css" href="stylle.css"></head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
-<div align="center"><center>
-<table width="680" cellspacing="0" cellpadding="0">
+<div align="center">
 <br>
 <div align=center>
 <font color="" style="font-size: 20pt">Преобразования на плоскости</font>
 </div>
 <br>
+<table width="680" cellspacing="0" cellpadding="0">
 <div align=left><td>
 <p>
 Класс Spin2d предназначен для задания вращений.
@@ -141,7 +141,7 @@ inline Conform2d operator * ( const Conform2d & l, const Conform2d & r )
 public:
     Vector2d x, y;
 
-    LinTran2d () {}
+    LinTran2d () : x(1,0), y(0,1) {}
 
     LinTran2d ( const Vector2d & a, const Vector2d & b ) : x ( a ), y ( b ) {}
     
@@ -202,13 +202,17 @@ public:
     LinTran2d t;
     Vector2d s;
 
-    Affin2d () {}
+    Affin2d () : s ( 0., 0. ) {}
 
     Affin2d ( const Vector2d & a, const Vector2d & b, const Vector2d & c ) : t ( a, b ), s ( c ) {}
 
     Affin2d ( const LinTran2d & a, const Vector2d & b ) : t ( a ), s ( b ) {}
 
+    explicit Affin2d ( const Vector2d & v ) : s ( v ) {}
+
     explicit Affin2d ( const Spin2d & spin ) : t ( spin ), s ( 0., 0. ) {}
+
+    explicit Affin2d ( const LinTran2d & tran ) : t ( tran ), s ( 0., 0. ) {}
 
     explicit Affin2d ( const Conform2d & conf ) : t ( conf.spin ), s ( conf.trans )
     {
@@ -237,6 +241,16 @@ public:
     {
         return Affin2d ( l.t * r.t, l ( r.s ) );
     }
+
+    friend inline Affin2d operator * ( const Affin2d & l, const LinTran2d & r )
+    {
+        return Affin2d ( l.t * r, l.s );
+    }
+
+    friend inline Affin2d operator * ( const LinTran2d & l, const Affin2d & r )
+    {
+        return Affin2d ( l * r.t, l ( r.s ) );
+    }
 };
 </pre>
 Описание шаблона классов Def находится <a href="def.html">здесь</a>.
@@ -251,7 +265,7 @@ public:
 <p>
 <br>
 </p>
-</td></div>
-</table>
+</td>
+</table></div>
 </body>
 </html>

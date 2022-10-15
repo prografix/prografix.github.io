@@ -10,13 +10,13 @@ const double M_PI = 3.14159265358979323846;
 //
 //**************************** 25.09.2010 *********************************//
 
-Def<Vector2d> centerPnt ( CArrRef<Vector2d> point )
+Def<Vector2d> centerPnt ( CCArrRef<Vector2d> & point )
 {
     Vector2d o ( 0, 0 );
     return point.size() == 0 ? Def<Vector2d>() : Def<Vector2d> ( ( o += point ) / point.size() );
 }
 
-Def<Vector2d> centerPnt ( CArrRef<Vector2d> point, CArrRef<double> mass )
+Def<Vector2d> centerPnt ( CCArrRef<Vector2d> & point, CCArrRef<double> & mass )
 {
     double m = 0.;
     Vector2d o ( 0, 0 );
@@ -28,7 +28,7 @@ Def<Vector2d> centerPnt ( CArrRef<Vector2d> point, CArrRef<double> mass )
     return m == 0 ? Def<Vector2d>() : Def<Vector2d> ( o / m );
 }
 
-Def<Vector2d> centerSgm ( CArrRef<Segment2d> segm )
+Def<Vector2d> centerSgm ( CCArrRef<Segment2d> & segm )
 {
     double m = 0.;
     Vector2d o ( 0., 0. );
@@ -42,7 +42,7 @@ Def<Vector2d> centerSgm ( CArrRef<Segment2d> segm )
     return m == 0 ? Def<Vector2d>() : Def<Vector2d> ( o / ( m + m ) );
 }
 
-Def<Vector2d> centerPlg ( CArrRef<Vector2d> vert )
+Def<Vector2d> centerPlg ( CCArrRef<Vector2d> & vert )
 {
     if ( vert.size() < 3 ) return Def<Vector2d>();
     Vector2d o ( 0., 0. );
@@ -94,7 +94,7 @@ Def<Vector2d> center4pnt ( CCArrRef<Vector2d> & point )
 //
 //**************************** 25.09.2010 *********************************//
 
-double momentum1Apnt ( CArrRef<Vector2d> point, const Line2d & line )
+double momentum1pnt ( CCArrRef<Vector2d> & point, const Line2d & line )
 {
     double sum = 0.;
     for ( nat i = 0; i < point.size(); ++i )
@@ -104,7 +104,7 @@ double momentum1Apnt ( CArrRef<Vector2d> point, const Line2d & line )
     return sum;
 }
 
-double momentum1Apnt ( CArrRef<Vector2d> point, CArrRef<double> mass, const Line2d & line )
+double momentum1pnt ( CCArrRef<Vector2d> & point, CCArrRef<double> & mass, const Line2d & line )
 {
     double sum = 0.;
     for ( nat i = 0; i < point.size(); ++i )
@@ -114,13 +114,34 @@ double momentum1Apnt ( CArrRef<Vector2d> point, CArrRef<double> mass, const Line
     return sum;
 }
 
+double momentum1sgm ( CCArrRef<Segment2d> & segm, const Line2d & line )
+{
+    double sum = 0.;
+    for ( nat i = 0; i < segm.size(); ++i )
+    {
+        const Segment2d & s = segm[i];
+        const double l = norm2 ( s );
+        const double a = line % s.a;
+        const double b = line % s.b;
+        if ( a * b < 0 )
+        {
+            sum += l * ( a * a + b * b ) / ( fabs ( a ) + fabs ( b ) );
+        }
+        else
+        {
+            sum += l * ( fabs ( a ) + fabs ( b ) );
+        }
+    }
+    return 0.5 * sum;
+}
+
 //**************************** 29.12.2007 *********************************//
 //
 //       ¬ычисление момента 2-го пор€дка относительно пр€мой
 //
 //**************************** 25.09.2010 *********************************//
 
-double momentum2pnt ( CArrRef<Vector2d> point, const Line2d & line )
+double momentum2pnt ( CCArrRef<Vector2d> & point, const Line2d & line )
 {
     double sum = 0.;
     for ( nat i = 0; i < point.size(); ++i )
@@ -131,7 +152,7 @@ double momentum2pnt ( CArrRef<Vector2d> point, const Line2d & line )
     return sum;
 }
 
-double momentum2pnt ( CArrRef<Vector2d> point, CArrRef<double> mass, const Line2d & line )
+double momentum2pnt ( CCArrRef<Vector2d> & point, CCArrRef<double> & mass, const Line2d & line )
 {
     double sum = 0.;
     for ( nat i = 0; i < point.size(); ++i )
@@ -142,7 +163,7 @@ double momentum2pnt ( CArrRef<Vector2d> point, CArrRef<double> mass, const Line2
     return sum;
 }
 
-double momentum2sgm ( CArrRef<Segment2d> segm, const Line2d & line )
+double momentum2sgm (  CCArrRef<Segment2d> & segm, const Line2d & line )
 {
     double sum = 0.;
     for ( nat i = 0; i < segm.size(); ++i )
@@ -156,7 +177,7 @@ double momentum2sgm ( CArrRef<Segment2d> segm, const Line2d & line )
     return sum / 3.;
 }
 
-double momentum2plg ( CArrRef<Vector2d> vert, const Line2d & line )
+double momentum2plg ( CCArrRef<Vector2d> & vert, const Line2d & line )
 {
     if ( vert.size() < 3 ) return 0.;
     const Vector2d & va = vert[0];

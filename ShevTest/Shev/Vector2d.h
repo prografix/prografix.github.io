@@ -353,7 +353,7 @@ class LinTran2d
 public:
     Vector2d x, y;
 
-    LinTran2d () {}
+    LinTran2d () : x(1,0), y(0,1) {}
 
     LinTran2d ( const Vector2d & a, const Vector2d & b ) : x ( a ), y ( b ) {}
     
@@ -409,13 +409,17 @@ public:
     LinTran2d t;
     Vector2d s;
 
-    Affin2d () {}
+    Affin2d () : s ( 0., 0. ) {}
 
     Affin2d ( const Vector2d & a, const Vector2d & b, const Vector2d & c ) : t ( a, b ), s ( c ) {}
 
     Affin2d ( const LinTran2d & a, const Vector2d & b ) : t ( a ), s ( b ) {}
 
+    explicit Affin2d ( const Vector2d & v ) : s ( v ) {}
+
     explicit Affin2d ( const Spin2d & spin ) : t ( spin ), s ( 0., 0. ) {}
+
+    explicit Affin2d ( const LinTran2d & tran ) : t ( tran ), s ( 0., 0. ) {}
 
     explicit Affin2d ( const Conform2d & conf ) : t ( conf.spin ), s ( conf.trans )
     {
@@ -443,6 +447,16 @@ public:
     friend inline Affin2d operator * ( const Affin2d & l, const Affin2d & r )
     {
         return Affin2d ( l.t * r.t, l ( r.s ) );
+    }
+
+    friend inline Affin2d operator * ( const Affin2d & l, const LinTran2d & r )
+    {
+        return Affin2d ( l.t * r, l.s );
+    }
+
+    friend inline Affin2d operator * ( const LinTran2d & l, const Affin2d & r )
+    {
+        return Affin2d ( l * r.t, l ( r.s ) );
     }
 };
 

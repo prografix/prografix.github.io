@@ -46,7 +46,7 @@ void file_test1 ()
             {
                 b = atof ( file() );
                 char buf[310];
-                sprintf ( buf, "%.19f", a );
+                sprintf_s ( buf, "%.19f", a );
                 double c = atof ( buf );
                 if ( b != c )
                 {
@@ -163,12 +163,12 @@ void printf_test()
     file.clear();*/
     printf ( file, "ha-ha % s ha-ha ", "hi-hi" );
     display << file() << NL;
-    sprintf ( buf, "ha-ha % s ha-ha ", "hi-hi" );
+    sprintf_s ( buf, "ha-ha % s ha-ha ", "hi-hi" );
     display << buf << NL;
     file.clear();
     printf ( file, "% 1d", 123 );
     display << file() << NL;
-    sprintf ( buf, "% 1d", 123 );
+    sprintf_s ( buf, "% 1d", 123 );
     display << buf << NL;
     file.clear();
 }

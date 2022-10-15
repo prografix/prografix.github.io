@@ -96,8 +96,8 @@ void getLine1a_test ()
             d = timeInSec ();
             Def<Line2d> line = getLine1 ( vert, mass );
             t2 += timeInSec () - d;
-            const double mom1 = momentum1Apnt ( vert, mass, Line2d ( dir1.rightPerpendicular(), dir1 % point1 ) );
-            const double mom2 = momentum1Apnt ( vert, mass, line );
+            const double mom1 = momentum1pnt ( vert, mass, Line2d ( dir1.rightPerpendicular(), dir1 % point1 ) );
+            const double mom2 = momentum1pnt ( vert, mass, line );
             if ( fabs ( mom1 - mom2 ) > 2e-16 )
                  display << fabs ( mom1 - mom2 ) << NL;
         }

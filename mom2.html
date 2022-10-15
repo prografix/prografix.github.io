@@ -5,7 +5,7 @@
 <div align=center>
 <br>
 <font color="" style="font-size: 20pt">Вычисление моментов на плоскости</font>
-<table width="680" cellspacing="0" cellpadding="0">
+<table width="800" cellspacing="0" cellpadding="0">
 <td>
 <br>
 <p>
@@ -13,35 +13,37 @@
 Моментом n-ного порядка множества точек называется сумма произведений расстояний до точек в n-й степени на массу точки.
 Если множество точек непрерывно, то сумма заменяется на интегрирование.
 <br><br>&bull; Моменты первого порядка относительно прямой:
-<pre>
-double momentum1Apnt ( CArrRef&lt;Vector2d> point, const Line2d & line );
+    <pre>
+double momentum1pnt ( CCArrRef&lt;Vector2d> & point, const Line2d & line );
 
-double momentum1Apnt ( CArrRef&lt;Vector2d> point, CArrRef&lt;double> mass, const Line2d & line );
+double momentum1pnt ( CCArrRef&lt;Vector2d> & point, CCArrRef&lt;double> & mass, const Line2d & line );
+
+double momentum1sgm ( CCArrRef&lt;Segment2d> & segm, const Line2d & line );
 </pre>
 </p>
 <p>
 &bull; Моменты второго порядка относительно прямой:
 <pre>
-double momentum2pnt ( CArrRef&lt;Vector2d> point, const Line2d & line );
+double momentum2pnt ( CCArrRef&lt;Vector2d> & point, const Line2d & line );
 
-double momentum2pnt ( CArrRef&lt;Vector2d> point, CArrRef&lt;double> mass, const Line2d & line );
+double momentum2pnt ( CCArrRef&lt;Vector2d> & point, CCArrRef&lt;double> & mass, const Line2d & line );
 
-double momentum2sgm ( CArrRef&lt;Segment2d> segm, const Line2d & line );
+double momentum2sgm ( CCArrRef&lt;Segment2d> & segm, const Line2d & line );
 
-double momentum2plg ( CArrRef&lt;Vector2d > vert, const Line2d & line );
+double momentum2plg ( CCArrRef&lt;Vector2d>  & vert, const Line2d & line );
 </pre>
 </p>
 Назовём центром масс n-ного порядка точку, относительно которой момент n-ного порядка будет минимальным.
 Результат не вычисляется в том случае, когда сумма масс равна нулю.
 <br><br>&bull; Центры масс второго порядка:
 <pre>
-Def&lt;Vector2d> centerPnt ( CArrRef&lt;Vector2d> point );
+Def&lt;Vector2d> centerPnt ( CCArrRef&lt;Vector2d> & point );
 
-Def&lt;Vector2d> centerPnt ( CArrRef&lt;Vector2d> point, CArrRef&lt;double> mass );
+Def&lt;Vector2d> centerPnt ( CCArrRef&lt;Vector2d> & point, CCArrRef&lt;double> & mass );
 
-Def&lt;Vector2d> centerSgm ( CArrRef&lt;Segment2d> segm );
+Def&lt;Vector2d> centerSgm ( CCArrRef&lt;Segment2d> & segm );
 
-Def&lt;Vector2d> centerPlg ( CArrRef&lt;Vector2d> vert );
+Def&lt;Vector2d> centerPlg ( CCArrRef&lt;Vector2d>  & vert );
 </pre>
 &bull; Центры масс четвёртого порядка:
 <pre>
@@ -79,18 +81,18 @@ Def&lt;Ellipse2d> getEllipse ( const Mom2d & mom );
 <pre>
 Def&lt;Rectangle2d> getRectangle ( const Mom2d & mom );
 </pre>
-        <p>
-            Описание шаблона классов CArrRef находится <a href=array.html>здесь</a>.
-            <br>Описание шаблона классов Def находится <a href="def.html">здесь</a>.
-            <br>Описание класса Vector2d находится <a href="rus_vector2d.html">здесь</a>.
-            <br>Описание классов Segment2d, Line2d, Ellipse2d и Rectangle2d находится <a href="figure2d.html">здесь</a>.
-            <br>Исходники алгоритмов находятся в файле <a href="source/source.zip">moment2d.cpp</a>.
-        </p>
-        <a href="rus_geom.html">Наверх</a>
+<p>
+Описание шаблона классов CArrRef находится <a href=array.html>здесь</a>.
+<br>Описание шаблона классов Def находится <a href="def.html">здесь</a>.
+<br>Описание класса Vector2d находится <a href="rus_vector2d.html">здесь</a>.
+<br>Описание классов Segment2d, Line2d, Ellipse2d и Rectangle2d находится <a href="figure2d.html">здесь</a>.
+<br>Исходники алгоритмов находятся в файле <a href="source/source.zip">moment2d.cpp</a>.
+</p>
+<a href="rus_geom.html">Наверх</a>
 <pre>
 
 </pre>
-    </td>
+</td>
 </table>
 </div></body>
 </html>
