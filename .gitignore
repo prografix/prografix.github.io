@@ -31,3 +31,4 @@ ShevTest/TextFile2.txt
 ShevTest/TextFile1.txt
 *.vsidx
 *.vsidx
+*.bin
