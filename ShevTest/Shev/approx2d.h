@@ -11,9 +11,9 @@
 //
 //************************* 01.02.2011 ******************************//
 
-Def<Line2d> getLine1 ( CArrRef<Vector2d> point );
+Def<Line2d> getLine1 ( CCArrRef<Vector2d> & point );
 
-Def<Line2d> getLine1 ( CArrRef<Vector2d> point, CArrRef<double> mass );
+Def<Line2d> getLine1 ( CCArrRef<Vector2d> & point, CCArrRef<double> & mass );
 
 
 //*******************************************************************//
@@ -23,9 +23,9 @@ Def<Line2d> getLine1 ( CArrRef<Vector2d> point, CArrRef<double> mass );
 //
 //************************* 01.02.2011 ******************************//
 
-Def<Line2d> getLine2 ( CArrRef<Vector2d> point );
+Def<Line2d> getLine2 ( CCArrRef<Vector2d> & point );
 
-Def<Line2d> getLine2 ( CArrRef<Vector2d> point, CArrRef<double> mass );
+Def<Line2d> getLine2 ( CCArrRef<Vector2d> & point, CCArrRef<double> & mass );
 
 
 //************************* 30.12.2009 ******************************//
@@ -61,7 +61,7 @@ Def<Line2d> getLineR ( CCArrRef<Vector2d> & point, ArrRef<double> & mass );
 //
 //************************* 10.01.2011 ******************************//
 
-Def<Line2d> getLine2 ( CArrRef<Segment2d> segm );
+Def<Line2d> getLine2 ( CCArrRef<Segment2d> & segm );
 
 
 //*******************************************************************//

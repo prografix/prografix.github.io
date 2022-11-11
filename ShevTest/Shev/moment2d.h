@@ -30,7 +30,7 @@ Def<Vector2d> center4pnt ( CCArrRef<Vector2d> & point );
 //
 //     Вычисление абсолютного момента 1-го порядка относительно прямой
 //
-//**************************** 25.09.2010 *********************************//
+//**************************** 15.10.2022 *********************************//
 
 double momentum1pnt ( CCArrRef<Vector2d> & point, const Line2d & line );
 double momentum1pnt ( CCArrRef<Vector2d> & point, CCArrRef<double> & mass, const Line2d & line );

@@ -25,7 +25,7 @@
 //
 //************************* 01.02.2011 ******************************//
 
-Def<Line2d> getLine1 ( CArrRef<Vector2d> point )
+Def<Line2d> getLine1 ( CCArrRef<Vector2d> & point )
 {
     Def<Line2d> res;
     const nat n = point.size();
@@ -120,7 +120,7 @@ Def<Line2d> getLine1 ( CArrRef<Vector2d> point )
     return res;
 }
 
-Def<Line2d> getLine1 ( CArrRef<Vector2d> point, CArrRef<double> mass )
+Def<Line2d> getLine1 ( CCArrRef<Vector2d> & point, CCArrRef<double> & mass )
 {
     Def<Line2d> res;
     const nat n = point.size();
@@ -222,7 +222,7 @@ Def<Line2d> getLine1 ( CArrRef<Vector2d> point, CArrRef<double> mass )
 //
 //************************* 01.02.2011 ******************************//
 
-Def<Line2d> getLine2 ( CArrRef<Vector2d> point )
+Def<Line2d> getLine2 ( CCArrRef<Vector2d> & point )
 {
     Def<Line2d> res;
     const Def<Mom2d> mom = momentum2pnt ( point );
@@ -233,7 +233,7 @@ Def<Line2d> getLine2 ( CArrRef<Vector2d> point )
     return res;
 }
 
-Def<Line2d> getLine2 ( CArrRef<Vector2d> point, CArrRef<double> mass )
+Def<Line2d> getLine2 ( CCArrRef<Vector2d> & point, CCArrRef<double> & mass )
 {
     Def<Line2d> res;
     const Def<Mom2d> mom = momentum2pnt ( point, mass );
@@ -370,11 +370,65 @@ Def<Line2d> getLineR ( CCArrRef<Vector2d> & arr, ArrRef<double> & mass )
 //************************* 06.12.2006 ******************************//
 //
 //           Аппроксимация прямой набора из n отрезков
+//      Минимизируется момент 1-го порядка относительно прямой
+//
+//************************* 10.01.2011 ******************************//
+
+Def<Line2d> getLine1 ( CCArrRef<Segment2d> & segm )
+{
+    Def<Line2d> res = getLine2 ( segm );
+    if ( ! res.isDef ) return res;
+    const Segment2d & s = segm[0];
+    double ax = res.norm % s.a;
+    double ay = res.norm * s.a;
+    double bx = res.norm % s.b;
+    double by = res.norm * s.b;
+    double maxX, minX, maxY, minY;
+    if ( ax < bx ) minX = ax, maxX = bx; else minX = bx, maxX = ax;
+    if ( ay < by ) minY = ay, maxY = by; else minY = by, maxY = ay;
+    nat i;
+    for ( i = 1; i < segm.size(); ++i )
+    {
+        const Segment2d & s = segm[i];
+        double ax = res.norm % s.a;
+        double ay = res.norm * s.a;
+        double bx = res.norm % s.b;
+        double by = res.norm * s.b;
+        _mina ( minX, _min ( ax, bx ) );
+        _maxa ( maxX, _max ( ax, bx ) );
+        _mina ( minY, _min ( ay, by ) );
+        _maxa ( minY, _max ( ay, by ) );
+
+    }
+    const double eps = 1e-9 * ( maxX - minX );
+    double stepD = ( maxY - minY ) / 8;
+    if ( stepD < eps ) return res;
+    double stepA = atan2 ( maxY - minY, maxX - minX ) / 8;
+    for (;;)
+    {
+        double sum2 = 0.;
+        Vector2d gra1 (0,0);
+        for ( i = 0; i < segm.size(); ++i )
+        {
+            const Segment2d & s = segm[i];
+        }
+        if ( stepD < eps )
+        {
+            break;
+        }
+        stepD *= 0.5;
+    }
+    return res;
+}
+
+//************************* 06.12.2006 ******************************//
+//
+//           Аппроксимация прямой набора из n отрезков
 //      Минимизируется момент 2-го порядка относительно прямой
 //
 //************************* 10.01.2011 ******************************//
 
-Def<Line2d> getLine2 ( CArrRef<Segment2d> segm )
+Def<Line2d> getLine2 ( CCArrRef<Segment2d> & segm )
 {
     Def<Line2d> res;
     const Def<Mom2d> mom = momentum2sgm ( segm );
