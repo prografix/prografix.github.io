@@ -4,26 +4,15 @@
 #include "Vector2d.h"
 #include "ShevArray.h"
 
-
-//**************************** 29.12.2007 *********************************//
+//**************************** 18.12.2022 *********************************//
 //
-//         Центры масс 2 порядка ( точек, отрезков, многоугольника )
+//         Вычисление момента 4-го порядка относительно точки
 //
-//**************************** 25.09.2010 *********************************//
+//**************************** 18.12.2022 *********************************//
 
-Def<Vector2d> centerPnt ( CCArrRef<Vector2d> & point );
-Def<Vector2d> centerPnt ( CCArrRef<Vector2d> & point, CCArrRef<double> & mass );
-Def<Vector2d> centerSgm ( CCArrRef<Segment2d> & segm );
-Def<Vector2d> centerPlg ( CCArrRef<Vector2d>  & vert );
+double momentum4sgm ( const Segment2d & s, const Vector2d & o );
 
-
-//**************************** 01.10.2022 *********************************//
-//
-//         Центры масс 4 порядка ( точек, отрезков, многоугольника )
-//
-//**************************** 01.10.2022 *********************************//
-
-Def<Vector2d> center4pnt ( CCArrRef<Vector2d> & point );
+double momentum4sgm ( CCArrRef<Segment2d> & segm, const Vector2d & o );
 
 
 //**************************** 02.01.2008 *********************************//
@@ -47,6 +36,28 @@ double momentum2pnt ( CCArrRef<Vector2d> & point, const Line2d & line );
 double momentum2pnt ( CCArrRef<Vector2d> & point, CCArrRef<double> & mass, const Line2d & line );
 double momentum2sgm ( CCArrRef<Segment2d> & segm, const Line2d & line );
 double momentum2plg ( CCArrRef<Vector2d>  & vert, const Line2d & line );
+
+
+//**************************** 29.12.2007 *********************************//
+//
+//         Центры масс 2 порядка ( точек, отрезков, многоугольника )
+//
+//**************************** 25.09.2010 *********************************//
+
+Def<Vector2d> centerPnt ( CCArrRef<Vector2d> & point );
+Def<Vector2d> centerPnt ( CCArrRef<Vector2d> & point, CCArrRef<double> & mass );
+Def<Vector2d> centerSgm ( CCArrRef<Segment2d> & segm );
+Def<Vector2d> centerPlg ( CCArrRef<Vector2d>  & vert );
+
+
+//**************************** 01.10.2022 *********************************//
+//
+//         Центры масс 4 порядка ( точек, отрезков, многоугольника )
+//
+//**************************** 18.12.2022 *********************************//
+
+Def<Vector2d> center4pnt ( CCArrRef<Vector2d> & point );
+Def<Vector2d> center4sgm ( CCArrRef<Segment2d> & segm );
 
 
 //**************************** 29.12.2007 *********************************//

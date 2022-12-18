@@ -12,8 +12,14 @@
 Моменты на плоскости можно вычислять относительно точек или прямых.
 Моментом n-ного порядка множества точек называется сумма произведений расстояний до точек в n-й степени на массу точки.
 Если множество точек непрерывно, то сумма заменяется на интегрирование.
-<br><br>&bull; Моменты первого порядка относительно прямой:
-    <pre>
+<br><br>&bull; Моменты четвёртого порядка относительно точки:
+<pre>
+double momentum4sgm ( const Segment2d & s, const Vector2d & o );
+
+double momentum4sgm ( CCArrRef&lt;Segment2d> & segm, const Vector2d & o );
+</pre>
+&bull; Моменты первого порядка относительно прямой:
+<pre>
 double momentum1pnt ( CCArrRef&lt;Vector2d> & point, const Line2d & line );
 
 double momentum1pnt ( CCArrRef&lt;Vector2d> & point, CCArrRef&lt;double> & mass, const Line2d & line );

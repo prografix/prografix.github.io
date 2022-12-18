@@ -241,10 +241,43 @@ Def<Vector2d> center4pnt ( CCArrRef<Vector2d> & point, double a )
     return o;
 }
 
+double mom4sgm ( const Segment2d & s )
+{
+    const double aa = s.a * s.a;
+    const double ab = s.a * s.b;
+    const double bb = s.b * s.b;
+    return norm2 ( s ) * ( aa*aa + aa*ab + 2*ab*ab/3 + aa*bb/3 + ab*bb + bb*bb ) / 5;
+}
+
+double mom4sgm ( CCArrRef<Segment2d> & segm )
+{
+    double r = 0;
+    for ( nat i = 0; i < segm.size(); ++i )  r += mom4sgm ( segm[i] );
+    return r;
+}
+
+double mom4sgm2 ( const Segment2d & s )
+{
+    double sum = 0;
+    nat n = 1188;
+    for ( nat i = 0; i <= n; ++i )
+    {
+        Vector2d v = ( s.a * i + s.b * ( n-i) ) / n;
+        sum += _pow2(v*v); 
+    }
+    return sum/(n+1);
+}
+
 void testmom ()
 {
     nat i;
     static PRand rand;
+    Segment2d s;
+    s.a.x = rand();
+    s.a.y = rand();
+    s.b.x = rand();
+    s.b.y = rand();
+    display << mom4sgm ( s ) / mom4sgm2 ( s ) << NL; return;
     const nat n = 9;
     FixArray<Vector2d, n> p;
     /*p[0] = Vector2d ( 0, 0 );
@@ -283,12 +316,36 @@ void testmom ()
     display << NL;
 }
 
+void testmomsegm ()
+{
+    nat i, n = 9;
+    static PRand rand;
+    DynArray<Segment2d> segm ( n );
+    for ( i = 0; i < n; ++i )
+    {
+        Segment2d & s = segm[i];
+        s.a.x = rand();
+        s.a.y = rand();
+        s.b.x = rand();
+        s.b.y = rand();
+    }
+    Vector2d o = center4sgm ( segm );
+    double m = momentum4sgm ( segm, o );
+    const double e = 1e-4;
+    Vector2d px ( o.x + e, o.y );
+    display << momentum4sgm ( segm, Vector2d ( o.x + e, o.y ) ) - m;
+    display << momentum4sgm ( segm, Vector2d ( o.x - e, o.y ) ) - m;
+    display << momentum4sgm ( segm, Vector2d ( o.x, o.y + e ) ) - m;
+    display << momentum4sgm ( segm, Vector2d ( o.x, o.y - e ) ) - m;
+    display << NL;
+}
+
 
 void momentum2d_test()
 {
     drawNewList2d ();
 //    momentum2pnt_test();
-    testmom ();
+    testmomsegm ();
 //    momentum4pnt_test();
     endNewList();
 }
