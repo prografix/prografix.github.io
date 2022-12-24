@@ -38,6 +38,12 @@ double momentum2sgm ( CCArrRef&lt;Segment2d> & segm, const Line2d & line );
 
 double momentum2plg ( CCArrRef&lt;Vector2d>  & vert, const Line2d & line );
 </pre>
+&bull; Моменты четвёртого порядка относительно прямой:
+<pre>
+double momentum4sgm ( const Segment2d & s, const Line2d & line );
+
+double momentum4sgm ( CCArrRef&lt;Segment2d> & segm, const Line2d & line );
+</pre>
 </p>
 Назовём центром масс n-ного порядка точку, относительно которой момент n-ного порядка будет минимальным.
 Результат не вычисляется в том случае, когда сумма масс равна нулю.

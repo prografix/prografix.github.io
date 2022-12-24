@@ -134,6 +134,28 @@ double momentum2plg ( CCArrRef<Vector2d> & vert, const Line2d & line )
     }
     return sum / 12.;
 }
+//**************************** 24.12.2022 *********************************//
+//
+//         ¬ычисление момента 4-го пор€дка относительно пр€мой
+//
+//**************************** 24.12.2022 *********************************//
+
+double momentum4sgm ( const Segment2d & s, const Line2d & line )
+{
+    const double a = line % s.a;
+    const double b = line % s.b;
+    const double aa = a * a;
+    const double ab = a * b;
+    const double bb = b * b;
+    return norm2 ( s ) * ( aa*aa + aa*ab + ab*ab + ab*bb + bb*bb ) / 5;
+}
+
+double momentum4sgm ( CCArrRef<Segment2d> & segm, const Line2d & line )
+{
+    double r = 0;
+    for ( nat i = 0; i < segm.size(); ++i )  r += momentum4sgm ( segm[i], line );
+    return r;
+}
 
 //**************************** 29.12.2007 *********************************//
 //

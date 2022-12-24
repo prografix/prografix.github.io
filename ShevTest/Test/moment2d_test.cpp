@@ -268,16 +268,40 @@ double mom4sgm2 ( const Segment2d & s )
     return sum/(n+1);
 }
 
+double mom4sgm ( const Segment2d & s, const Line2d & line )
+{
+    const double a = line % s.a;
+    const double b = line % s.b;
+    const double aa = a * a;
+    const double ab = a * b;
+    const double bb = b * b;
+    return norm2 ( s ) * ( aa*aa + aa*ab + ab*ab + ab*bb + bb*bb ) / 5;
+}
+
+double mom4sgm2 ( const Segment2d & s, const Line2d & line )
+{
+    double sum = 0;
+    nat n = 1188;
+    for ( nat i = 0; i <= n; ++i )
+    {
+        Vector2d v = ( s.a * i + s.b * ( n-i) ) / n;
+        sum += _pow4(line%v); 
+    }
+    return norm2 ( s ) * sum/(n+1);
+}
+
 void testmom ()
 {
     nat i;
     static PRand rand;
+    static PRandVector2d vrand;
     Segment2d s;
     s.a.x = rand();
     s.a.y = rand();
     s.b.x = rand();
     s.b.y = rand();
-    display << mom4sgm ( s ) / mom4sgm2 ( s ) << NL; return;
+    Line2d line ( vrand(), rand() );
+    display << mom4sgm ( s, line ) / mom4sgm2 ( s, line ) << NL; return;
     const nat n = 9;
     FixArray<Vector2d, n> p;
     /*p[0] = Vector2d ( 0, 0 );
@@ -345,7 +369,8 @@ void momentum2d_test()
 {
     drawNewList2d ();
 //    momentum2pnt_test();
-    testmomsegm ();
+    testmom ();
+//    testmomsegm ();
 //    momentum4pnt_test();
     endNewList();
 }

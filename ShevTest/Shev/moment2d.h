@@ -11,7 +11,6 @@
 //**************************** 18.12.2022 *********************************//
 
 double momentum4sgm ( const Segment2d & s, const Vector2d & o );
-
 double momentum4sgm ( CCArrRef<Segment2d> & segm, const Vector2d & o );
 
 
@@ -36,6 +35,16 @@ double momentum2pnt ( CCArrRef<Vector2d> & point, const Line2d & line );
 double momentum2pnt ( CCArrRef<Vector2d> & point, CCArrRef<double> & mass, const Line2d & line );
 double momentum2sgm ( CCArrRef<Segment2d> & segm, const Line2d & line );
 double momentum2plg ( CCArrRef<Vector2d>  & vert, const Line2d & line );
+
+
+//**************************** 24.12.2022 *********************************//
+//
+//         ¬ычисление момента 4-го пор€дка относительно пр€мой
+//
+//**************************** 24.12.2022 *********************************//
+
+double momentum4sgm ( const Segment2d & s, const Line2d & line );
+double momentum4sgm ( CCArrRef<Segment2d> & segm, const Line2d & line );
 
 
 //**************************** 29.12.2007 *********************************//

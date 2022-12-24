@@ -349,16 +349,16 @@ double zeta2 ( int k )
 double func0 ( MuFunc & mu, double x )
 {
     double s = 0;
-    for ( nat n = 1; n < 30000; n+=1 )
+    for ( nat n = 1; n < 30000; n+=2 )
     {
-        double t = pow ( 1./n, x );
-        if ( n % 2 )
-        s += mu(n) * t;
+        double t = cos ( x/(M_PI2*n) )/n;
+        if ( n % 4 == 1 )
+            s += t;
         else
-        s -= mu(n) * t;
-        if ( t < 1e-16 ) break;
+            s -= t;
+//        if ( t < 1e-16 ) break;
     }
-    return s;
+    return s/M_PI2;
 }
 
 double factor ( nat n )
@@ -371,56 +371,43 @@ double factor ( nat n )
     return s;
 }
 
-double func1 ( LaFunc & mu, nat k )
+double func1 ( MuFunc & mu, double x )
 {
     double s = 0;
-    for ( nat n = 1; n <= 40; ++n )
+    for ( nat n = 1; n <= 30000; n+=2 )
     {
-        double t = pow ( n, double(k) ) / exp ( n );
-        s += mu(n) * t;
+        double t = 1 + n * x;
+        t = 1 / t;
+        if ( n % 4 == 1 )
+            s += t;
+        else
+            s -= t;
     }
- //   display << k << s / factor (k) << NL;
-    return s / factor (k);
-}
-
-template <class T>
-double func2 ( T & mu, double x )
-{
-    double s = 0, c = cos(M_PI*x);
-    nat n = 1;
-    for ( ; n <= 40000; ++n )
-    {
-        double t = pow ( c, n );
-        s += mu(n) * t;
-        if ( fabs(t) < 1e-5 ) break;
-    }
-display << x << s << n << NL;
     return s;
 }
 
-double func3 ( nat n )
+double func2 ( MuFunc & mu )
 {
-    double s = 0, c = M_PI;
-    for ( nat i = 0; i < n; i+=1 )
+    double s = 0;
+    for ( nat n = 1; n <= 40000; n+=1 )
     {
-        nat j = 2*(n-i);
-        double u = zeta(2*j)/zeta(j)*c;
-        if ( i % 2 == 1 )
-            s -= u;
-        else
-            s += u;
-        c *= M_PI * M_PI / ( ( i + i + 2 ) * ( i + i + 3 ) );
+        double t = _pow2 ( 1./ n );
+        if(n%3==0 ) continue;
+        s += mu(n) * t;
     }
+display << 27/(4*M_PI*M_PI ) / s << NL;
+//display << -3/(4*M_PI*M_PI ) << s << NL;
     return s;
 }
 
 void func_test()
 {
     MuFunc mu;
-    for ( int i = 1; i <= 99; i+=1 )
+    func2 ( mu );
+    for ( int i = 1; i < 41; i+=1 )
     {
-        double x = 0.01*i;
-        double s = func2 ( mu, x );
+        double x = 0.1*i;
+       // display << func1 (mu, x) << func0 (mu, x) <<NL;
         //printf ( display.file, "%d %.4e\n", i, s );
     }
     //display << pow (0.9,50)<<pow (0.9,30)<<NL;
