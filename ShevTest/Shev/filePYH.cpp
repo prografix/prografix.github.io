@@ -70,3 +70,21 @@ bool loadPYH ( IReadFile & file, Polyhedron & poly, char * text )
     }
     return true;
 }
+
+#include "RealFile.h"
+
+bool savePYH ( const char * filename, const Shev::Polyhedron & poly, const char * text )
+{
+    RealFile file ( filename, "wb" );
+    if ( ! file.isValid() )
+        return false;
+    return savePYH ( file, poly, text );
+}
+
+bool loadPYH ( const char * filename, Shev::Polyhedron & poly, char * text )
+{
+    RealFile file ( filename, "rb" );
+    if ( ! file.isValid() )
+        return false;
+    return loadPYH ( file, poly, text );
+}

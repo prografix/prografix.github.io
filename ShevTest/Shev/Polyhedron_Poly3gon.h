@@ -5,6 +5,7 @@
 #include "Vector2d.h"
 #include "Poly3gon.h"
 #include "Polyhedron.h"
+#include "trans.h"
 
 //**************************** 25.01.2006 ****************************
 //
