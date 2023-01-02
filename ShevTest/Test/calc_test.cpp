@@ -400,10 +400,26 @@ display << 27/(4*M_PI*M_PI ) / s << NL;
     return s;
 }
 
+double func3 ()
+{
+    double s = 0;
+    for ( nat n = 1; n <= 40000; n+=1 )
+    {
+        if(n%3==0 ) continue;
+        double t = _pow2 ( 1./ n );
+        if(n%3==2 )
+            s += t;
+        else
+            s += t;
+    }
+display << s <<4*M_PI*M_PI/27 << NL;
+    return s;
+}
+
 void func_test()
 {
     MuFunc mu;
-    func2 ( mu );
+    func3 ();
     for ( int i = 1; i < 41; i+=1 )
     {
         double x = 0.1*i;

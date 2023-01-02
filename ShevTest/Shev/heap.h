@@ -270,3 +270,84 @@ public:
         return true;
     }
 };
+
+template <class T>
+class MinDynHeap // Очередь с минимальным приоритетом
+{
+    Suite<T> heap;
+// Запрет конструктора копии и оператора присваивания
+    MinDynHeap ( const MinDynHeap & );
+    void operator = ( const MinDynHeap & );
+public:
+    explicit MinDynHeap ( nat n = 7 ) : heap ( n + 1, 1 ) {}
+// Указатель на i-тый элемент ( 0, если i выходит за предел )
+    const T * operator[] ( nat i ) const { return heap ( i + 1 ); }
+          T * operator[] ( nat i )       { return heap ( i + 1 ); }
+// Количество элементов в очереди
+    nat size() const { return heap.size() - 1; }
+// Очистить очередь
+    void clear() { heap.resize(1); }
+// Поднять i-тый элемент
+    void raise ( nat i )
+    {
+        if ( ++i >= heap.size() ) return;
+        while ( i > 1 )
+        {
+            const nat j = i >> 1;
+            if ( heap[j] <= heap[i] ) break;
+            _swap ( heap[i], heap[j] );
+            i = j;
+        }
+    }
+// Опустить i-тый элемент
+    void down ( nat i )
+    {
+        for (++i;;)
+        {
+            const nat i1 = i + i;
+            if ( i1 >= heap.size() ) break;
+            const nat i2 = i1 + 1;
+            const nat j = i2 >= heap.size() ? i1 : heap[i1] <= heap[i2] ? i1 : i2;
+            if ( heap[i] <= heap[j] ) break;
+            _swap ( heap[i], heap[j] );
+            i = j;
+        }
+    }
+// Удалить i-тый элемент
+    bool del ( nat i )
+    {
+        const nat i1 = i + 1;
+        if ( i1 >= heap.size() ) return false;
+        if ( i1 + 1 == heap.size() )
+        {
+            heap.dec();
+        }
+        else
+        {
+            T & t = heap.las();
+            _swap ( heap[i1], t );
+            heap.dec();
+            if ( heap[i1] > t )
+                down ( i );
+            else
+                raise ( i );
+        }
+        return true;
+    }
+// Добавить элемент в очередь
+    void operator << ( const T & t )
+    {
+        heap.inc() = t;
+        raise ( heap.size() - 2 );
+    }
+// Убрать максимальный элемент из очереди
+    bool operator >> ( T & t )
+    {
+        if ( heap.size() == 1 ) return false;
+        t = heap[1];
+        _swap ( heap[1], heap.las() );
+        heap.dec();
+        down ( 0 );
+        return true;
+    }
+};

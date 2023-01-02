@@ -1,9 +1,9 @@
 
-#ifndef LISTS_H
-#define LISTS_H
+#pragma once
 
 #include "Template.h"
 #include "ShevList.h"
+#include "func1t.h"
 
 /***********************************************/
 
@@ -41,6 +41,9 @@ typedef List<Item2d> List2d;
 typedef Item2<void *> Item2p;
 typedef List<Item2p> List2p;
 
+typedef Item2<const void *> Item2cp;
+typedef List<Item2cp> List2cp;
+
 /***********************************************/
 
 template <class T> class Item3 : public ListItem<Set3<T> >
@@ -53,6 +56,9 @@ public:
 
 typedef Item3<nat> Item3n;
 typedef List<Item3n> List3n;
+
+typedef Item3<void *> Item3p;
+typedef List<Item3p> List3p;
 
 /***********************************************/
 
@@ -79,14 +85,14 @@ template <class T>
 void makeClosed ( T & list, List<ListItem<T> > & itog )
 {
     T temp;
-    typedef T::Par Item;
-    typedef Item::Par Value;
-    typedef SortItem<Set2<Value, nat>, Item *> SItem;
+    typedef T::Par TItem;
+    typedef TItem::Par Value;
+    typedef SortItem<Set2<Value, nat>, TItem *> SItem;
     Suite<SItem> vert ( list.size() );
     if ( list.top() )
     for(;;)
     {
-        Item * t = list.cur();
+        TItem * t = list.cur();
         if ( t->a == t->b )
         {
             if ( list.delCur_() ) break;
@@ -141,7 +147,7 @@ void makeClosed ( T & list, List<ListItem<T> > & itog )
             }
             else
             {
-                temp.delLas(); // последнее звено удаляется, т.к. у него нет продолжения
+                temp.delLas(); // удаляем последнее звено, т.к. у него нет продолжения
             }
         }
         else
@@ -347,5 +353,3 @@ void simplifyChain ( List<T> & list, Func & func, Remove & remove, nat n, double
         }
     }
 }
-
-#endif

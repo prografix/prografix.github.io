@@ -1,6 +1,5 @@
 
-#ifndef _PSEUDO_FILE_H
-#define _PSEUDO_FILE_H
+#pragma once
 
 #include "File.h"
 #include "ShevArray.h"
@@ -87,5 +86,3 @@ public:
     void rewind() { pos = 0; }
     long tell() { return pos; }
 };
-
-#endif

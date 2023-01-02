@@ -67,6 +67,17 @@ template <class T> inline T _median3 ( const T * a )
     return a[__median3(a)];
 }
 
+template <class T> T _median3 ( const T & a, const T & b, const T & c )
+{
+    if ( a <= b )
+    {
+        if ( b <= c ) return b;
+        return a >= c ? a : c;
+    }
+    if ( b >= c ) return b;
+    return a <= c ? a : c;
+}
+
 //*********************** 03.12.2014 **************************//
 //
 //      Медиана четырёх чисел ( 4 сравнения ).

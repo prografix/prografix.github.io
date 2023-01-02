@@ -180,9 +180,6 @@ void _swap ( Facet & facet1, Facet & facet2 )
 
 bool trianTest ( const Facet & facet, CArrRef<Vector3d> vert );
 
-DynArrRef<Vector2d> &       trans ( CArrRef<Vector3d> v, const Facet & g, DynArrRef<Vector2d> & p );
-DynArrRef<Vector2d> & ortho_trans ( CArrRef<Vector3d> v, const Facet & g, DynArrRef<Vector2d> & p );
-
 inline
 void _swap ( Polyhedron & poly1, Polyhedron & poly2 )
 {
