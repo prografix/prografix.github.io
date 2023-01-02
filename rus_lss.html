@@ -3,7 +3,7 @@
 <link rel="stylesheet" type="text/css" href="stylle.css">
 </head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
-<div align="center"><center>
+<div align="center">
 <table width="800" cellspacing="0" cellpadding="0">
 <div align=center><br>
 <font color="" style="font-size: 20pt">Метод наименьших квадратов</font>
@@ -32,12 +32,12 @@
 Первый из них, основанный на ортогонализации Грама-Шмидта, представлен здесь в виде функции:
 </p>
 <pre>
-bool ortholin ( Matrix & a, CArrRef&lt;double> b, ArrRef&lt;double> x );
+bool ortholin ( IMatrix&lt;double> & a, CArrRef&lt;double> b, ArrRef&lt;double> x );
 </pre>
 <p>При этом матрица а изменяется ( в результате все столбцы матрицы будут ортогональными ).
 <br>Второй метод, с применением преобразований Хаусхолдера, может быть вызван при помощи функции:</p>
 <pre>
-bool lss_h ( Matrix & a, CArrRef&lt;double> b, ArrRef&lt;double> x );
+bool lss_h ( IMatrix&lt;double> & a, CArrRef&lt;double> b, ArrRef&lt;double> x );
 </pre>
 <p>Здесь также матрица а изменяется.
 <br>Вариант для комплекных чисел находится <a href="rus_matrix.html">здесь</a>.
@@ -46,14 +46,14 @@ bool lss_h ( Matrix & a, CArrRef&lt;double> b, ArrRef&lt;double> x );
 <pre>
 class LSS_H
 {
-    Matrix & a;
+    IMatrix&lt;double> & a;
     DynArray&lt;nat> pivot;
     mutable DynArray&lt;double> alpha;
 // Запрет конструктора копии и оператора присваивания:
     LSS_H ( LSS_H & );
     void operator = ( LSS_H & );
 public:
-    LSS_H ( Matrix & a );
+    LSS_H ( IMatrix&lt;double> & a );
     bool solve ( CArrRef&lt;double> b, ArrRef&lt;double> x ) const; // b[a.nRow], x[a.nCol]
 };
 </pre>
@@ -68,7 +68,7 @@ public:
 <p>Эти алгоритмы были взяты мной из книги "Справочник алгоритмов на языке Алгол" ( Уилкинсон, Райнш ) 
 и переписаны на С++ с небольшими изменениями. В частности я убрал процедуры уточнения результатов.
 </p>
-<p>Описание класса Matrix находится <a href="rus_matrix.html">здесь</a>. 
+<p>Описание класса IMatrix находится <a href="rus_matrix.html">здесь</a>. 
 <br>Описание шаблонов классов CArrRef, ArrRef и DynArray находится <a href=array.html>здесь</a>.
 </p>
 <p>Исходники находятся в файле <a href="source/source.zip">mathem.cpp</a>.
@@ -78,16 +78,6 @@ public:
 
 </pre></td></div>
 </table>
-<script type="text/javascript">
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
-
-<script type="text/javascript">
-try {
-var pageTracker = _gat._getTracker("UA-10825496-1");
-pageTracker._trackPageview();
-} catch(err) {}
-</script>
+</div>
 </body>
 </html>
