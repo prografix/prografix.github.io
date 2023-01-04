@@ -403,16 +403,16 @@ display << 27/(4*M_PI*M_PI ) / s << NL;
 double func3 ()
 {
     double s = 0;
-    for ( nat n = 1; n <= 40000; n+=1 )
+    for ( nat n = 2; n <= 40000; n+=4 )
     {
-        if(n%3==0 ) continue;
-        double t = _pow2 ( 1./ n );
+        //if(n%3==0 ) continue;
+        double t = _pow2 ( 1./ (n) );
         if(n%3==2 )
             s += t;
         else
             s += t;
     }
-display << s <<4*M_PI*M_PI/27 << NL;
+display << s <<M_PI*M_PI/32 << NL;
     return s;
 }
 
