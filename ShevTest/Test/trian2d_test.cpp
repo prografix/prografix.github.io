@@ -20,6 +20,7 @@
 #include "display.h"
 
 double timeInSec();
+bool rebuildDelauney ( CCArrRef<Vector2d> & vert, CCArrRef<Set3<nat> > & trian, DynArray<SemiRib> & rib );
 
 namespace Test
 {
@@ -1555,6 +1556,121 @@ void splitFacetN ( CCArrRef<nat> & cntr, CCArrRef<Vector2d> & vert, CCArrRef<Set
     }
 }
 
+void splitPolygon ( CCArrRef<nat> & cntr, CCArrRef<Vector2d> & vert, Suite<nat> & cntr2, Suite<nat> & index )
+{
+    DynArray<SemiRib> rib;
+    Suite<Set3<nat> > trian;
+    ::trianSweepLine ( cntr, vert, trian );
+    if ( ! rebuildDelauney ( vert, trian, rib ) ) return;
+    nat i;
+    const nat nv = vert.size();
+    const nat nr = rib.size();
+    DynArray<nat> prev ( nr );
+    Suite<SortItem<double, nat> > diag;
+    for ( i = 0; i < nr; ++i )
+    {
+        const SemiRib & r = rib[i];
+        prev[i] = rib[r.next].next;
+        if ( r.twin >= nr ) continue;
+        SortItem<double, nat> & si = diag.inc();
+        si.head = qmod ( vert[r.vert] - vert[rib[r.next].vert] );
+        si.tail = i;
+    }
+    quickSort321 ( diag );
+    Suite<nat> buf;
+    for ( i = 0; i < diag.size(); ++i )
+    {
+        const nat i1 = diag[i].tail;
+        SemiRib & r = rib[i1];
+        const nat i2 = r.twin;
+        buf.resize();
+        nat j = rib[i1].next;
+        while ( j != i1 )
+        {
+            const SemiRib & rj = rib[j];
+            buf.inc() = rj.vert;
+            if ( buf.size() > nv )
+                return;
+            j = rj.next;
+        }
+        j = rib[i2].next;
+        while ( j != i2 )
+        {
+            const SemiRib & rj = rib[j];
+            buf.inc() = rj.vert;
+            if ( buf.size() > nv )
+                return;
+            j = rj.next;
+        }
+        quickSort123 ( buf );
+        for ( nat k = 1; k < buf.size(); ++k )
+        {
+            if ( buf[k-1] == buf[k] ) goto m1;
+        }
+        SemiRib & t = rib[i2];
+        SemiRib & r1 = rib[prev[i1]];
+        SemiRib & t1 = rib[prev[i2]];
+        r1.next = t.next;
+        t1.next = r.next;
+        prev[r.next] = prev[i2];
+        prev[t.next] = prev[i1];
+        r.vert = t.vert = nv;
+m1:;}
+    for ( i = 0; i < nr; ++i )
+    {
+        if ( rib[i].vert == nv ) continue;
+        nat & n = cntr2.inc();
+        n = 0;
+        nat j = i;
+        do
+        {
+            ++n;
+            SemiRib & rj = rib[j];
+            index.inc() = rj.vert;
+            rj.vert = nv;
+            j = rj.next;
+        }
+        while ( j != i );
+    }
+}
+
+void splitPolygon_test()
+{
+    nat i;
+    const nat n = 3;
+    Suite<Vector2d> vert;
+    randPolygon ( vert.resize(n) );
+    vert.reverse();
+    Def<Segment2d> s = dimensions ( vert );
+    vert -= 0.5 * ( s.a + s.b );
+    FixArray<nat, 2> cntr;
+    cntr[0] = vert.size();
+    cntr[1] = 4;
+    FixArray<Vector2d, 4> quad;
+    quad[0].x = -1;
+    quad[0].y = -1;
+    quad[1].x =  1;
+    quad[1].y = -1;
+    quad[2].x =  1;
+    quad[2].y =  1;
+    quad[3].x = -1;
+    quad[3].y =  1;
+    vert.addAftLas ( quad );
+    vert *= 0.9;
+    nat k = 0;
+    for ( i = 0; i < cntr.size(); ++i )
+    {
+        drawPolygon ( CArrRef<Vector2d> ( vert, k, cntr[i] ), 0, 1, 1 );
+        k += cntr[i];
+    }
+    Suite<nat> cntr2;
+    Suite<nat> index;
+    splitPolygon ( cntr, vert, cntr2, index );
+    for ( i = 0; i < cntr2.size(); ++i )
+    {
+    }
+}
+
 void addIndex ( CCArrRef<nat> & cntr, nat a, nat b, Suite<nat> & res )
 {
     nat i = 0, m = cntr[0];
@@ -1690,6 +1806,7 @@ void trian2d_test ()
 //    convexParts_test();
 //    trianSeidel_test2();
 //    trianSweepLine_test();
-    splitFacet_test();
+//    splitFacet_test();
+    splitPolygon_test();
     endNewList();
 }

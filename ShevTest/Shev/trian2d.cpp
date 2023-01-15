@@ -2127,6 +2127,63 @@ SuiteRef<Set3<nat> > & trianSweepLine ( CCArrRef<Vector2d> & vert, SuiteRef<Set3
 //
 //**************************** 24.08.2018 *********************************//
 
+bool rebuildDelauney ( CCArrRef<Vector2d> & vert, CCArrRef<Set3<nat> > & trian, DynArray<SemiRib> & rib )
+{
+    const nat nt = trian.size();
+    const nat nv = vert.size();
+    const nat nr = 3 * nt;
+    rib.resize ( nr );
+    if ( nt < 1 || nv < 3 ) return false;
+    // Запишем массив полурёбер SemiRib.
+    // Причём рёбра принадлежащие к одному треугольнику должны находится последовательно, 
+    // а поле twin должно быть меньше количества рёбер только у одного ребра из пары.
+    nat i, k;
+    DynArray<SortItem<Set2<nat>, nat> > sar ( nr );
+    for ( k = 0; k < nt; ++k )
+    {
+        const Set3<nat> & t = trian[k];
+        const nat na = 3 * k;
+        const nat nb = na + 1;
+        const nat nc = nb + 1;
+        SemiRib & ra = rib[na];
+        ra.next = nb;
+        ra.twin = nr;
+        ra.vert = t.a;
+        SemiRib & rb = rib[nb];
+        rb.next = nc;
+        rb.twin = nr;
+        rb.vert = t.b;
+        SemiRib & rc = rib[nc];
+        rc.next = na;
+        rc.twin = nr;
+        rc.vert = t.c;
+        SortItem<Set2<nat>, nat> & sa = sar[na];
+        sa.head = t.a < t.b ? Set2<nat> ( t.a, t.b ) : Set2<nat> ( t.b, t.a );
+        sa.tail = na;
+        SortItem<Set2<nat>, nat> & sb = sar[nb];
+        sb.head = t.b < t.c ? Set2<nat> ( t.b, t.c ) : Set2<nat> ( t.c, t.b );
+        sb.tail = nb;
+        SortItem<Set2<nat>, nat> & sc = sar[nc];
+        sc.head = t.c < t.a ? Set2<nat> ( t.c, t.a ) : Set2<nat> ( t.a, t.c );
+        sc.tail = nc;
+    }
+    quickSort123 ( sar );
+    for ( i = 1; i < nr; ++i )
+    {
+        SortItem<Set2<nat>, nat> & sa = sar[i];
+        SortItem<Set2<nat>, nat> & sb = sar[i-1];
+        if ( sa == sb )
+        {
+            rib[sa.tail].twin = sb.tail;
+            ++i;
+        }
+    }
+    const Min2a<double> merge;
+    const TQ_MinTan<double, Vector2d> quality ( vert );
+    maxL1<double> ( quality, merge, rib );
+    return true;
+}
+
 ArrRef<Set3<nat> > & rebuildDelauney ( CCArrRef<Vector2d> & vert, ArrRef<Set3<nat> > & res )
 {
     const nat nt = res.size();
