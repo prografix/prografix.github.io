@@ -2131,9 +2131,9 @@ bool rebuildDelauney ( CCArrRef<Vector2d> & vert, CCArrRef<Set3<nat> > & trian, 
 {
     const nat nt = trian.size();
     const nat nv = vert.size();
+    if ( nt < 1 || nv < 3 ) return false;
     const nat nr = 3 * nt;
     rib.resize ( nr );
-    if ( nt < 1 || nv < 3 ) return false;
     // Запишем массив полурёбер SemiRib.
     // Причём рёбра принадлежащие к одному треугольнику должны находится последовательно, 
     // а поле twin должно быть меньше количества рёбер только у одного ребра из пары.
@@ -2186,59 +2186,10 @@ bool rebuildDelauney ( CCArrRef<Vector2d> & vert, CCArrRef<Set3<nat> > & trian, 
 
 ArrRef<Set3<nat> > & rebuildDelauney ( CCArrRef<Vector2d> & vert, ArrRef<Set3<nat> > & res )
 {
-    const nat nt = res.size();
+    DynArray<SemiRib> rib;
+    rebuildDelauney ( vert, res, rib );
     const nat nv = vert.size();
-    if ( nt < 2 || nv < 4 ) return res;
-    // Запишем массив полурёбер SemiRib.
-    // Причём рёбра принадлежащие к одному треугольнику должны находится последовательно, 
-    // а поле twin должно быть меньше количества рёбер только у одного ребра из пары.
-    nat i, k;
-    const nat nr = 3 * nt;
-    DynArray<SemiRib> rib ( nr );
-    DynArray<SortItem<Set2<nat>, nat> > sar ( nr );
-    for ( k = 0; k < nt; ++k )
-    {
-        const Set3<nat> & t = res[k];
-        const nat na = 3 * k;
-        const nat nb = na + 1;
-        const nat nc = nb + 1;
-        SemiRib & ra = rib[na];
-        ra.next = nb;
-        ra.twin = nr;
-        ra.vert = t.a;
-        SemiRib & rb = rib[nb];
-        rb.next = nc;
-        rb.twin = nr;
-        rb.vert = t.b;
-        SemiRib & rc = rib[nc];
-        rc.next = na;
-        rc.twin = nr;
-        rc.vert = t.c;
-        SortItem<Set2<nat>, nat> & sa = sar[na];
-        sa.head = t.a < t.b ? Set2<nat> ( t.a, t.b ) : Set2<nat> ( t.b, t.a );
-        sa.tail = na;
-        SortItem<Set2<nat>, nat> & sb = sar[nb];
-        sb.head = t.b < t.c ? Set2<nat> ( t.b, t.c ) : Set2<nat> ( t.c, t.b );
-        sb.tail = nb;
-        SortItem<Set2<nat>, nat> & sc = sar[nc];
-        sc.head = t.c < t.a ? Set2<nat> ( t.c, t.a ) : Set2<nat> ( t.a, t.c );
-        sc.tail = nc;
-    }
-    quickSort123 ( sar );
-    for ( i = 1; i < nr; ++i )
-    {
-        SortItem<Set2<nat>, nat> & sa = sar[i];
-        SortItem<Set2<nat>, nat> & sb = sar[i-1];
-        if ( sa == sb )
-        {
-            rib[sa.tail].twin = sb.tail;
-            ++i;
-        }
-    }
-    const Min2a<double> merge;
-    const TQ_MinTan<double, Vector2d> quality ( vert );
-    maxL1<double> ( quality, merge, rib );
-    for ( i = 0, k = 0; i < nr; ++i )
+    for ( nat i = 0, k = 0; i < rib.size(); ++i )
     {
         SemiRib & a = rib[i];
         if ( a.vert >= nv ) continue;
@@ -2282,6 +2233,73 @@ bool trianTestNat1L1MinTan ( CCArrRef<Vector2d> & vert )
 //              Разбиение многоугольника на выпуклые части
 //
 //**************************** 27.08.2018 *********************************//
+
+bool convexParts ( CCArrRef<Vector2d> & vert, Suite<nat> & cntr, Suite<nat> & index )
+{
+    cntr.resize();
+    index.resize();
+    DynArray<SemiRib> rib;
+    Suite<Set3<nat> > trian;
+// Делаем триангуляцию
+    trianSweepLine ( vert, trian );
+    if ( ! rebuildDelauney ( vert, trian, rib ) ) return false;
+// Находим диагонали
+    nat i;
+    const nat nv = vert.size();
+    const nat nr = rib.size();
+    DynArray<nat> prev ( nr );
+    Suite<SortItem<double, nat> > diag;
+    for ( i = 0; i < nr; ++i )
+    {
+        const SemiRib & r = rib[i];
+        prev[i] = rib[r.next].next;
+        if ( r.twin >= nr ) continue;
+        SortItem<double, nat> & si = diag.inc();
+        si.head = qmod ( vert[r.vert] - vert[rib[r.next].vert] );
+        si.tail = i;
+    }
+    quickSort321 ( diag );
+// Делаем объединие многоугольников, если оно будет выпуклым
+    for ( i = 0; i < diag.size(); ++i )
+    {
+        const nat i1 = diag[i].tail;
+        SemiRib & r1 = rib[i1];
+        const nat i2 = r1.twin;
+        SemiRib & r2 = rib[i2];
+        const Vector2d & v1 = vert[rib[prev[i1]].vert];
+        const Vector2d & v2 = vert[r1.vert];
+        const Vector2d & v3 = vert[rib[rib[r2.next].next].vert];
+        if ( ( v2 - v1 ) % ( v3 - v2 ) < 0 ) continue;
+        const Vector2d & u1 = vert[rib[prev[i2]].vert];
+        const Vector2d & u2 = vert[r2.vert];
+        const Vector2d & u3 = vert[rib[rib[r1.next].next].vert];
+        if ( ( u2 - u1 ) % ( u3 - u2 ) < 0 ) continue;
+        rib[prev[i1]].next = r2.next;
+        rib[prev[i2]].next = r1.next;
+        prev[r1.next] = prev[i2];
+        prev[r2.next] = prev[i1];
+        r1.vert = r2.vert = nv;
+    }
+// Запись результата
+    for ( i = 0; i < nr; ++i )
+    {
+        if ( rib[i].vert == nv ) continue;
+        nat & n = cntr.inc();
+        n = 0;
+        nat j = i;
+        do
+        {
+            ++n;
+            SemiRib & rj = rib[j];
+            index.inc() = rj.vert;
+            rj.vert = nv;
+            j = rj.next;
+        }
+        while ( j != i );
+    }
+    return true;
+}
+
 
 struct GEdge
 {
@@ -2423,4 +2441,93 @@ void convexParts ( CCArrRef<Vector2d> & poly, List< ListItem<ShevList> > & res )
         }
         while ( j != facet[i] );
     }
+}
+
+//**************************** 16.01.2023 *********************************//
+//
+//              Разделение многоугольника с дырками на части
+//
+//**************************** 16.01.2023 *********************************//
+
+bool splitPolygon ( CCArrRef<nat> & cntr, CCArrRef<Vector2d> & vert, Suite<nat> & cntr2, Suite<nat> & index )
+{
+    cntr2.resize();
+    index.resize();
+    DynArray<SemiRib> rib;
+    Suite<Set3<nat> > trian;
+// Делаем триангуляцию
+    trianSweepLine ( cntr, vert, trian );
+    if ( ! rebuildDelauney ( vert, trian, rib ) ) return false;
+// Находим диагонали
+    nat i;
+    const nat nv = vert.size();
+    const nat nr = rib.size();
+    DynArray<nat> prev ( nr );
+    Suite<SortItem<double, nat> > diag;
+    for ( i = 0; i < nr; ++i )
+    {
+        const SemiRib & r = rib[i];
+        prev[i] = rib[r.next].next;
+        if ( r.twin >= nr ) continue;
+        SortItem<double, nat> & si = diag.inc();
+        si.head = qmod ( vert[r.vert] - vert[rib[r.next].vert] );
+        si.tail = i;
+    }
+    quickSort321 ( diag );
+// Делаем объединие многоугольников, если у него не будет одинаковых вершин
+    Suite<nat> buf;
+    for ( i = 0; i < diag.size(); ++i )
+    {
+        const nat i1 = diag[i].tail;
+        SemiRib & r1 = rib[i1];
+        const nat i2 = r1.twin;
+        SemiRib & r2 = rib[i2];
+        buf.resize();
+        nat j = r1.next;
+        while ( j != i1 )
+        {
+            const SemiRib & rj = rib[j];
+            buf.inc() = rj.vert;
+if ( buf.size() > nr ) // этого не должно быть
+    return false;
+            j = rj.next;
+        }
+        j = r2.next;
+        while ( j != i2 )
+        {
+            const SemiRib & rj = rib[j];
+            buf.inc() = rj.vert;
+if ( buf.size() > nr ) // этого не должно быть
+    return false;
+            j = rj.next;
+        }
+        quickSort123 ( buf );
+        for ( nat k = 1; k < buf.size(); ++k )
+        {
+            if ( buf[k-1] == buf[k] ) goto m1;
+        }
+        rib[prev[i1]].next = r2.next;
+        rib[prev[i2]].next = r1.next;
+        prev[r1.next] = prev[i2];
+        prev[r2.next] = prev[i1];
+        r1.vert = r2.vert = nv;
+m1:;}
+// Запись результата
+    for ( i = 0; i < nr; ++i )
+    {
+        if ( rib[i].vert == nv ) continue;
+        nat & n = cntr2.inc();
+        n = 0;
+        nat j = i;
+        do
+        {
+            ++n;
+            SemiRib & rj = rib[j];
+            index.inc() = rj.vert;
+            rj.vert = nv;
+            j = rj.next;
+        }
+        while ( j != i );
+    }
+    return true;
 }

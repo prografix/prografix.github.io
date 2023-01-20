@@ -88,8 +88,17 @@ bool trianTestNat1L1MinTan ( CCArrRef<Vector2d> & vert );
 //
 //              Разбиение многоугольника на выпуклые части
 //
-//**************************** 27.08.2011 *********************************//
+//**************************** 16.01.2023 *********************************//
 
 void convexParts ( CCArrRef<Vector2d> & poly, List< ListItem<ShevList> > & res );
+bool convexParts ( CCArrRef<Vector2d> & vert, Suite<nat> & cntr, Suite<nat> & index );
+
+//**************************** 16.01.2023 *********************************//
+//
+//              Разделение многоугольника с дырками на части
+//
+//**************************** 16.01.2023 *********************************//
+
+bool splitPolygon ( CCArrRef<nat> & cntr, CCArrRef<Vector2d> & vert, Suite<nat> & cntr2, Suite<nat> & index );
 
 #endif
