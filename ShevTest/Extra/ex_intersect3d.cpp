@@ -936,7 +936,7 @@ m5:         if ( flist.curIsLas() )
         for ( nat j = 0; j < facet->nv; ++j ) vert2d[j] = func ( vertex[facet->index[j]] );
         if ( trianTestNat1L1MinTan ( vert2d ) ) continue;
 // Разбиваем грань на выпуклые части
-        convexParts ( vert2d, plist );
+//        convexParts ( vert2d, plist );
 //display << vert2d.size() << plist.size() << NL;
         if ( ! plist.top() ) continue;
         do

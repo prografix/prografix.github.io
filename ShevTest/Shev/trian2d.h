@@ -42,16 +42,6 @@ SuiteRef<Set3<nat> > & trianG1MaxMinTan     ( CCArrRef<Vector2d> & vert, SuiteRe
 SuiteRef<Set3<nat> > & trianG1MaxSumMinAngle( CCArrRef<Vector2d> & vert, SuiteRef<Set3<nat> > & res );
 
 
-//**************************** 31.12.2014 *********************************//
-//
-//            “риангул€ци€ многоугольников ( алгоритм «ейдел€ )
-//
-//**************************** 31.12.2014 *********************************//
-
-SuiteRef<Set3<nat> > & trianSeidel ( CCArrRef<nat> & cntr, CCArrRef<Vector2d> & vert, SuiteRef<Set3<nat> > & res );
-SuiteRef<Set3<nat> > & trianSeidel ( CCArrRef<Vector2d> & vert, SuiteRef<Set3<nat> > & res );
-
-
 //**************************** 25.11.2015 *********************************//
 //
 //            “риангул€ци€ многоугольников ( заметающа€ пр€ма€ )
@@ -90,8 +80,8 @@ bool trianTestNat1L1MinTan ( CCArrRef<Vector2d> & vert );
 //
 //**************************** 16.01.2023 *********************************//
 
-void convexParts ( CCArrRef<Vector2d> & poly, List< ListItem<ShevList> > & res );
 bool convexParts ( CCArrRef<Vector2d> & vert, Suite<nat> & cntr, Suite<nat> & index );
+
 
 //**************************** 16.01.2023 *********************************//
 //

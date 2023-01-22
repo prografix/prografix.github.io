@@ -494,7 +494,7 @@ bool maxConvexPolyhedronInPolyhedronNR ( const Polyhedron & inner, const Polyhed
             else
             {
                 List< ListItem<ShevList> > plist;
-                convexParts ( vert2d, plist );
+//                convexParts ( vert2d, plist );
                 if ( plist.top() )
                 do
                 {

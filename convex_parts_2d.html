@@ -1,45 +1,41 @@
 ﻿<html>
-<head><title>Разделение многоугольника на выпуклые части</title>
+<head><title>Разделение многоугольника на части</title>
 <link rel="stylesheet" type="text/css" href="stylle.css"></head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
-<div align="center"><center>
+<div align="center">
 <table width="800" cellspacing="0" cellpadding="0">
 <div align=center><br>
-<font color="" style="font-size: 20pt">Разделение многоугольника на выпуклые части</font>
+<font color="" style="font-size: 20pt">Разделение многоугольника на части</font>
 </div>
 <div align=left><td><br>
-<p>В этом разделе представлен алгоритм, который делит невыпуклый многоугольник на выпуклые:
-<pre>void convexParts ( CArrRef&lt;Vector2d> & poly, List< ListItem&lt;ShevList> > & res );
+<p>Первый алгоритм делит невыпуклый многоугольник на выпуклые части:
+<pre>
+bool convexParts ( CCArrRef&lt;Vector2d> & vert, Suite&lt;nat> & cntr, Suite&lt;nat> & index );
 </pre>
-Входными данными являются: ссылка на массив вершин многоугольника poly и ссылка на список res, куда будет записываться
-результат. Каждый элемент результата описывает полученную выпуклую часть и представляет собой список индексов вершин. 
-<br>Вначале исходный многоугольник разбивается на треугольники.
-Затем соседние треугольники объединяются, если в результате будет выпуклый многоугольник.
+На вход поступает массив вершин невыпуклого многоугольника (vert), а на выходе получаем количество вершин (cntr) и индексы (index) выпуклых частей.
 Этот алгоритм не всегда даёт минимальное к-во выпуклых частей.
 </p>
+<p>Второй алгоритм делит многоугольник с дырками на многоугольники без дырок:
+<pre>
+bool splitPolygon ( CCArrRef&lt;nat> & cntr, CCArrRef&lt;Vector2d> & vert, Suite&lt;nat> & cntr2, Suite&lt;nat> & index );
+</pre>
+Здесь cntr - это количества вершин многоугольников, vert - общий массив всех вершин, cntr2 и index - количества вершин и индексы полученных многоугольников. 
+Внешний многоугольник должен иметь обход вершин против часовой стрелки, 
+а внутренние - по часовой. Порядок перечисления многоугольников произвольный.
+<br><br>В обоих алгоритмах вначале исходный многоугольник <a href="rus_trian2d.html">разбивается</a> на треугольники, а затем соседние треугольники объединяются, 
+пока не буден получен результат.
+</p>
 <p>Описание класса Vector2d смотрите в разделе <a href="rus_vector2d.html">Вектора на плоскости</a>.
-<br>Описание шаблона CArrRef находится <a href="array.html">здесь</a>.
-<br>Описание класса ShevList находится <a href="rus_list.html">здесь</a>.
-<br>Описание шаблонов List и ListItem находится <a href="rus_list2.html">здесь</a>.
+<br>Описание шаблонов CCArrRef и Suite находится <a href="array.html">здесь</a>.
 <br>Исходники алгоритма находятся в файле <a href="source/source.zip">trian2d.cpp</a>.
 <br>В приложении <a href="demo/demo.html">DEMO</a> можно посмотреть результат деления.
 </p>
 <a href="rus_geom.html">Наверх</a>
-</pre>
-
 <pre>
+
+</pre>
 </td></div>
 </table>
-<script type="text/javascript">
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
 
-<script type="text/javascript">
-try {
-var pageTracker = _gat._getTracker("UA-10825496-1");
-pageTracker._trackPageview();
-} catch(err) {}
-</script>
 </body>
 </html>

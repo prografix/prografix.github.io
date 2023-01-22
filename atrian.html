@@ -30,6 +30,13 @@ public:
     virtual F operator () ( A1 a1, A2 a2, A3 a3 ) const = 0;
 };
 
+struct SemiRib
+{
+    unsigned int next;
+    unsigned int twin;
+    unsigned int vert;
+};
+
 template &lt;class T>
 void maxL1 ( const Func3a&lt;T,nat> & quality, const Func2a&lt;T,T> & merge, ArrRef&lt;SemiRib> & rib )
 ...
@@ -62,9 +69,9 @@ SuiteRef&lt;Set3&lt;nat> > & maxG1 ( const Func3a&lt;T,nat> & quality, const Fun
 <br>Исходники находятся в файле <a href="source/source.zip">atrian.h</a>.
 </p>
 <a href="rus_geom.html">Наверх</a>
-</pre>
-
 <pre>
+
+</pre>
 </td></div>
 </table>
 </body>
