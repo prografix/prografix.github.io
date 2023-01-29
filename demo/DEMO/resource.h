@@ -1,0 +1,112 @@
+//{{NO_DEPENDENCIES}}
+// Включаемый файл, созданный в Microsoft Visual C++.
+// Используется DEMO.rc
+//
+#define IDD_ABOUTBOX                    100
+#define IDR_MAINFRAME                   128
+#define IDR_DEMOTYPE                    129
+#define IDD_RANDOM_VEC                  132
+#define IDD_TRIAN_2D                    135
+#define IDD_LINES_X_2D                  137
+#define IDD_POINT_2D                    139
+#define IDD_MAX_3D                      141
+#define IDD_MAX_2D                      143
+#define IDD_APPROX_2D                   145
+#define IDD_OTHER                       147
+#define IDD_SCENE_PAR                   176
+#define IDD_MIN_2D                      177
+#define IDD_APPROX_3D                   178
+#define IDD_MIN_3D                      179
+#define IDD_INTERSECT_2D                180
+#define IDD_TRIAN_3D                    181
+#define IDD_INTERSECT_3D                182
+#define IDD_MAX_2D3D                    183
+#define ID_RUN                          1000
+#define IDC_NVEC                        1001
+#define IDC_MAX                         1002
+#define IDC_MIN                         1003
+#define IDC_COMBO_RAND                  1004
+#define IDC_AREA_MIN                    1005
+#define IDC_AREA_MAX                    1006
+#define IDC_POLYGON_SIZE                1007
+#define IDC_EDGE_SIGMA                  1007
+#define IDC_NEXT_POLYGON                1008
+#define IDC_AREA_SIGMA                  1008
+#define IDC_TRIAN_TYPE                  1009
+#define IDC_NEXT_LINES                  1009
+#define IDC_TRIANGULATE                 1010
+#define IDC_LINES_NUM                   1010
+#define IDC_POINTS_NUM                  1011
+#define IDC_CONVEX_PARTS                1011
+#define IDC_NEXT_POINTS                 1012
+#define IDC_CHECK_GLOBAL                1015
+#define ID_NEXT_RUN                     1016
+#define IDC_COMBO_OUTER                 1017
+#define ID_NEXT_INNER                   1018
+#define IDC_COMBO_INNER_NV              1019
+#define IDC_COMBO_INNER                 1020
+#define ID_NEXT_OUTER                   1021
+#define IDC_COMBO_OUTER_NV              1022
+#define IDC_COMBO_VAR                   1023
+#define IDC_COMBO_1                     1025
+#define IDC_COMBO_2                     1026
+#define IDC_COMBO_1_NV                  1027
+#define IDC_COMBO_2_NV                  1028
+#define ID_NEXT_1                       1029
+#define ID_NEXT_2                       1030
+#define IDC_N_VERTEX                    1031
+#define IDC_COMBO1                      1032
+#define IDC_COMBO_ROTATE                1033
+#define IDC_SMAGNIFY                    1261
+#define IDC_SANGLE                      1262
+#define IDC_SDISTANCE                   1263
+#define IDC_EDISTANCE                   1264
+#define IDC_EANGLE                      1265
+#define IDC_EMAGNIFY                    1266
+#define ID_MOV_XM                       32771
+#define ID_MOV_XP                       32772
+#define ID_ROT_X_CW                     32773
+#define ID_ROT_X_CCW                    32774
+#define ID_SCENE                        32775
+#define ID_MOV_ZP                       32776
+#define ID_MOV_ZM                       32777
+#define ID_ROT_Z_CW                     32778
+#define ID_ROT_Z_CCW                    32779
+#define ID_MOV_YP                       32780
+#define ID_MOV_YM                       32781
+#define ID_ROT_Y_CW                     32782
+#define ID_ROT_Y_CCW                    32783
+#define ID_ZOOM_OUT                     32784
+#define ID_ZOOM_IN                      32785
+#define ID_RESET                        32786
+#define ID_DEMO_RANDOM_VEC              32787
+#define ID_MODEL_WIRE                   32788
+#define ID_MODEL_FLAT                   32789
+#define ID_MODEL_SMOOTH                 32790
+#define ID_DEMO_TRIAN_2D                32791
+#define ID_DEMO_LINES_X_2D              32792
+#define ID_DEMO_LINE_APPROX             32793
+#define ID_FILE_SAVE_VIEW               32794
+#define ID_DEMO_MAXI_3D                 32795
+#define ID_DEMO_MAXI_2D                 32796
+#define ID_DEMO_APPROX_2D               32797
+#define ID_DEMO_MINI_2D                 32798
+#define ID_DEMO_APPROX_3D               32799
+#define ID_DEMO_MINI_3D                 32800
+#define ID_DEMO_INTERSECT_2D            32801
+#define ID_DEMO_TRIAN_3D                32802
+#define ID_DEMO_INTERSECT_3D            32803
+#define ID_DEMO_OTHER                   32804
+#define ID_DEMO_MAXI_2D_3D              32805
+
+// Next default values for new objects
+// 
+#ifdef APSTUDIO_INVOKED
+#ifndef APSTUDIO_READONLY_SYMBOLS
+#define _APS_3D_CONTROLS                     1
+#define _APS_NEXT_RESOURCE_VALUE        150
+#define _APS_NEXT_COMMAND_VALUE         32806
+#define _APS_NEXT_CONTROL_VALUE         1035
+#define _APS_NEXT_SYMED_VALUE           101
+#endif
+#endif

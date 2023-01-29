@@ -1,0 +1,1316 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Русский (Россия) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_RUS)
+LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
+#pragma code_page(1251)
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 9, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\DEMO.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""afxres.rc""         // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_RANDOM_VEC DIALOG 0, 0, 186, 98
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Random vectors"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Run",ID_RUN,68,77,50,14
+    EDITTEXT        IDC_NVEC,62,13,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_MAX,96,42,40,14,ES_AUTOHSCROLL | ES_READONLY | ES_NUMBER
+    EDITTEXT        IDC_MIN,56,42,40,14,ES_AUTOHSCROLL | ES_READONLY | ES_NUMBER
+    LTEXT           "Vertex number",IDC_STATIC,12,16,46,8
+    LTEXT           "Edge length",IDC_STATIC,9,45,39,8
+    LTEXT           "Facet area",IDC_STATIC,9,59,35,8
+    COMBOBOX        IDC_COMBO_RAND,116,13,48,46,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    EDITTEXT        IDC_AREA_MIN,56,56,40,14,ES_AUTOHSCROLL | ES_READONLY | ES_NUMBER
+    EDITTEXT        IDC_AREA_MAX,96,56,40,14,ES_AUTOHSCROLL | ES_READONLY | ES_NUMBER
+    EDITTEXT        IDC_EDGE_SIGMA,136,42,40,14,ES_AUTOHSCROLL | ES_READONLY | ES_NUMBER
+    EDITTEXT        IDC_AREA_SIGMA,136,56,40,14,ES_AUTOHSCROLL | ES_READONLY | ES_NUMBER
+    LTEXT           "Minimum",IDC_STATIC,62,31,28,8
+    LTEXT           "Maximum",IDC_STATIC,102,31,30,8
+    LTEXT           "Sigma",IDC_STATIC,145,31,20,8
+END
+
+IDD_TRIAN_2D DIALOGEX 0, 0, 143, 71
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Triangulation 2D"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
+BEGIN
+    COMBOBOX        IDC_POLYGON_SIZE,21,24,28,98,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Vertex number",IDC_STATIC,14,13,46,8
+    PUSHBUTTON      "Next polygon",IDC_NEXT_POLYGON,10,42,50,14
+    COMBOBOX        IDC_TRIAN_TYPE,64,24,60,98,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Action",IDC_STATIC,85,13,21,8
+    PUSHBUTTON      "Do it",IDC_TRIANGULATE,70,42,50,14
+    CONTROL         "Rebuild Delauney",IDC_CHECK_GLOBAL,"Button",BS_AUTOCHECKBOX | BS_LEFTTEXT | NOT WS_VISIBLE | WS_TABSTOP,122,44,8,8
+    PUSHBUTTON      "Convex parts",IDC_CONVEX_PARTS,131,40,6,14,NOT WS_VISIBLE
+END
+
+IDD_LINES_X_2D DIALOG 0, 0, 138, 61
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Lines X 2D"
+FONT 8, "MS Sans Serif"
+BEGIN
+    COMBOBOX        IDC_LINES_NUM,45,40,28,98,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Прямые",IDC_STATIC,9,43,29,8
+    PUSHBUTTON      "Следующие",IDC_NEXT_LINES,79,40,50,14
+    LTEXT           "2-норма - красный",IDC_STATIC,65,17,64,8
+    LTEXT           "1-норма - жёлтый",IDC_STATIC,65,8,60,8
+    LTEXT           "U-норма - зелёный",IDC_STATIC,64,25,65,8
+    LTEXT           "Крестики  -->",IDC_STATIC,10,15,45,8
+END
+
+IDD_POINT_2D DIALOG 0, 0, 160, 58
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Line approximation"
+FONT 8, "MS Sans Serif"
+BEGIN
+    COMBOBOX        IDC_POINTS_NUM,53,16,28,98,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "Points num",IDC_STATIC,13,19,36,8
+    PUSHBUTTON      "Next points",IDC_NEXT_POINTS,93,15,50,14
+    LTEXT           "red - getLine2",IDC_STATIC,14,37,44,8
+    LTEXT           "yellow - getLine1a",IDC_STATIC,78,37,58,8
+END
+
+IDD_MAX_3D DIALOG 0, 0, 211, 65
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Максимизация 3D"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Следующий",ID_NEXT_OUTER,31,36,48,14
+    LTEXT           "Вершины",IDC_STATIC,15,20,32,8
+    COMBOBOX        IDC_COMBO_OUTER_NV,49,18,48,102,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Внешний объект",IDC_STATIC,7,7,98,51
+    DEFPUSHBUTTON   "Следующий",ID_NEXT_INNER,134,37,48,14,NOT WS_VISIBLE
+    GROUPBOX        "Внутренний объект",IDC_STATIC,110,7,98,51
+    COMBOBOX        IDC_COMBO_INNER,117,18,83,146,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_MAX_2D DIALOG 0, 0, 214, 98
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Максимизация 2D"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Следующий",ID_NEXT_OUTER,31,69,48,14
+    LTEXT           "Вершины",IDC_STATIC,15,48,32,8
+    COMBOBOX        IDC_COMBO_OUTER_NV,49,46,48,102,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Внешний объект",IDC_STATIC,7,19,98,75
+    COMBOBOX        IDC_COMBO_OUTER,14,29,83,102,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "Вписать",ID_NEXT_INNER,134,70,48,14
+    LTEXT           "Вершины",IDC_STATIC,118,49,32,8
+    COMBOBOX        IDC_COMBO_INNER_NV,152,46,48,102,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Внутренний объект",IDC_STATIC,110,19,98,75
+    COMBOBOX        IDC_COMBO_INNER,120,30,80,102,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_ROTATE,68,3,80,42,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_APPROX_2D DIALOG 0, 0, 156, 53
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Аппроксимация на плоскости"
+FONT 8, "MS Sans Serif"
+BEGIN
+    COMBOBOX        IDC_POINTS_NUM,51,32,28,98,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "К-во точек",IDC_STATIC,11,35,36,8
+    PUSHBUTTON      "Следующий",IDC_NEXT_POINTS,91,31,50,14
+    COMBOBOX        IDC_COMBO_VAR,13,10,124,80,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_MIN_2D DIALOG 0, 0, 214, 90
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Минимизация 2D"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Следующий",ID_NEXT_OUTER,31,57,48,14
+    LTEXT           "Вершины",IDC_STATIC,15,36,32,8
+    COMBOBOX        IDC_COMBO_OUTER_NV,53,34,44,102,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Внешний объект",IDC_STATIC,7,7,98,75
+    COMBOBOX        IDC_COMBO_OUTER,14,17,83,102,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "Следующий",ID_NEXT_INNER,134,58,48,14
+    LTEXT           "Количество",IDC_STATIC,113,37,40,8
+    COMBOBOX        IDC_COMBO_INNER_NV,157,34,43,102,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Внутренний объект",IDC_STATIC,110,7,98,75
+    COMBOBOX        IDC_COMBO_INNER,120,18,80,102,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_APPROX_3D DIALOG 0, 0, 156, 53
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Аппроксимация в пространстве"
+FONT 8, "MS Sans Serif"
+BEGIN
+    COMBOBOX        IDC_POINTS_NUM,51,32,28,98,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    LTEXT           "К-во точек",IDC_STATIC,11,35,36,8
+    PUSHBUTTON      "Следующий",IDC_NEXT_POINTS,91,31,50,14
+    COMBOBOX        IDC_COMBO_VAR,13,10,124,61,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_MIN_3D DIALOG 0, 0, 214, 71
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Минимизация 3D"
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "Следующий",ID_NEXT_OUTER,31,47,48,14,NOT WS_VISIBLE | NOT WS_TABSTOP
+    GROUPBOX        "Внешний объект",-1,7,7,98,58
+    COMBOBOX        IDC_COMBO_OUTER,14,31,83,102,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "Следующий",ID_NEXT_INNER,134,47,48,14
+    LTEXT           "Количество",-1,113,20,40,8
+    COMBOBOX        IDC_COMBO_INNER_NV,159,17,41,102,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Внутренний объект",-1,110,7,98,58
+    COMBOBOX        IDC_COMBO_INNER,117,31,83,102,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_INTERSECT_2D DIALOG 0, 0, 214, 90
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Пересечения 2D"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Следующий",ID_NEXT_1,31,57,48,14
+    LTEXT           "Вершины",IDC_STATIC,15,36,32,8
+    COMBOBOX        IDC_COMBO_1_NV,53,34,44,102,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Первый объект",IDC_STATIC,7,7,98,75
+    COMBOBOX        IDC_COMBO_1,14,17,83,102,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "Следующий",ID_NEXT_2,134,58,48,14
+    LTEXT           "Вершины",IDC_STATIC,113,37,32,8
+    COMBOBOX        IDC_COMBO_2_NV,157,34,43,102,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Второй объект",IDC_STATIC,110,7,98,75
+    COMBOBOX        IDC_COMBO_2,120,18,80,102,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_TRIAN_3D DIALOG 0, 0, 118, 71
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Триангуляция 3D"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Run",ID_RUN,11,50,40,14
+    PUSHBUTTON      "Cancel",IDCANCEL,68,50,40,14
+    EDITTEXT        IDC_N_VERTEX,55,8,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "N vertex",-1,16,11,28,8
+    COMBOBOX        IDC_COMBO_VAR,18,30,81,46,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_INTERSECT_3D DIALOG 0, 0, 214, 63
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Пересечения 3D"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Следующий",ID_NEXT_1,31,36,48,14
+    GROUPBOX        "Первый объект",-1,7,7,98,50
+    COMBOBOX        IDC_COMBO_1,15,17,82,102,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "Следующий",ID_NEXT_2,134,37,48,14
+    GROUPBOX        "Второй объект",-1,110,7,98,50
+    COMBOBOX        IDC_COMBO_2,118,18,82,102,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_OTHER DIALOG 0, 0, 173, 50
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Other"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,24,29,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,100,29,50,14
+    COMBOBOX        IDC_COMBO1,43,8,92,30,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+END
+
+IDD_MAX_2D3D DIALOG 0, 0, 214, 98
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
+CAPTION "Максимизация 2D->3D"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "Следующий",ID_NEXT_OUTER,31,69,48,14
+    LTEXT           "Вершины",IDC_STATIC,15,48,32,8
+    COMBOBOX        IDC_COMBO_OUTER_NV,49,46,48,102,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Внешний объект",IDC_STATIC,7,19,98,75
+    COMBOBOX        IDC_COMBO_OUTER,14,29,83,102,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    DEFPUSHBUTTON   "Вписать",ID_NEXT_INNER,134,70,48,14,NOT WS_VISIBLE
+    LTEXT           "Вершины",IDC_STATIC,118,49,32,8,NOT WS_VISIBLE
+    COMBOBOX        IDC_COMBO_INNER_NV,152,46,48,102,CBS_DROPDOWNLIST | NOT WS_VISIBLE | WS_VSCROLL | WS_TABSTOP
+    GROUPBOX        "Внутренний объект",IDC_STATIC,110,19,98,75
+    COMBOBOX        IDC_COMBO_INNER,120,30,80,102,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    COMBOBOX        IDC_COMBO_ROTATE,68,3,80,42,CBS_DROPDOWNLIST | NOT WS_VISIBLE | WS_VSCROLL | WS_TABSTOP
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_RANDOM_VEC, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 95
+    END
+
+    IDD_TRIAN_2D, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 136
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 64
+    END
+
+    IDD_LINES_X_2D, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 131
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 54
+    END
+
+    IDD_POINT_2D, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 153
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 51
+    END
+
+    IDD_MAX_3D, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 204
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 58
+    END
+
+    IDD_MAX_2D, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 207
+        TOPMARGIN, 7
+    END
+
+    IDD_APPROX_2D, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 149
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 46
+    END
+
+    IDD_MIN_2D, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 207
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 83
+    END
+
+    IDD_APPROX_3D, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 149
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 46
+    END
+
+    IDD_MIN_3D, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 207
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 64
+    END
+
+    IDD_INTERSECT_2D, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 207
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 83
+    END
+
+    IDD_TRIAN_3D, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 111
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 64
+    END
+
+    IDD_INTERSECT_3D, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 207
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 56
+    END
+
+    IDD_OTHER, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 166
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 43
+    END
+
+    IDD_MAX_2D3D, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 207
+        TOPMARGIN, 7
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog Info
+//
+
+IDD_RANDOM_VEC DLGINIT
+BEGIN
+    IDC_COMBO_RAND, 0x403, 6, 0
+0x5250, 0x6e61, 0x0064, 
+    IDC_COMBO_RAND, 0x403, 6, 0
+0x5251, 0x6e61, 0x0064, 
+    IDC_COMBO_RAND, 0x403, 7, 0
+0x5251, 0x6e61, 0x3264, "\000" 
+    0
+END
+
+IDD_TRIAN_2D DLGINIT
+BEGIN
+    IDC_POLYGON_SIZE, 0x403, 2, 0
+0x0034, 
+    IDC_POLYGON_SIZE, 0x403, 2, 0
+0x0035, 
+    IDC_POLYGON_SIZE, 0x403, 2, 0
+0x0036, 
+    IDC_POLYGON_SIZE, 0x403, 2, 0
+0x0037, 
+    IDC_POLYGON_SIZE, 0x403, 2, 0
+0x0038, 
+    IDC_POLYGON_SIZE, 0x403, 2, 0
+0x0039, 
+    IDC_TRIAN_TYPE, 0x403, 14, 0
+0x7254, 0x6169, 0x676e, 0x6c75, 0x7461, 0x6f69, 0x006e, 
+    IDC_TRIAN_TYPE, 0x403, 13, 0
+0x6f43, 0x766e, 0x7865, 0x7020, 0x7261, 0x7374, "\000" 
+    IDC_TRIAN_TYPE, 0x403, 14, 0
+0x7053, 0x696c, 0x2074, 0x6f70, 0x796c, 0x6f67, 0x006e, 
+    0
+END
+
+IDD_LINES_X_2D DLGINIT
+BEGIN
+    IDC_LINES_NUM, 0x403, 2, 0
+0x0033, 
+    IDC_LINES_NUM, 0x403, 2, 0
+0x0034, 
+    IDC_LINES_NUM, 0x403, 2, 0
+0x0035, 
+    IDC_LINES_NUM, 0x403, 2, 0
+0x0036, 
+    IDC_LINES_NUM, 0x403, 2, 0
+0x0037, 
+    0
+END
+
+IDD_POINT_2D DLGINIT
+BEGIN
+    IDC_POINTS_NUM, 0x403, 2, 0
+0x0033, 
+    IDC_POINTS_NUM, 0x403, 2, 0
+0x0034, 
+    IDC_POINTS_NUM, 0x403, 2, 0
+0x0035, 
+    IDC_POINTS_NUM, 0x403, 2, 0
+0x0036, 
+    IDC_POINTS_NUM, 0x403, 2, 0
+0x0037, 
+    IDC_POINTS_NUM, 0x403, 2, 0
+0x0038, 
+    IDC_POINTS_NUM, 0x403, 2, 0
+0x0039, 
+    IDC_POINTS_NUM, 0x403, 3, 0
+0x3031, "\000" 
+    IDC_POINTS_NUM, 0x403, 3, 0
+0x3131, "\000" 
+    0
+END
+
+IDD_MAX_3D DLGINIT
+BEGIN
+    IDC_COMBO_OUTER_NV, 0x403, 2, 0
+0x0034, 
+    IDC_COMBO_OUTER_NV, 0x403, 2, 0
+0x0035, 
+    IDC_COMBO_OUTER_NV, 0x403, 2, 0
+0x0036, 
+    IDC_COMBO_OUTER_NV, 0x403, 2, 0
+0x0037, 
+    IDC_COMBO_OUTER_NV, 0x403, 2, 0
+0x0038, 
+    IDC_COMBO_OUTER_NV, 0x403, 2, 0
+0x0039, 
+    IDC_COMBO_OUTER_NV, 0x403, 3, 0
+0x3031, "\000" 
+    IDC_COMBO_OUTER_NV, 0x403, 3, 0
+0x3131, "\000" 
+    IDC_COMBO_OUTER_NV, 0x403, 3, 0
+0x3231, "\000" 
+    IDC_COMBO_INNER, 0x403, 6, 0
+0xf4d1, 0xf0e5, 0x00e0, 
+    IDC_COMBO_INNER, 0x403, 14, 0
+0xe8d6, 0xe8eb, 0xe4ed, 0x20f0, 0xe8f4, 0xf1ea, 0x002e, 
+    IDC_COMBO_INNER, 0x403, 12, 0
+0xeeca, 0xf3ed, 0x20f1, 0xe8f4, 0xf1ea, 0x002e, 
+    IDC_COMBO_INNER, 0x403, 14, 0
+0xf4d1, 0xf0e5, 0xe8ee, 0x20e4, 0xe8f4, 0xf1ea, 0x002e, 
+    IDC_COMBO_INNER, 0x403, 9, 0
+0xe8d6, 0xe8eb, 0xe4ed, 0x20f0, "\000" 
+    IDC_COMBO_INNER, 0x403, 7, 0
+0xeeca, 0xf3ed, 0x20f1, "\000" 
+    IDC_COMBO_INNER, 0x403, 9, 0
+0xf4d1, 0xf0e5, 0xe8ee, 0x20e4, "\000" 
+    IDC_COMBO_INNER, 0x403, 11, 0
+0xebdd, 0xe8eb, 0xf1ef, 0xe8ee, 0x20e4, "\000" 
+    IDC_COMBO_INNER, 0x403, 12, 0
+0xf3ca, 0xeee1, 0xe4e8, 0xe120, 0xe22f, 0x00f0, 
+    IDC_COMBO_INNER, 0x403, 18, 0
+0xedcc, 0xe3ee, 0xe3ee, 0xe0f0, 0xeded, 0xeae8, 0xe120, 0xe22f, 0x00f0, 
+
+    IDC_COMBO_INNER, 0x403, 18, 0
+0xedcc, 0xe3ee, 0xe3ee, 0xe0f0, 0xeded, 0xeae8, 0x3120, 0xe22f, 0x00f0, 
+
+    IDC_COMBO_INNER, 0x403, 13, 0
+0xedcc, 0xe3ee, 0xe3ee, 0xe0f0, 0xeded, 0xeae8, "\000" 
+    0
+END
+
+IDD_MAX_2D DLGINIT
+BEGIN
+    IDC_COMBO_OUTER_NV, 0x403, 2, 0
+0x0033, 
+    IDC_COMBO_OUTER_NV, 0x403, 2, 0
+0x0034, 
+    IDC_COMBO_OUTER_NV, 0x403, 2, 0
+0x0035, 
+    IDC_COMBO_OUTER_NV, 0x403, 2, 0
+0x0036, 
+    IDC_COMBO_OUTER_NV, 0x403, 2, 0
+0x0037, 
+    IDC_COMBO_OUTER_NV, 0x403, 2, 0
+0x0038, 
+    IDC_COMBO_OUTER_NV, 0x403, 2, 0
+0x0039, 
+    IDC_COMBO_OUTER_NV, 0x403, 3, 0
+0x3031, "\000" 
+    IDC_COMBO_OUTER_NV, 0x403, 3, 0
+0x3131, "\000" 
+    IDC_COMBO_OUTER_NV, 0x403, 3, 0
+0x3231, "\000" 
+    IDC_COMBO_OUTER, 0x403, 19, 0
+0xfbc2, 0x2eef, 0xec20, 0xeeed, 0xeee3, 0xe3f3, 0xebee, 0xedfc, 0xeae8, 
+"\000" 
+    IDC_COMBO_OUTER, 0x403, 21, 0
+0xe5cd, 0xfbe2, 0x2eef, 0xec20, 0xeeed, 0xeee3, 0xe3f3, 0xebee, 0xedfc, 
+0xeae8, "\000" 
+    IDC_COMBO_INNER_NV, 0x403, 2, 0
+0x0033, 
+    IDC_COMBO_INNER_NV, 0x403, 2, 0
+0x0034, 
+    IDC_COMBO_INNER_NV, 0x403, 2, 0
+0x0035, 
+    IDC_COMBO_INNER_NV, 0x403, 2, 0
+0x0036, 
+    IDC_COMBO_INNER_NV, 0x403, 2, 0
+0x0037, 
+    IDC_COMBO_INNER_NV, 0x403, 2, 0
+0x0038, 
+    IDC_COMBO_INNER_NV, 0x403, 2, 0
+0x0039, 
+    IDC_COMBO_INNER_NV, 0x403, 3, 0
+0x3031, "\000" 
+    IDC_COMBO_INNER_NV, 0x403, 3, 0
+0x3131, "\000" 
+    IDC_COMBO_INNER_NV, 0x403, 3, 0
+0x3231, "\000" 
+    IDC_COMBO_INNER, 0x403, 11, 0
+0xeace, 0xf3f0, 0xede6, 0xf1ee, 0xfcf2, "\000" 
+    IDC_COMBO_INNER, 0x403, 13, 0
+0xebdd, 0xe8eb, 0xf1ef, 0xf420, 0xeae8, 0x2ef1, "\000" 
+    IDC_COMBO_INNER, 0x403, 13, 0
+0xebdd, 0xe8eb, 0xf1ef, 0xf120, 0xeee2, 0x2ee1, "\000" 
+    IDC_COMBO_INNER, 0x403, 14, 0
+0xf0cf, 0xecff, 0xf3ee, 0xeee3, 0xfceb, 0xe8ed, 0x00ea, 
+    IDC_COMBO_INNER, 0x403, 5, 0
+0xeed0, 0xe1ec, "\000" 
+    IDC_COMBO_INNER, 0x403, 19, 0
+0xfbc2, 0x2eef, 0xec20, 0xeeed, 0xeee3, 0xe3f3, 0xebee, 0xedfc, 0xeae8, 
+"\000" 
+    IDC_COMBO_ROTATE, 0x403, 14, 0
+0xc120, 0xe7e5, 0xe220, 0xe0f0, 0xe5f9, 0xe8ed, 0x00ff, 
+    IDC_COMBO_ROTATE, 0x403, 13, 0
+0xd120, 0xe220, 0xe0f0, 0xe5f9, 0xe8ed, 0xece5, "\000" 
+    0
+END
+
+IDD_APPROX_2D DLGINIT
+BEGIN
+    IDC_POINTS_NUM, 0x403, 2, 0
+0x0034, 
+    IDC_POINTS_NUM, 0x403, 2, 0
+0x0035, 
+    IDC_POINTS_NUM, 0x403, 2, 0
+0x0036, 
+    IDC_POINTS_NUM, 0x403, 2, 0
+0x0037, 
+    IDC_POINTS_NUM, 0x403, 2, 0
+0x0038, 
+    IDC_POINTS_NUM, 0x403, 2, 0
+0x0039, 
+    IDC_POINTS_NUM, 0x403, 3, 0
+0x3031, "\000" 
+    IDC_POINTS_NUM, 0x403, 3, 0
+0x3131, "\000" 
+    IDC_COMBO_VAR, 0x403, 15, 0
+0xeef2, 0xeaf7, 0x20e8, 0x3e2d, 0xf220, 0xf7ee, 0xe0ea, "\000" 
+    IDC_COMBO_VAR, 0x403, 16, 0
+0xeef2, 0xeaf7, 0x20e8, 0x3e2d, 0xef20, 0xfff0, 0xe0ec, 0x00ff, 
+    IDC_COMBO_VAR, 0x403, 20, 0
+0xeef2, 0xeaf7, 0x20e8, 0x3e2d, 0xee20, 0xf0ea, 0xe6f3, 0xeeed, 0xf2f1, 
+0x00fc, 
+    IDC_COMBO_VAR, 0x403, 22, 0
+0xedec, 0xe3ee, 0xf3ee, 0xeee3, 0xfceb, 0xe8ed, 0x20ea, 0x3e2d, 0xea20, 
+0xf3f0, 0x00e3, 
+    IDC_COMBO_VAR, 0x403, 24, 0
+0xedec, 0xe3ee, 0xf3ee, 0xeee3, 0xfceb, 0xe8ed, 0x20ea, 0x3e2d, 0xfd20, 
+0xebeb, 0xefe8, 0x00f1, 
+    IDC_COMBO_VAR, 0x403, 31, 0
+0xedec, 0xe3ee, 0xf3ee, 0xeee3, 0xfceb, 0xe8ed, 0x20ea, 0x3e2d, 0xef20, 
+0xfff0, 0xeeec, 0xe3f3, 0xebee, 0xedfc, 0xeae8, "\000" 
+    IDC_COMBO_VAR, 0x403, 31, 0
+0xedec, 0xe3ee, 0xf3ee, 0xeee3, 0xfceb, 0xe8ed, 0x20ea, 0x3e2d, 0xec20, 
+0xeeed, 0xeee3, 0xe3f3, 0xebee, 0xedfc, 0xeae8, "\000" 
+    IDC_COMBO_VAR, 0x403, 7, 0
+0xeff1, 0xe0eb, 0xede9, "\000" 
+    0
+END
+
+IDD_MIN_2D DLGINIT
+BEGIN
+    IDC_COMBO_OUTER_NV, 0x403, 2, 0
+0x0033, 
+    IDC_COMBO_OUTER_NV, 0x403, 2, 0
+0x0034, 
+    IDC_COMBO_OUTER_NV, 0x403, 2, 0
+0x0035, 
+    IDC_COMBO_OUTER_NV, 0x403, 2, 0
+0x0036, 
+    IDC_COMBO_OUTER_NV, 0x403, 2, 0
+0x0037, 
+    IDC_COMBO_OUTER_NV, 0x403, 2, 0
+0x0038, 
+    IDC_COMBO_OUTER_NV, 0x403, 2, 0
+0x0039, 
+    IDC_COMBO_OUTER_NV, 0x403, 3, 0
+0x3031, "\000" 
+    IDC_COMBO_OUTER_NV, 0x403, 3, 0
+0x3131, "\000" 
+    IDC_COMBO_OUTER_NV, 0x403, 3, 0
+0x3231, "\000" 
+    IDC_COMBO_OUTER, 0x403, 11, 0
+0xeace, 0xf3f0, 0xede6, 0xf1ee, 0xfcf2, "\000" 
+    IDC_COMBO_OUTER, 0x403, 13, 0
+0xebdd, 0xe8eb, 0xf1ef, 0xf420, 0xeae8, 0x2ef1, "\000" 
+    IDC_COMBO_OUTER, 0x403, 13, 0
+0xebdd, 0xe8eb, 0xf1ef, 0xf120, 0xeee2, 0x2ee1, "\000" 
+    IDC_COMBO_OUTER, 0x403, 12, 0
+0xf0d2, 0xf3e5, 0xeee3, 0xfceb, 0xe8ed, 0x00ea, 
+    IDC_COMBO_OUTER, 0x403, 14, 0
+0xf0cf, 0xecff, 0xf3ee, 0xeee3, 0xfceb, 0xe8ed, 0x00ea, 
+    IDC_COMBO_OUTER, 0x403, 15, 0
+0xe0cf, 0xe0f0, 0xebeb, 0xebe5, 0xe3ee, 0xe0f0, 0xecec, "\000" 
+    IDC_COMBO_OUTER, 0x403, 5, 0
+0xeed0, 0xe1ec, "\000" 
+    IDC_COMBO_OUTER, 0x403, 9, 0
+0xf0d2, 0xefe0, 0xf6e5, 0xffe8, "\000" 
+    IDC_COMBO_OUTER, 0x403, 14, 0
+0xedcc, 0xe3ee, 0xf3ee, 0xeee3, 0xfceb, 0xe8ed, 0x00ea, 
+    IDC_COMBO_OUTER, 0x403, 14, 0
+0xe0d0, 0xede2, 0xf3ee, 0xeee3, 0xfceb, 0xe8ed, 0x00ea, 
+    IDC_COMBO_INNER_NV, 0x403, 2, 0
+0x0032, 
+    IDC_COMBO_INNER_NV, 0x403, 2, 0
+0x0033, 
+    IDC_COMBO_INNER_NV, 0x403, 2, 0
+0x0034, 
+    IDC_COMBO_INNER_NV, 0x403, 2, 0
+0x0035, 
+    IDC_COMBO_INNER_NV, 0x403, 2, 0
+0x0036, 
+    IDC_COMBO_INNER_NV, 0x403, 2, 0
+0x0037, 
+    IDC_COMBO_INNER_NV, 0x403, 2, 0
+0x0038, 
+    IDC_COMBO_INNER_NV, 0x403, 2, 0
+0x0039, 
+    IDC_COMBO_INNER, 0x403, 6, 0
+0xeed2, 0xeaf7, 0x00e8, 
+    IDC_COMBO_INNER, 0x403, 11, 0
+0xeace, 0xf3f0, 0xede6, 0xf1ee, 0xe8f2, "\000" 
+    IDC_COMBO_INNER, 0x403, 7, 0
+0xf0cf, 0xecff, 0xe5fb, "\000" 
+    0
+END
+
+IDD_APPROX_3D DLGINIT
+BEGIN
+    IDC_POINTS_NUM, 0x403, 2, 0
+0x0034, 
+    IDC_POINTS_NUM, 0x403, 2, 0
+0x0035, 
+    IDC_POINTS_NUM, 0x403, 2, 0
+0x0036, 
+    IDC_POINTS_NUM, 0x403, 2, 0
+0x0037, 
+    IDC_POINTS_NUM, 0x403, 2, 0
+0x0038, 
+    IDC_POINTS_NUM, 0x403, 2, 0
+0x0039, 
+    IDC_POINTS_NUM, 0x403, 3, 0
+0x3031, "\000" 
+    IDC_POINTS_NUM, 0x403, 3, 0
+0x3131, "\000" 
+    IDC_COMBO_VAR, 0x403, 21, 0
+0xedec, 0xe3ee, 0xe3ee, 0xe0f0, 0xeded, 0xe8ed, 0x20ea, 0x3e2d, 0xf820, 
+0xf0e0, "\000" 
+    IDC_COMBO_VAR, 0x403, 27, 0
+0xedec, 0xe3ee, 0xe3ee, 0xe0f0, 0xeded, 0xe8ed, 0x20ea, 0x3e2d, 0xfd20, 
+0xebeb, 0xefe8, 0xeef1, 0xe4e8, "\000" 
+    IDC_COMBO_VAR, 0x403, 32, 0
+0xedec, 0xe3ee, 0xe3ee, 0xe0f0, 0xeded, 0xe8ed, 0x20ea, 0x3e2d, 0xef20, 
+0xf0e0, 0xebe0, 0xe5eb, 0xe5eb, 0xe8ef, 0xe5ef, 0x00e4, 
+    0
+END
+
+IDD_MIN_3D DLGINIT
+BEGIN
+    IDC_COMBO_OUTER, 0x403, 6, 0
+0xf4d1, 0xf0e5, 0x00e0, 
+    IDC_COMBO_OUTER, 0x403, 10, 0
+0xebdd, 0xe8eb, 0xf1ef, 0xe8ee, 0x00e4, 
+    IDC_COMBO_OUTER, 0x403, 8, 0
+0xe8d6, 0xe8eb, 0xe4ed, 0x00f0, 
+    IDC_COMBO_OUTER, 0x403, 9, 0
+0xe5d2, 0xf0f2, 0xfde0, 0xf0e4, "\000" 
+    IDC_COMBO_OUTER, 0x403, 20, 0
+0xe0cf, 0xe0f0, 0xebeb, 0xebe5, 0xefe5, 0xefe8, 0xe4e5, 0xe120, 0xe22f, 
+0x00f0, 
+    IDC_COMBO_OUTER, 0x403, 15, 0
+0xe0cf, 0xe0f0, 0xebeb, 0xebe5, 0xefe5, 0xefe8, 0xe4e5, "\000" 
+    IDC_COMBO_INNER_NV, 0x403, 2, 0
+0x0034, 
+    IDC_COMBO_INNER_NV, 0x403, 2, 0
+0x0035, 
+    IDC_COMBO_INNER_NV, 0x403, 2, 0
+0x0036, 
+    IDC_COMBO_INNER_NV, 0x403, 2, 0
+0x0037, 
+    IDC_COMBO_INNER_NV, 0x403, 2, 0
+0x0038, 
+    IDC_COMBO_INNER_NV, 0x403, 2, 0
+0x0039, 
+    IDC_COMBO_INNER, 0x403, 6, 0
+0xeed2, 0xeaf7, 0x00e8, 
+    IDC_COMBO_INNER, 0x403, 6, 0
+0xf4d1, 0xf0e5, 0x00fb, 
+    IDC_COMBO_INNER, 0x403, 7, 0
+0xf0cf, 0xecff, 0xe5fb, "\000" 
+    0
+END
+
+IDD_INTERSECT_2D DLGINIT
+BEGIN
+    IDC_COMBO_1_NV, 0x403, 2, 0
+0x0033, 
+    IDC_COMBO_1_NV, 0x403, 2, 0
+0x0034, 
+    IDC_COMBO_1_NV, 0x403, 2, 0
+0x0035, 
+    IDC_COMBO_1_NV, 0x403, 2, 0
+0x0036, 
+    IDC_COMBO_1_NV, 0x403, 2, 0
+0x0037, 
+    IDC_COMBO_1_NV, 0x403, 2, 0
+0x0038, 
+    IDC_COMBO_1_NV, 0x403, 2, 0
+0x0039, 
+    IDC_COMBO_1_NV, 0x403, 3, 0
+0x3031, "\000" 
+    IDC_COMBO_1_NV, 0x403, 3, 0
+0x3131, "\000" 
+    IDC_COMBO_1_NV, 0x403, 3, 0
+0x3231, "\000" 
+    IDC_COMBO_1, 0x403, 7, 0
+0xf0cf, 0xecff, 0xffe0, "\000" 
+    IDC_COMBO_1, 0x403, 8, 0
+0xf2ce, 0xe5f0, 0xeee7, 0x00ea, 
+    IDC_COMBO_1, 0x403, 11, 0
+0xeace, 0xf3f0, 0xede6, 0xf1ee, 0xfcf2, "\000" 
+    IDC_COMBO_1, 0x403, 7, 0
+0xebdd, 0xe8eb, 0xf1ef, "\000" 
+    IDC_COMBO_1, 0x403, 14, 0
+0xedcc, 0xe3ee, 0xf3ee, 0xeee3, 0xfceb, 0xe8ed, 0x00ea, 
+    IDC_COMBO_2_NV, 0x403, 2, 0
+0x0033, 
+    IDC_COMBO_2_NV, 0x403, 2, 0
+0x0034, 
+    IDC_COMBO_2_NV, 0x403, 2, 0
+0x0035, 
+    IDC_COMBO_2_NV, 0x403, 2, 0
+0x0036, 
+    IDC_COMBO_2_NV, 0x403, 2, 0
+0x0037, 
+    IDC_COMBO_2_NV, 0x403, 2, 0
+0x0038, 
+    IDC_COMBO_2_NV, 0x403, 2, 0
+0x0039, 
+    IDC_COMBO_2, 0x403, 7, 0
+0xf0cf, 0xecff, 0xffe0, "\000" 
+    IDC_COMBO_2, 0x403, 8, 0
+0xf2ce, 0xe5f0, 0xeee7, 0x00ea, 
+    IDC_COMBO_2, 0x403, 14, 0
+0xed4d, 0xe3ee, 0xf3ee, 0xeee3, 0xfceb, 0xe8ed, 0x00ea, 
+    IDC_COMBO_2, 0x403, 19, 0
+0xfbc2, 0x2eef, 0xec20, 0xeeed, 0xeee3, 0xe3f3, 0xebee, 0xedfc, 0xeae8, 
+"\000" 
+    0
+END
+
+IDD_TRIAN_3D DLGINIT
+BEGIN
+    IDC_COMBO_VAR, 0x403, 13, 0
+0xe4ce, 0xe0ed, 0xeb20, 0xecee, 0xede0, 0xffe0, "\000" 
+    IDC_COMBO_VAR, 0x403, 12, 0
+0xe2c4, 0x20e5, 0xeeeb, 0xe0ec, 0xfbed, 0x00e5, 
+    0
+END
+
+IDD_INTERSECT_3D DLGINIT
+BEGIN
+    IDC_COMBO_1, 0x403, 13, 0
+0xedcc, 0xe3ee, 0xe3ee, 0xe0f0, 0xeded, 0xeae8, "\000" 
+    IDC_COMBO_2, 0x403, 10, 0
+0xebcf, 0xf1ee, 0xeeea, 0xf2f1, 0x00fc, 
+    IDC_COMBO_2, 0x403, 17, 0
+0xeecf, 0xf3eb, 0xf0ef, 0xf1ee, 0xf0f2, 0xede0, 0xf2f1, 0xeee2, "\000" 
+    0
+END
+
+IDD_OTHER DLGINIT
+BEGIN
+    IDC_COMBO1, 0x403, 23, 0
+0x5453, 0x3a4c, 0x4420, 0x7669, 0x6469, 0x2065, 0x6e69, 0x6f74, 0x7020, 
+0x7261, 0x7374, "\000" 
+    0
+END
+
+IDD_MAX_2D3D DLGINIT
+BEGIN
+    IDC_COMBO_OUTER_NV, 0x403, 2, 0
+0x0034, 
+    IDC_COMBO_OUTER_NV, 0x403, 2, 0
+0x0035, 
+    IDC_COMBO_OUTER_NV, 0x403, 2, 0
+0x0036, 
+    IDC_COMBO_OUTER_NV, 0x403, 2, 0
+0x0037, 
+    IDC_COMBO_OUTER_NV, 0x403, 2, 0
+0x0038, 
+    IDC_COMBO_OUTER_NV, 0x403, 2, 0
+0x0039, 
+    IDC_COMBO_OUTER_NV, 0x403, 3, 0
+0x3031, "\000" 
+    IDC_COMBO_OUTER_NV, 0x403, 3, 0
+0x3131, "\000" 
+    IDC_COMBO_OUTER_NV, 0x403, 3, 0
+0x3231, "\000" 
+    IDC_COMBO_OUTER, 0x403, 18, 0
+0xfbc2, 0x2eef, 0xec20, 0xeeed, 0xeee3, 0xf0e3, 0xede0, 0xe8ed, 0x00ea, 
+
+    IDC_COMBO_INNER_NV, 0x403, 2, 0
+0x0033, 
+    IDC_COMBO_INNER_NV, 0x403, 2, 0
+0x0034, 
+    IDC_COMBO_INNER_NV, 0x403, 2, 0
+0x0035, 
+    IDC_COMBO_INNER_NV, 0x403, 2, 0
+0x0036, 
+    IDC_COMBO_INNER_NV, 0x403, 2, 0
+0x0037, 
+    IDC_COMBO_INNER_NV, 0x403, 2, 0
+0x0038, 
+    IDC_COMBO_INNER_NV, 0x403, 2, 0
+0x0039, 
+    IDC_COMBO_INNER_NV, 0x403, 3, 0
+0x3031, "\000" 
+    IDC_COMBO_INNER_NV, 0x403, 3, 0
+0x3131, "\000" 
+    IDC_COMBO_INNER_NV, 0x403, 3, 0
+0x3231, "\000" 
+    IDC_COMBO_INNER, 0x403, 11, 0
+0xeace, 0xf3f0, 0xede6, 0xf1ee, 0xfcf2, "\000" 
+    IDC_COMBO_INNER, 0x403, 12, 0
+0xf0d2, 0xf3e5, 0xeee3, 0xfceb, 0xe8ed, 0x00ea, 
+    IDC_COMBO_INNER, 0x403, 15, 0
+0xe0cf, 0xe0f0, 0xebeb, 0xebe5, 0xe3ee, 0xe0f0, 0xecec, "\000" 
+    IDC_COMBO_INNER, 0x403, 14, 0
+0xf0cf, 0xecff, 0xf3ee, 0xeee3, 0xfceb, 0xe8ed, 0x00ea, 
+    IDC_COMBO_INNER, 0x403, 5, 0
+0xeed0, 0xe1ec, "\000" 
+    IDC_COMBO_ROTATE, 0x403, 14, 0
+0xc120, 0xe7e5, 0xe220, 0xe0f0, 0xe5f9, 0xe8ed, 0x00ff, 
+    IDC_COMBO_ROTATE, 0x403, 13, 0
+0xd120, 0xe220, 0xe0f0, 0xe5f9, 0xe8ed, 0xece5, "\000" 
+    0
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_TRIAN_2D AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+#endif    // Русский (Россия) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// Английский (США) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+IDD_ABOUTBOX DIALOG 0, 0, 154, 66
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "About DEMO"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "DEMO version 60",IDC_STATIC,49,10,60,8,SS_NOPREFIX
+    LTEXT           "prografix.github.io",IDC_STATIC,49,25,55,8
+    DEFPUSHBUTTON   "OK",IDOK,51,42,50,14,WS_GROUP
+END
+
+IDD_SCENE_PAR DIALOG 0, 0, 216, 90
+STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Scene parameters"
+FONT 8, "MS Sans Serif"
+BEGIN
+    PUSHBUTTON      "OK",IDOK,31,67,50,14
+    RTEXT           "Movement step",-1,4,11,52,8,NOT WS_GROUP
+    CONTROL         "Slider5",IDC_SDISTANCE,"msctls_trackbar32",WS_TABSTOP,60,9,112,15
+    EDITTEXT        IDC_EDISTANCE,174,9,17,14,ES_RIGHT | ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER | NOT WS_TABSTOP
+    RTEXT           "Rotation step",-1,4,27,52,8,NOT WS_GROUP
+    CONTROL         "Slider4",IDC_SANGLE,"msctls_trackbar32",WS_TABSTOP,60,25,112,15
+    EDITTEXT        IDC_EANGLE,170,25,21,14,ES_RIGHT | ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER | NOT WS_TABSTOP
+    RTEXT           "Zoom step",-1,4,43,52,8,NOT WS_GROUP
+    CONTROL         "Slider3",IDC_SMAGNIFY,"msctls_trackbar32",TBS_AUTOTICKS | WS_TABSTOP,60,41,112,15
+    EDITTEXT        IDC_EMAGNIFY,174,41,17,14,ES_RIGHT | ES_AUTOHSCROLL | ES_READONLY | NOT WS_BORDER | NOT WS_TABSTOP
+    LTEXT           "°",-1,191,25,8,8
+    PUSHBUTTON      "Cancel",IDCANCEL,133,67,50,14
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO
+BEGIN
+    IDD_ABOUTBOX, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 147
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 59
+    END
+
+    IDD_SCENE_PAR, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 209
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 83
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\DEMO.ico"
+
+IDR_DEMOTYPE            ICON                    "res\\DEMODoc.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINFRAME MENU
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&New\tCtrl+N",                ID_FILE_NEW
+        MENUITEM "&Open...\tCtrl+O",            ID_FILE_OPEN
+        MENUITEM "&Save\tCtrl+S",               ID_FILE_SAVE
+        MENUITEM "Save &As...",                 ID_FILE_SAVE_AS
+        MENUITEM "Save &View...",               ID_FILE_SAVE_VIEW
+        MENUITEM SEPARATOR
+        MENUITEM "Recent File",                 ID_FILE_MRU_FILE1, GRAYED
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_APP_EXIT
+    END
+    POPUP "&Demo"
+    BEGIN
+        MENUITEM "Random vectors",              ID_DEMO_RANDOM_VEC
+        MENUITEM "Triangulation 2D",            ID_DEMO_TRIAN_2D
+        MENUITEM "Approximation 2D",            ID_DEMO_APPROX_2D
+        MENUITEM "Maximization 2D",             ID_DEMO_MAXI_2D
+        MENUITEM "Minimization 2D",             ID_DEMO_MINI_2D
+        MENUITEM "Intersection 2D",             ID_DEMO_INTERSECT_2D
+        MENUITEM "Lines X in 2D",               ID_DEMO_LINES_X_2D
+        MENUITEM "Maximization 2D->3D",         ID_DEMO_MAXI_2D_3D
+        MENUITEM "Triangulation 3D",            ID_DEMO_TRIAN_3D
+        MENUITEM "Approximation 3D",            ID_DEMO_APPROX_3D
+        MENUITEM "Maximization 3D",             ID_DEMO_MAXI_3D
+        MENUITEM "Minimization 3D",             ID_DEMO_MINI_3D
+        MENUITEM "Intersection 3D",             ID_DEMO_INTERSECT_3D
+        MENUITEM "Other",                       ID_DEMO_OTHER
+    END
+    POPUP "&Model"
+    BEGIN
+        MENUITEM "&Wire",                       ID_MODEL_WIRE
+        MENUITEM "&Flat",                       ID_MODEL_FLAT
+        MENUITEM "&Smooth",                     ID_MODEL_SMOOTH
+    END
+    MENUITEM "&Scene",                      ID_SCENE
+    POPUP "&View"
+    BEGIN
+        MENUITEM "&Toolbar",                    ID_VIEW_TOOLBAR
+    END
+    POPUP "&Help"
+    BEGIN
+        MENUITEM "&About DEMO...",              ID_APP_ABOUT
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINFRAME ACCELERATORS
+BEGIN
+    "N",            ID_FILE_NEW,            VIRTKEY, CONTROL
+    "O",            ID_FILE_OPEN,           VIRTKEY, CONTROL
+    "S",            ID_FILE_SAVE,           VIRTKEY, CONTROL
+    "Z",            ID_EDIT_UNDO,           VIRTKEY, CONTROL
+    "X",            ID_EDIT_CUT,            VIRTKEY, CONTROL
+    "C",            ID_EDIT_COPY,           VIRTKEY, CONTROL
+    "V",            ID_EDIT_PASTE,          VIRTKEY, CONTROL
+    VK_BACK,        ID_EDIT_UNDO,           VIRTKEY, ALT
+    VK_DELETE,      ID_EDIT_CUT,            VIRTKEY, SHIFT
+    VK_INSERT,      ID_EDIT_COPY,           VIRTKEY, CONTROL
+    VK_INSERT,      ID_EDIT_PASTE,          VIRTKEY, SHIFT
+    VK_F6,          ID_NEXT_PANE,           VIRTKEY 
+    VK_F6,          ID_PREV_PANE,           VIRTKEY, SHIFT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 60,0,0,0
+ PRODUCTVERSION 60,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "FileDescription", "DEMO MFC Application"
+            VALUE "FileVersion", "60, 0, 0, 0"
+            VALUE "InternalName", "DEMO"
+            VALUE "LegalCopyright", "prografix.github.io"
+            VALUE "OriginalFilename", "DEMO.EXE"
+            VALUE "ProductName", "DEMO Application"
+            VALUE "ProductVersion", "60, 0, 0, 1"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_MAINFRAME TOOLBAR 16, 16
+BEGIN
+    BUTTON      ID_FILE_OPEN
+    BUTTON      ID_FILE_SAVE
+    SEPARATOR
+    BUTTON      ID_MOV_XM
+    BUTTON      ID_MOV_XP
+    BUTTON      ID_ROT_X_CW
+    BUTTON      ID_ROT_X_CCW
+    SEPARATOR
+    BUTTON      ID_MOV_ZP
+    BUTTON      ID_MOV_ZM
+    BUTTON      ID_ROT_Z_CW
+    BUTTON      ID_ROT_Z_CCW
+    SEPARATOR
+    BUTTON      ID_MOV_YP
+    BUTTON      ID_MOV_YM
+    BUTTON      ID_ROT_Y_CW
+    BUTTON      ID_ROT_Y_CCW
+    SEPARATOR
+    BUTTON      ID_ZOOM_OUT
+    BUTTON      ID_ZOOM_IN
+    BUTTON      ID_RESET
+    SEPARATOR
+    BUTTON      ID_APP_ABOUT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE
+BEGIN
+    IDR_MAINFRAME           "DEMO\n\nDEMO\n\n\nDEMO.Document\nDEMO Document"
+END
+
+STRINGTABLE
+BEGIN
+    AFX_IDS_APP_TITLE       "DEMO"
+    AFX_IDS_IDLEMESSAGE     "Ready"
+END
+
+STRINGTABLE
+BEGIN
+    ID_INDICATOR_EXT        "EXT"
+    ID_INDICATOR_CAPS       "CAP"
+    ID_INDICATOR_NUM        "NUM"
+    ID_INDICATOR_SCRL       "SCRL"
+    ID_INDICATOR_OVR        "OVR"
+    ID_INDICATOR_REC        "REC"
+END
+
+STRINGTABLE
+BEGIN
+    ID_FILE_NEW             "Create a new document\nNew"
+    ID_FILE_OPEN            "Open an existing document\nOpen"
+    ID_FILE_CLOSE           "Close the active document\nClose"
+    ID_FILE_SAVE            "Save the active document\nSave"
+    ID_FILE_SAVE_AS         "Save the active document with a new name\nSave As"
+END
+
+STRINGTABLE
+BEGIN
+    ID_APP_ABOUT            "Display program information, version number and copyright\nAbout"
+    ID_APP_EXIT             "Quit the application; prompts to save documents\nExit"
+END
+
+STRINGTABLE
+BEGIN
+    ID_FILE_MRU_FILE1       "Open this document"
+    ID_FILE_MRU_FILE2       "Open this document"
+    ID_FILE_MRU_FILE3       "Open this document"
+    ID_FILE_MRU_FILE4       "Open this document"
+    ID_FILE_MRU_FILE5       "Open this document"
+    ID_FILE_MRU_FILE6       "Open this document"
+    ID_FILE_MRU_FILE7       "Open this document"
+    ID_FILE_MRU_FILE8       "Open this document"
+    ID_FILE_MRU_FILE9       "Open this document"
+    ID_FILE_MRU_FILE10      "Open this document"
+    ID_FILE_MRU_FILE11      "Open this document"
+    ID_FILE_MRU_FILE12      "Open this document"
+    ID_FILE_MRU_FILE13      "Open this document"
+    ID_FILE_MRU_FILE14      "Open this document"
+    ID_FILE_MRU_FILE15      "Open this document"
+    ID_FILE_MRU_FILE16      "Open this document"
+END
+
+STRINGTABLE
+BEGIN
+    ID_NEXT_PANE            "Switch to the next window pane\nNext Pane"
+    ID_PREV_PANE            "Switch back to the previous window pane\nPrevious Pane"
+END
+
+STRINGTABLE
+BEGIN
+    ID_WINDOW_SPLIT         "Split the active window into panes\nSplit"
+END
+
+STRINGTABLE
+BEGIN
+    ID_EDIT_CLEAR           "Erase the selection\nErase"
+    ID_EDIT_CLEAR_ALL       "Erase everything\nErase All"
+    ID_EDIT_COPY            "Copy the selection and put it on the Clipboard\nCopy"
+    ID_EDIT_CUT             "Cut the selection and put it on the Clipboard\nCut"
+    ID_EDIT_FIND            "Find the specified text\nFind"
+    ID_EDIT_PASTE           "Insert Clipboard contents\nPaste"
+    ID_EDIT_REPEAT          "Repeat the last action\nRepeat"
+    ID_EDIT_REPLACE         "Replace specific text with different text\nReplace"
+    ID_EDIT_SELECT_ALL      "Select the entire document\nSelect All"
+    ID_EDIT_UNDO            "Undo the last action\nUndo"
+    ID_EDIT_REDO            "Redo the previously undone action\nRedo"
+END
+
+STRINGTABLE
+BEGIN
+    ID_VIEW_TOOLBAR         "Show or hide the toolbar\nToggle ToolBar"
+END
+
+STRINGTABLE
+BEGIN
+    AFX_IDS_SCSIZE          "Change the window size"
+    AFX_IDS_SCMOVE          "Change the window position"
+    AFX_IDS_SCMINIMIZE      "Reduce the window to an icon"
+    AFX_IDS_SCMAXIMIZE      "Enlarge the window to full size"
+    AFX_IDS_SCNEXTWINDOW    "Switch to the next document window"
+    AFX_IDS_SCPREVWINDOW    "Switch to the previous document window"
+    AFX_IDS_SCCLOSE         "Close the active window and prompts to save the documents"
+END
+
+STRINGTABLE
+BEGIN
+    AFX_IDS_SCRESTORE       "Restore the window to normal size"
+    AFX_IDS_SCTASKLIST      "Activate Task List"
+END
+
+#endif    // Английский (США) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+#define _AFX_NO_SPLITTER_RESOURCES
+#define _AFX_NO_OLE_RESOURCES
+#define _AFX_NO_TRACKER_RESOURCES
+#define _AFX_NO_PROPERTY_RESOURCES
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE 9, 1
+#pragma code_page(1252)
+#endif //_WIN32
+#include "res\DEMO.rc2"  // non-Microsoft Visual C++ edited resources
+#include "afxres.rc"         // Standard components
+#endif
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

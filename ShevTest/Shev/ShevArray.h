@@ -389,7 +389,7 @@ template <class T> class SuiteRef : public DynArrRef<T>
     virtual void resizeAndCopy ( nat n ) = 0;
 protected:
     nat real_size;
-    SuiteRef ( T * d, nat n ) : DynArrRef<T>( d, n ) {}
+    SuiteRef ( T * d, nat n, nat m ) : DynArrRef<T>( d, n ), real_size(m) {}
 public:
     SuiteRef & operator= ( CCArrRef<T> & r )
     {
@@ -512,8 +512,11 @@ template <class T> class Suite : public SuiteRef<T>
         _size = n;
     }
 public:
-    Suite () : SuiteRef<T>(0, real_size=0) {}
-    explicit Suite ( nat n, nat m = 0 ) : SuiteRef<T>((real_size=_max(n,m)) > 0 ? new T[real_size] : 0, m) {}
+    Suite () : SuiteRef<T>(0, 0, 0) {}
+    explicit Suite ( nat n, nat m = 0 ) : SuiteRef<T> ( 0, m, _max ( n, m ) )
+    {
+        if ( real_size > 0 ) _data.var = new T[real_size];
+    }
     ~Suite () { delete[] _data.var; }
 
     Suite & operator= ( CCArrRef<T> & r )
@@ -578,9 +581,11 @@ template <class T, nat N> class CmbSuite : public SuiteRef<T>
         _size = n;
     }
 public:
-    CmbSuite () : SuiteRef<T>(stor, 0) { real_size = N; }
-    explicit CmbSuite ( nat n, nat m = 0 ) : 
-        SuiteRef<T> ( ( real_size = _max(n,m) ) > N ? new T[real_size] : ( real_size = N, stor ), m ) {}
+    CmbSuite () : SuiteRef<T>(stor, 0, N) {}
+    explicit CmbSuite ( nat n, nat m = 0 ) : SuiteRef<T> ( stor, m, _max ( N, n, m ) )
+    {
+        if ( real_size > N ) _data.var = new T[real_size];
+    }
     ~CmbSuite () { if ( _data.var != stor ) delete[] _data.var; }
 
     CmbSuite & operator= ( CCArrRef<T> & r )
@@ -620,9 +625,8 @@ template <class T> class LtdSuiteRef : public SuiteRef<T>
         _size = real_size;
     }
 public:
-    LtdSuiteRef ( ArrRef<T> a, nat i, nat n ) : SuiteRef<T>( a(i), 0 )
+    LtdSuiteRef ( ArrRef<T> & a, nat i, nat n ) : SuiteRef<T>( a(i), 0, n )
     {
-        real_size = n;
 #ifdef ARRAY_TEST
         if ( a.size() < i + n ) outOfRange ( "LtdSuiteRef", a.size(), i + n );
 #endif

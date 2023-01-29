@@ -1,0 +1,444 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{6c4e8e96-251a-459e-a87b-b9d3f754e6b9}</UniqueIdentifier>
+      <Extensions>cpp;c;cxx;rc;def;r;odl;idl;hpj;bat</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{8faac702-fe2b-4f7d-9b01-20ff492b75f0}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{6c90886f-526e-45e7-9250-0fad4fcaa345}</UniqueIdentifier>
+      <Extensions>ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="approx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="approx2d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="approx3d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ApproxCircle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CTrian2d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CTrian3d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DEMO.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DemoApprox3d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DEMODoc.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DemoIntersect2d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DemoIntersect3d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DemoOther.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DEMOView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="draw.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="File.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fileOBJ.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fileOBJplh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="filePYH.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="fileSTL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="func1d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="func2d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="func3d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="intersect2d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="intersect3d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ioOBJ.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ioPYH.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ioSTL.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="LineX2d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MainFrm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Mathem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Matrix.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Max2d3d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MaxCircle.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MaxSphere.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Min2d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Min3d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="moment2d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="moment3d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="opti1d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="opti2d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="opti2d_2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="opti2d_3d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="opti2d_4.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="opti3d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="opti3d_2.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Polyhedron.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="printf.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Rand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RandomVec.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="RealFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ScenePar.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ShevList.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="StdAfx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="TRANS.CPP">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Trian2d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="trian3d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector2d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector3d.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Vector3f.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="DEMO.rc">
+      <Filter>Source Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="approx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="approx2d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="approx3d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ApproxCircle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="atrian.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CTrian2d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CTrian3d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DEMO.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DemoApprox3d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DEMODoc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DemoIntersect2d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DemoIntersect3d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DemoOther.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DEMOView.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DoubleN.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="draw.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="File.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fileOBJ.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fileOBJplh.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="filePYH.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="fileSTL.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="func1d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="func1t.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="func2d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="func2t.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="func3d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="heap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="intersect2d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="intersect3d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ioOBJ.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LinAlg.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="LineX2d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="lists.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MainFrm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Mathem.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MathFunc.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Matrix.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Max2d3d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MaxCircle.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="MaxSphere.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="median.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Min2d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Min3d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="moment2d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="moment3d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="opti1d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="opti2d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="opti2d_3d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="opti3d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Poly3gon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Polyhedron.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Polyhedron_Poly3gon.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Rand.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RandomVec.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="RealFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ScenePar.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="SemiRib.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShevArray.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShevArray2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShevList.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="sorting.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="StdAfx.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Template.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Trans.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Trian2d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="trian2t.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="trian3d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TUNE.H">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="typedef.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector2d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3f.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector4d.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WireModel.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\DEMO.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\DEMODoc.ico">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="res\Toolbar.bmp">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="res\DEMO.rc2">
+      <Filter>Resource Files</Filter>
+    </CustomBuild>
+  </ItemGroup>
+</Project>

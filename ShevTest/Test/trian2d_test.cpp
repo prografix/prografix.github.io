@@ -1364,9 +1364,9 @@ void splitFacetN ( CCArrRef<nat> & cntr, CCArrRef<Vector2d> & vert, CCArrRef<Set
 void splitPolygon_test()
 {
     nat i;
-    const nat n = 15;
+    const nat n = 5;
     Suite<Vector2d> vert;
-    /*randPolygon (vert.resize(n));
+    randPolygon (vert.resize(n));
     vert.reverse();
     Def<Segment2d> s = dimensions ( vert );
     vert -= 0.5 * ( s.a + s.b );
@@ -1384,26 +1384,7 @@ void splitPolygon_test()
     quad[3].x = -1;
     quad[3].y =  1;
     vert.addAftLas ( quad );
-    vert *= 0.9;*/
-    vert.resize(n);
-    FixArray<nat, 2> cntr;
-    cntr[0] = 12;
-    cntr[1] = 3;
-    vert[0] = Vector2d (-0.20531460452928285, 0.17168211806487155 );
-    vert[1] = Vector2d (-0.24203053422312459, 0.23257040863745962 );
-    vert[2] = Vector2d (-0.95704625970480461, 1.1520589319386396 );
-    vert[3] = Vector2d (-1.0697592690421278, 1.2594612016841387 );
-    vert[4] = Vector2d (-1.1188961756725844, 1.2971868542262717 );
-    vert[5] = Vector2d (-1.1292972856943124, 1.3031080016722372 );
-    vert[6] = Vector2d (-1.1382688381966886, 1.3075081230486076 );
-    vert[7] = Vector2d (-1.6503052100949134, -0.17195511496758864 );
-    vert[8] = Vector2d (-1.7785221505074484, -0.55435996381179742 );
-    vert[9] = Vector2d (-1.7786574239246851, -0.55481159837376681 );
-    vert[10] = Vector2d (-1.7821660832106421, -0.56533554488657234 );
-    vert[11] = Vector2d (-1.6149641523412095, -0.81251388595142138 );
-    vert[12] = Vector2d (-1.1879945602625499, 0.082638004967384299 );
-    vert[13] = Vector2d (-1.2029260601253053, 0.068977399904156897 );
-    vert[14] = Vector2d (-1.2287948470609902, 0.14730819343786269 );
+    vert *= 0.9;
     nat k = 0;
     for ( i = 0; i < cntr.size(); ++i )
     {

@@ -1,0 +1,300 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <SccProjectName>"$/sad/DEMO", OJCAAAAA</SccProjectName>
+    <SccLocalPath>.</SccLocalPath>
+    <Keyword>MFCProj</Keyword>
+    <ProjectGuid>{5397DF90-5C3D-46C5-99F2-138FAD1ABEF9}</ProjectGuid>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <PlatformToolset>v143</PlatformToolset>
+    <UseOfMfc>Dynamic</UseOfMfc>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="$(VCTargetsPath)Microsoft.Cpp.UpgradeFromVC60.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>.\Release\</OutDir>
+    <IntDir>.\Release\</IntDir>
+    <LinkIncremental>false</LinkIncremental>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules />
+    <CodeAnalysisRuleAssemblies />
+    <TargetExt>.exe</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>.\Debug\</OutDir>
+    <IntDir>.\Debug\</IntDir>
+    <LinkIncremental>true</LinkIncremental>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRules />
+    <CodeAnalysisRuleAssemblies />
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <StringPooling>true</StringPooling>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <Optimization>MaxSpeed</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>.\Release\</AssemblerListingLocation>
+      <BrowseInformation>true</BrowseInformation>
+      <PrecompiledHeaderOutputFile>.\Release\DEMO.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeader />
+      <ObjectFileName>.\Release\</ObjectFileName>
+      <ProgramDataBaseFileName>.\Release\</ProgramDataBaseFileName>
+    </ClCompile>
+    <Midl>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <TypeLibraryName>.\Release\DEMO.tlb</TypeLibraryName>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0419</Culture>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Release\DEMO.bsc</OutputFile>
+    </Bscmake>
+    <Link>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <SubSystem>Windows</SubSystem>
+      <OutputFile>.\Release\DEMO.exe</OutputFile>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <InlineFunctionExpansion>Default</InlineFunctionExpansion>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <Optimization>Disabled</Optimization>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <WarningLevel>Level3</WarningLevel>
+      <MinimalRebuild>true</MinimalRebuild>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AssemblerListingLocation>.\Debug\</AssemblerListingLocation>
+      <BrowseInformation>true</BrowseInformation>
+      <PrecompiledHeaderOutputFile>.\Debug\DEMO.pch</PrecompiledHeaderOutputFile>
+      <PrecompiledHeader />
+      <ObjectFileName>.\Debug\</ObjectFileName>
+      <ProgramDataBaseFileName>.\Debug\</ProgramDataBaseFileName>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+    </ClCompile>
+    <Midl>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <TypeLibraryName>.\Debug\DEMO.tlb</TypeLibraryName>
+      <MkTypLibCompatible>true</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+    </Midl>
+    <ResourceCompile>
+      <Culture>0x0419</Culture>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+    </ResourceCompile>
+    <Bscmake>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <OutputFile>.\Debug\DEMO.bsc</OutputFile>
+    </Bscmake>
+    <Link>
+      <SuppressStartupBanner>true</SuppressStartupBanner>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <OutputFile>.\Debug\DEMO.exe</OutputFile>
+      <AdditionalDependencies>opengl32.lib;glu32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="approx.cpp" />
+    <ClCompile Include="approx2d.cpp" />
+    <ClCompile Include="approx3d.cpp" />
+    <ClCompile Include="ApproxCircle.cpp" />
+    <ClCompile Include="CTrian2d.cpp" />
+    <ClCompile Include="CTrian3d.cpp" />
+    <ClCompile Include="DEMO.cpp" />
+    <ClCompile Include="DemoApprox3d.cpp" />
+    <ClCompile Include="DEMODoc.cpp" />
+    <ClCompile Include="DemoIntersect2d.cpp" />
+    <ClCompile Include="DemoIntersect3d.cpp" />
+    <ClCompile Include="DemoOther.cpp" />
+    <ClCompile Include="DEMOView.cpp" />
+    <ClCompile Include="draw.cpp" />
+    <ClCompile Include="File.cpp" />
+    <ClCompile Include="fileOBJ.cpp" />
+    <ClCompile Include="fileOBJplh.cpp" />
+    <ClCompile Include="filePYH.cpp" />
+    <ClCompile Include="fileSTL.cpp" />
+    <ClCompile Include="func1d.cpp" />
+    <ClCompile Include="func2d.cpp" />
+    <ClCompile Include="func3d.cpp" />
+    <ClCompile Include="intersect2d.cpp" />
+    <ClCompile Include="intersect3d.cpp" />
+    <ClCompile Include="ioOBJ.cpp" />
+    <ClCompile Include="ioPYH.cpp" />
+    <ClCompile Include="ioSTL.cpp" />
+    <ClCompile Include="LineX2d.cpp" />
+    <ClCompile Include="MainFrm.cpp" />
+    <ClCompile Include="Mathem.cpp" />
+    <ClCompile Include="Matrix.cpp" />
+    <ClCompile Include="Max2d3d.cpp" />
+    <ClCompile Include="MaxCircle.cpp" />
+    <ClCompile Include="MaxSphere.cpp" />
+    <ClCompile Include="Min2d.cpp" />
+    <ClCompile Include="Min3d.cpp" />
+    <ClCompile Include="moment2d.cpp" />
+    <ClCompile Include="moment3d.cpp" />
+    <ClCompile Include="opti1d.cpp" />
+    <ClCompile Include="opti2d.cpp" />
+    <ClCompile Include="opti2d_2.cpp" />
+    <ClCompile Include="opti2d_3d.cpp" />
+    <ClCompile Include="opti2d_4.cpp" />
+    <ClCompile Include="opti3d.cpp" />
+    <ClCompile Include="opti3d_2.cpp" />
+    <ClCompile Include="Polyhedron.cpp" />
+    <ClCompile Include="printf.cpp" />
+    <ClCompile Include="Rand.cpp" />
+    <ClCompile Include="RandomVec.cpp" />
+    <ClCompile Include="RealFile.cpp" />
+    <ClCompile Include="ScenePar.cpp" />
+    <ClCompile Include="ShevList.cpp" />
+    <ClCompile Include="StdAfx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">stdafx.h</PrecompiledHeaderFile>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">stdafx.h</PrecompiledHeaderFile>
+    </ClCompile>
+    <ClCompile Include="TRANS.CPP" />
+    <ClCompile Include="Trian2d.cpp" />
+    <ClCompile Include="trian3d.cpp" />
+    <ClCompile Include="Vector2d.cpp" />
+    <ClCompile Include="Vector3d.cpp" />
+    <ClCompile Include="Vector3f.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="DEMO.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="approx.h" />
+    <ClInclude Include="approx2d.h" />
+    <ClInclude Include="approx3d.h" />
+    <ClInclude Include="ApproxCircle.h" />
+    <ClInclude Include="atrian.h" />
+    <ClInclude Include="CTrian2d.h" />
+    <ClInclude Include="CTrian3d.h" />
+    <ClInclude Include="DEMO.h" />
+    <ClInclude Include="DemoApprox3d.h" />
+    <ClInclude Include="DEMODoc.h" />
+    <ClInclude Include="DemoIntersect2d.h" />
+    <ClInclude Include="DemoIntersect3d.h" />
+    <ClInclude Include="DemoOther.h" />
+    <ClInclude Include="DEMOView.h" />
+    <ClInclude Include="DoubleN.h" />
+    <ClInclude Include="draw.h" />
+    <ClInclude Include="File.h" />
+    <ClInclude Include="fileOBJ.h" />
+    <ClInclude Include="fileOBJplh.h" />
+    <ClInclude Include="filePYH.h" />
+    <ClInclude Include="fileSTL.h" />
+    <ClInclude Include="func1d.h" />
+    <ClInclude Include="func1t.h" />
+    <ClInclude Include="func2d.h" />
+    <ClInclude Include="func2t.h" />
+    <ClInclude Include="func3d.h" />
+    <ClInclude Include="heap.h" />
+    <ClInclude Include="intersect2d.h" />
+    <ClInclude Include="intersect3d.h" />
+    <ClInclude Include="ioOBJ.h" />
+    <ClInclude Include="LinAlg.h" />
+    <ClInclude Include="LineX2d.h" />
+    <ClInclude Include="lists.h" />
+    <ClInclude Include="MainFrm.h" />
+    <ClInclude Include="Mathem.h" />
+    <ClInclude Include="MathFunc.h" />
+    <ClInclude Include="Matrix.h" />
+    <ClInclude Include="Max2d3d.h" />
+    <ClInclude Include="MaxCircle.h" />
+    <ClInclude Include="MaxSphere.h" />
+    <ClInclude Include="median.h" />
+    <ClInclude Include="Min2d.h" />
+    <ClInclude Include="Min3d.h" />
+    <ClInclude Include="moment2d.h" />
+    <ClInclude Include="moment3d.h" />
+    <ClInclude Include="opti1d.h" />
+    <ClInclude Include="opti2d.h" />
+    <ClInclude Include="opti2d_3d.h" />
+    <ClInclude Include="opti3d.h" />
+    <ClInclude Include="Poly3gon.h" />
+    <ClInclude Include="Polyhedron.h" />
+    <ClInclude Include="Polyhedron_Poly3gon.h" />
+    <ClInclude Include="Rand.h" />
+    <ClInclude Include="RandomVec.h" />
+    <ClInclude Include="RealFile.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="ScenePar.h" />
+    <ClInclude Include="SemiRib.h" />
+    <ClInclude Include="ShevArray.h" />
+    <ClInclude Include="ShevArray2.h" />
+    <ClInclude Include="ShevList.h" />
+    <ClInclude Include="sorting.h" />
+    <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="Template.h" />
+    <ClInclude Include="Trans.h" />
+    <ClInclude Include="Trian2d.h" />
+    <ClInclude Include="trian2t.h" />
+    <ClInclude Include="trian3d.h" />
+    <ClInclude Include="TUNE.H" />
+    <ClInclude Include="typedef.h" />
+    <ClInclude Include="Vector2d.h" />
+    <ClInclude Include="Vector3d.h" />
+    <ClInclude Include="Vector3f.h" />
+    <ClInclude Include="Vector4d.h" />
+    <ClInclude Include="WireModel.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\DEMO.ico" />
+    <Image Include="res\DEMODoc.ico" />
+    <Image Include="res\Toolbar.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="res\DEMO.rc2" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

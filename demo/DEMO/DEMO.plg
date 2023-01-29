@@ -1,0 +1,158 @@
+<html>
+<body>
+<pre>
+<h1>Build Log</h1>
+<h3>
+--------------------Configuration: DEMO - Win32 Release--------------------
+</h3>
+<h3>Command Lines</h3>
+Creating command line "rc.exe /l 0x419 /fo"Release/DEMO.res" /d "NDEBUG" /d "_AFXDLL" "D:\PROJECTS\DEMO\DEMO.rc"" 
+Creating temporary file "C:\DOCUME~1\sad\LOCALS~1\Temp\RSPAFF.tmp" with contents
+[
+/nologo /MD /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_AFXDLL" /D "_MBCS" /FR"Release/" /Fo"Release/" /Fd"Release/" /FD /c 
+"D:\PROJECTS\DEMO\MaxSphere.cpp"
+]
+Creating command line "cl.exe @C:\DOCUME~1\sad\LOCALS~1\Temp\RSPAFF.tmp" 
+Creating temporary file "C:\DOCUME~1\sad\LOCALS~1\Temp\RSPB00.tmp" with contents
+[
+opengl32.lib glu32.lib /nologo /subsystem:windows /profile /map:"Release/DEMO.map" /machine:I386 /out:"Release/DEMO.exe" 
+.\Release\approx.obj
+.\Release\approx2d.obj
+.\Release\approx3d.obj
+.\Release\ApproxCircle.obj
+.\Release\CTrian2d.obj
+.\Release\CTrian3d.obj
+.\Release\DEMO.obj
+.\Release\DemoApprox3d.obj
+.\Release\DEMODoc.obj
+.\Release\DemoIntersect2d.obj
+.\Release\DemoIntersect3d.obj
+.\Release\DemoOther.obj
+.\Release\DEMOView.obj
+.\Release\draw.obj
+.\Release\File.obj
+.\Release\fileOBJ.obj
+.\Release\fileOBJplh.obj
+.\Release\filePYH.obj
+.\Release\fileSTL.obj
+.\Release\func1d.obj
+.\Release\func2d.obj
+.\Release\func3d.obj
+.\Release\intersect2d.obj
+.\Release\intersect3d.obj
+.\Release\ioOBJ.obj
+.\Release\ioPYH.obj
+.\Release\ioSTL.obj
+.\Release\LineX2d.obj
+.\Release\MainFrm.obj
+.\Release\Mathem.obj
+.\Release\Matrix.obj
+.\Release\Max2d3d.obj
+.\Release\MaxCircle.obj
+.\Release\MaxSphere.obj
+.\Release\Min2d.obj
+.\Release\Min3d.obj
+.\Release\moment2d.obj
+.\Release\moment3d.obj
+.\Release\opti1d.obj
+.\Release\opti2d.obj
+.\Release\opti2d_2.obj
+.\Release\opti2d_3d.obj
+.\Release\opti2d_4.obj
+.\Release\opti3d.obj
+.\Release\opti3d_2.obj
+.\Release\Polyhedron.obj
+.\Release\printf.obj
+.\Release\Rand.obj
+.\Release\RandomVec.obj
+.\Release\RealFile.obj
+.\Release\ScenePar.obj
+.\Release\ShevList.obj
+.\Release\StdAfx.obj
+.\Release\TRANS.OBJ
+.\Release\Trian2d.obj
+.\Release\trian3d.obj
+.\Release\Vector2d.obj
+.\Release\Vector3d.obj
+.\Release\Vector3f.obj
+.\Release\DEMO.res
+]
+Creating command line "link.exe @C:\DOCUME~1\sad\LOCALS~1\Temp\RSPB00.tmp"
+<h3>Output Window</h3>
+Compiling resources...
+Compiling...
+MaxSphere.cpp
+Linking...
+Creating temporary file "C:\DOCUME~1\sad\LOCALS~1\Temp\RSPB02.tmp" with contents
+[
+/nologo /o"Release/DEMO.bsc" 
+.\Release\StdAfx.sbr
+.\Release\approx.sbr
+.\Release\approx2d.sbr
+.\Release\approx3d.sbr
+.\Release\ApproxCircle.sbr
+.\Release\CTrian2d.sbr
+.\Release\CTrian3d.sbr
+.\Release\DEMO.sbr
+.\Release\DemoApprox3d.sbr
+.\Release\DEMODoc.sbr
+.\Release\DemoIntersect2d.sbr
+.\Release\DemoIntersect3d.sbr
+.\Release\DemoOther.sbr
+.\Release\DEMOView.sbr
+.\Release\draw.sbr
+.\Release\File.sbr
+.\Release\fileOBJ.sbr
+.\Release\fileOBJplh.sbr
+.\Release\filePYH.sbr
+.\Release\fileSTL.sbr
+.\Release\func1d.sbr
+.\Release\func2d.sbr
+.\Release\func3d.sbr
+.\Release\intersect2d.sbr
+.\Release\intersect3d.sbr
+.\Release\ioOBJ.sbr
+.\Release\ioPYH.sbr
+.\Release\ioSTL.sbr
+.\Release\LineX2d.sbr
+.\Release\MainFrm.sbr
+.\Release\Mathem.sbr
+.\Release\Matrix.sbr
+.\Release\Max2d3d.sbr
+.\Release\MaxCircle.sbr
+.\Release\MaxSphere.sbr
+.\Release\Min2d.sbr
+.\Release\Min3d.sbr
+.\Release\moment2d.sbr
+.\Release\moment3d.sbr
+.\Release\opti1d.sbr
+.\Release\opti2d.sbr
+.\Release\opti2d_2.sbr
+.\Release\opti2d_3d.sbr
+.\Release\opti2d_4.sbr
+.\Release\opti3d.sbr
+.\Release\opti3d_2.sbr
+.\Release\Polyhedron.sbr
+.\Release\printf.sbr
+.\Release\Rand.sbr
+.\Release\RandomVec.sbr
+.\Release\RealFile.sbr
+.\Release\ScenePar.sbr
+.\Release\ShevList.sbr
+.\Release\TRANS.SBR
+.\Release\Trian2d.sbr
+.\Release\trian3d.sbr
+.\Release\Vector2d.sbr
+.\Release\Vector3d.sbr
+.\Release\Vector3f.sbr]
+Creating command line "bscmake.exe @C:\DOCUME~1\sad\LOCALS~1\Temp\RSPB02.tmp"
+Creating browse info file...
+<h3>Output Window</h3>
+
+
+
+<h3>Results</h3>
+DEMO.exe - 0 error(s), 0 warning(s)
+</pre>
+</body>
+</html>

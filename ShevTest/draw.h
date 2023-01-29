@@ -12,7 +12,7 @@ void drawPoint ( const Vector2d         & fig, float r, float g, float b );
 void drawPoints  ( CCArrRef<Vector2d>   & fig, float r, float g, float b );
 void drawLine    ( CCArrRef<Vector2d>   & fig, float r, float g, float b );
 void drawPolygon ( CCArrRef<Vector2d>   & fig, float r, float g, float b );
-void draw ( const Segment2d             & fig, float r, float g, float b );
+void draw ( const Def<Segment2d>        & fig, float r, float g, float b );
 void draw ( const Def<Circle2d>         & fig, float r, float g, float b );
 void draw ( const Def<Rhombus2d>        & fig, float r, float g, float b );
 void draw ( const Def<Ellipse2d>        & fig, float r, float g, float b );
@@ -50,5 +50,3 @@ void draw ( const Def<Ellipsoid3d>      & fig, float r, float g, float b, float 
 void draw ( const Def<Cylinder3d>       & fig, float r, float g, float b, float a, ViewMode vm );
 void draw ( const Def<Sphere3d>         & fig, float r, float g, float b, float a, ViewMode vm );
 void draw ( const Def<Cone3d>           & fig, float r, float g, float b, float a, ViewMode vm );
-void drawPolyhedron ( CCArrRef<Set3<Vector3d> > 
-                                        & fig, float r, float g, float b, float a, ViewMode vm );

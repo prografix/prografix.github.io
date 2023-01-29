@@ -14,79 +14,6 @@
 #include "Shev/Poly3gon.h"
 #include "Shev/Polyhedron.h"
 
-void drawPolyhedron ( CCArrRef<Set3<Vector3d> > & poly, float r, float g, float b, float a, ViewMode vm )
-{
-    if ( vm == VM_WIRE )
-    {
-        glDisable ( GL_LIGHT0 );
-        glDisable ( GL_LIGHTING );
-        glEnable  ( GL_CULL_FACE );
-        glDisable ( GL_NORMALIZE );
-        glEnable  ( GL_DEPTH_TEST );
-        glDepthFunc ( GL_LEQUAL );
-        glPolygonMode ( GL_FRONT_AND_BACK, GL_LINE );
-
-        for ( nat k = 0; k < 2; ++k )
-        {
-            if ( k == 0 )
-            {
-                glEnable  ( GL_LINE_STIPPLE );
-                glLineStipple ( 1, 0x2222 );
-                glCullFace ( GL_FRONT );
-                glColor4f ( 0.5f*r, 0.5f*g, 0.5f*b, a );
-            }
-            else
-            {
-                glDisable  ( GL_LINE_STIPPLE );
-                glCullFace ( GL_BACK );
-                glColor4f ( r, g, b, a );
-                glPolygonMode ( GL_FRONT, GL_LINE );
-            }
-            for ( nat i = 0; i < poly.size(); ++i )
-            {
-                const Set3<Vector3d> & facet = poly[i];
-                glBegin ( GL_TRIANGLES );
-                glVertex3dv ( & facet.a.x );
-                glVertex3dv ( & facet.b.x );
-                glVertex3dv ( & facet.c.x );
-                glEnd ();
-            }
-        }
-
-    }
-    else
-    {
-        glEnable ( GL_LIGHT0 );
-        glEnable ( GL_LIGHTING );
-        glDisable( GL_CULL_FACE );
-        glEnable ( GL_NORMALIZE );
-        glEnable ( GL_DEPTH_TEST );
-        glPolygonMode ( GL_FRONT, GL_FILL );
-
-        float mat[4];
-        mat[0] = 0.2f * r;
-        mat[1] = 0.2f * g;
-        mat[2] = 0.2f * b;
-        mat[3] = a;
-        glMaterialfv ( GL_FRONT, GL_AMBIENT, mat );
-        mat[0] *= 4.0f;
-        mat[1] *= 4.0f;
-        mat[2] *= 4.0f;
-        glMaterialfv ( GL_FRONT, GL_DIFFUSE, mat );
-	    for ( nat i = 0; i < poly.size(); ++i )
-        {
-            const Set3<Vector3d> & facet = poly[i];
-            const Vector3d norm ( ( facet.b - facet.a ) % ( facet.c - facet.a ) );
-            glBegin ( GL_TRIANGLES );
-			glNormal3dv ( & norm.x );
-            glVertex3dv ( & facet.a.x );
-            glVertex3dv ( & facet.b.x );
-            glVertex3dv ( & facet.c.x );
-            glEnd ();
-        }
-    }
-}
-
 void draw ( const Polyhedron & poly, float r, float g, float b, float a, ViewMode vm )
 {
     if ( vm == VM_WIRE )
@@ -283,8 +210,9 @@ void endNewList ()
     view->Invalidate(TRUE);
 }
 
-void draw ( const Segment2d & seg, float r, float g, float b )
+void draw ( const Def<Segment2d> & seg, float r, float g, float b )
 {
+    if ( ! seg.isDef ) return;
     glColor3f ( r, g, b );
     glBegin ( GL_LINES );
     glVertex2dv ( & seg.a.x );
