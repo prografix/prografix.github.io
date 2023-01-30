@@ -1602,7 +1602,7 @@ inline void recalc ( SegmList & list, SegmItem * p, CArrRef<Vector2d> inner )
 }
 
 // Подвигаем стороны N-угольника
-void tuning ( SegmList & list, CArrRef<Vector2d> inner )
+void tuning ( SegmList & list, CCArrRef<Vector2d> & inner )
 {
     const nat m = inner.size();
     list.setAllInfo(0);
@@ -1698,7 +1698,7 @@ inline double area2 ( SegmList & list )
     return a;
 }
 
-bool minNgonAroundConvexPolygonA ( ArrRef<Vector2d> outer, CArrRef<Vector2d> inner )
+bool minNgonAroundConvexPolygonA ( ArrRef<Vector2d> & outer, CCArrRef<Vector2d> & inner )
 {
     const nat n = outer.size();
     const nat m = inner.size();
@@ -1766,7 +1766,7 @@ bool minNgonAroundPolygonA ( ArrRef<Vector2d> & outer, CCArrRef<Vector2d> & inne
 
 // Множество точек
 
-bool minNgonAroundPointsA ( ArrRef<Vector2d> & outer, CArrRef<Vector2d> & inner )
+bool minNgonAroundPointsA ( ArrRef<Vector2d> & outer, CCArrRef<Vector2d> & inner )
 {
     return minNgonAroundConvexPolygonA ( outer, convexNlogN ( inner, Suite<Vector2d> ( inner.size() ) ) );
 }
