@@ -43,7 +43,7 @@ bool miTrapezoidAroundConvexPolygonA ( FixArrRef&lt;Vector2d, 4> & outer, CCArrR
 <br>&bull; Функция minNgonAroundConvexPolygonA находит минимальный по площади N-угольник
 охватывающий заданный выпуклый многоугольник:
 <pre>
-bool minNgonAroundConvexPolygonA ( ArrRef&lt;Vector2d> outer, CArrRef&lt;Vector2d> inner );
+bool minNgonAroundConvexPolygonA ( ArrRef&lt;Vector2d> & outer, CCArrRef&lt;Vector2d> & inner );
 </pre>
 Размер массива outer определяет к-во вершин N-угольника. Если это к-во больше к-ва вершин многоугольника inner,
 то функция возвращает значение false и не заполняет массив outer.
@@ -67,10 +67,10 @@ Def&lt;Rectangle2d> minRectangleAroundPolygonP ( CArrRef&lt;Vector2d> inner );
 Def&lt;Rectangle2d> minRectangleAroundPointsP  ( CArrRef&lt;Vector2d> inner );
 Def&lt;Parallelogram2d> minParallelogramAroundPolygonA ( CCArrRef&lt;Vector2d> & inner );
 Def&lt;Parallelogram2d> minParallelogramAroundPointsA  ( CCArrRef&lt;Vector2d> & inner );
-bool minTrapezoidAroundPolygonA  ( FixArrRef&lt;Vector2d, 4> & outer, CCArrRef&lt;Vector2d> & inner );
-bool minTrapezoidAroundPointsA   ( FixArrRef&lt;Vector2d, 4> & outer, CCArrRef&lt;Vector2d> & inner );
-bool minNgonAroundPolygonA       ( ArrRef&lt;Vector2d> outer, CArrRef&lt;Vector2d> inner );
-bool minNgonAroundPointsA        ( ArrRef&lt;Vector2d> outer, CArrRef&lt;Vector2d> inner );
+bool minTrapezoidAroundPolygonA   ( FixArrRef&lt;Vector2d, 4> & outer, CCArrRef&lt;Vector2d> & inner );
+bool minTrapezoidAroundPointsA    ( FixArrRef&lt;Vector2d, 4> & outer, CCArrRef&lt;Vector2d> & inner );
+bool minNgonAroundPolygonA              ( ArrRef&lt;Vector2d> & outer, CCArrRef&lt;Vector2d> & inner );
+bool minNgonAroundPointsA               ( ArrRef&lt;Vector2d> & outer, CCArrRef&lt;Vector2d> & inner );
 bool minEquianglarPolygonAroundPolygonA ( ArrRef&lt;Vector2d> & outer, CCArrRef&lt;Vector2d> & inner );
 bool minEquianglarPolygonAroundPointsA  ( ArrRef&lt;Vector2d> & outer, CCArrRef&lt;Vector2d> & inner );
 </pre>
