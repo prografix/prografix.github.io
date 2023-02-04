@@ -441,6 +441,8 @@ BEGIN
 0x0038, 
     IDC_POLYGON_SIZE, 0x403, 2, 0
 0x0039, 
+    IDC_TRIAN_TYPE, 0x403, 5, 0
+0x6f4e, 0x656e, "\000" 
     IDC_TRIAN_TYPE, 0x403, 14, 0
 0x7254, 0x6169, 0x676e, 0x6c75, 0x7461, 0x6f69, 0x006e, 
     IDC_TRIAN_TYPE, 0x403, 13, 0
@@ -953,12 +955,12 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // Dialog
 //
 
-IDD_ABOUTBOX DIALOG 0, 0, 154, 66
+IDD_ABOUTBOX DIALOGEX 0, 0, 154, 66
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About DEMO"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    LTEXT           "DEMO version 60",IDC_STATIC,49,10,60,8,SS_NOPREFIX
+    LTEXT           "DEMO version 61",IDC_STATIC,49,10,60,8,SS_NOPREFIX
     LTEXT           "prografix.github.io",IDC_STATIC,49,25,55,8
     DEFPUSHBUTTON   "OK",IDOK,51,42,50,14,WS_GROUP
 END
@@ -1105,8 +1107,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 60,0,0,0
- PRODUCTVERSION 60,0,0,1
+ FILEVERSION 61,0,0,0
+ PRODUCTVERSION 61,0,0,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -1122,12 +1124,12 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "DEMO MFC Application"
-            VALUE "FileVersion", "60, 0, 0, 0"
+            VALUE "FileVersion", "61.0.0.0"
             VALUE "InternalName", "DEMO"
             VALUE "LegalCopyright", "prografix.github.io"
             VALUE "OriginalFilename", "DEMO.EXE"
             VALUE "ProductName", "DEMO Application"
-            VALUE "ProductVersion", "60, 0, 0, 1"
+            VALUE "ProductVersion", "61.0.0.1"
         END
     END
     BLOCK "VarFileInfo"
@@ -1175,6 +1177,17 @@ BEGIN
     BUTTON      ID_RESET
     SEPARATOR
     BUTTON      ID_APP_ABOUT
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_ABOUTBOX AFX_DIALOG_LAYOUT
+BEGIN
+    0
 END
 
 

@@ -117,9 +117,9 @@ bool minTrapezoidAroundPointsA        ( FixArrRef<Vector2d, 4> & outer, CCArrRef
 //
 //**************************** 22.02.2016 *********************************//
 
-bool minNgonAroundConvexPolygonA ( ArrRef<Vector2d> outer, CArrRef<Vector2d> inner );
-bool minNgonAroundPolygonA       ( ArrRef<Vector2d> outer, CArrRef<Vector2d> inner );
-bool minNgonAroundPointsA        ( ArrRef<Vector2d> outer, CArrRef<Vector2d> inner );
+bool minNgonAroundConvexPolygonA ( ArrRef<Vector2d> & outer, CCArrRef<Vector2d> & inner );
+bool minNgonAroundPolygonA       ( ArrRef<Vector2d> & outer, CCArrRef<Vector2d> & inner );
+bool minNgonAroundPointsA        ( ArrRef<Vector2d> & outer, CCArrRef<Vector2d> & inner );
 
 
 //**************************** 29.10.2016 *********************************//

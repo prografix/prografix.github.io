@@ -616,16 +616,16 @@ bool trianTestNat1L1MinTan ( CCArrRef<Vector2d> & vert )
 //
 //              Разбиение многоугольника на выпуклые части
 //
-//**************************** 27.08.2018 *********************************//
+//**************************** 04.02.2023 *********************************//
 
-bool convexParts ( CCArrRef<Vector2d> & vert, Suite<nat> & cntr, Suite<nat> & index )
+bool convexParts ( CCArrRef<nat> & cntr, CCArrRef<Vector2d> & vert, Suite<nat> & cntr2, Suite<nat> & index )
 {
-    cntr.resize();
+    cntr2.resize();
     index.resize();
     DynArray<SemiRib> rib;
     Suite<Set3<nat> > trian;
 // Делаем триангуляцию
-    trianSweepLine ( vert, trian );
+    trianSweepLine ( cntr, vert, trian );
     if ( ! rebuildDelauney ( vert, trian, rib ) ) return false;
 // Находим диагонали
     nat i;
@@ -668,7 +668,7 @@ bool convexParts ( CCArrRef<Vector2d> & vert, Suite<nat> & cntr, Suite<nat> & in
     for ( i = 0; i < nr; ++i )
     {
         if ( rib[i].vert == nv ) continue;
-        nat & n = cntr.inc();
+        nat & n = cntr2.inc();
         n = 0;
         nat j = i;
         do
@@ -682,6 +682,13 @@ bool convexParts ( CCArrRef<Vector2d> & vert, Suite<nat> & cntr, Suite<nat> & in
         while ( j != i );
     }
     return true;
+}
+
+bool convexParts ( CCArrRef<Vector2d> & vert, Suite<nat> & cntr, Suite<nat> & index )
+{
+    FixArray<nat, 1> temp;
+    temp[0] = vert.size();
+    return convexParts ( temp, vert, cntr, index );
 }
 
 //**************************** 16.01.2023 *********************************//

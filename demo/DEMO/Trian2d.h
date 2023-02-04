@@ -1,6 +1,5 @@
 
-#ifndef TRIAN2D_H
-#define TRIAN2D_H
+#pragma once
 
 #include "template.h"
 #include "ShevList.h"
@@ -78,8 +77,9 @@ bool trianTestNat1L1MinTan ( CCArrRef<Vector2d> & vert );
 //
 //              Разбиение многоугольника на выпуклые части
 //
-//**************************** 16.01.2023 *********************************//
+//**************************** 04.02.2023 *********************************//
 
+bool convexParts ( CCArrRef<nat> & cntr, CCArrRef<Vector2d> & vert, Suite<nat> & cntr2, Suite<nat> & index );
 bool convexParts ( CCArrRef<Vector2d> & vert, Suite<nat> & cntr, Suite<nat> & index );
 
 
@@ -90,5 +90,3 @@ bool convexParts ( CCArrRef<Vector2d> & vert, Suite<nat> & cntr, Suite<nat> & in
 //**************************** 16.01.2023 *********************************//
 
 bool splitPolygon ( CCArrRef<nat> & cntr, CCArrRef<Vector2d> & vert, Suite<nat> & cntr2, Suite<nat> & index );
-
-#endif

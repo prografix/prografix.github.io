@@ -64,42 +64,74 @@ void Trian2d::OnTriangulate()
 {
 	UpdateData();
     const nat n = m_poly_size + 4;
-    if ( poly.size() != n )
+    FixArray<nat, 2> cntr;
+    cntr[0] = 4;
+    cntr[1] = n;
+    if ( poly.size() != n + 4 )
     {
-        poly.resize ( n );
-        randPolygon ( poly );
+        poly.resize ( n + 4 );
+        poly[0].x = -1;
+        poly[0].y = -1;
+        poly[1].x =  1;
+        poly[1].y = -1;
+        poly[2].x =  1;
+        poly[2].y =  1;
+        poly[3].x = -1;
+        poly[3].y =  1;
+        randPolygon ( ArrRef<Vector2d> ( poly, 4, n ) ).reverse() *= 0.9;
+        poly *= 0.9;
     }
     drawNewList2d ();
-    drawPolygon ( poly, 0, 1, 1 );
-    Suite<Set3<nat> > res ( n - 2 );
+    Suite<nat> cntr2;
+    Suite<nat> index;
+    Suite<Vector2d> buf;
     switch ( m_trian_type )
     {
-    case 0: trianSweepLine ( poly, res ); rebuildDelauney ( poly, res ); break;
-    case 1: //trianSeidel ( poly, res ); 
-        break;
+    case 1: 
+        {
+            Suite<Set3<nat> > res ( n - 2 );
+            trianSweepLine ( cntr, poly, res );
+            rebuildDelauney ( poly, res );
+            for ( nat i = 0; i < res.size(); ++i )
+            {
+                const Set3<nat> & t = res[i];
+                draw ( Segment2d ( poly[t.a], poly[t.b] ), 1, 1, 0 );
+                draw ( Segment2d ( poly[t.b], poly[t.c] ), 1, 1, 0 );
+                draw ( Segment2d ( poly[t.c], poly[t.a] ), 1, 1, 0 );
+            }
+            break;
+        }
+    case 2: 
+        {
+            convexParts ( cntr, poly, cntr2, index );
+            nat k = 0;
+            for ( nat i = 0; i < cntr2.size(); ++i )
+            {
+                buf.resize();
+                nat k1 = k + cntr2[i];
+                for ( nat j = k; j < k1; ++j ) buf.inc() = poly[index[j]];
+                drawPolygon ( buf, 1, 1, 0 );
+                k = k1;
+            }
+            break;
+        }
+    case 3: 
+        {
+            splitPolygon ( cntr, poly, cntr2, index );
+            nat k = 0;
+            for ( nat i = 0; i < cntr2.size(); ++i )
+            {
+                buf.resize();
+                nat k1 = k + cntr2[i];
+                for ( nat j = k; j < k1; ++j ) buf.inc() = poly[index[j]];
+                drawPolygon ( buf, 1, 1, 0 );
+                k = k1;
+            }
+            break;
+        }
     }
-    for ( nat i = 0; i < res.size(); ++i )
-    {
-        const Set3<nat> & t = res[i];
-        nat j = t.a + 1;
-        if ( j == n ) j = 0;
-        if ( t.b != j )
-        {
-            draw ( Segment2d ( poly[t.a], poly[t.b] ), 1, 1, 0 );
-        }
-        j = t.b + 1;
-        if ( j == n ) j = 0;
-        if ( t.c != j )
-        {
-            draw ( Segment2d ( poly[t.b], poly[t.c] ), 1, 1, 0 );
-        }
-        j = t.c + 1;
-        if ( j == n ) j = 0;
-        if ( t.a != j )
-        {
-            draw ( Segment2d ( poly[t.c], poly[t.a] ), 1, 1, 0 );
-        }
-    }
+    drawPolygon ( CArrRef<Vector2d> ( poly, 0, 4 ), 0, 1, 1 );
+    drawPolygon ( CArrRef<Vector2d> ( poly, 4, n ), 0, 1, 1 );
     endNewList ();
 }
 

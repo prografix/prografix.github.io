@@ -1385,17 +1385,11 @@ void splitPolygon_test()
     quad[3].y =  1;
     vert.addAftLas ( quad );
     vert *= 0.9;
-    nat k = 0;
-    for ( i = 0; i < cntr.size(); ++i )
-    {
-        drawPolygon ( CArrRef<Vector2d> ( vert, k, cntr[i] ), 0, 1, 1 );
-        k += cntr[i];
-    }
     Suite<nat> cntr2;
     Suite<nat> index;
     splitPolygon ( cntr, vert, cntr2, index );
     Suite<Vector2d> buf;
-    k = 0;
+    nat k = 0;
     for ( i = 0; i < cntr2.size(); ++i )
     {
         buf.resize();
@@ -1403,6 +1397,12 @@ void splitPolygon_test()
         for ( nat j = k; j < k1; ++j ) buf.inc() = vert[index[j]];
         drawPolygon ( buf, 1, 1, 0 );
         k = k1;
+    }
+    k = 0;
+    for ( i = 0; i < cntr.size(); ++i )
+    {
+        drawPolygon ( CArrRef<Vector2d> ( vert, k, cntr[i] ), 0, 1, 1 );
+        k += cntr[i];
     }
 }
 
