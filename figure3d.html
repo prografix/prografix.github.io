@@ -423,28 +423,6 @@ public:
 </pre>
 Функция-член getAffin3d возвращает аффинное преобразование, которое отображает
 единичную сферу в данный эллипсоид:</p>
-<p>
-&bull; Прямоугольный параллелепипед</p>
-<pre>
-class Cuboid3d
-{
-public:
-    double a, b, c; // полуоси
-    Spin3d spin;    // поворот
-    Vector3d o;     // центр
-
-    Affin3d getAffin3d () const
-    {
-        LinTran3d t ( spin );
-        t.x.x *= a; t.x.y *= b; t.x.z *= c;
-        t.y.x *= a; t.y.y *= b; t.y.z *= c;
-        t.z.x *= a; t.z.y *= b; t.z.z *= c;
-        return Affin3d ( t, o );
-    }
-    double getArea () const;
-};
-</pre>
-<p>
 &bull; Цилиндр</p>
 <pre>class Cylinder3d
 {
@@ -469,6 +447,40 @@ public:
     double getArea () const;
 };
 </pre>
+<p>
+&bull; Тетраэдр</p>
+<pre>
+class Tetrahedron
+{
+public:
+    Vector3d a, b, c, d;
+
+    Tetrahedron () {}
+};
+</pre>
+<p>
+<p>
+&bull; Прямоугольный параллелепипед</p>
+<pre>
+class Cuboid3d
+{
+public:
+    double a, b, c; // полуоси
+    Spin3d spin;    // поворот
+    Vector3d o;     // центр
+
+    Affin3d getAffin3d () const
+    {
+        LinTran3d t ( spin );
+        t.x.x *= a; t.x.y *= b; t.x.z *= c;
+        t.y.x *= a; t.y.y *= b; t.y.z *= c;
+        t.z.x *= a; t.z.y *= b; t.z.z *= c;
+        return Affin3d ( t, o );
+    }
+    double getArea () const;
+};
+</pre>
+<p>
 <p>Функции вычисляющие расстояния от точки до некоторых из этих фигур находятся <a href="dist3.html">здесь</a>.
 </p>
 <p>Примеры использования всех этих классов можно посмотреть в приложении <a href="demo/demo.html">DEMO</a>.

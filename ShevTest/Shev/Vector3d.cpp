@@ -469,6 +469,11 @@ void Rhombus3d::getVerts ( Vector3d vert[4] ) const
     vert[3] = o - vb;
 }
 
+double Rhombus3d::getPerimeter () const
+{
+    return 4 * sqrt ( a*a + b*b );
+}
+
 /////////////////////////////// Объёмы фигур //////////////////////////////////
 
 double volume ( const Sphere3d & fig ) // Объём шара

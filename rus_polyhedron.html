@@ -2,7 +2,7 @@
 <head><title>Класс Polyhedron</title>
 <link rel="stylesheet" type="text/css" href="stylle.css"></head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
-<div align="center"><center>
+<div align="center">
 <table width="680" cellspacing="0" cellpadding="0">
 <div align=center><br>
 <font color="" style="font-size: 20pt">Класс Polyhedron</font>
@@ -72,6 +72,7 @@ index и поле info для записи дополнительной инфо
 
         Polyhedron () {}
         Polyhedron ( nat nv, nat nf ) : vertex(nv), facet(nf) {}
+        explicit Polyhedron ( const Tetrahedron & fig ) { *this = fig; }
         explicit Polyhedron ( const Cuboid3d & fig ) { *this = fig; }
 
         Polyhedron & linkFacets (); // Связать грани
@@ -86,6 +87,8 @@ index и поле info для записи дополнительной инфо
             }
             return *this;
         }
+
+        Polyhedron & operator = ( const Tetrahedron & fig );
 
         Polyhedron & operator = ( const Cuboid3d & fig )
         {
@@ -203,7 +206,7 @@ ei - индекс ребра, fi - индекс грани ). Если ближ�
 </p>
 <p>
 Описание класса Vector3d находится <a href="rus_vector.html">здесь</a>.
-<br>Описание классов Plane3d, Sphere3d, Ellipsoid3d, Cuboid3d, Cylinder3d и Cone3d находится <a href="figure3d.html">здесь</a>.
+<br>Описание классов Plane3d, Sphere3d, Ellipsoid3d, Cylinder3d, Cone3d, Tetrahedron и Cuboid3d находится <a href="figure3d.html">здесь</a>.
 <br>Описание классов Spin3d, Ortho3d, Conform3d и Similar3d находится <a href="transform3d.html">здесь</a>.
 <br>Описание шаблонов классов CArrRef и DynArray находится <a href=array.html>здесь</a>.
 <br>Исходники находятся в файле <a href="source/source.zip">polyhedron.cpp</a>. 

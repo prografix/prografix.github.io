@@ -67,6 +67,7 @@ namespace Shev
 
         Polyhedron () {}
         Polyhedron ( nat nv, nat nf ) : vertex(nv), facet(nf) {}
+        explicit Polyhedron ( const Tetrahedron & fig ) { *this = fig; }
         explicit Polyhedron ( const Cuboid3d & fig ) { *this = fig; }
 
         Polyhedron & linkFacets (); // Связать грани
@@ -83,6 +84,8 @@ namespace Shev
             }
             return *this;
         }
+
+        Polyhedron & operator = ( const Tetrahedron & fig );
 
         Polyhedron & operator = ( const Cuboid3d & fig )
         {

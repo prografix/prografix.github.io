@@ -348,6 +348,12 @@ void draw ( const Def<Segment3d> & fig, float r, float g, float b )
     glEnd ();
 }
 
+void draw ( const Def<Tetrahedron> & fig, float r, float g, float b, float a, ViewMode vm )
+{
+    if ( ! fig.isDef ) return;
+    draw ( Polyhedron ( fig ), r, g, b, a, vm == VM_SMOOTH ? VM_FLAT : vm );
+}
+
 void draw ( const Def<Cuboid3d> & fig, float r, float g, float b, float a, ViewMode vm )
 {
     if ( ! fig.isDef ) return;
