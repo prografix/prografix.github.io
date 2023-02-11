@@ -1047,7 +1047,7 @@ Def<Ellipsoid3d> maxEllipsoidInConvexPolyhedronV ( const Polyhedron & poly )
 //
 //**************************** 05.02.2023 *********************************//
 
-Def<Tetrahedron> maxTetrahedronInConvexPolyhedronA ( const Polyhedron & poly )
+Def<Tetrahedron> maxTetrahedronInConvexPolyhedronV ( const Polyhedron & poly )
 {
     Def<Tetrahedron> res;
     CCArrRef<Vector3d> & vert = poly.vertex;

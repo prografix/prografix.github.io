@@ -211,7 +211,7 @@ Def<Ellipsoid3d> maxEllipsoidInConvexPolyhedronV ( const Polyhedron & poly );
 //
 //**************************** 05.02.2023 *********************************//
 
-Def<Tetrahedron> maxTetrahedronInConvexPolyhedronA ( const Polyhedron & poly );
+Def<Tetrahedron> maxTetrahedronInConvexPolyhedronV ( const Polyhedron & poly );
 
 
 //**************************** 24.10.2021 *********************************//
