@@ -3856,7 +3856,8 @@ void maxCuboidInConvexPolyhedron_test()
 //        display << k << NL;
         draw ( outer, 0, 1, 1, 0, VM_WIRE );
         double t1 = timeInSec();
-        Def<Cuboid3d> cube = maxCuboidInConvexPolyhedronNR ( outer );
+        //Def<Cuboid3d> cube = maxCuboidInConvexPolyhedronNR ( outer );
+        Def<Tetrahedron> cube = maxTetrahedronInConvexPolyhedronA ( outer );
         double t2 = timeInSec();
         time += t2 - t1;
         if ( cube.isDef ) 

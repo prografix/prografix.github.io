@@ -371,14 +371,25 @@ double factor ( nat n )
     return s;
 }
 
-double func1 ( MuFunc & mu, double x )
+double funcD ( double x )
+{
+    double s = 0, t = 1;
+    for ( double i = 1; ; i++ )
+    {
+        t *= x / ( i*i );
+        s += t * i;
+        if ( fabs(t) < 1e-9 ) break;
+    }
+    return s;
+}
+
+double func1 ( double x )
 {
     double s = 0;
-    for ( nat n = 1; n <= 30000; n+=2 )
+    for ( nat n = 0; n <= 30; n+=1 )
     {
-        double t = 1 + n * x;
-        t = 1 / t;
-        if ( n % 4 == 1 )
+        double t = funcD ( (1 + 2*n) * x );
+        if ( n % 2 == 1 )
             s += t;
         else
             s -= t;
@@ -419,11 +430,10 @@ display << s <<M_PI*M_PI/32 << NL;
 void func_test()
 {
     MuFunc mu;
-    func3 ();
-    for ( int i = 1; i < 41; i+=1 )
+    for ( int i = 1; i < 100; i+=1 )
     {
-        double x = 0.1*i;
-       // display << func1 (mu, x) << func0 (mu, x) <<NL;
+        double x = -i;
+        display << x << funcD (x) <<NL;
         //printf ( display.file, "%d %.4e\n", i, s );
     }
     //display << pow (0.9,50)<<pow (0.9,30)<<NL;
