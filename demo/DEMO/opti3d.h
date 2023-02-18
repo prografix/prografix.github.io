@@ -205,6 +205,15 @@ Ellipsoid3d maxEllipsoidInTetrahedronV ( Vector3d v1, Vector3d v2, Vector3d v3, 
 Def<Ellipsoid3d> maxEllipsoidInConvexPolyhedronV ( const Polyhedron & poly );
 
 
+//**************************** 05.02.2023 *********************************//
+//
+//          Максимальный тетраэдр вписанный в выпуклый многогранник
+//
+//**************************** 05.02.2023 *********************************//
+
+Def<Tetrahedron> maxTetrahedronInConvexPolyhedronV ( const Polyhedron & poly );
+
+
 //**************************** 24.10.2021 *********************************//
 //
 //      Максимальный по объёму прямоугольный параллелепипед

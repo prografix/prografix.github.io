@@ -244,8 +244,7 @@ Polyhedron & Polyhedron::linkFacets()
 
 Polyhedron & Polyhedron::makeTetrahedron ( double r )
 {
-    makeVoid();
-    if ( r <= 0 ) return *this;
+    if ( r <= 0 ) return makeVoid();
 
     if ( vertex.size() != 4 ) vertex.resize ( 4 );
     if ( facet .size() != 4 ) facet .resize ( 4 );
@@ -255,6 +254,52 @@ Polyhedron & Polyhedron::makeTetrahedron ( double r )
     vertex[1] = Vector3d ( r, r, m );
     vertex[2] = Vector3d ( m, r, r );
     vertex[3] = Vector3d ( m, m, m );
+
+    if ( facet[0].nv != 3 ) facet[0].resize ( 3 );
+    if ( facet[1].nv != 3 ) facet[1].resize ( 3 );
+    if ( facet[2].nv != 3 ) facet[2].resize ( 3 );
+    if ( facet[3].nv != 3 ) facet[3].resize ( 3 );
+
+    nat * p;
+    p = facet[3].index();
+    p[0] = 0;
+    p[1] = 1;
+    p[2] = 2;
+    p[3] = 0;
+    p = facet[2].index();
+    p[0] = 0;
+    p[1] = 3;
+    p[2] = 1;
+    p[3] = 0;
+    p = facet[1].index();
+    p[0] = 0;
+    p[1] = 2;
+    p[2] = 3;
+    p[3] = 0;
+    p = facet[0].index();
+    p[0] = 1;
+    p[1] = 3;
+    p[2] = 2;
+    p[3] = 1;
+
+    return initPlanes().linkFacets();
+}
+
+//**************************** 05.02.2023 ****************************
+//
+//                         Создание тетраэдра
+//
+//**************************** 05.02.2023 ****************************
+
+Polyhedron & Polyhedron::operator = ( const Tetrahedron & fig )
+{
+    if ( vertex.size() != 4 ) vertex.resize ( 4 );
+    if ( facet .size() != 4 ) facet .resize ( 4 );
+
+    vertex[0] = fig.a;
+    vertex[1] = fig.b;
+    vertex[2] = fig.c;
+    vertex[3] = fig.d;
 
     if ( facet[0].nv != 3 ) facet[0].resize ( 3 );
     if ( facet[1].nv != 3 ) facet[1].resize ( 3 );

@@ -45,6 +45,7 @@ void draw ( const Def<Rectangle3d>      & fig, float r, float g, float b, float 
 void draw ( const Def<Rhombus3d>        & fig, float r, float g, float b, float a, ViewMode vm );
 void draw ( const Def<Parallelogram3d>  & fig, float r, float g, float b, float a, ViewMode vm );
 void draw ( const Shev::Polyhedron      & fig, float r, float g, float b, float a, ViewMode vm );
+void draw ( const Def<Tetrahedron>      & fig, float r, float g, float b, float a, ViewMode vm );
 void draw ( const Def<Cuboid3d>         & fig, float r, float g, float b, float a, ViewMode vm );
 void draw ( const Def<Ellipsoid3d>      & fig, float r, float g, float b, float a, ViewMode vm );
 void draw ( const Def<Cylinder3d>       & fig, float r, float g, float b, float a, ViewMode vm );

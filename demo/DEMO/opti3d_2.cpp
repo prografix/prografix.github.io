@@ -1041,6 +1041,49 @@ Def<Ellipsoid3d> maxEllipsoidInConvexPolyhedronV ( const Polyhedron & poly )
     return res;
 }
 
+//**************************** 05.02.2023 *********************************//
+//
+//          Максимальный тетраэдр вписанный в выпуклый многогранник
+//
+//**************************** 05.02.2023 *********************************//
+
+Def<Tetrahedron> maxTetrahedronInConvexPolyhedronV ( const Polyhedron & poly )
+{
+    Def<Tetrahedron> res;
+    CCArrRef<Vector3d> & vert = poly.vertex;
+    if ( vert.size() < 4 ) return res;
+    nat m0(0), m1(1), m2(2), m3(3);
+    double max = 0, vol;
+    for ( nat i0 =    0; i0 < vert.size() - 3; ++i0 )
+    for ( nat i1 = i0+1; i1 < vert.size() - 2; ++i1 )
+    {
+        const Vector3d v1 = vert[i1] - vert[i0];
+        for ( nat i2 = i1+1; i2 < vert.size() - 1; ++i2 )
+        {
+            const Vector3d v2 = v1 % ( vert[i2] - vert[i0] );
+            for ( nat i3 = i2+1; i3 < vert.size(); ++i3 )
+            {
+                const double d = v2 * ( vert[i0] - vert[i3] );
+                if ( _maxa ( max, fabs ( d ) ) )
+                {
+                    vol = d;
+                    m0 = i0;
+                    m1 = i1;
+                    m2 = i2;
+                    m3 = i3;
+                }
+            }
+        }
+    }
+    if ( vol < 0 ) _swap ( m0, m1 );
+    res.a = vert[m0];
+    res.b = vert[m1];
+    res.c = vert[m2];
+    res.d = vert[m3];
+    res.isDef = true;
+    return res;
+}
+
 //**************************** 24.10.2021 *********************************//
 //
 //      Максимальный по объёму прямоугольный параллелепипед

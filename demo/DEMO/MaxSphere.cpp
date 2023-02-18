@@ -80,22 +80,24 @@ public:
         case 7:
             _draw ( maxEllipsoidInConvexPolyhedronV ( outer ), outer ); break;
         case 8:
-            _draw ( maxCuboidInConvexPolyhedronNR ( outer ), outer ); break;
+            _draw ( maxTetrahedronInConvexPolyhedronV ( outer ), outer ); break;
         case 9:
+            _draw ( maxCuboidInConvexPolyhedronNR ( outer ), outer ); break;
+        case 10:
             {
                 Polyhedron inner;
                 inner.makePrism ( regularPolygon ( FixArray<Vector2d, 6>() ), 0.4 );
                 inner *= maxPolyhedronInConvexPolyhedronNR ( inner, outer );
                 _draw ( inner, outer, true ); break;
             }
-        case 10:
+        case 11:
             {
                 Polyhedron inner;
                 inner.makePrism ( regularPolygon ( FixArray<Vector2d, 6>() ), 0.4 );
                 inner *= maxPolyhedronInConvexPolyhedron1R ( inner, Vector3d(0,0,1), 6, outer );
                 _draw ( inner, outer, true ); break;
             }
-        case 11:
+        case 12:
             {
                 Polyhedron inner;
                 inner.makePrism ( regularPolygon ( FixArray<Vector2d, 6>() ), 0.4 );
