@@ -1,0 +1,31 @@
+
+29.06.2002 Версия 1.0
+
+20.07.2002 Версия 2.0
+    В класс GraphicInterface добавлены следующие функции:
+    virtual void IntAstDI ( GIuint index1, GIuint index2 );
+    virtual void IntAstDA ( GIuint index, int n, const int * );
+    virtual void FloatAstDA ( GIuint index, int n, const float * );
+    virtual void Normal3vI ( GIuint index );
+    virtual void Vertex2vI ( GIuint index );
+    virtual void Vertex3vI ( GIuint index );
+    virtual void Build2DMipmapsBGR_BTPC ( int length, const unsigned char * pData );
+
+01.03.2003 Версия 3.0
+    В класс GraphicInterface добавлены следующие функции:
+    virtual void EnableColorMaterial ();
+    virtual void DisableColorMaterial();
+    virtual void Disk ( float innerRadius, float outerRadius, int slices, int loops );
+    virtual void Time ( GIuint index );
+    В toolbar добавлены кнопки управления положением сцены. 
+    Также левой кнопкой мышки можно сцену вращать, а правой двигать.
+
+21.06.2003 Версия 3.1
+    Добавлена возможность сохранения графики в С++ файле.
+
+29.04.2012 Версия 4.0
+    В класс GraphicInterface добавлены следующие функции:
+    virtual void GetFloatModelViewMatrix ( GIuint index );
+    virtual void GetFloatProjectionMatrix ( GIuint index );
+    virtual void LightQuadraticAttenuation( Light, float );
+    virtual void Frustum4v ( GIuint index );
