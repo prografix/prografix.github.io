@@ -1388,7 +1388,7 @@ Def<Conform3d> maxPolyhedronInConvexPolyhedronNR ( const Polyhedron & inner, con
 //     ћаксимальный многогранник вписанный в выпуклый многогранник 
 //               с вращением вокруг заданной оси
 //
-//**************************** 30.03.2015 *********************************//
+//**************************** 24.02.2023 *********************************//
 
 Def<Conform3d> maxPolyhedronInConvexPolyhedron1R ( const Polyhedron & inner, 
                                                    const Vector3d & az, nat sym,
@@ -1423,20 +1423,21 @@ Def<Conform3d> maxPolyhedronInConvexPolyhedron1R ( const Polyhedron & inner,
         plane[i] = sim2 ( outer.facet[i].plane );
     }
 // »нициализаци€ области допустимых преобразований
-    List< Vertex<5> > stor;
-    WireModel<5> model;
+    List< Vertex<6> > stor;
+    WireModel<6> model;
     model.simplex ( 10., stor );
-    Double<5> d5;
-    d5.d1 = d5.d2 = d5.d3 = d5.d4 = 1.;
-    d5.d0 = sym > 1 ? 0. : d5.d1;
-    model.vlist -= d5;
-    Double<6> cor;
+    Double<6> dd;
+    dd.d1 = dd.d2 = dd.d3 = dd.d4 = 1.;
+    dd.d5 = 0;
+    dd.d0 = sym > 1 ? 0. : dd.d1;
+    model.vlist -= dd;
+    Double<7> cor;
     if ( sym > 2 )
     {
         const double fi = ( M_PI + M_PI ) / sym;
         cor.d0 = - sin ( fi );
         cor.d1 =   cos ( fi );
-        cor.d2 = cor.d3 = cor.d4 = cor.d5 = 0;
+        cor.d2 = cor.d3 = cor.d4 = cor.d5 = cor.d6 = 0;
         model.cut ( cor, stor );
     }
     const double eps = 1e-6;
@@ -1445,27 +1446,60 @@ Def<Conform3d> maxPolyhedronInConvexPolyhedron1R ( const Polyhedron & inner,
     for ( i = 0; i < 200; ++i )
     {
 // ѕоиск максимального решени€
-        Double<5> best;
-        double max = 0.;
+        Double<6> best;
+        best.d5 = 0.;
         if ( model.vlist.top() )
         do
         {
-            const Double<5> & d = model.vlist.cur()->coor;
-            const double t = d.d0 * d.d0 + d.d1 * d.d1;
-            if ( max < t ) max = t, best = d;
+            Vertex<6> * v = model.vlist.cur();
+            const Double<6> & d = v->coor;
+            v->data = d.d0 * d.d0 + d.d1 * d.d1 - d.d5 * d.d5;
         }
         while ( model.vlist.next() );
-        if ( ! max ) return err;
+        if ( model.vlist.top() )
+        do
+        {
+            const Vertex<6> * vi = model.vlist.cur();
+            const Double<6> & di = vi->coor;
+            if ( vi->data == 0 )
+            {
+                if ( _maxa ( best.d5, di.d5 ) ) best = di;
+            }
+            else
+            for ( nat j = 0; j < 6; ++j )
+            {
+                const Vertex<6> * vj = vi->vertex[j];
+                if ( vi > vj || vi->data * vj->data >= 0 ) continue;
+                const Double<6> & dj = vj->coor;
+                const double b0 = dj.d0 - di.d0;
+                const double b1 = dj.d1 - di.d1;
+                const double b5 = dj.d5 - di.d5;
+                double x[2];
+                const nat n = root2 ( b0*b0 + b1*b1 - b5*b5, 2*(di.d0*b0 + di.d1*b1 - di.d5*b5), di.d0*di.d0 + di.d1*di.d1 - di.d5*di.d5, x );
+                if ( ! n ) continue;
+                double t = x[0];
+                if ( n == 2 && fabs ( x[1] - 0.5 ) < fabs ( t - 0.5 ) ) t = x[1];
+                if ( _maxa ( best.d5, di.d5 + b5*t ) )
+                {
+                    best.d0 = di.d0 + b0*t;
+                    best.d1 = di.d1 + b1*t;
+                    best.d2 = di.d2 + ( dj.d2 - di.d2 ) * t;
+                    best.d3 = di.d3 + ( dj.d3 - di.d3 ) * t;
+                    best.d4 = di.d4 + ( dj.d4 - di.d4 ) * t;
+                }
+            }
+        }
+        while ( model.vlist.next() );
+        if ( ! best.d5 ) return err;
 // ѕоиск максимального нарушени€ ограничений дл€ выбранного решени€
         const double s = best.d0;
         const double t = best.d1;
-        const double q = sqrt ( max );
         const Vector3d o ( best.d2, best.d3, best.d4 );
         Vector3d vx, vy, vz;
         vx = s * ax + t * ay;        // p1 = ( s*p.x - t*p.y ) * ax +
         vy = s * ay - t * ax;        //      ( t*p.x + s*p.y ) * ay +
-        vz = q * az;                 //   p.z * sqrt (s*s+t*t) * az + o;
-        max = 0;
+        vz = best.d5 * az;           //        h*p.z * az + o;
+        double max = 0;
         nat jm, km;
         for ( nat j = 0; j < nv; ++j )
         {
@@ -1482,21 +1516,22 @@ Def<Conform3d> maxPolyhedronInConvexPolyhedron1R ( const Polyhedron & inner,
 // ≈сли нарушение мало, то завершение программы
         if ( max < eps )
         {
-            return ~conf2 * Conform3d ( Spin3d ( vx/q, vy/q, az ), o, q ) * conf1;
+//display << i << NL;
+            return ~conf2 * Conform3d ( Spin3d ( vx/best.d5, vy/best.d5, az ), o, best.d5 ) * conf1;
         }
 // ѕрименение ограничени€ к области допустимых преобразований
         const Vector3d & norm = plane[km].norm;
         const double xn = ax * norm;
         const double yn = ay * norm;
-        cor.d0 = xn * vert[jm].x + yn * vert[jm].y;
-        cor.d1 = yn * vert[jm].x - xn * vert[jm].y;
-        const double u = vert[jm].z * ( az * norm ) / q;
-        cor.d0 += s * u;
-        cor.d1 += t * u;
+        const double zn = az * norm;
+        const Vector3d & v = vert[jm];
+        cor.d0 = xn * v.x + yn * v.y;
+        cor.d1 = yn * v.x - xn * v.y;
         cor.d2 = norm.x;
         cor.d3 = norm.y;
         cor.d4 = norm.z;
-        cor.d5 = plane[km].dist;
+        cor.d5 = zn * v.z;
+        cor.d6 = plane[km].dist;
         model.cut ( cor, stor );
     }
     return err;

@@ -2099,12 +2099,138 @@ void maxCylinder_test ()
 display << "time =" << t1 - t0 << NL;
 }
 
+Def<Conform3d> maxPolyhedronInConvexPolyhedron1Rt ( const Polyhedron & inner, 
+                                                   const Vector3d & az, nat sym,
+                                                   const Polyhedron & outer )
+{
+    nat i;
+    Def<Conform3d> err;
+    const nat nv = inner.vertex.size();
+    if ( nv < 2 ) return err;
+    const nat np = outer.facet.size();
+    if ( nv < 4 ) return err;
+    DynArray<Vector3d> vert ( nv );
+    DynArray<Plane3d> plane ( np );
+    Def<Segment3d> dim1 = dimensions ( inner.vertex );
+    Def<Segment3d> dim2 = dimensions ( outer.vertex );
+    if ( ! dim2.isDef ) return err;
+    const double r1 = normU ( dim1.a - dim1.b );
+    const double r2 = normU ( dim2.a - dim2.b );
+    if ( ! r1 || ! r2 ) return err;
+    const Vector3d o1 = 0.5 * ( dim1.a + dim1.b );
+    const Vector3d o2 = 0.5 * ( dim2.a + dim2.b );
+    const double c1 = 4 / r1;
+    for ( i = 0; i < nv; ++i )
+    {
+        vert[i] = ( inner.vertex[i] - o1 ) * c1;
+    }
+    const Conform3d conf1 = Conform3d ( c1 ) * Conform3d ( -o1 );
+    const Conform3d conf2 = Conform3d ( 2 / r2 ) * Conform3d ( -o2 );
+    const Similar3d sim2 ( conf2 );
+    for ( i = 0; i < np; ++i )
+    {
+        plane[i] = sim2 ( outer.facet[i].plane );
+    }
+// »нициализаци€ области допустимых преобразований
+    List< Vertex<6> > stor;
+    WireModel<6> model;
+    model.simplex ( 10., stor );
+    Double<6> dd;
+    dd.d1 = dd.d2 = dd.d3 = dd.d4 = 1.;
+    dd.d5 = 0;
+    dd.d0 = sym > 1 ? 0. : dd.d1;
+    model.vlist -= dd;
+    Double<7> cor;
+    if ( sym > 2 )
+    {
+        const double fi = ( M_PI + M_PI ) / sym;
+        cor.d0 = - sin ( fi );
+        cor.d1 =   cos ( fi );
+        cor.d2 = cor.d3 = cor.d4 = cor.d5 = cor.d6 = 0;
+        model.cut ( cor, stor );
+    }
+    const double eps = 1e-6;
+    Vector3d ax, ay;
+    reper ( az, ax, ay );
+    for ( i = 0; i < 400; ++i )
+    {
+// ѕоиск максимального решени€
+        Double<6> best;
+        double max = 0.;
+        if ( model.vlist.top() )
+        do
+        {
+            const Double<6> & d = model.vlist.cur()->coor;
+            const double t = d.d0 * d.d0 + d.d1 * d.d1;
+            if ( max < t ) max = t, best = d;
+        }
+        while ( model.vlist.next() );
+        if ( ! max ) return err;
+// ѕоиск максимального нарушени€ ограничений дл€ выбранного решени€
+        const double s = best.d0;
+        const double t = best.d1;
+        const double q = sqrt ( max );
+        if ( best.d5 < 0.999 * q )
+        {
+            cor.d0 = s / q;
+            cor.d1 = t / q;
+            cor.d5 = -1;
+            cor.d2 = 
+            cor.d3 = 
+            cor.d4 = 
+            cor.d6 = 0;
+            model.cut ( cor, stor );
+            continue;
+        }
+        const Vector3d o ( best.d2, best.d3, best.d4 );
+        Vector3d vx, vy, vz;
+        vx = s * ax + t * ay;        // p1 = ( s*p.x - t*p.y ) * ax +
+        vy = s * ay - t * ax;        //      ( t*p.x + s*p.y ) * ay +
+        vz = best.d5 * az;           //        h*p.z * az + o;
+        max = 0;
+        nat jm, km;
+        for ( nat j = 0; j < nv; ++j )
+        {
+            Vector3d p = o;
+            p += vert[j].x * vx;
+            p += vert[j].y * vy;
+            p += vert[j].z * vz;
+            for ( nat k = 0; k < np; ++k )
+            {
+                const double d = plane[k] % p;
+                if ( max < d ) max = d, jm = j, km = k;
+            }
+        }
+// ≈сли нарушение мало, то завершение программы
+        if ( max < eps )
+        {
+//display << i << NL;
+            return ~conf2 * Conform3d ( Spin3d ( vx/q, vy/q, az ), o, q ) * conf1;
+        }
+// ѕрименение ограничени€ к области допустимых преобразований
+        const Vector3d & norm = plane[km].norm;
+        const double xn = ax * norm;
+        const double yn = ay * norm;
+        const double zn = az * norm;
+        const Vector3d & v = vert[jm];
+        cor.d0 = xn * v.x + yn * v.y;
+        cor.d1 = yn * v.x - xn * v.y;
+        cor.d2 = norm.x;
+        cor.d3 = norm.y;
+        cor.d4 = norm.z;
+        cor.d5 = zn * v.z;
+        cor.d6 = plane[km].dist;
+        model.cut ( cor, stor );
+    }
+    return err;
+}
+
 void maxPolyhedronInConvexPolyhedron1R_test()
 {
     double time = 0;
     static PRand rand;
     static PRandVector3d vrand;
-    FixArray<Vector2d, 6> vert;
+    FixArray<Vector2d, 4> vert;
     regularPolygon ( vert );
 //    for ( nat k = 0; k < 500; ++k )
     {
@@ -2121,38 +2247,38 @@ void maxPolyhedronInConvexPolyhedron1R_test()
             outer *= 0.2;
         }
         //outer.makeCube ( 0.2 );
-        randPolyhedron ( 1000, outer );
+        randPolyhedron ( 40, outer );
         inner.makePrism ( vert, 0.4 );
+        for ( nat k = 0; k < inner.vertex.size(); ++k ) inner.vertex[k].y *= 1.5;
         inner += Vector3d ( 0.1, 0.2, 0.3 );
 //draw ( inner, 1, 1, 0, 1, VM_WIRE );
         draw ( outer, 0, 1, 1, 0, VM_WIRE );
-        const Vector3d axis = vrand();
-        //const Vector3d axis (0,0,1);
+        //const Vector3d axis = vrand();
+        const Vector3d axis (0,0,1);
         double t1 = timeInSec();
-        Def<Conform3d> conf = maxPolyhedronInConvexPolyhedron1R ( inner, axis, 6, outer );
+        Def<Conform3d> conf = maxPolyhedronInConvexPolyhedron1R ( inner, axis, 1, outer );
         if ( conf.isDef )
         {
             double t2 = timeInSec();
             time += t2 - t1;
-            inner *= conf;
-            draw ( inner, 1, 0, 0, 1, VM_WIRE );
+            double t3 = timeInSec();
+            Def<Conform3d> conf2 = maxPolyhedronInConvexPolyhedron1R ( inner, axis, 1, outer );
+            double t4 = timeInSec();
+display << (t2 - t1) << (t4 - t3) << NL;
+//display << conf.magn << conf2.magn << NL;
             Polyhedron inner2;
             inner2 = inner;
+            inner *= conf;
             draw ( inner, 1, 0, 0, 1, VM_WIRE );
-            double t3 = timeInSec();
-            //Def<Conform3d> conf2 = 
-            for(nat i=0; i<100; ++i) maxPolyhedronInConvexPolyhedronNR ( inner, outer );
-            double t4 = timeInSec();
-display << (t2 - t1) / (t4 - t3) << NL;
-            //inner2 *= conf2;
-            //draw ( inner, 1, 1, 0, 1, VM_WIRE );
+            inner2 *= conf2;
+            draw ( inner2, 1, 1, 0, 1, VM_WIRE );
         }
         else
         {
             display << "error" << NL;
         }
     }
-    display << "end" << time << NL;
+    display << "end" << NL;
 }
 
 Line3d getLineU ( CArrRef<Vector3d> data, double & r )
@@ -3857,7 +3983,7 @@ void maxCuboidInConvexPolyhedron_test()
         draw ( outer, 0, 1, 1, 0, VM_WIRE );
         double t1 = timeInSec();
         //Def<Cuboid3d> cube = maxCuboidInConvexPolyhedronNR ( outer );
-        Def<Tetrahedron> cube = maxTetrahedronInConvexPolyhedronA ( outer );
+        Def<Tetrahedron> cube = maxTetrahedronInConvexPolyhedronV ( outer );
         double t2 = timeInSec();
         time += t2 - t1;
         if ( cube.isDef ) 
@@ -3880,10 +4006,10 @@ void opti3d_test ()
 //    minTetrahedronAroundPoints_test1();
 //    minEllipsoid_test();
 //    maxEllipsoidInConvexPolyhedron_test();
-    maxCuboidInConvexPolyhedron_test();
+//    maxCuboidInConvexPolyhedron_test();
 //    maxPolyhedronInConvexPolyhedron_test();
 //    maxConvexPolyhedronInPolyhedronNR_test();
-//    maxPolyhedronInConvexPolyhedron1R_test();
+    maxPolyhedronInConvexPolyhedron1R_test();
 //    maxPolyhedronInConvexPolyhedron2_test();
 //    maxSphereInConvexPolyhedron_test();
 //    minSphereAroundPoints_test();
