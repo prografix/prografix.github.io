@@ -763,7 +763,8 @@ Def<Conform2d> overlayConvexPolygons ( CCArrRef<Vector2d> & vert1, CCArrRef<Vect
 Def<Affin2d> overlayPointsOnConvexPolygon ( CCArrRef<Vector2d> & point, CCArrRef<Line2d> & line )
 {
     Def<Affin2d> res;
-    if ( point.size() < 3 || line.size() < 3 ) return res;
+    const nat nl = line.size();
+    if ( point.size() < 3 || nl < 3 ) return res;
 // Инициализация области допустимых преобразований
     List< Vertex<7> > stor;
     WireModel<7> model;
@@ -819,7 +820,7 @@ Def<Affin2d> overlayPointsOnConvexPolygon ( CCArrRef<Vector2d> & point, CCArrRef
         }
         while ( show.next() );
 // Поиск максимального нарушения ограничений для выбранного решения
-        nat km;
+        nat km = nl;
         Vector2d pm;
         double max = 0.;
         for ( nat j = 0; j < point.size(); ++j )
@@ -827,10 +828,10 @@ Def<Affin2d> overlayPointsOnConvexPolygon ( CCArrRef<Vector2d> & point, CCArrRef
             const Vector2d & p = point[j];
             const Vector2d p1 ( best.d0*p.x + best.d1*p.y + best.d2,
                                 best.d3*p.x + best.d4*p.y + best.d5 );
-            for ( nat k = 0; k < line.size(); ++k )
+            for ( nat k = 0; k < nl; ++k )
             {
                 const double t = line[k] % p1;
-                if ( max < t ) max = t, pm = p, km = k;
+                if ( km == nl || max < t ) max = t, pm = p, km = k;
             }
         }
         max += best.d6;
