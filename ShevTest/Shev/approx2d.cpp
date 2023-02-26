@@ -13,6 +13,7 @@
 #include "moment2d.h"
 #include "approx2d.h"
 #include "Vector2d.h"
+#include "Vector3d.h"
 #include "Vector4d.h"
 #include "ShevArray.h"
 #include "intersect2d.h"
@@ -601,6 +602,95 @@ Def<Rectangle2d> getRectanglePlg ( CArrRef<Vector2d> poly )
     return getRectangle ( momentum2plg ( poly ) );
 }
 
+//************************ 25.02.2023 *******************************//
+//
+//        Совмещение группы точек с выпуклым многоугольником
+//                  при помощи сдвига, без вращения
+//
+//************************ 25.02.2023 *******************************//
+
+bool minMaxPointsConvexPolygon ( CCArrRef<Vector2d> & vert1, CCArrRef<Vector2d> & vert2, Vector2d & res )
+{
+    if ( vert1.size() < 1 || vert2.size() < 3 ) return false;
+// Найдём габариты многоугольников
+    const Segment2d & seg1 = dimensions ( vert1 );
+    const Segment2d & seg2 = dimensions ( vert2 );
+    const double dx = _max ( seg1.b.x, seg2.b.x ) - _min ( seg1.a.x, seg2.a.x );
+    const double dy = _max ( seg1.b.y, seg2.b.y ) - _min ( seg1.a.y, seg2.a.y );
+// Получение границ многоугольника в виде прямых линий
+    DynArray<Line2d> line ( vert2.size() );
+    if ( ! points2lines ( vert2, line ) ) return false;
+// Поиск оптимального сдвига
+    Vector3d arr[4];
+    arr[0] = Vector3d ( dx, dy, dx + dy );
+    arr[1] = Vector3d ( -1., 0., 0. );
+    arr[2] = Vector3d ( 0., -1., 0. );
+    arr[3] = Vector3d ( 0., 0., -1. );
+    const double eps = 1e-6 * arr[0].z;
+    for ( nat k = 0; k < 100; ++k )
+    {
+        Vector3d & a0 = arr[0];
+        const Vector2d o ( a0.x, a0.y );
+        double max = -1;
+        nat i, im, km;
+        for ( i = 0; i < line.size(); ++i )
+        {
+            const Line2d & li = line[i];
+            nat jm = 0;
+            double pmax = li.norm * vert1[0];
+            for ( nat j = 1; j < vert1.size(); ++j )
+            {
+                if ( _maxa ( pmax, li.norm * vert1[j] ) ) jm = j;
+            }
+            pmax += li % o;
+            if ( _maxa ( max, pmax ) ) im = i, km = jm;
+        }
+        const double dist = max + a0.z;
+        if ( dist < eps )
+        {
+            res = o;
+            return true;
+        }
+        const Line2d & li = line[im];
+        const Vector2d & vm = vert1[km];
+        const Vector3d cor ( li.norm.x, li.norm.y, 1. );
+        nat ib = 0;
+        double sg;
+        for ( i = 1; i <= 3; ++i )
+        {
+            const Vector3d & v = arr[i];
+            double t = cor * v;
+            if ( t > -1e-8 ) continue;
+            t = 1./ t;
+            if ( ib == 0 )
+            {
+                max = v.z * t;
+                ib = i;
+                sg = t;
+            }
+            else
+            {
+                const double s = v.z * t;
+                if ( s < max ) max = s, ib = i, sg = t;
+            }
+        }
+        if ( ib == 0 )
+        {
+            return false;
+        }
+        const Vector3d & v = arr[ib];
+        a0 -= v * ( dist * sg );
+        for ( i = 1; i <= 3; ++i )
+        {
+            if ( i == ib ) continue;
+            Vector3d & ai = arr[i];
+            ai -= v * ( ( cor * ai ) * sg );
+            ai *= ( 1./ sqrt ( ai * ai ) );
+        }
+    }
+    return false;
+}
+
 //************************ 27.09.2021 *******************************//
 //
 //             Совмещение двух выпуклых многоугольников
@@ -755,7 +845,7 @@ Def<Conform2d> overlayConvexPolygons ( CCArrRef<Vector2d> & vert1, CCArrRef<Vect
 
 //************************ 07.02.2022 *******************************//
 //
-//         Наложение группы точек на выпуклый многоугольник
+//        Совмещение группы точек с выпуклым многоугольником
 //          при помощи преобразования сохраняющего площадь
 //
 //************************ 07.02.2022 *******************************//

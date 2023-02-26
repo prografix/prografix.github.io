@@ -2,8 +2,8 @@
 <head><title>Аппроксимация многоугольника</title>
 <link rel="stylesheet" type="text/css" href="stylle.css"></head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
-<div align="center"><center>
-<table width="680" cellspacing="0" cellpadding="0">
+<div align="center">
+<table width="800" cellspacing="0" cellpadding="0">
 <div align=center>
 <br><font color="" style="font-size: 20pt">Аппроксимация многоугольника</font>
 </div>
@@ -22,12 +22,18 @@ Def&lt;Rectangle2d> getRectanglePlg ( CArrRef&lt;Vector2d> poly );
 <p>Исходными данными для всех трёх функций является массив вершин многоугольника poly. 
 Направление обхода вершин многоугольника произвольно.
 </p>
+<p>Следующая функция совмещает множество точек (vert1) и выпуклый многоугольник (vert2) при помощи сдвига точек. 
+При этом минимизируется максимальное растояние точек от многоугольника. 
+Направление обхода вершин многоугольника против часовой стрелки:
+</p>
+<pre>
+bool minMaxPointsConvexPolygon ( CCArrRef&lt;Vector2d> & vert1, CCArrRef&lt;Vector2d> & vert2, Vector2d & res );
+</pre>
 <p>Следующая функция совмещает два выпуклых многоугольника при помощи поворота и сдвига первого многоугольника. 
 Направление обхода вершин против часовой стрелки:
 </p>
 <pre>
-Def&lt;Conform2d> overlayConvexPolygons ( CCArrRef&lt;Vector2d> & vert1, 
-                                       CCArrRef&lt;Vector2d> & vert2 );
+Def&lt;Conform2d> overlayConvexPolygons ( CCArrRef&lt;Vector2d> & vert1, CCArrRef&lt;Vector2d> & vert2 );
 </pre>
 <p>
 В приложении <a href="demo/demo.html">DEMO</a> можно посмотреть примеры использования этих функций.

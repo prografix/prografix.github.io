@@ -1388,33 +1388,34 @@ void overlayConvexPolygons_test()
 {
     Suite<Vector2d> poly1;
     poly1.resize ( 9 );
-    randConvexPolygon ( poly1 );
+    randConvexPolygon ( poly1 ) *= 0.6;
     Suite<Vector2d> poly2;
-    poly2.resize ( 9 );
-    randConvexPolygon ( poly2 );
+    poly2.resize ( 4 );
+    regularPolygon ( poly2 );
 drawPolygon ( poly2, 0, 1, 1 );
     DynArray<Line2d> line ( poly2.size() );
     if ( ! points2lines ( poly2, line ) ) return;
 double t0 = timeInSec ();
-    Def<Conform2d> conf = overlayConvexPolygons ( poly1, poly2 );
+    Vector2d conf;
+    bool ok = minMaxPointsConvexPolygon ( poly1, poly2, conf );
 double t1 = timeInSec ();
     Def<Affin2d> aff = overlayPointsOnConvexPolygon ( poly1, line );
 double t2 = timeInSec ();
 display << t1-t0 << t2-t1 << NL;
     Suite<Vector2d> tmp;
-    if ( conf.isDef )
+    if ( ok )
     {
         tmp = poly1;
-        tmp *= conf;
-display << area ( tmp ) << NL;
+        tmp += conf;
+//display << area ( tmp ) << NL;
 drawPolygon ( tmp, 1, 1, 0 );
     }
     if ( aff.isDef )
     {
         tmp = poly1;
         tmp *= aff;
-display << area ( tmp ) << NL;
-drawPolygon ( tmp, 1, 0, 0 );
+//display << area ( tmp ) << NL;
+//drawPolygon ( tmp, 1, 0, 0 );
     }
 }
 

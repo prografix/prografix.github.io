@@ -39,7 +39,7 @@ protected:
     DynArray&lt;double> coef;
     HarmAppr () {}
 public:
-    HarmAppr ( CCArrRef<Vector2d> & func, nat nr, nat k = 1 );
+    HarmAppr ( CCArrRef&lt;Vector2d> & func, nat nr, nat k = 1 );
 
     double operator () ( double a ) const;
 };
@@ -85,7 +85,7 @@ class HarmAppr1 : public HarmAppr
 {
     nat rank;
 public:
-    HarmAppr1 ( CCArrRef<Vector2d> & func, nat nr, nat k = 1 );
+    HarmAppr1 ( CCArrRef&lt;Vector2d> & func, nat nr, nat k = 1 );
 };
 </pre>
 Ниже приведено сравнение методов HarmAppr1 и HarmAppr2:
@@ -97,10 +97,10 @@ public:
 <p>Исходники находятся в <a href="source/source.zip">approx.cpp</a></p>
 </p>
 <a href="rus_approx.html">Наверх</a>
+</td></div>
+</table>
 <pre>
 
 </pre>
-</td></div>
-</table>
 </body>
 </html>
