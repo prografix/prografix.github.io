@@ -120,7 +120,6 @@ void WireModel<N>::newVert ( List< Vertex<N> > & temp1, List< Vertex<N> > & temp
             {
                 Vertex<N> * vert2 = p1[i];
                 if ( vert2->data < 0 ) continue;
-                nat16 * num2 = vert2->nfacet;
                 Vertex<N> * vert3 = temp2.addNewBefFir ( stor );
 				vert3->coor = vert2->coor;
 				vert3->coor -= vert1->coor;
@@ -152,7 +151,6 @@ void WireModel<N>::newVert ( List< Vertex<N> > & temp1, List< Vertex<N> > & temp
             {
                 Vertex<N> * vert2 = p1[i];
                 if ( vert2->data >= 0 ) continue;
-                nat16 * num2 = vert2->nfacet;
                 Vertex<N> * vert3 = temp2.addNewBefFir ( stor );
 				vert3->coor = vert2->coor;
 				vert3->coor -= vert1->coor;
@@ -183,14 +181,12 @@ void WireModel<N>::newVert ( List< Vertex<N> > & temp1, List< Vertex<N> > & temp
 }
 
 template <nat16 N> 
-class SegmentId;
+struct SegmentId;
 
 template <> 
-class SegmentId<3>
+struct SegmentId<3>
 {
-    nat16 id0;
-public:
-    nat16 summa;
+    nat16 id0, summa;
 
     SegmentId () {}
     SegmentId ( nat16 i, const nat16 * num )
@@ -209,11 +205,9 @@ public:
 };
 
 template <> 
-class SegmentId<4>
+struct SegmentId<4>
 {
-    nat16 id0, id1;
-public:
-    nat16 summa;
+    nat16 id0, id1, summa;
 
     SegmentId () {}
     SegmentId ( nat16 i, const nat16 * num )
@@ -233,11 +227,9 @@ public:
 };
 
 template <> 
-class SegmentId<5>
+struct SegmentId<5>
 {
-    nat16 id0, id1, id2;
-public:
-    nat16 summa;
+    nat16 id0, id1, id2, summa;
 
     SegmentId () {}
     SegmentId ( nat16 i, const nat16 * num )
@@ -258,11 +250,9 @@ public:
 };
 
 template <> 
-class SegmentId<6>
+struct SegmentId<6>
 {
-    nat16 id0, id1, id2, id3;
-public:
-    nat16 summa;
+    nat16 id0, id1, id2, id3, summa;
 
     SegmentId () {}
     SegmentId ( nat16 i, const nat16 * num )
@@ -284,11 +274,9 @@ public:
 };
 
 template <> 
-class SegmentId<7>
+struct SegmentId<7>
 {
-    nat16 id0, id1, id2, id3, id4;
-public:
-    nat16 summa;
+    nat16 id0, id1, id2, id3, id4, summa;
 
     SegmentId () {}
     SegmentId ( nat16 i, const nat16 * num )
@@ -311,11 +299,9 @@ public:
 };
 
 template <> 
-class SegmentId<8>
+struct SegmentId<8>
 {
-    nat16 id0, id1, id2, id3, id4, id5;
-public:
-    nat16 summa;
+    nat16 id0, id1, id2, id3, id4, id5, summa;
 
     SegmentId () {}
     SegmentId ( nat16 i, const nat16 * num )
@@ -339,11 +325,9 @@ public:
 };
 
 template <> 
-class SegmentId<9>
+struct SegmentId<9>
 {
-    nat16 id0, id1, id2, id3, id4, id5, id6;
-public:
-    nat16 summa;
+    nat16 id0, id1, id2, id3, id4, id5, id6, summa;
 
     SegmentId () {}
     SegmentId ( nat16 i, const nat16 * num )
@@ -369,11 +353,9 @@ public:
 };
 
 template <> 
-class SegmentId<10>
+struct SegmentId<10>
 {
-    nat16 id0, id1, id2, id3, id4, id5, id6, id7;
-public:
-    nat16 summa;
+    nat16 id0, id1, id2, id3, id4, id5, id6, id7, summa;
 
     SegmentId () {}
     SegmentId ( nat16 i, const nat16 * num )
@@ -400,9 +382,8 @@ public:
 };
 
 template <nat16 N, typename T> 
-class SegmentEnd
+struct SegmentEnd
 {
-public:
     SegmentId<N> id;
     T * parent;
     T ** link;
@@ -487,7 +468,6 @@ WireModel<N> & WireModel<N>::cut ( const Double<N+1> & g, List< Vertex<N> > & st
         {
             Vertex<N> * vert2 = p1[i];
             if ( vert2->data < 0 ) continue;
-            nat16 * num2 = vert2->nfacet;
             Vertex<N> * vert3 = temp.addNewBefFir ( stor );
 			vert3->coor = vert2->coor;
 			vert3->coor -= vert1->coor;
@@ -603,9 +583,8 @@ bool copy ( const WireModel<N> & a, WireModel<N> & b, List< Vertex<N> > & stor,
 
 
 template <nat16 N, typename T, nat16 M = N> 
-class VertexEx : public ShevItem
+struct VertexEx : public ShevItem
 {
-public:
     VertexEx *  vertex[N];  // указатели на соседние вершины 
     nat16       nfacet[N];  // номера образующих граней
     Double<M>   coor;       // координаты данной вершины
@@ -712,7 +691,6 @@ void WireModelEx<N, T>::newVert ( List<T> & temp1, List<T> & temp2, List<T> & st
             {
                 T * vert2 = p1[i];
                 if ( vert2->data < 0 ) continue;
-                nat16 * num2 = vert2->nfacet;
                 T * vert3 = temp2.addNewBefFir ( stor );
 				vert3->coor = vert2->coor;
 				vert3->coor -= vert1->coor;
@@ -744,7 +722,6 @@ void WireModelEx<N, T>::newVert ( List<T> & temp1, List<T> & temp2, List<T> & st
             {
                 T * vert2 = p1[i];
                 if ( vert2->data >= 0 ) continue;
-                nat16 * num2 = vert2->nfacet;
                 T * vert3 = temp2.addNewBefFir ( stor );
 				vert3->coor = vert2->coor;
 				vert3->coor -= vert1->coor;

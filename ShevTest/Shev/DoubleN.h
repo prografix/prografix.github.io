@@ -195,6 +195,8 @@ public:
         d0 = p0; d1 = p1; d2 = p2; d3 = p3; d4 = p4; d5 = p5;
         return *this;
     }
+
+    double & las() { return d5; }
 };
 
 inline

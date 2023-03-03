@@ -1,6 +1,7 @@
 
 #include <math.h>
 #include "../shev/S2D_Model.h"
+#include "../shev/WireModel2.h"
 
 #include "display.h"
 
@@ -169,7 +170,7 @@ display << NL;
 
 } // end of namespace
 
-#define N 9
+#define N 5
 
 void cutTest ( S2D_Model<N> & model, S2D_ModelStor<N> & stor )
 {
@@ -182,27 +183,7 @@ void cutTest ( S2D_Model<N> & model, S2D_ModelStor<N> & stor )
         dn1.las() = -10;
         model.cut ( dn1, stor );
     }
-}/*
- time = 0.032 
-0 0 0 
-nv = 512 ne = 2304 ns = 4608 
-end 
-time = 0.031 
-0 0 0 
-nv = 512 ne = 2304 ns = 4608 
-end 
-time = 0.028 
-0 0 0 
-nv = 512 ne = 2304 ns = 4608 
-end 
-time = 0.030 
-0 0 0 
-nv = 512 ne = 2304 ns = 4608 
-end 
-time = 0.030 
-0 0 0 
-nv = 512 ne = 2304 ns = 4608 
-end */
+}
 
 static double time1, time2;
 static nat scount;
@@ -374,7 +355,19 @@ Def<Parallelogram3d> maxParallelogramInConvexPolyhedronA2 ( const Polyhedron & p
     return maxParallelogramInConvexPolyhedron ( poly, maxParallelogramArea );
 }
 
+void WireModel2_test ()
+{
+    WireModel2<N> model;
+    List< WireVert<N> > vstor;
+    List< WireSegm<N> > sstor;
+    model.simplex ( 1, vstor, sstor );
+    Suite<Double<N+1>> plane ( N+1, N+1 );
+    Double<N+1> dn1;
+    dn1.fill ( 0 );
+    model.cut ( dn1, vstor, sstor );
+}
+
 void S2D_Model_test ()
 {
-    simplex();
+    WireModel2_test ();
 }
