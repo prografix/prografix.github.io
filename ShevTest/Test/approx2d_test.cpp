@@ -1397,7 +1397,7 @@ drawPolygon ( poly2, 0, 1, 1 );
     if ( ! points2lines ( poly2, line ) ) return;
 double t0 = timeInSec ();
     Vector2d conf;
-    bool ok = minMaxPointsConvexPolygon ( poly1, poly2, conf );
+    bool ok = minMaxPointsConvexPolygonNR ( poly1, poly2, conf );
 double t1 = timeInSec ();
     Def<Affin2d> aff = overlayPointsOnConvexPolygon ( poly1, line );
 double t2 = timeInSec ();

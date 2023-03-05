@@ -130,7 +130,7 @@ Def<Rectangle2d> getRectanglePlg ( CArrRef<Vector2d> poly );
 //
 //************************ 25.02.2023 *******************************//
 
-bool minMaxPointsConvexPolygon ( CCArrRef<Vector2d> & vert1, CCArrRef<Vector2d> & vert2, Vector2d & res );
+bool minMaxPointsConvexPolygonNR ( CCArrRef<Vector2d> & point, CCArrRef<Vector2d> & vert, Vector2d & res );
 
 
 //************************ 27.09.2021 *******************************//

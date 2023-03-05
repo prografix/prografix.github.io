@@ -645,6 +645,117 @@ Def<Cuboid3d> getCuboid ( const Polyhedron & poly )
     return getCuboid ( momentum2plh ( poly ) );
 }
 
+//************************ 05.03.2023 *******************************//
+//
+//             Совмещение двух выпуклых многогранников
+//                  при помощи сдвига, без вращения
+//
+//************************ 05.03.2023 *******************************//
+
+Def<Vector3d> overlayConvexPolyhedronsNR ( const Polyhedron & poly1, const Polyhedron & poly2 )
+{
+    nat i;
+    if ( poly1.vertex.size() < 1 || poly2.vertex.size() < 4 || poly1.facet.size() < 4  || poly2.facet.size() < 4 ) return Def<Vector3d>();
+// Вспомогательные данные
+    DynArray<double> pd1 ( poly1.facet.size() );
+    for ( i = 0; i < poly1.facet.size(); ++i )
+    {
+        const Plane3d & li = poly1.facet[i].plane;
+        double max = li.norm * poly2.vertex[0];
+        for ( nat j = 1; j < poly2.vertex.size(); ++j ) _maxa ( max, li.norm * poly2.vertex[j] );
+        pd1[i] = max + li.dist;
+    }
+    DynArray<double> pd2 ( poly2.facet.size() );
+    for ( i = 0; i < poly2.facet.size(); ++i )
+    {
+        const Plane3d & li = poly2.facet[i].plane;
+        double max = li.norm * poly1.vertex[0];
+        for ( nat j = 1; j < poly1.vertex.size(); ++j ) _maxa ( max, li.norm * poly1.vertex[j] );
+        pd2[i] = max + li.dist;
+    }
+// Найдём габариты множества точек
+    const Segment3d & seg1 = dimensions ( poly1.vertex );
+    const Segment3d & seg2 = dimensions ( poly2.vertex );
+    const double dx = _max ( seg1.b.x, seg2.b.x ) - _min ( seg1.a.x, seg2.a.x );
+    const double dy = _max ( seg1.b.y, seg2.b.y ) - _min ( seg1.a.y, seg2.a.y );
+    const double dz = _max ( seg1.b.z, seg2.b.z ) - _min ( seg1.a.z, seg2.a.z );
+    const double dd = dx + dy + dz;
+// Поиск оптимального сдвига
+    Double<5> arr[6];
+    arr[0].init ( dx, dy, dz, dd, dd );
+    arr[1].init ( -1., 0., 0., 0., 0. );
+    arr[2].init ( 0., -1., 0., 0., 0. );
+    arr[3].init ( 0., 0., -1., 0., 0. );
+    arr[4].init ( 0., 0., 0., -1., 0. );
+    arr[5].init ( 0., 0., 0., 0., -1. );
+    const double eps = 1e-6 * dd;
+    for ( nat k = 0; k < 100; ++k )
+    {
+        Double<5> & a0 = arr[0];
+        const Vector3d o ( a0.d0, a0.d1, a0.d2 );
+        double max1 = -1;
+        nat im1, im2;
+        for ( i = 0; i < poly2.facet.size(); ++i )
+        {
+            if ( _maxa ( max1, pd2[i] + poly2.facet[i].plane.norm * o ) ) im1 = i;
+        }
+        max1 += a0.d3;
+        double max2 = -1;
+        for ( i = 0; i < poly1.facet.size(); ++i )
+        {
+            if ( _maxa ( max2, pd1[i] - poly1.facet[i].plane.norm * o ) ) im2 = i;
+        }
+        max2 += a0.d4;
+        double dist;
+        Double<5> cor;
+        if ( max1 > max2 )
+        {
+            dist = max1;
+            const Vector3d & norm = poly2.facet[im1].plane.norm;
+            cor.init ( norm.x, norm.y, norm.z, 1, 0 );
+        }
+        else
+        {
+            dist = max2;
+            const Vector3d & norm = poly1.facet[im2].plane.norm;
+            cor.init ( -norm.x, -norm.y, -norm.z, 0, 1 );
+        }
+        if ( dist < eps ) return o;
+        nat ib = 0;
+        double sg, max;
+        for ( i = 1; i < 6; ++i )
+        {
+            const Double<5> & v = arr[i];
+            double t = cor * v;
+            if ( t > -1e-8 ) continue;
+            t = 1./ t;
+            if ( ib == 0 )
+            {
+                max = ( v.d3 + v.d4 ) * t;
+                ib = i;
+                sg = t;
+            }
+            else
+            {
+                const double s = ( v.d3 + v.d4 ) * t;
+                if ( s < max ) max = s, ib = i, sg = t;
+            }
+        }
+        if ( ib == 0 )
+            return Def<Vector3d>();
+        const Double<5> & v = arr[ib];
+        a0 -= v * ( dist * sg );
+        for ( i = 1; i <= 5; ++i )
+        {
+            if ( i == ib ) continue;
+            Double<5> & ai = arr[i];
+            ai -= v * ( ( cor * ai ) * sg );
+            ai *= ( 1./ sqrt ( ai * ai ) );
+        }
+    }
+    return Def<Vector3d>();
+}
+
 //************************ 11.04.2008 *******************************//
 //
 //      Вычисление ближайшей точки к заданным плоскостям

@@ -13,6 +13,7 @@
 #include "../Shev/opti2d.h"
 #include "../Shev/approx3d.h"
 #include "../Shev/Vector3d.h"
+#include "../Shev/Vector4d.h"
 #include "../Shev/approx2d.h"
 #include "../Shev/Vector2d.h"
 #include "../Shev/Polyhedron.h"
@@ -1328,6 +1329,22 @@ double t2 = timeInSec ();
     display << r1 - r2 << max1 - max2 << NL;
 }
 
+void minMaxPointsConvexPolygonNR_test()
+{
+    static PRand rand;
+    static QRandVector3d qrv;
+    Polyhedron poly1, poly2;
+    //poly2.makeCuboid ( 0.35+0.5*rand(), 0.35+0.5*rand(), 0.35+0.5*rand() );
+    poly1.makeEllipsoid ( 10, 0.5, 0.75, 1, qrv );
+    poly2.makeEllipsoid ( 10, 0.5, 0.75, 1, qrv );
+    Vector3d res;
+    //minMaxPointsConvexPolygonNR ( poly1.vertex, poly2, res );
+    res = overlayConvexPolyhedronsNR ( poly1, poly2 );
+    poly1 += res;
+    draw ( poly1, 1, 1, 0, 1, VM_WIRE );
+    draw ( poly2, 0, 1, 1, 1, VM_WIRE );
+}
+
 } // end of namespace
 
 void approx3d_test ()
@@ -1340,6 +1357,7 @@ void approx3d_test ()
 //    getEllipsoid_test();
 //    getCuboid_test();
 //    getNearPoint4_3_test1();
-    getLinePoint_test1();
+//    getLinePoint_test1();
+    minMaxPointsConvexPolygonNR_test();
     endNewList();
 }

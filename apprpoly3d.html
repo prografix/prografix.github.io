@@ -2,12 +2,10 @@
 <head><title>Аппроксимация многогранника</title>
 <link rel="stylesheet" type="text/css" href="stylle.css"></head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
-<div align="center"><center>
-<table width="800" cellspacing="0" cellpadding="0">
-<div align=center><br>
+<div align="center"><br>
 <font color="" style="font-size: 20pt">Аппроксимация многогранника</font>
-</div>
-<div align=left><td><br>
+<table width="800" cellspacing="0" cellpadding="0">
+<tr><td><br>
 <p>Если многогранник надо аппроксимировать сферой, то можно построить сферу, у которой центр масс и объём будут такие же, 
 как у многогранника:
 </p>
@@ -28,6 +26,11 @@ Def&lt;Ellipsoid3d> getEllipsoidPlg ( const Polyhedron & poly );
 <pre>
 Def&lt;Cuboid3d> getCuboid ( const Polyhedron & poly );
 </pre>
+<p>Совмещение двух выпуклых многогранников при помощи сдвига, без вращения. Определяется вектор сдвига для смещения первого многогранника:
+</p>
+<pre>
+Def&lt;Vector3d> overlayConvexPolyhedronsNR ( const Polyhedron & poly1, const Polyhedron & poly2 );
+</pre>
 <p>Описание класса Polyhedron находится <a href="rus_polyhedron.html">здесь</a>.
 <br>Описание классов Sphere3d, Ellipsoid3d и Cuboid3d находится <a href="figure3d.html">здесь</a>.
 <br>Описание шаблона классов Def находится <a href=def.html>здесь</a>.
@@ -38,7 +41,7 @@ Def&lt;Cuboid3d> getCuboid ( const Polyhedron & poly );
 <a href="rus_approx.html">Наверх</a>
 <pre>
 
-</pre></td></div>
-</table>
+</pre></td></tr>
+</table></div>
 </body>
 </html>
