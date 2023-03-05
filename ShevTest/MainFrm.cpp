@@ -230,7 +230,7 @@ void CMainFrame::OnTest()
 //    momentum2d_test();
 //    polyhedron_test();
 //    S2D_Model_test();
-    approx3d_test();
+    approx2d_test();
 //    testBlackRing();
 //    compress_test();
 //    shevlist_test();

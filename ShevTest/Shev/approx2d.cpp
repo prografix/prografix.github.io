@@ -609,17 +609,18 @@ Def<Rectangle2d> getRectanglePlg ( CArrRef<Vector2d> poly )
 //
 //************************ 25.02.2023 *******************************//
 
-bool minMaxPointsConvexPolygonNR ( CCArrRef<Vector2d> & point, CCArrRef<Vector2d> & vert, Vector2d & res )
+Def<Vector2d> minMaxPointsConvexPolygonNR ( CCArrRef<Vector2d> & point, CCArrRef<Vector2d> & vert )
 {
-    if ( point.size() < 1 || vert.size() < 3 ) return false;
+    Def<Vector2d> err;
+    if ( point.size() < 1 || vert.size() < 3 ) return err;
+// Получение границ многоугольника в виде прямых линий
+    DynArray<Line2d> line ( vert.size() );
+    if ( ! points2lines ( vert, line ) ) return err;
 // Найдём габариты множества точек
     const Segment2d & seg1 = dimensions ( point );
     const Segment2d & seg2 = dimensions ( vert );
     const double dx = _max ( seg1.b.x, seg2.b.x ) - _min ( seg1.a.x, seg2.a.x );
     const double dy = _max ( seg1.b.y, seg2.b.y ) - _min ( seg1.a.y, seg2.a.y );
-// Получение границ многоугольника в виде прямых линий
-    DynArray<Line2d> line ( vert.size() );
-    if ( ! points2lines ( vert, line ) ) return false;
 // Поиск оптимального сдвига
     Vector3d arr[4];
     arr[0] = Vector3d ( dx, dy, dx + dy );
@@ -645,11 +646,7 @@ bool minMaxPointsConvexPolygonNR ( CCArrRef<Vector2d> & point, CCArrRef<Vector2d
             if ( _maxa ( max, pmax ) ) im = i;
         }
         const double dist = max + a0.z;
-        if ( dist < eps )
-        {
-            res = o;
-            return true;
-        }
+        if ( dist < eps ) return o;
         const Line2d & li = line[im];
         const Vector3d cor ( li.norm.x, li.norm.y, 1. );
         nat ib = 0;
@@ -673,12 +670,10 @@ bool minMaxPointsConvexPolygonNR ( CCArrRef<Vector2d> & point, CCArrRef<Vector2d
             }
         }
         if ( ib == 0 )
-        {
-            return false;
-        }
+            return err;
         const Vector3d & v = arr[ib];
         a0 -= v * ( dist * sg );
-        for ( i = 1; i <= 3; ++i )
+        for ( i = 1; i < 4; ++i )
         {
             if ( i == ib ) continue;
             Vector3d & ai = arr[i];
@@ -686,7 +681,7 @@ bool minMaxPointsConvexPolygonNR ( CCArrRef<Vector2d> & point, CCArrRef<Vector2d
             ai *= ( 1./ sqrt ( ai * ai ) );
         }
     }
-    return false;
+    return err;
 }
 
 //************************ 27.09.2021 *******************************//

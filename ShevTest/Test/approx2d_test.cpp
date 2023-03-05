@@ -1384,6 +1384,115 @@ Def<Conform2d> overlayConvexPolygon2 ( CCArrRef<Vector2d> & vert1, CCArrRef<Vect
     return res;
 }
 
+Def<Vector2d> overlayConvexPolygonsNR ( CCArrRef<Vector2d> & vert1, CCArrRef<Vector2d> & vert2 )
+{
+    nat i;
+    Def<Vector2d> err;
+    const nat nv1 = vert1.size();
+    const nat nv2 = vert2.size();
+    if ( nv1 < 3 || nv2 < 3 ) return err;
+// Вспомогательные данные
+    DynArray<Line2d> line1 ( nv1 );
+    if ( ! points2lines ( vert1, line1 ) ) return err;
+    DynArray<Line2d> line2 ( nv2 );
+    if ( ! points2lines ( vert2, line2 ) ) return err;
+    DynArray<double> pd1 ( nv1 );
+    for ( i = 0; i < nv1; ++i )
+    {
+        const Line2d & li = line1[i];
+        double max = li.norm * vert2[0];
+        for ( nat j = 1; j < nv2; ++j ) _maxa ( max, li.norm * vert2[j] );
+        pd1[i] = max + li.dist;
+    }
+    DynArray<double> pd2 ( nv2 );
+    for ( i = 0; i < nv2; ++i )
+    {
+        const Line2d & li = line2[i];
+        double max = li.norm * vert1[0];
+        for ( nat j = 1; j < nv1; ++j ) _maxa ( max, li.norm * vert1[j] );
+        pd2[i] = max + li.dist;
+    }
+// Найдём габариты множества точек
+    const Segment2d & seg1 = dimensions ( vert1 );
+    const Segment2d & seg2 = dimensions ( vert2 );
+    const double dx = _max ( seg1.b.x, seg2.b.x ) - _min ( seg1.a.x, seg2.a.x );
+    const double dy = _max ( seg1.b.y, seg2.b.y ) - _min ( seg1.a.y, seg2.a.y );
+    const double dd = dx + dy;
+// Поиск оптимального сдвига
+    Double<4> arr[5];
+    arr[0].init ( dx, dy, dd, dd );
+    arr[1].init ( -1., 0., 0., 0. );
+    arr[2].init ( 0., -1., 0., 0. );
+    arr[3].init ( 0., 0., -1., 0. );
+    arr[4].init ( 0., 0., 0., -1. );
+    const double eps = 1e-6 * dd;
+    for ( nat k = 0; k < 100; ++k )
+    {
+        Double<4> & a0 = arr[0];
+        const Vector2d o ( a0.d0, a0.d1 );
+        double max1 = -1;
+        nat im1, im2;
+        for ( i = 0; i < nv2; ++i )
+        {
+            if ( _maxa ( max1, pd2[i] + line2[i].norm * o ) ) im1 = i;
+        }
+        max1 += a0.d2;
+        double max2 = -1;
+        for ( i = 0; i < nv1; ++i )
+        {
+            if ( _maxa ( max2, pd1[i] - line1[i].norm * o ) ) im2 = i;
+        }
+        max2 += a0.d3;
+        double dist;
+        Double<4> cor;
+        if ( max1 > max2 )
+        {
+            dist = max1;
+            const Vector2d & norm = line2[im1].norm;
+            cor.init ( norm.x, norm.y, 1, 0 );
+        }
+        else
+        {
+            dist = max2;
+            const Vector2d & norm = line1[im2].norm;
+            cor.init ( -norm.x, -norm.y, 0, 1 );
+        }
+        if ( dist < eps ) return o;
+        nat ib = 0;
+        double sg, max;
+        for ( i = 1; i < 5; ++i )
+        {
+            const Double<4> & v = arr[i];
+            double t = cor * v;
+            if ( t > -1e-8 ) continue;
+            t = 1./ t;
+            if ( ib == 0 )
+            {
+                max = ( v.d2 + v.d3 ) * t;
+                ib = i;
+                sg = t;
+            }
+            else
+            {
+                const double s = ( v.d2 + v.d3 ) * t;
+                if ( s < max ) max = s, ib = i, sg = t;
+            }
+        }
+        if ( ib == 0 )
+            return err;
+        const Double<4> & v = arr[ib];
+        a0 -= v * ( dist * sg );
+        for ( i = 1; i < 5; ++i )
+        {
+            if ( i == ib ) continue;
+            Double<4> & ai = arr[i];
+            ai -= v * ( ( cor * ai ) * sg );
+            ai *= ( 1./ sqrt ( ai * ai ) );
+        }
+    }
+    return err;
+}
+
 void overlayConvexPolygons_test()
 {
     Suite<Vector2d> poly1;
@@ -1392,18 +1501,22 @@ void overlayConvexPolygons_test()
     Suite<Vector2d> poly2;
     poly2.resize ( 4 );
     regularPolygon ( poly2 );
+    poly2.resize ( 9 );
+    randConvexPolygon ( poly2 ) *= 0.6;
+    poly2 = poly1;
+    poly1.dec ();
 drawPolygon ( poly2, 0, 1, 1 );
     DynArray<Line2d> line ( poly2.size() );
     if ( ! points2lines ( poly2, line ) ) return;
 double t0 = timeInSec ();
-    Vector2d conf;
-    bool ok = minMaxPointsConvexPolygonNR ( poly1, poly2, conf );
+    //Def<Vector2d> conf = overlayConvexPolygonsNR ( poly1, poly2 );
+    Def<Vector2d> conf = minMaxPointsConvexPolygonNR ( poly1, poly2 );
 double t1 = timeInSec ();
     Def<Affin2d> aff = overlayPointsOnConvexPolygon ( poly1, line );
 double t2 = timeInSec ();
-display << t1-t0 << t2-t1 << NL;
+//display << t1-t0 << t2-t1 << NL;
     Suite<Vector2d> tmp;
-    if ( ok )
+    //if ( conf.isDef )
     {
         tmp = poly1;
         tmp += conf;

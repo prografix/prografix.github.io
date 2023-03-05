@@ -655,7 +655,7 @@ Def<Cuboid3d> getCuboid ( const Polyhedron & poly )
 Def<Vector3d> overlayConvexPolyhedronsNR ( const Polyhedron & poly1, const Polyhedron & poly2 )
 {
     nat i;
-    if ( poly1.vertex.size() < 1 || poly2.vertex.size() < 4 || poly1.facet.size() < 4  || poly2.facet.size() < 4 ) return Def<Vector3d>();
+    if ( poly1.vertex.size() < 4 || poly2.vertex.size() < 4 || poly1.facet.size() < 4  || poly2.facet.size() < 4 ) return Def<Vector3d>();
 // Вспомогательные данные
     DynArray<double> pd1 ( poly1.facet.size() );
     for ( i = 0; i < poly1.facet.size(); ++i )
@@ -745,7 +745,7 @@ Def<Vector3d> overlayConvexPolyhedronsNR ( const Polyhedron & poly1, const Polyh
             return Def<Vector3d>();
         const Double<5> & v = arr[ib];
         a0 -= v * ( dist * sg );
-        for ( i = 1; i <= 5; ++i )
+        for ( i = 1; i < 6; ++i )
         {
             if ( i == ib ) continue;
             Double<5> & ai = arr[i];
