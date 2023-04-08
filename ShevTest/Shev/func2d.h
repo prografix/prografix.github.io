@@ -392,3 +392,12 @@ DynArrRef<Vector2d> & simplify ( CCArrRef<Vector2d> & poly, double eps, bool clo
 
 DynArrRef<  nat   > & simplifyNV ( CCArrRef<Vector2d> & poly, nat nv, bool closed, DynArrRef<  nat   > & res );
 DynArrRef<Vector2d> & simplifyNV ( CCArrRef<Vector2d> & poly, nat nv, bool closed, DynArrRef<Vector2d> & res );
+
+
+//**************************** 07.04.2023 *********************************//
+//
+//           Построение многоугольника по набору касательных
+//
+//**************************** 07.04.2023 *********************************//
+
+DynArrRef<Vector2d> & makePolygon ( CCArrRef<Line2d> & line, const double eps, DynArrRef<Vector2d> & poly );

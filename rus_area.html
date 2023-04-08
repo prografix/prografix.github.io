@@ -3,7 +3,7 @@
 <link rel="stylesheet" type="text/css" href="stylle.css"></head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
 <div align=center>
-<table width="680" cellspacing="0" cellpadding="0">
+<table width="800" cellspacing="0" cellpadding="0">
 <div align=center><br>
 <font color="" style="font-size: 20pt">Функции для многоугольников</font>
 </div><td><br>
@@ -48,7 +48,11 @@ DynArrRef<&lt;  nat   > & simplifyNV ( CCArrRef&lt;Vector2d> & poly, nat nv, boo
 DynArrRef<&lt;Vector2d> & simplifyNV ( CCArrRef&lt;Vector2d> & poly, nat nv, bool closed, DynArrRef&lt;Vector2d> & res );
 </pre>
 </p>
-<p>Первый параметр у всех функций - это ссылка на массив вершин многоугольника.</p>
+<p>Построение многоугольника по набору касательных. Параметр eps определяет расстояние, больше которого вершины не должны отклонятся от касательных:
+<pre>
+DynArrRef<Vector2d> & makePolygon ( CCArrRef&lt;Line2d> & line, const double eps, DynArrRef&lt;Vector2d> & poly );
+</pre>
+</p>
 <p>Описание класса Vector2d находится <a href="rus_vector2d.html">здесь</a>.
 <br>Описание шаблонов классов CArrRef и DynArrRef находится <a href=array.html>здесь</a>.
 <br>Исходники алгоритмов находятся в файле <a href="source/source.zip">func2d.cpp</a>.</p>

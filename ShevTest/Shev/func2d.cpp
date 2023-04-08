@@ -3,6 +3,8 @@
 
 #include "rand.h"
 #include "heap.h"
+#include "lists.h"
+#include "LinAlg.h"
 #include "Mathem.h"
 #include "func2d.h"
 #include "func1t.h"
@@ -1820,4 +1822,160 @@ DynArrRef<Vector2d> & simplifyNV ( CCArrRef<Vector2d> & poly, nat nv, bool close
         }
     }
     return res;
+}
+
+//**************************** 07.04.2023 *********************************//
+//
+//           Построение многоугольника по набору касательных
+//
+//**************************** 07.04.2023 *********************************//
+
+namespace {
+
+void plus ( SLU2<double> & slu, const Line2d & li )
+{
+    const double aa = li.norm.x * li.norm.x;
+    const double ab = li.norm.x * li.norm.y;
+    const double bb = li.norm.y * li.norm.y;
+    slu.aa += aa;
+    slu.ab += ab;
+    slu.ac -= li.norm.x * li.dist;
+    slu.bb += bb;
+    slu.ba += ab;
+    slu.bc -= li.norm.y * li.dist;
+}
+
+void minus ( SLU2<double> & slu, const Line2d & li )
+{
+    const double aa = li.norm.x * li.norm.x;
+    const double ab = li.norm.x * li.norm.y;
+    const double bb = li.norm.y * li.norm.y;
+    slu.aa -= aa;
+    slu.ab -= ab;
+    slu.ac += li.norm.x * li.dist;
+    slu.bb -= bb;
+    slu.ba -= ab;
+    slu.bc += li.norm.y * li.dist;
+}
+
+class Point2d
+{
+public:
+    Vector2d v;
+    nat i1, i2;
+    SLU2<double> slu;
+};
+
+class Point2dItem : public ListItem<Point2d> {};
+class Point2dList : public List<Point2dItem> {};
+
+double maxDifc ( CCArrRef<Line2d> & line, const Point2dItem * p, const Point2dItem * c )
+{
+    SLU2<double> slu ( p->slu );
+    slu += c->slu;
+    minus ( slu, line[c->i1] );
+    Vector2d v;
+    slu.gauss ( v.x, v.y );
+    nat i, i1 = p->i1, i2 = c->i2;
+    double max = 0;
+    if ( i1 < i2 )
+    {
+        for ( i = i1; i <= i2; ++i ) _maxa ( max, fabs ( line[i] % v ) );
+    }
+    else
+    {
+        const nat nl = line.size();
+        for ( i = i1; i < nl; ++i ) _maxa ( max, fabs ( line[i] % v ) );
+        for ( i = 0; i <= i2; ++i ) _maxa ( max, fabs ( line[i] % v ) );
+    }
+    return max;
+}
+
+} // namespace
+
+inline void _swap ( SortItem<double, Point2dItem*> & p1, SortItem<double, Point2dItem*> & p2 )
+{
+    const SortItem<double, Point2dItem*> p ( p1 );
+    p1 = p2;
+    p2 = p;
+    ::_swap ( p1.tail->info, p2.tail->info );
+}
+
+DynArrRef<Vector2d> & makePolygon ( CCArrRef<Line2d> & line, const double eps, DynArrRef<Vector2d> & poly )
+{
+    const nat nl = line.size();
+    if ( nl < 3 )
+    {
+        return poly.resize();
+    }
+    nat i, j = nl - 1;
+    Point2dList plist;
+    for ( i = 0; i < nl; ++i )
+    {
+        const Line2d & l1 = line[j];
+        const Line2d & l2 = line[i];
+        Point2dItem * p = new Point2dItem;
+        plist.addAftLas ( p );
+        p->i1 = j;
+        p->i2 = i;
+        p->slu.aa = l1.norm.x * l1.norm.x + l2.norm.x * l2.norm.x;
+        p->slu.ab = l1.norm.x * l1.norm.y + l2.norm.x * l2.norm.y;
+        p->slu.ac = - l1.norm.x * l1.dist - l2.norm.x * l2.dist;
+        p->slu.bb = l1.norm.y * l1.norm.y + l2.norm.y * l2.norm.y;
+        p->slu.ba = p->slu.ab;
+        p->slu.bc = - l1.norm.y * l1.dist - l2.norm.y * l2.dist;
+        p->slu.gauss ( p->v.x, p->v.y );
+        j = i;
+    }
+    SortItem<double, Point2dItem*> item;
+    MinHeap< SortItem<double, Point2dItem*> > heap ( nl );
+    Point2dItem * pi = plist.end();
+    plist.top();
+    do
+    {
+        pi->info = heap.size();
+        Point2dItem * t = plist.cur();
+        item.head = maxDifc ( line, pi, t );
+        item.tail = pi;
+        heap << item;
+        pi = t;
+    }
+    while ( plist.next() );
+    while ( heap.size() > 3 && heap[0]->head < eps )
+    {
+        heap >> item;
+        Point2dItem * t = plist.jump ( item.tail ).cnext();
+        t->slu += item.tail->slu;
+        minus ( t->slu, line[t->i1] );
+        t->slu.gauss ( t->v.x, t->v.y );
+        t->i1 = item.tail->i1;
+        plist.jump ( item.tail ).delCur();
+
+        Point2dItem * p = plist.jump ( t ).cprev();
+        SortItem<double, Point2dItem*> & ip = *heap[p->info];
+        const double hp = ip.head;
+        ip.head = maxDifc ( line, p, t );
+        if ( hp < ip.head )
+            heap.down ( p->info );
+        else
+            heap.raise ( p->info );
+
+        p = plist.jump ( t ).cnext();
+        SortItem<double, Point2dItem*> & it = *heap[t->info];
+        const double ht = it.head;
+        it.head = maxDifc ( line, t, p );
+        if ( ht < it.head )
+            heap.down ( t->info );
+        else
+            heap.raise ( t->info );
+    }
+    const nat np = plist.size();
+    poly.resize(np);
+    plist.top();
+    for ( i = 0; i < np; ++i )
+    {
+        poly[i] = plist.cur()->v;
+        plist.next();
+    }
+    return poly;
 }
