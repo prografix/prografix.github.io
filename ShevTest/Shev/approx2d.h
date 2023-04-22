@@ -132,6 +132,15 @@ Def<Rectangle2d> getRectanglePlg ( CArrRef<Vector2d> poly );
 
 Def<Vector2d> minMaxPointsConvexPolygonNR ( CCArrRef<Vector2d> & point, CCArrRef<Vector2d> & vert );
 
+//************************ 22.04.2023 *******************************//
+//
+//             Совмещение двух выпуклых многоугольников
+//                  при помощи сдвига, без вращения
+//
+//************************ 22.04.2023 *******************************//
+
+Def<Vector2d> overlayConvexPolygonsNR ( CCArrRef<Vector2d> & vert1, CCArrRef<Vector2d> & vert2 );
+
 
 //************************ 27.09.2021 *******************************//
 //
