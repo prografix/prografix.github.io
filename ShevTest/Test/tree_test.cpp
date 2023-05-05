@@ -1,5 +1,6 @@
 
 #include "../Shev/HeapAndTree.h"
+#include "../Shev/AVL_TreeList.h"
 
 #include "display.h"
 
@@ -143,11 +144,31 @@ template <class T> void MaxHeapAndTree_test()
     display << "end" << NL;
 }
 
+void tree_test2()
+{
+    const nat nn = 27;
+    AVL_TreeNodeStor<nat> stor;
+    for ( nat n = 1; n <= nn; ++n )
+    {
+        for ( nat i = 1; i <= n; ++i )
+        {
+            AVL_TreeList<nat> tree;
+            for ( nat j = 1; j <= n; ++j )
+            {
+                tree.add ( j );
+            }
+            tree.del ( i );
+            if ( ! tree.test() ) display << "error" << NL;
+        }
+    }
+    display << "end" << NL;
+}
+
 } // end of namespace
 
 void tree_test()
 {
 //    MaxHeapAndTree_test<nat>();
-    tree_test1();
+    tree_test2();
 //    heap_test1();
 }
