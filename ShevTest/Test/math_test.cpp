@@ -1991,6 +1991,66 @@ void slu_gauss_test()
     display << NL;
 }
 
+bool sluGaussRow ( ArrRef<Suite<SortItem<nat, double>>> & data, ArrRef<nat> & index )
+{
+    const nat nRow = data.size();
+    const nat nCol = index.size();
+    if ( nRow >= nCol ) return false;
+// Прямой ход
+    nat i, j, k;
+    for ( i = 0; i < nCol; ++i ) index[i] = i;
+    for ( k = 0; k < nRow; ++k )
+    {
+// Поиск максимального по модулю члена в k-ой строке
+        Suite<SortItem<nat, double> > & rk = data[k];
+        const nat nc = rk.size();
+        if ( ! nc ) return false;
+        nat im = 0;
+        double max = fabs ( rk[0].tail );
+        for ( i = 1; i < nc; ++i )
+        {
+            if ( _maxa ( max, fabs ( rk[i].tail ) ) ) im = i;
+        }
+        if ( ! max ) return false;
+        _swap ( index[k], index[rk[im].head] );
+        const nat ik = index[k];
+// Нормализация строки
+        const double p = 1. / rk[im].tail;
+        for ( i = 0; i < nc; ++i ) rk[i].tail *= p;
+        rk.delAndShift ( im );
+// Вычитание строк
+        for ( j = k+1; j < nRow; ++j )
+        {
+            Suite<SortItem<nat, double> > & rj = data[j];
+            const double t = rj[ik].tail;
+            for ( i = k+1; i < nCol; ++i )
+            {
+                const nat ii = index[i];
+                if ( fabs ( rj[ii].tail -= rk[ii].tail * t ) < 1e-290 ) rj[ii].tail = 0;
+            }
+            rj[ik].tail = 0;
+        }
+    }
+// Обратная подстановка
+    for ( j = nRow; --j > 0; )
+    {
+        Suite<SortItem<nat, double> > & rj = data[j];
+        const nat ij = index[j];
+        for ( i = 0; i < j; ++i )
+        {
+            Suite<SortItem<nat, double> > & ri = data[i];
+            const double t = ri[ij].tail;
+            for ( k = nRow; k < nCol; ++k )
+            {
+                const nat ik = index[k];
+                ri[ik].tail -= rj[ik].tail * t;
+            }
+            ri[ij].tail = 0;
+        }
+    }
+    return true;
+}
+
 } // namespace
 
 void math_test ()

@@ -147,12 +147,12 @@ template <class T> void MaxHeapAndTree_test()
 void tree_test2()
 {
     const nat nn = 27;
-    AVL_TreeNodeStor<nat> stor;
+    AVL_TreeListNodeStor<nat> stor;
     for ( nat n = 1; n <= nn; ++n )
     {
         for ( nat i = 1; i <= n; ++i )
         {
-            AVL_TreeList<nat> tree;
+            AVL_TreeList<nat> tree ( & stor );
             for ( nat j = 1; j <= n; ++j )
             {
                 tree.add ( j );

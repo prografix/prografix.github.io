@@ -800,14 +800,14 @@ Def<Vector2d> overlayConvexPolygonsNR ( CCArrRef<Vector2d> & vert1, CCArrRef<Vec
     return err;
 }
 
-//************************ 27.09.2021 *******************************//
+//************************ 23.04.2023 *******************************//
 //
-//             Совмещение двух выпуклых многоугольников
-//                  при помощи сдвига и вращения
+//        Совмещение группы точек с выпуклым многоугольником
+//                  при помощи вращения и сдвига
 //
-//************************ 27.09.2021 *******************************//
+//************************ 23.04.2023 *******************************//
 
-Def<Vector4d> overlayConvexPolygon ( const double a, const double b, CCArrRef<Vector2d> & vert, CCArrRef<Line2d> & line ) 
+Def<Vector4d> minMaxPointsConvexPolygon ( const double a, const double b, CCArrRef<Vector2d> & point, CCArrRef<Line2d> & line ) 
 {
     Vector4d arr[5];
     arr[0] = Vector4d ( 1, 1, 1, 1 );
@@ -827,10 +827,10 @@ Def<Vector4d> overlayConvexPolygon ( const double a, const double b, CCArrRef<Ve
             const Line2d & li = line[i];
             const Vector2d u ( w * li.norm, w % li.norm );
             nat jm = 0;
-            double pmax = u * vert[0];
-            for ( nat j = 1; j < vert.size(); ++j )
+            double pmax = u * point[0];
+            for ( nat j = 1; j < point.size(); ++j )
             {
-                const double p = u * vert[j];
+                const double p = u * point[j];
                 if ( pmax < p ) pmax = p, jm = j;
             }
             pmax += li % o;
@@ -840,7 +840,7 @@ Def<Vector4d> overlayConvexPolygon ( const double a, const double b, CCArrRef<Ve
         if ( dist < 1e-4 )
             return a0;
         const Line2d & li = line[im];
-        const Vector2d & vm = vert[km];
+        const Vector2d & vm = point[km];
         const Vector4d cor ( li.norm.x, li.norm.y, li.norm * vm * b + li.norm % vm * a, 1. );
         nat ib = 0;
         double sg;
@@ -879,18 +879,18 @@ Def<Vector4d> overlayConvexPolygon ( const double a, const double b, CCArrRef<Ve
     return Def<Vector4d>();
 }
 
-Def<Conform2d> overlayConvexPolygon ( CCArrRef<Vector2d> & vert1, CCArrRef<Vector2d> & vert2 )
+Def<Conform2d> minMaxPointsConvexPolygon ( CCArrRef<Vector2d> & point, CCArrRef<Vector2d> & vert )
 {
     nat i;
     Def<Conform2d> res;
 // Приведём многоугольники к стандартному виду
-    const Def<Vector2d> o1 = centerPlg ( vert1 );
+    const Def<Vector2d> o1 = centerPlg ( point );
     if ( ! o1.isDef ) return res;
-    const Def<Vector2d> o2 = centerPlg ( vert2 );
+    const Def<Vector2d> o2 = centerPlg ( vert );
     if ( ! o2.isDef ) return res;
-    DynArray<Vector2d> poly1 ( vert1.size() ), poly2 ( vert2.size() );
-    for ( i = 0; i < vert1.size(); ++i ) poly1[i] = vert1[i] - o1;
-    for ( i = 0; i < vert2.size(); ++i ) poly2[i] = vert2[i] - o2;
+    DynArray<Vector2d> poly1 ( point.size() ), poly2 ( vert.size() );
+    for ( i = 0; i < point.size(); ++i ) poly1[i] = point[i] - o1;
+    for ( i = 0; i < vert.size(); ++i ) poly2[i] = vert[i] - o2;
     double d = norm2 ( poly2[0] );
     for ( i = 1; i < poly2.size(); ++i )
     {
@@ -917,7 +917,7 @@ Def<Conform2d> overlayConvexPolygon ( CCArrRef<Vector2d> & vert1, CCArrRef<Vecto
         const double a = i * step;
         const double cosa = cos(a);
         const double sina = sin(a);
-        Def<Vector4d> d = overlayConvexPolygon ( cosa, sina, poly1, line );
+        Def<Vector4d> d = minMaxPointsConvexPolygon ( cosa, sina, poly1, line );
         if ( d.isDef && max < d.x4 )
         {
             max = d.x4;
@@ -931,6 +931,13 @@ Def<Conform2d> overlayConvexPolygon ( CCArrRef<Vector2d> & vert1, CCArrRef<Vecto
     return res;
 }
 
+//************************ 27.09.2021 *******************************//
+//
+//             Совмещение двух выпуклых многоугольников
+//                  при помощи сдвига и вращения
+//
+//************************ 27.09.2021 *******************************//
+
 Def<Conform2d> overlayConvexPolygons ( CCArrRef<Vector2d> & vert1, CCArrRef<Vector2d> & vert2 )
 {
     Def<Conform2d> res;
@@ -942,12 +949,12 @@ Def<Conform2d> overlayConvexPolygons ( CCArrRef<Vector2d> & vert1, CCArrRef<Vect
     if ( area1 < area2 )
     {
         if ( area2 <= 0 ) return res;
-        res = overlayConvexPolygon ( vert1, vert2 );
+        res = minMaxPointsConvexPolygon ( vert1, vert2 );
     }
     else
     {
         if ( area1 <= 0 ) return res;
-        res = overlayConvexPolygon ( vert2, vert1 );
+        res = minMaxPointsConvexPolygon ( vert2, vert1 );
         if ( res.isDef ) res = ~res;
     }
     return res;

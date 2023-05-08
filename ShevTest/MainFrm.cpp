@@ -228,9 +228,9 @@ void CMainFrame::OnTest()
 {
 //    intersect3d_test();
 //    momentum2d_test();
-    polyhedron_test();
+//    polyhedron_test();
 //    S2D_Model_test();
-//    approx2d_test();
+    approx2d_test();
 //    testBlackRing();
 //    compress_test();
 //    shevlist_test();

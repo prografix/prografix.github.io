@@ -1204,52 +1204,6 @@ void spline_test3()
     }*/
 }
 
-Line2d getLineUL ( CArrRef<Vector2d> point, const Vector2d & norm, double & r )
-{
-    r = 0;
-    const nat n = point.size();
-    if ( ! n ) return Line2d ( Vector2d ( 0, 1 ), 0 );
-// Находим первую начальную точку
-    nat i, i0 = 0;
-    double max = 0;
-    for ( i = 1; i < n; ++i )
-    {
-        const double q = qmod ( point[i] - point[0] );
-        if ( max < q ) max = q, i0 = i;
-    }
-    if ( ! max )
-    {
-        return Line2d ( Vector2d ( 0, 1 ), -point[0].y );
-    }
-// Находим вторую начальную точку
-    nat i1 = 0;
-    max = qmod ( point[0] - point[i0] );
-    for ( i = 1; i < n; ++i )
-    {
-        const double q = qmod ( point[i] - point[i0] );
-        if ( max < q ) max = q, i1 = i;
-    }
-    const double eps = 1e-9 * sqrt ( max );
-// Находим третью начальную точку
-    nat i2 = 0;
-    Line2d line ( point[i1], point[i0] );
-    r = fabs ( line % point[0] );
-    for ( i = 1; i < n; ++i )
-    {
-        const double t = fabs ( line % point[i] );
-        if ( r < t ) r = t, i2 = i;
-    }
-    if ( max < qmod ( point[i2] - point[i1] ) )
-    {
-        ::_swap ( i0, i2 );
-        line = Line2d ( point[i1], point[i0] );
-        r = fabs ( line % point[i2] );
-    }
-    if ( r < eps || i2 == i0 || i2 == i1 ) return line;
-    r *= 0.5;
-    return line;
-}
-
 struct OCP_data
 {
     double cosa, sina;
@@ -1384,117 +1338,291 @@ Def<Conform2d> overlayConvexPolygon2 ( CCArrRef<Vector2d> & vert1, CCArrRef<Vect
     return res;
 }
 
-Def<Vector2d> overlayConvexPolygonsNR ( CCArrRef<Vector2d> & vert1, CCArrRef<Vector2d> & vert2 )
+double time1=0, time2=0;
+
+bool minMaxPointsConvexPolygon1 ( WireModel<5> & model, Double<5> & best )
 {
-    nat i;
-    Def<Vector2d> err;
-    const nat nv1 = vert1.size();
-    const nat nv2 = vert2.size();
-    if ( nv1 < 3 || nv2 < 3 ) return err;
-// Вспомогательные данные
-    DynArray<Line2d> line1 ( nv1 );
-    if ( ! points2lines ( vert1, line1 ) ) return err;
-    DynArray<Line2d> line2 ( nv2 );
-    if ( ! points2lines ( vert2, line2 ) ) return err;
-    DynArray<double> pd1 ( nv1 );
-    for ( i = 0; i < nv1; ++i )
+double t0 = timeInSec ();
+    const nat N = 5;
+    double max = -1e9;
+    if ( model.vlist.top() )
+    do
     {
-        const Line2d & li = line1[i];
-        double max = li.norm * vert2[0];
-        for ( nat j = 1; j < nv2; ++j ) _maxa ( max, li.norm * vert2[j] );
-        pd1[i] = max + li.dist;
-    }
-    DynArray<double> pd2 ( nv2 );
-    for ( i = 0; i < nv2; ++i )
-    {
-        const Line2d & li = line2[i];
-        double max = li.norm * vert1[0];
-        for ( nat j = 1; j < nv1; ++j ) _maxa ( max, li.norm * vert1[j] );
-        pd2[i] = max + li.dist;
-    }
-// Найдём габариты множества точек
-    const Segment2d & seg1 = dimensions ( vert1 );
-    const Segment2d & seg2 = dimensions ( vert2 );
-    const double dx = _max ( seg1.b.x, seg2.b.x ) - _min ( seg1.a.x, seg2.a.x );
-    const double dy = _max ( seg1.b.y, seg2.b.y ) - _min ( seg1.a.y, seg2.a.y );
-    const double dd = dx + dy;
-// Поиск оптимального сдвига
-    Double<4> arr[5];
-    arr[0].init ( dx, dy, dd, dd );
-    arr[1].init ( -1., 0., 0., 0. );
-    arr[2].init ( 0., -1., 0., 0. );
-    arr[3].init ( 0., 0., -1., 0. );
-    arr[4].init ( 0., 0., 0., -1. );
-    const double eps = 1e-6 * dd;
-    for ( nat k = 0; k < 100; ++k )
-    {
-        Double<4> & a0 = arr[0];
-        const Vector2d o ( a0.d0, a0.d1 );
-        double max1 = -1;
-        nat im1, im2;
-        for ( i = 0; i < nv2; ++i )
+        const Vertex<N> * p = model.vlist.cur();
+        const Double<N> & pc = p->coor;
+        const double c = pc.d0 * pc.d0 + pc.d1 * pc.d1 - 1;
+        if ( ! c )
         {
-            if ( _maxa ( max1, pd2[i] + line2[i].norm * o ) ) im1 = i;
+            if ( _maxa ( max, pc.d4 ) ) best = pc;
+            continue;
         }
-        max1 += a0.d2;
-        double max2 = -1;
-        for ( i = 0; i < nv1; ++i )
+        for ( nat k = 0; k < N; ++k )
         {
-            if ( _maxa ( max2, pd1[i] - line1[i].norm * o ) ) im2 = i;
+            const Vertex<N> * v = p->vertex[k];
+            if ( v < p ) continue;
+            const Double<N> & vc = v->coor;
+            if ( c < 0 )
+            {
+                const double d = vc.d0 * vc.d0 + vc.d1 * vc.d1 - 1;
+                if ( d < 0 ) continue;
+            }
+            const double a0 = vc.d0 - pc.d0;
+            const double a1 = vc.d1 - pc.d1;
+            const double a = a0 * a0 + a1 * a1;
+            const double b = a0 * pc.d0 + a1 * pc.d1;
+            double r[2];
+            const nat n = root2 ( a, b+b, c, r );
+            for ( nat j = 0; j < n; ++j )
+            {
+                const double t = r[j];
+                if ( t >= 0 && t <= 1 )
+                {
+                    if ( _maxa ( max, pc.d4 + t * ( vc.d4 - pc.d4 ) ) )
+                    {
+                        const double a2 = vc.d2 - pc.d2;
+                        const double a3 = vc.d3 - pc.d3;
+                        best.d0 = pc.d0 + t * a0;
+                        best.d1 = pc.d1 + t * a1;
+                        best.d2 = pc.d2 + t * a2;
+                        best.d3 = pc.d3 + t * a3;
+                        best.d4 = max;
+                    }
+                }
+            }
         }
-        max2 += a0.d3;
-        double dist;
-        Double<4> cor;
-        if ( max1 > max2 )
+    }
+    while ( model.vlist.next() );
+double t1 = timeInSec ();
+time1 += t1-t0;
+    return max > -1e9;
+}
+
+bool minMaxPointsConvexPolygon2 ( CCArrRef<Vector2d> & point, CCArrRef<Line2d> & line, WireModel<5> & model, 
+                                  Double<5> & best, List< Vertex<5> > & stor, double & max )
+{
+    const nat N = 5;
+    const nat np = point.size();
+    const nat nv = line.size();
+// Поиск максимального нарушения ограничений для выбранного решения
+    max = -1e9;
+    nat jm, km;
+    for ( nat j = 0; j < np; ++j )
+    {
+        const Vector2d & v = point[j];
+        const Vector2d p ( best.d0 * v.x + best.d1 * v.y + best.d2, best.d0 * v.y - best.d1 * v.x + best.d3 );
+        for ( nat k = 0; k < nv; ++k )
         {
-            dist = max1;
-            const Vector2d & norm = line2[im1].norm;
-            cor.init ( norm.x, norm.y, 1, 0 );
+            if ( _maxa ( max, line[k] % p ) ) jm = j, km = k;
+        }
+    }
+    max += best.d4;
+// Если нарушение мало, то завершение программы
+    if ( max < 1e-5 )
+        return true;
+// Применение ограничения к области допустимых преобразований
+    const Vector2d & v = point[jm];
+    const Line2d & li = line[km];
+    Double<N+1> cor;
+    cor.d0 = v.x * li.norm.x + v.y * li.norm.y;
+    cor.d1 = v.y * li.norm.x - v.x * li.norm.y;
+    cor.d2 = li.norm.x;
+    cor.d3 = li.norm.y;
+    cor.d4 = 1;
+    cor.d5 = li.dist;
+    model.cut ( cor, stor );
+// Поиск оптимального решения в данной области допустимых значений
+    return minMaxPointsConvexPolygon1 ( model, best );
+}
+
+Def<Conform2d> minMaxPointsConvexPolygon2 ( CCArrRef<Vector2d> & point, CCArrRef<Vector2d> & vert )
+{
+    Def<Conform2d> res;
+    const nat np = point.size();
+    const nat nv = vert.size();
+    if ( np < 3 || nv < 3 ) return res;
+// Получение границ многоугольника в виде прямых линий
+    DynArray<Line2d> line ( nv );
+    if ( ! points2lines ( vert, line ) ) return res;
+// Определяем общие габариты
+    Def<Segment2d> dim = dimensions ( point );
+    Def<Segment2d> dim2 = dimensions ( vert );
+    if ( dim.a.x > dim2.a.x ) dim.a.x = dim2.a.x;
+    if ( dim.b.x < dim2.b.x ) dim.b.x = dim2.b.x;
+    if ( dim.a.y > dim2.a.y ) dim.a.y = dim2.a.y;
+    if ( dim.b.y < dim2.b.y ) dim.b.y = dim2.b.y;
+    const double r = norm2 ( dim.b - dim.a );
+// Инициализация области допустимых преобразований
+    const nat N = 5;
+    List< Vertex<N> > stor;
+    WireModel<N> model1, model2;
+    model1.simplex ( 2*N, stor );
+    Double<N> dn;
+    dn.d0 = dn.d1 = dn.d2 = dn.d3 = dn.d4 = 1.;
+    if ( model1.vlist.top() )
+    do
+    {
+        Double<N> & dc = model1.vlist.cur()->coor;
+        dc -= dn;
+        dc.d0 *= 2;
+        dc.d1 *= 2;
+        dc.d2 *= r;
+        dc.d3 *= r;
+        dc.d4 *= r;
+    }
+    while ( model1.vlist.next() );
+    Double<N+1> cor;
+    cor.d0 = -1;
+    cor.d1 = cor.d2 = cor.d3 = cor.d4 = cor.d5 = 0;
+    model1.cut ( cor, stor, model2 );
+// Поиск оптимального решения в данной области допустимых значений
+    Double<N> best1, best2;
+    if ( ! minMaxPointsConvexPolygon1 ( model1, best1 ) ) return res;
+    if ( ! minMaxPointsConvexPolygon1 ( model2, best2 ) ) return res;
+// Ищем решение
+    for ( nat i = 0; i < 200; ++i )
+    {
+        double max;
+        if ( best1.d4 > best2.d4 )
+        {
+            if ( ! minMaxPointsConvexPolygon2 ( point, line, model1, best1, stor, max ) ) return res;
+            if ( max < 1e-5 )
+            {
+                res.spin = Spin2d ( Vector2d ( best1.d0, best1.d1 ), Vector2d ( 1, 0 ) );
+                res.trans = Vector2d ( best1.d2, best1.d3 );
+                res.isDef = true;
+                return res;
+            }
         }
         else
         {
-            dist = max2;
-            const Vector2d & norm = line1[im2].norm;
-            cor.init ( -norm.x, -norm.y, 0, 1 );
+            if ( ! minMaxPointsConvexPolygon2 ( point, line, model2, best2, stor, max ) ) return res;
+            if ( max < 1e-5 )
+            {
+                res.spin = Spin2d ( Vector2d ( best2.d0, best2.d1 ), Vector2d ( 1, 0 ) );
+                res.trans = Vector2d ( best2.d2, best2.d3 );
+                res.isDef = true;
+                return res;
+            }
         }
-        if ( dist < eps ) return o;
-        nat ib = 0;
-        double sg, max;
-        for ( i = 1; i < 5; ++i )
+    }
+    return res;
+}
+
+Def<Vector4d> minMaxPointsConvexPolygon3 ( const double r, const double a, const double b, CCArrRef<Vector2d> & vert, CCArrRef<Line2d> & line ) 
+{
+    Vector4d arr[5];
+    arr[0] = Vector4d ( r, r, 1, r );
+    arr[1] = Vector4d ( -1., 0., 0., 0. );
+    arr[2] = Vector4d ( 0., -1., 0., 0. );
+    arr[3] = Vector4d ( 0., 0., -1., 0. );
+    arr[4] = Vector4d ( 0., 0., 0., -1. );
+    for ( nat k = 0; k < 100; ++k )
+    {
+        Vector4d & a0 = arr[0];
+        const Vector2d o ( a0.x1, a0.x2 );
+        const Vector2d w ( a + b * a0.x3, b - a * a0.x3 );
+        double max = -1;
+        nat i, im, km;
+        for ( i = 0; i < line.size(); ++i )
         {
-            const Double<4> & v = arr[i];
+            const Line2d & li = line[i];
+            const Vector2d u ( w * li.norm, w % li.norm );
+            nat jm = 0;
+            double pmax = u * vert[0];
+            for ( nat j = 1; j < vert.size(); ++j )
+            {
+                const double p = u * vert[j];
+                if ( pmax < p ) pmax = p, jm = j;
+            }
+            pmax += li % o;
+            if ( max < pmax ) max = pmax, im = i, km = jm;
+        }
+        const double dist = max + a0.x4;
+        if ( dist < 1e-4 )
+            return a0;
+        const Line2d & li = line[im];
+        const Vector2d & vm = vert[km];
+        const Vector4d cor ( li.norm.x, li.norm.y, li.norm * vm * b + li.norm % vm * a, 1. );
+        nat ib = 0;
+        double sg;
+        for ( i = 1; i <= 4; ++i )
+        {
+            const Vector4d & v = arr[i];
             double t = cor * v;
             if ( t > -1e-8 ) continue;
             t = 1./ t;
             if ( ib == 0 )
             {
-                max = ( v.d2 + v.d3 ) * t;
+                max = v.x4 * t;
                 ib = i;
                 sg = t;
             }
             else
             {
-                const double s = ( v.d2 + v.d3 ) * t;
+                const double s = v.x4 * t;
                 if ( s < max ) max = s, ib = i, sg = t;
             }
         }
         if ( ib == 0 )
-            return err;
-        const Double<4> & v = arr[ib];
+        {
+            return Def<Vector4d>();
+        }
+        const Vector4d & v = arr[ib];
         a0 -= v * ( dist * sg );
-        for ( i = 1; i < 5; ++i )
+        for ( i = 1; i <= 4; ++i )
         {
             if ( i == ib ) continue;
-            Double<4> & ai = arr[i];
+            Vector4d & ai = arr[i];
             ai -= v * ( ( cor * ai ) * sg );
             ai *= ( 1./ sqrt ( ai * ai ) );
         }
     }
-    return err;
+    return Def<Vector4d>();
+}
+
+Def<Conform2d> minMaxPointsConvexPolygon3 ( CCArrRef<Vector2d> & point, CCArrRef<Vector2d> & vert )
+{
+    Def<Conform2d> res;
+    const nat np = point.size();
+    const nat nv = vert.size();
+    if ( np < 3 || nv < 3 ) return res;
+// Получение границ многоугольника в виде прямых линий
+    DynArray<Line2d> line ( nv );
+    if ( ! points2lines ( vert, line ) ) return res;
+// Определяем общие габариты
+    Def<Segment2d> dim = dimensions ( point );
+    Def<Segment2d> dim2 = dimensions ( vert );
+    if ( dim.a.x > dim2.a.x ) dim.a.x = dim2.a.x;
+    if ( dim.b.x < dim2.b.x ) dim.b.x = dim2.b.x;
+    if ( dim.a.y > dim2.a.y ) dim.a.y = dim2.a.y;
+    if ( dim.b.y < dim2.b.y ) dim.b.y = dim2.b.y;
+    const double r = norm2 ( dim.b - dim.a );
+// Инициализация области допустимых преобразований
+    const nat n = 40;
+    const double step = M_2PI / n;
+    double max = -1e9;
+    for ( nat i = 0; i < n; ++i )
+    {
+        const double a = i * step;
+        const double cosa = cos(a);
+        const double sina = sin(a);
+        Def<Vector4d> d = minMaxPointsConvexPolygon3 ( r, cosa, sina, point, line );
+        if ( d.isDef && max < d.x4 )
+        {
+            max = d.x4;
+            res.spin = Spin2d ( atan2 ( sina - cosa * d.x3, cosa + sina * d.x3 ) );
+            res.trans.x = d.x1;
+            res.trans.y = d.x2;
+        }
+    }
+    if ( max > -1e9 ) res.isDef = true;
+    return res;
 }
 
 void overlayConvexPolygons_test()
 {
+    static PRand rand;
+    Spin2d spin = getRandSpin2d ( rand() );
     Suite<Vector2d> poly1;
     poly1.resize ( 9 );
     randConvexPolygon ( poly1 ) *= 0.6;
@@ -1503,33 +1631,102 @@ void overlayConvexPolygons_test()
     regularPolygon ( poly2 );
     poly2.resize ( 9 );
     randConvexPolygon ( poly2 ) *= 0.6;
-    poly2 = poly1;
-    poly1.dec ();
+    poly2 = poly1; poly1.dec (); poly1 *= spin;
+//drawPolygon ( poly1, 0, 0, 1 );
 drawPolygon ( poly2, 0, 1, 1 );
-    DynArray<Line2d> line ( poly2.size() );
-    if ( ! points2lines ( poly2, line ) ) return;
-double t0 = timeInSec ();
-    //Def<Vector2d> conf = overlayConvexPolygonsNR ( poly1, poly2 );
-    Def<Vector2d> conf = minMaxPointsConvexPolygonNR ( poly1, poly2 );
+//    DynArray<Line2d> line ( poly2.size() );
+//    if ( ! points2lines ( poly2, line ) ) return;
+double t0 = timeInSec (); time1=0;
+    Def<Conform2d> conf = overlayConvexPolygons ( poly1, poly2 );
 double t1 = timeInSec ();
-    Def<Affin2d> aff = overlayPointsOnConvexPolygon ( poly1, line );
-double t2 = timeInSec ();
-//display << t1-t0 << t2-t1 << NL;
     Suite<Vector2d> tmp;
-    //if ( conf.isDef )
+    if ( conf.isDef )
     {
         tmp = poly1;
-        tmp += conf;
+        tmp *= conf;
+//display << area ( tmp ) << NL;
+drawPolygon ( tmp, 1, 0, 0 );
+    }
+double t2 = timeInSec ();
+    conf = minMaxPointsConvexPolygon2 ( poly1, poly2 );
+    //Def<Vector2d> conf = overlayConvexPolygonsNR ( poly1, poly2 );
+    //Def<Vector2d> conf = minMaxPointsConvexPolygonNR ( poly1, poly2 );
+//    Def<Affin2d> aff = overlayPointsOnConvexPolygon ( poly1, line );
+double t3 = timeInSec ();
+display << t1-t0 << time1 << NL;
+//display << kk1 << kk2 << NL;
+    if ( conf.isDef )
+    {
+        tmp = poly1;
+        tmp *= conf;
 //display << area ( tmp ) << NL;
 drawPolygon ( tmp, 1, 1, 0 );
     }
-    if ( aff.isDef )
+}
+
+double maxPointsConvexPolygon ( Def<Conform2d> & conf, CCArrRef<Vector2d> & point, CCArrRef<Vector2d> & vert )
+{
+    double res = -1e9;
+    if ( ! conf.isDef ) return res;
+    const nat np = point.size();
+    const nat nv = vert.size();
+    DynArray<Line2d> line ( nv );
+    if ( ! points2lines ( vert, line ) ) return res;
+    DynArray<Vector2d> tmp ( point );
+    tmp *= conf;
+    for ( nat j = 0; j < np; ++j )
     {
-        tmp = poly1;
-        tmp *= aff;
-//display << area ( tmp ) << NL;
-//drawPolygon ( tmp, 1, 0, 0 );
+        const Vector2d & p = tmp[j];
+        for ( nat k = 0; k < nv; ++k ) _maxa ( res, line[k] % p );
     }
+    return res;
+}
+
+void overlayConvexPolygons_test2()
+{
+    Suite<Vector2d> poly1, poly2;
+    double tt1 = 0, tt2 = 0, max = -1;
+    time1=0;
+    nat im;
+    for ( nat k = 0; k < 9000; ++k )
+    {
+        poly1.resize ( 9 );
+        randConvexPolygon ( poly1 );
+        poly2.resize ( 9 );
+        randConvexPolygon ( poly2 );
+        if ( area ( poly1 ) > area ( poly2 ) ) _swap ( poly1, poly2 );
+    double t0 = timeInSec ();
+        Def<Conform2d> conf1 = minMaxPointsConvexPolygon ( poly1, poly2 );
+    double t1 = timeInSec ();
+    tt1 += t1-t0;
+    double t2 = timeInSec ();
+        //Def<Conform2d> conf2 = overlayConvexPolygon2 ( poly1, poly2 );
+        Def<Conform2d> conf2 = minMaxPointsConvexPolygon3 ( poly1, poly2 );
+    double t3 = timeInSec ();
+    tt2 += t3-t2;
+        double max1 = maxPointsConvexPolygon ( conf1, poly1, poly2 );
+        double max2 = maxPointsConvexPolygon ( conf2, poly1, poly2 );
+        if ( _maxa ( max, fabs ( max1 - max2 ) ) ) im = k;
+        if ( k != 58690 ) 
+            continue;
+display << max1 << max2 << NL;
+        drawPolygon ( poly2, 0, 1, 1 );
+        Suite<Vector2d> tmp;
+        if ( conf1.isDef )
+        {
+            tmp = poly1;
+            tmp *= conf1;
+            drawPolygon ( tmp, 1, 0, 0 );
+        }
+        if ( conf2.isDef )
+        {
+            tmp = poly1;
+            tmp *= conf2;
+            drawPolygon ( tmp, 1, 1, 0 );
+        }
+    }
+display << tt2 / tt1 << NL;
+//display << max << im << NL;
 }
 
 } // end of namespace
@@ -1552,6 +1749,6 @@ void approx2d_test()
 //    getCircle1_test1();
 //    getNearPoint2_test1();
 //    spline_test3();
-    overlayConvexPolygons_test();
+    overlayConvexPolygons_test2();
     endNewList();
 }

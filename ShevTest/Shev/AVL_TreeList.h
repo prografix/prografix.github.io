@@ -22,7 +22,7 @@ public:
         virtual void put ( Node * ) = 0;
     };
 private:
-    Node * root, * fir, * cur;
+    Node * root, * cur;
     NodeStor * stor;
     unsigned count;
     bool isDel;
@@ -47,7 +47,7 @@ private:
             if ( ! pp )
             {
                 pp = p->left;
-                pp->prev = p->prev;
+                if ( ( pp->prev = p->prev ) ) pp->prev->next = pp;
                 pp->next = p;
                 p->prev = pp;
             }
@@ -92,7 +92,7 @@ private:
             if ( ! pp )
             {
                 pp = p->right;
-                pp->next = p->next;
+                if ( ( pp->next = p->next ) ) pp->next->prev = pp;
                 pp->prev = p;
                 p->next = pp;
             }
@@ -300,7 +300,6 @@ private:
                 p->right = q->right;
                 if ( h ) h = balanceL ( p );
             }
-            if ( q == fir ) fir = fir->next;
             if ( q == cur )
             {
                 cur = cur->next ? cur->next : cur->prev;
@@ -351,28 +350,28 @@ private:
         return test ( p->left ) && test ( p->right );
     }
 public:
-    explicit AVL_TreeList ( NodeStor * s = 0 ) : root ( 0 ), fir(0), cur(0), stor ( s ), count ( 0 ) {}
+    explicit AVL_TreeList ( NodeStor * s = 0 ) : root ( 0 ), cur(0), stor ( s ), count ( 0 ) {}
 
     ~AVL_TreeList ()
     {
         delAll ( root );
     }
 
+    void set ( NodeStor * s )
+    {
+        stor = s;
+    }
+
     D & add ( const K & x, const D & d )
     {
         bool h;
-        D & r = add ( x, d, root, h );
-        if ( ! fir )
-        {
-            fir = cur = root;
-            fir->prev = fir->next = 0;
-        }
-        return r;
+        return add ( x, d, root, h );
     }
 
     D & add ( const K & x )
     {
-        return add ( x, D() );
+        bool h;
+        return add ( x, D(), root, h );
     }
 
     bool del ( const K & x )
@@ -400,7 +399,9 @@ public:
 
     Node * first()
     {
-        return cur = fir;
+        if ( ! ( cur = root ) ) return 0;
+        while ( cur->left ) cur = cur->left;
+        return cur;
     }
 
     Node * next()
@@ -417,14 +418,117 @@ public:
     {
         if ( count != countItems() )
             return false;
-        Node * p = fir;
+        Node * p = root;
         if ( p )
+        {
+            while ( p->left ) p = p->left;
             while ( p->next )
             {
+                if ( p->next->prev != p )
+                    return false;
                 if ( p->key > p->next->key )
                     return false;
                 p = p->next;
             }
+        }
         return test ( root );
+    }
+};
+
+template <typename T, nat N> class BlockStor
+{
+    struct Block
+    {
+        T data[N];
+        Block * ptr;
+    };
+    nat k;
+    Block * ptr;
+public:
+    BlockStor() : k(N), ptr(0) {}
+
+    ~BlockStor()
+    {
+        while ( ptr )
+        {
+            Block * p = ptr->ptr;
+            delete ptr;
+            ptr = p;
+        }
+    }
+
+    virtual T * get()
+    {
+        if ( k == N )
+        {
+            k = 0;
+            Block * p = new Block;
+            p->ptr = ptr;
+            ptr = p;
+        }
+        return ptr->data + k++;
+    }
+};
+
+#define BLOCK
+
+template <typename K, typename D = Void> 
+class AVL_TreeListNodeStor : public AVL_TreeList<K, D>::NodeStor
+{
+    typename AVL_TreeList<K, D>::Node * ptr;
+#ifdef BLOCK
+    BlockStor<typename AVL_TreeList<K, D>::Node, 10000> stor;
+#endif
+public:
+    AVL_TreeListNodeStor() : ptr(0) {}
+
+    ~AVL_TreeListNodeStor()
+    {
+#ifndef BLOCK
+        while ( ptr )
+        {
+            AVL_TreeList<K, D>::Node * p = ptr->left;
+            delete ptr;
+            ptr = p;
+        }
+#endif
+    }
+
+    virtual typename AVL_TreeList<K, D>::Node * get()
+    {
+        if ( ptr )
+        {
+            AVL_TreeList<K, D>::Node * p = ptr;
+            ptr = p->left;
+            return p;
+        }
+        else
+#ifdef BLOCK
+            return stor.get();
+#else
+            return new AVL_TreeList<K, D>::Node;
+#endif
+    }
+
+    virtual void put ( typename AVL_TreeList<K, D>::Node * p )
+    {
+        p->left = ptr;
+        ptr = p;
+    }
+
+    const D * find ( const K & x ) const
+    {
+        const AVL_TreeList<K, D>::Node * p = ptr;
+        while ( p )
+        {
+            if ( p->key == x ) return & p->data;
+            p = p->left;
+        }
+        return 0;
+    }
+
+    const D * first () const
+    {
+        return ptr ? & ptr->data : 0;
     }
 };

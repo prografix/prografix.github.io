@@ -31,10 +31,17 @@ Def&lt;Vector2d> minMaxPointsConvexPolygonNR ( CCArrRef&lt;Vector2d> & point, CC
 </pre>
 <p>
 &bull; Совмещение двух выпуклых многоугольников при помощи сдвига первого многоугольника. 
-<br>Минимизируется сумма максимальных растояний вершин одного многоугольника до второго:
+<br>Минимизируется сумма максимальных растояний вершин одного многоугольника до другого:
 </p>
 <pre>
 Def&lt;Vector2d> overlayConvexPolygonsNR ( CCArrRef&lt;Vector2d> & vert1, CCArrRef&lt;Vector2d> & vert2 );
+</pre>
+<p>
+&bull; Совмещение множества точек (point) и выпуклого многоугольника (vert) при помощи вращения и сдвига. 
+<br>Минимизируется максимальное растояние точек от многоугольника: 
+</p>
+<pre>
+Def&lt;Conform2d> minMaxPointsConvexPolygon ( CCArrRef&lt;Vector2d> & point, CCArrRef&lt;Vector2d> & vert );
 </pre>
 <p>
 &bull; Совмещение двух выпуклых многоугольников при помощи поворота и сдвига первого многоугольника:

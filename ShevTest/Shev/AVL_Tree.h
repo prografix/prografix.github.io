@@ -342,9 +342,8 @@ public:
 
     D & add ( const K & x )
     {
-        D d;
         bool h;
-        return add ( x, d, root, h );
+        return add ( x, D(), root, h );
     }
 
     bool del ( const K & x )
