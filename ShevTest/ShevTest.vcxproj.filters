@@ -615,6 +615,9 @@
     <ClInclude Include="Extra\Vert.h">
       <Filter>Extra</Filter>
     </ClInclude>
+    <ClInclude Include="Shev\AVL_TreeList.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="res\ShevTest.ico">
