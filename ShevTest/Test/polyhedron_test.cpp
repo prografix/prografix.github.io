@@ -383,20 +383,20 @@ void fillData ( const Polyhedron & poly, DynArray<Suite<SortItem<nat, double>>> 
 {
     const nat nv = poly.vertex.size();
     const nat nf = poly.facet.size();
-    nat nr = 0;
-    for ( nat i = 0; i < nf; ++i )
+    nat i, j, k, nr = 0;
+    for ( i = 0; i < nf; ++i )
     {
         const Facet & f = poly.facet[i];
         nr += f.nv - 1;
     }
     data.resize ( nr );
-    for ( nat i = 0, k = 0; i < nf; ++i )
+    for ( i = 0, k = 0; i < nf; ++i )
     {
         const Facet & f = poly.facet[i];
         const nat i1 = 3 * f.index[0];
         const nat i2 = i1 + 1;
         const nat i3 = i2 + 1;
-        for ( nat j = 1; j < f.nv; ++j )
+        for ( j = 1; j < f.nv; ++j )
         {
             Suite<SortItem<nat, double>> & r = data[k++];
             const nat ix = 3 * f.index[j];
@@ -421,7 +421,7 @@ void fillData ( const Polyhedron & poly, DynArray<Suite<SortItem<nat, double>>> 
     }
     const nat nc = 3*nv;
     x.resize ( nc );
-    for ( nat i = 0; i < nv; ++i )
+    for ( i = 0; i < nv; ++i )
     {
         const Vector3d & v = poly.vertex[i];
         const nat ix = 3 * i;
@@ -647,7 +647,7 @@ void normalizePolyhedron_test3()
 #ifdef AVL
         sluGaussRowT ( data1, index1 );
 #else
-        sluGaussRowNS ( data1 );
+        sluGaussRowS ( data1 );
 #endif
         double t2 = timeInSec();
     display << nr * nc << t1-t0 << t2-t1 << (t1-t0) / (t2-t1) << NL;
