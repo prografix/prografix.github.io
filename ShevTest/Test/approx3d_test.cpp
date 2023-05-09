@@ -1345,6 +1345,118 @@ void minMaxPointsConvexPolygonNR_test()
     draw ( poly2, 0, 1, 1, 1, VM_WIRE );
 }
 
+Def<Double<5> > minMaxPointsConvexPolyhedron ( const double r, const double a, const double b, CCArrRef<Vector3d> & vert, CCArrRef<Facet> & facet ) 
+{
+    Double<5> arr[6], cor;
+    arr[0].init ( r, r, 1, r, r );
+    arr[1].init ( -1., 0., 0., 0., 0. );
+    arr[2].init ( 0., -1., 0., 0., 0. );
+    arr[3].init ( 0., 0., -1., 0., 0. );
+    arr[4].init ( 0., 0., 0., -1., 0. );
+    arr[5].init ( 0., 0., 0., 0., -1. );
+    for ( nat k = 0; k < 100; ++k )
+    {
+        Double<5> & a0 = arr[0];
+        const Vector3d o ( a0.d0, a0.d1, a0.d2 );
+        const Vector2d w ( a + b * a0.d3, b - a * a0.d3 );
+        double max = -1;
+        nat i, im, km;
+        for ( i = 0; i < facet.size(); ++i )
+        {
+            const Plane3d & li = facet[i].plane;
+            const Vector3d u ( w.x * li.norm.x + w.y * li.norm.y,  w.x * li.norm.y - w.y * li.norm.x, li.norm.z );
+            nat jm = 0;
+            double pmax = u * vert[0];
+            for ( nat j = 1; j < vert.size(); ++j )
+            {
+                const double p = u * vert[j];
+                if ( pmax < p ) pmax = p, jm = j;
+            }
+            pmax += li % o;
+            if ( max < pmax ) max = pmax, im = i, km = jm;
+        }
+        const double dist = max + a0.d4;
+        if ( dist < 1e-4 )
+            return a0;
+        const Plane3d & li = facet[im].plane;
+        const Vector3d & vm = vert[km];
+        cor.init ( li.norm.x, li.norm.y, li.norm.z, ( li.norm.x * vm.x + li.norm.y * vm.y ) * b + ( li.norm.x * vm.y - li.norm.y * vm.x ) * a, 1. );
+        nat ib = 0;
+        double sg;
+        for ( i = 1; i <= 4; ++i )
+        {
+            const Double<5> & v = arr[i];
+            double t = cor * v;
+            if ( t > -1e-8 ) continue;
+            t = 1./ t;
+            if ( ib == 0 )
+            {
+                max = v.d4 * t;
+                ib = i;
+                sg = t;
+            }
+            else
+            {
+                const double s = v.d4 * t;
+                if ( s < max ) max = s, ib = i, sg = t;
+            }
+        }
+        if ( ib == 0 )
+        {
+            return Def<Double<5> >();
+        }
+        const Double<5> & v = arr[ib];
+        a0 -= v * ( dist * sg );
+        for ( i = 1; i <= 4; ++i )
+        {
+            if ( i == ib ) continue;
+            Double<5> & ai = arr[i];
+            ai -= v * ( ( cor * ai ) * sg );
+            ai *= ( 1./ sqrt ( ai * ai ) );
+        }
+    }
+    return Def<Double<5> >();
+}
+
+Def<Conform3d> minMaxPointsConvexPolyhedron ( CCArrRef<Vector3d> & point, const Polyhedron & poly )
+{
+    Def<Conform3d> res;
+    const nat np = point.size();
+    const nat nv = poly.vertex.size();
+    if ( np < 3 || nv < 3 ) return res;
+// Определяем общие габариты
+    Def<Segment3d> dim = dimensions ( point );
+    Def<Segment3d> dim2 = dimensions ( poly.vertex );
+    if ( dim.a.x > dim2.a.x ) dim.a.x = dim2.a.x;
+    if ( dim.b.x < dim2.b.x ) dim.b.x = dim2.b.x;
+    if ( dim.a.y > dim2.a.y ) dim.a.y = dim2.a.y;
+    if ( dim.b.y < dim2.b.y ) dim.b.y = dim2.b.y;
+    if ( dim.a.z > dim2.a.z ) dim.a.z = dim2.a.z;
+    if ( dim.b.z < dim2.b.z ) dim.b.z = dim2.b.z;
+    const double r = norm2 ( dim.b - dim.a );
+// Инициализация области допустимых преобразований
+    const nat n = 40;
+    const double step = M_2PI / n;
+    double max = -1e9;
+    for ( nat i = 0; i < n; ++i )
+    {
+        const double a = i * step;
+        const double cosa = cos(a);
+        const double sina = sin(a);
+        Def<Double<5> > d;// = minMaxPointsConvexPolygon3 ( r, cosa, sina, point, line );
+        if ( d.isDef && max < d.d4 )
+        {
+            max = d.d4;
+            res.spin = Spin3d ( Vector3d(0,0,1), atan2 ( sina - cosa * d.d3, cosa + sina * d.d3 ) );
+            res.trans.x = d.d0;
+            res.trans.y = d.d2;
+            res.trans.z = d.d2;
+        }
+    }
+    if ( max > -1e9 ) res.isDef = true;
+    return res;
+}
+
 } // end of namespace
 
 void approx3d_test ()
