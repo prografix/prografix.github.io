@@ -9,6 +9,7 @@
 #include "../Shev/RealFile.h"
 #include "../Shev/filePYH.h"
 #include "../Shev/LinAlg.h"
+#include "../Shev/mathem.h"
 #include "../Shev/func3d.h"
 #include "../Shev/func1t.h"
 #include "../Shev/opti2d.h"
@@ -72,47 +73,37 @@ void makeModel_test()
     check ( poly.makeModel ( fig, 100 ), rec );
 }
 
-bool sluGaussRowNS ( ArrRef<Suite<SortItem<nat, double>>> & data )
+bool sluGaussRowNS ( nat n, Suite<SortItem<nat, double>> * data, double * b )
 {
-    const nat nRow = data.size();
-    if ( ! nRow ) return false;
     Suite<SortItem<nat, double> > temp;
 // Прямой ход
     nat i, j, k;
-    for ( k = 0; k < nRow; ++k )
+    for ( k = 0; k < n; ++k )
     {
-// Поиск максимального по модулю члена в k-ой строке
         Suite<SortItem<nat, double> > & rk = data[k];
         const nat nk = rk.size();
-        if ( ! nk ) return false;
-        nat im = 0;
-        double max = fabs ( rk[0].tail );
-        for ( i = 1; i < nk; ++i )
-        {
-            if ( _maxa ( max, fabs ( rk[i].tail ) ) ) im = i;
-        }
-        _swap ( rk[0], rk[im] );
+        if ( ! nk || rk[0].head != k )
+            return false;
         SortItem<nat, double> & rkm = rk[0];
 // Нормализация строки
         const double p = 1. / rkm.tail;
-        for ( i = 1; i < nk; ++i ) rk[i].tail *= p;
+        for ( i = 0; i < nk; ++i ) rk[i].tail *= p;
         rkm.tail = 1;
+        b[k] *= p;
 // Вычитание строк
-        for ( j = k+1; j < nRow; ++j )
+        for ( j = k+1; j < n; ++j )
         {
             Suite<SortItem<nat, double> > & rj = data[j];
-            const nat ij = firEqu ( rj, rkm );
-            if ( ij == rj.size() ) continue;
-            const double t = rj[ij].tail;
-            rj.del(ij);
+            if ( rj[0].head != k ) continue;
+            const double t = rj[0].tail;
             for ( i = 1; i < nk; ++i )
             {
                 const SortItem<nat, double> & rki = rk[i];
                 const double tt = - rki.tail * t;
-                const nat ii = firEqu ( rj, rki );
+                const nat ii = lasEqu123 ( rj, rki );
                 if ( ii < rj.size() )
                 {
-                    if ( fabs ( rj[ii].tail += tt ) < 1e-14 * fabs ( tt ) ) rj.del(ii);
+                    if ( fabs ( rj[ii].tail += tt ) < 1e-14 * fabs ( tt ) ) rj.delAndShift(ii);
                 }
                 else
                 {
@@ -121,55 +112,98 @@ bool sluGaussRowNS ( ArrRef<Suite<SortItem<nat, double>>> & data )
             }
             if ( temp.size() > 0 )
             {
+                rj.del(0);
                 rj.addAftLas ( temp );
+                insertSort123 ( rj );
                 temp.resize();
             }
+            else
+                rj.delAndShift(0);
+            b[j] -= t * b[k];
         }
     }
 //return true;
 // Обратная подстановка
-    for ( k = nRow; --k > 0; )
+    for ( k = n; --k > 0; )
     {
-        Suite<SortItem<nat, double> > & rk = data[k];
-        const nat nk = rk.size();
-        if ( ! nk ) continue;
-        const SortItem<nat, double> si ( rk[0] );
+        const double d = b[k];
         for ( j = 0; j < k; ++j )
         {
             Suite<SortItem<nat, double> > & rj = data[j];
-            const nat ij = firEqu ( rj, si );
-            if ( ij == rj.size() ) continue;
-            const double t = rj[ij].tail;
-            rj.del(ij);
-            for ( i = 1; i < nk; ++i )
-            {
-                const SortItem<nat, double> & rki = rk[i];
-                const double tt = - rki.tail * t;
-                const nat ii = firEqu ( rj, rki );
-                if ( ii < rj.size() )
-                {
-                    if ( fabs ( rj[ii].tail += tt ) < 1e-14 * fabs ( tt ) ) rj.del(ii);
-                }
-                else
-                {
-                    if ( fabs ( tt ) > 1e-290 ) temp.inc() = SortItem<nat, double> ( rki.head, tt );
-                }
-            }
-            if ( temp.size() > 0 )
-            {
-                rj.addAftLas ( temp );
-                temp.resize();
-            }
+            const SortItem<nat, double> & si = rj.las();
+            if ( si.head != k ) continue;
+            b[j] -= si.tail * d;
+            rj.dec();
         }
     }
     return true;
 }
 
-bool sluGaussRowS ( ArrRef<Suite<SortItem<nat, double>>> & data )
+bool calcSLU2 ( nat k, nat nf, CCArrRef<Set2<DynArray<nat>, Vector3d> > & facet, 
+               CCArrRef<Vector3d> & vertex, CCArrRef<Suite<Set2<nat, Vector3d> > > & vp, double * x )
+{
+    nat i, l;
+    DynArray<Suite<SortItem<nat, double>>> data ( k );
+    nat n = 0;
+    for ( i = 0, k = 0; i < nf; ++i )
+    {
+        const Set2<DynArray<nat>, Vector3d> & f = facet[i];
+        if ( f.a.size() < 4 ) continue;
+        const nat i0 = f.a[0];
+        CCArrRef<Set2<nat, Vector3d> > & s0 = vp[i0];
+        for ( nat j = 1; j < f.a.size(); ++j )
+        {
+            Suite<SortItem<nat, double>> & r = data[k];
+            const nat ii = f.a[j];
+            CCArrRef<Set2<nat, Vector3d> > & si = vp[ii];
+            for ( l = 0; l < si.size(); ++l )
+            {
+                const Set2<nat, Vector3d> & sl = si[l];
+                const double p = f.b * sl.b;
+                if ( fabs ( p ) < 1e-15 )
+                    continue;
+                SortItem<nat, double> & si = r.inc();
+                si.head = sl.a;
+                si.tail = p;
+            }
+            for ( l = 0; l < s0.size(); ++l )
+            {
+                const Set2<nat, Vector3d> & sl = s0[l];
+                const double p = f.b * sl.b;
+                if ( fabs ( p ) < 1e-15 )
+                    continue;
+                const nat m = firEqu ( r, SortItem<nat, double> ( sl.a ) );
+                if ( m < r.size() )
+                {
+                    if ( fabs ( r[m].tail -= p ) < 1e-15 )
+                        r.del ( m );
+                }
+                else
+                {
+                    SortItem<nat, double> & si = r.inc();
+                    si.head = sl.a;
+                    si.tail = - p;
+                }
+            }
+            insertSort123 ( r );
+n+= r.size();
+//display << r.size() << NL;
+            x[k] = f.b * ( vertex[ii] - vertex[i0] );
+            ++k;
+        }
+    }
+ //display << k << n/double(k) << NL; return false;
+    if ( ! sluGaussRowNS ( k, data(), x ) ) return false;
+    return true;
+}
+
+bool sluGaussRowS ( ArrRef<Suite<SortItem<nat, double>>> & data, ArrRef<nat> & index )
 {
     const nat nRow = data.size();
     if ( ! nRow ) return false;
     Suite<SortItem<nat, double> > temp;
+    index.fill ( nRow );
+    DynArray<nat> index2 ( nRow );
 // Прямой ход
     nat i, j, k;
     for ( k = 0; k < nRow; ++k ) insertSort123 ( data[k] );
@@ -185,11 +219,12 @@ bool sluGaussRowS ( ArrRef<Suite<SortItem<nat, double>>> & data )
         {
             if ( _maxa ( max, fabs ( rk[i].tail ) ) ) im = i;
         }
-        if ( im > 0 ) ArrRef<SortItem<nat, double> > ( rk, 0, im+1 ) >>= 1;
-        SortItem<nat, double> & rkm = rk[0];
+        SortItem<nat, double> & rkm = rk[im];
+        index[rkm.head] = k;
+        index2[k] = rkm.head;
 // Нормализация строки
         const double p = 1. / rkm.tail;
-        for ( i = 1; i < nk; ++i ) rk[i].tail *= p;
+        for ( i = 0; i < nk; ++i ) rk[i].tail *= p;
         rkm.tail = 1;
 // Вычитание строк
         for ( j = k+1; j < nRow; ++j )
@@ -199,8 +234,9 @@ bool sluGaussRowS ( ArrRef<Suite<SortItem<nat, double>>> & data )
             if ( ij == rj.size() ) continue;
             const double t = rj[ij].tail;
             rj.delAndShift(ij);
-            for ( i = 1; i < nk; ++i )
+            for ( i = 0; i < nk; ++i )
             {
+                if ( i == im ) continue;
                 const SortItem<nat, double> & rki = rk[i];
                 const double tt = - rki.tail * t;
                 const nat ii = lasEqu123 ( rj, rki );
@@ -228,7 +264,8 @@ bool sluGaussRowS ( ArrRef<Suite<SortItem<nat, double>>> & data )
         Suite<SortItem<nat, double> > & rk = data[k];
         const nat nk = rk.size();
         if ( ! nk ) continue;
-        const SortItem<nat, double> si ( rk[0] );
+        const nat ik = index2[k];
+        const SortItem<nat, double> si ( ik );
         for ( j = 0; j < k; ++j )
         {
             Suite<SortItem<nat, double> > & rj = data[j];
@@ -236,9 +273,10 @@ bool sluGaussRowS ( ArrRef<Suite<SortItem<nat, double>>> & data )
             if ( ij == rj.size() ) continue;
             const double t = rj[ij].tail;
             rj.delAndShift(ij);
-            for ( i = 1; i < nk; ++i )
+            for ( i = 0; i < nk; ++i )
             {
                 const SortItem<nat, double> & rki = rk[i];
+                if ( rki.head == ik ) continue;
                 const double tt = - rki.tail * t;
                 const nat ii = lasEqu123 ( rj, rki );
                 if ( ii < rj.size() )
@@ -348,23 +386,6 @@ bool sluGaussRowT ( ArrRef<AVL_TreeList<nat, double>> & data, SuiteRef<Set2<nat>
     return true;
 }
 
-void initPolyhedron ( Polyhedron & poly )
-{
-    static PRand rand;
-    Polyhedron temp;
-    //poly.makeTetrahedron ( 1 );
-    poly.makeOctahedron ( 1 );
-    cut ( poly, Plane3d ( Vector3d (0,0,1), -0.9), temp ); _swap ( temp, poly );
-    cut ( poly, Plane3d ( Vector3d (0,0,-1),-0.9), temp ); _swap ( temp, poly );
-    cut ( poly, Plane3d ( Vector3d (0,1,0), -0.9), temp ); _swap ( temp, poly );
-    cut ( poly, Plane3d ( Vector3d (-1,0,0),-0.9), temp ); _swap ( temp, poly );
-    cut ( poly, Plane3d ( Vector3d (1,0,0), -0.9), temp ); _swap ( temp, poly );
-    cut ( poly, Plane3d ( Vector3d (0,-1,0),-0.9), temp ); _swap ( temp, poly );
-    //poly.makeCube ( 1 );
-    poly *= getRandOrtho3d ( rand(), rand(), rand() );
-    poly += Vector3d ( rand(), rand(), rand() );
-}
-
 void initPolyhedron ( Polyhedron & poly, nat n )
 {
     static PRand rand;
@@ -375,283 +396,180 @@ void initPolyhedron ( Polyhedron & poly, nat n )
     {
         cut ( poly, Plane3d ( vrand(), -0.9), temp ); _swap ( temp, poly );
     }
+//poly.makeSphere ( 1, n );
     poly *= getRandOrtho3d ( rand(), rand(), rand() );
     poly += Vector3d ( rand(), rand(), rand() );
+    for ( nat i = 0; i < poly.vertex.size(); ++i ) poly.vertex[i] += 1e-9 * vrand();
 }
 
-void fillData ( const Polyhedron & poly, DynArray<Suite<SortItem<nat, double>>> & data, DynArray<double> & x )
+double maxDif ( CCArrRef<Vector3d> & vert, CCArrRef<Set2<DynArray<nat>, Vector3d> > & facet )
 {
-    const nat nv = poly.vertex.size();
-    const nat nf = poly.facet.size();
-    nat i, j, k, nr = 0;
-    for ( i = 0; i < nf; ++i )
+    double dif = 0;
+    const nat nf = facet.size();
+    for ( nat i = 0; i < nf; ++i )
     {
-        const Facet & f = poly.facet[i];
-        nr += f.nv - 1;
+        const Set2<DynArray<nat>, Vector3d> & f = facet[i];
+        if ( f.a.size() < 4 ) continue;
+        double max = f.b * vert[f.a[0]];
+        double min = max;
+        for ( nat j = 1; j < f.a.size(); ++j )
+        {
+            const double t = f.b * vert[f.a[j]];
+            _maxa ( max, t );
+            _mina ( min, t );
+        }
+        _maxa ( dif, max - min );
     }
-    data.resize ( nr );
+    return dif;
+}
+
+bool calcSLU ( nat k, nat nf, CCArrRef<Set2<DynArray<nat>, Vector3d> > & facet, 
+               CCArrRef<Vector3d> & vertex, CCArrRef<Suite<Set2<nat, Vector3d> > > & vp, double * x )
+{
+    nat i, l;
+    HMatrix<double> a ( k, k );
+    a.fill(0);
+    DynArray<double> b ( k );
     for ( i = 0, k = 0; i < nf; ++i )
     {
-        const Facet & f = poly.facet[i];
-        const nat i1 = 3 * f.index[0];
-        const nat i2 = i1 + 1;
-        const nat i3 = i2 + 1;
-        for ( j = 1; j < f.nv; ++j )
+        const Set2<DynArray<nat>, Vector3d> & f = facet[i];
+        if ( f.a.size() < 4 ) continue;
+        const nat i0 = f.a[0];
+        CCArrRef<Set2<nat, Vector3d> > & s0 = vp[i0];
+        for ( nat j = 1; j < f.a.size(); ++j )
         {
-            Suite<SortItem<nat, double>> & r = data[k++];
-            const nat ix = 3 * f.index[j];
-            const nat iy = ix + 1;
-            const nat iz = iy + 1;
-            if ( f.plane.norm.x )
+            double * r = a[k];
+            const nat ii = f.a[j];
+            CCArrRef<Set2<nat, Vector3d> > & si = vp[ii];
+            for ( l = 0; l < si.size(); ++l )
             {
-                r.inc() = SortItem<nat, double> ( ix,  f.plane.norm.x );
-                r.inc() = SortItem<nat, double> ( i1, -f.plane.norm.x );
+                const Set2<nat, Vector3d> & sl = si[l];
+                r[sl.a] = f.b * sl.b;
             }
-            if ( f.plane.norm.y )
+            for ( l = 0; l < s0.size(); ++l )
             {
-                r.inc() = SortItem<nat, double> ( iy,  f.plane.norm.y );
-                r.inc() = SortItem<nat, double> ( i2, -f.plane.norm.y );
+                const Set2<nat, Vector3d> & sl = s0[l];
+                r[sl.a] -= f.b * sl.b;
             }
-            if ( f.plane.norm.z )
-            {
-                r.inc() = SortItem<nat, double> ( iz,  f.plane.norm.z );
-                r.inc() = SortItem<nat, double> ( i3, -f.plane.norm.z );
-            }
+            b[k] = f.b * ( vertex[ii] - vertex[i0] );
+            ++k;
         }
     }
-    const nat nc = 3*nv;
-    x.resize ( nc );
+    if(0)for ( nat i = 0; i < k; ++i )
+    {
+        for ( nat j = 0; j < k; ++j ) display << a[i][j];
+        display << NL;
+    }
+    SM_LDLt slu ( k, a );
+    return slu.solve ( b(), x );
+}
+
+bool normalizePolyhedron ( CCArrRef<Set2<DynArray<nat>, Vector3d> > & facet, ArrRef<Vector3d> & vertex )
+{
+    const double dif1 = maxDif ( vertex, facet );
+    const nat nv = vertex.size();
+    const nat nf = facet.size();
+    DynArray<Suite<Set2<nat, Vector3d> > > vp ( nv );
+    nat i, k = 0;
+    for ( i = 0; i < nf; ++i )
+    {
+        const Set2<DynArray<nat>, Vector3d> & f = facet[i];
+        if ( f.a.size() < 4 ) continue;
+        const nat i0 = f.a[0];
+        for ( nat j = 1; j < f.a.size(); ++j )
+        {
+            const nat ii = f.a[j];
+            vp[ii].inc() = Set2<nat, Vector3d> ( k, f.b );
+            vp[i0].inc() = Set2<nat, Vector3d> ( k, -f.b );
+            ++k;
+        }
+    }
+double t1 = timeInSec();
+    DynArray<double> x ( k );
+    if ( ! calcSLU2 ( k, nf, facet, vertex, vp, x() ) ) return false;
+double t2 = timeInSec();
+    if(0)for ( i = 0; i < k; ++i ) display << x[i] << NL;
     for ( i = 0; i < nv; ++i )
     {
-        const Vector3d & v = poly.vertex[i];
-        const nat ix = 3 * i;
-        const nat iy = ix + 1;
-        const nat iz = iy + 1;
-        x[ix] = v.x;
-        x[iy] = v.y;
-        x[iz] = v.z;
+        Vector3d & v = vertex[i];
+        CCArrRef<Set2<nat, Vector3d> > & si = vp[i];
+        for ( nat l = 0; l < si.size(); ++l )
+        {
+            const Set2<nat, Vector3d> & sl = si[l];
+            v -= sl.b * x[sl.a];
+        }
     }
+    const double dif2 = maxDif ( vertex, facet );
+display << k << dif1 << dif2 << t2-t1 << NL;
+    return dif1 > dif2;
 }
 
-void fillData ( const Polyhedron & poly, DynArray<AVL_TreeList<nat, double>> & data, DynArray<double> & x, AVL_TreeListNodeStor<nat, double> * stor )
+bool normalizePolyhedron ( Polyhedron & poly )
 {
-    const nat nv = poly.vertex.size();
+    DynArray<Vector3d> vertex ( * poly.vertex );
     const nat nf = poly.facet.size();
-    nat nr = 0;
+    DynArray<Set2<DynArray<nat>, Vector3d> > facet ( nf );
     for ( nat i = 0; i < nf; ++i )
     {
         const Facet & f = poly.facet[i];
-        nr += f.nv - 1;
+        if ( f.nv < 3 ) continue;
+        Set2<DynArray<nat>, Vector3d> & s = facet[i];
+        s.b = f.plane.norm;
+        s.a.resize ( f.nv );
+        for ( nat j = 0; j < f.nv; ++j ) s.a[j] = f.index[j];
     }
-    data.resize ( nr );
-    for ( nat i = 0, k = 0; i < nf; ++i )
-    {
-        const Facet & f = poly.facet[i];
-        const nat i1 = 3 * f.index[0];
-        const nat i2 = i1 + 1;
-        const nat i3 = i2 + 1;
-        for ( nat j = 1; j < f.nv; ++j )
-        {
-            AVL_TreeList<nat, double> & r = data[k++];
-            r.set ( stor );
-            const nat ix = 3 * f.index[j];
-            const nat iy = ix + 1;
-            const nat iz = iy + 1;
-            if ( f.plane.norm.x )
-            {
-                r.add ( ix,  f.plane.norm.x );
-                r.add ( i1, -f.plane.norm.x );
-            }
-            if ( f.plane.norm.y )
-            {
-                r.add ( iy,  f.plane.norm.y );
-                r.add ( i2, -f.plane.norm.y );
-            }
-            if ( f.plane.norm.z )
-            {
-                r.add ( iz,  f.plane.norm.z );
-                r.add ( i3, -f.plane.norm.z );
-            }
-        }
-    }
-    const nat nc = 3*nv;
-    x.resize ( nc );
-    for ( nat i = 0; i < nv; ++i )
-    {
-        const Vector3d & v = poly.vertex[i];
-        const nat ix = 3 * i;
-        const nat iy = ix + 1;
-        const nat iz = iy + 1;
-        x[ix] = v.x;
-        x[iy] = v.y;
-        x[iz] = v.z;
-    }
-}
-
-void fillData ( const Polyhedron & poly, DynArray2<double> & data, DynArray<double> & x )
-{
-    const nat nv = poly.vertex.size();
-    const nat nf = poly.facet.size();
-    nat nr = 0;
+    if ( ! normalizePolyhedron ( facet, vertex ) )
+        return false;
     for ( nat i = 0; i < nf; ++i )
     {
-        const Facet & f = poly.facet[i];
-        nr += f.nv - 1;
-    }
-    const nat nc = 3*nv;
-    DynArray2<double> temp ( nr, nc );
-    temp.fill(0);
-    for ( nat i = 0, k = 0; i < nf; ++i )
-    {
-        const Facet & f = poly.facet[i];
-        const nat i1 = 3 * f.index[0];
-        const nat i2 = i1 + 1;
-        const nat i3 = i2 + 1;
-        for ( nat j = 1; j < f.nv; ++j )
+        Facet & f = poly.facet[i];
+        if ( f.nv < 3 ) continue;
+        Set2<DynArray<nat>, Vector3d> & s = facet[i];
+        if ( f.nv == 3 )
         {
-            ArrRef<double> & r = temp[k++];
-            const nat ix = 3 * f.index[j];
-            const nat iy = ix + 1;
-            const nat iz = iy + 1;
-            r[ix] = f.plane.norm.x;
-            r[i1] = -f.plane.norm.x;
-            r[iy] = f.plane.norm.y;
-            r[i2] = -f.plane.norm.y;
-            r[iz] = f.plane.norm.z;
-            r[i3] = -f.plane.norm.z;
+            const Vector3d v1 = vertex[s.a[1]] - vertex[s.a[0]];
+            const Vector3d v2 = vertex[s.a[2]] - vertex[s.a[0]];
+            SLU2<double> slu;
+            slu.aa = v1 * v1; slu.ab = v1 * v2; slu.ac = v1 * s.b;
+            slu.ba =  slu.ab; slu.bb = v2 * v2; slu.bc = v2 * s.b;
+            double la1, la2;
+            if ( slu.gauss (la1, la2) )
+            {
+                s.b -= la1 * v1 + la2 * v2;
+                f.plane.norm = s.b.setNorm2();
+            }
         }
+        double max = s.b * vertex[s.a[0]];
+        double min = max;
+        for ( nat j = 1; j < s.a.size(); ++j )
+        {
+            const double t = s.b * vertex[s.a[j]];
+            _maxa ( max, t );
+            _mina ( min, t );
+        }
+        f.plane.dist = -0.5 * ( min + max );
     }
-    x.resize ( nc );
-    for ( nat i = 0; i < nv; ++i )
-    {
-        const Vector3d & v = poly.vertex[i];
-        const nat ix = 3 * i;
-        const nat iy = ix + 1;
-        const nat iz = iy + 1;
-        x[ix] = v.x;
-        x[iy] = v.y;
-        x[iz] = v.z;
-    }
-    temp.swap ( data );
+    vertex.swap ( poly.vertex );
+    return true;
 }
-
-//#define AVL
 
 void normalizePolyhedron_test()
 {
     Polyhedron poly;
-    initPolyhedron ( poly, 111 );
+    initPolyhedron ( poly, 10 ); //poly.makeOctahedron(1);
     draw ( poly, 0, 1, 1, 1, VM_WIRE );
-    DynArray<double> x;
-#ifdef AVL
-    AVL_TreeListNodeStor<nat, double> stor;
-    DynArray<AVL_TreeList<nat, double>> data;
-    fillData ( poly, data, x, & stor );
-#else
-    //DynArray2<double> data(0,0);
-    DynArray<Suite<SortItem<nat, double>>> data;
-    fillData ( poly, data, x );
-#endif
-    const nat nr = data.size();
-    const nat nc = x.size();
-    double t0 = timeInSec();
-#ifdef AVL
-    Suite<Set2<nat> > index ( nr );
-    bool ok = sluGaussRowT ( data, index );
-#else
-    bool ok = sluGaussRowS ( data );
-    //DynArray<nat> index(nc);
-    //bool ok = sluGaussRow ( data, nr, nc, index(), nr, nc);
-#endif
-    double t1 = timeInSec();
-#ifdef AVL
-    for ( nat i = 0; i < nr; ++i )
-    {
-        AVL_TreeList<nat, double> & r = data[i];
-        AVL_TreeList<nat, double>::Node * p = r.first();
-        double sum = 0;
-        while ( p )
-        {
-            sum += p->data * x[p->key];
-            p = r.next();
-        }
-        if ( fabs(sum) > 1e-13 ) display << i << sum << NL;
-    }
-#else
-    if ( 1 )
-    {
-        for ( nat i = 0; i < nr; ++i )
-        {
-            Suite<SortItem<nat, double>> & r = data[i];
-            double sum = 0;
-            for ( nat j = 0; j < r.size(); ++j ) sum += r[j].tail * x[r[j].head];
-            if ( fabs(sum) > 1e-13 ) display << i << sum << NL;
-            //for ( nat j = 0; j < r.size(); ++j ) display << "["<<r[j].head << "] ="<< r[j].tail; display << NL;
-        }
-    }
-#endif
-    display << ok << nr * nc << t1-t0 << NL;
+    normalizePolyhedron ( poly );
 }
 
 void normalizePolyhedron_test2()
 {
     Polyhedron poly;
-    DynArray<Suite<SortItem<nat, double>>> data;
-    DynArray<double> x;
-    for ( nat k = 0; k < 100; ++k )
+    for ( nat k = 0; k < 9; ++k )
     {
         initPolyhedron ( poly, k );
-        fillData ( poly, data, x );
-        const nat nr = data.size();
-        const nat nc = x.size();
-        bool ok = sluGaussRowS ( data );
-        if (ok) for ( nat i = 0; i < nr; ++i )
-        {
-            Suite<SortItem<nat, double>> & r = data[i];
-            double sum = 0;
-            for ( nat j = 0; j < r.size(); ++j ) sum += r[j].tail * x[r[j].head];
-            if ( fabs(sum) > 1e-13 ) display << k << i << sum << NL;
-        }
-        else display << k << ok << NL;
+        normalizePolyhedron ( poly );
     }
     display << "end" << NL;
-}
-
-void normalizePolyhedron_test3()
-{
-    Polyhedron poly;
-    DynArray2<double> data(0,0);
-    DynArray<double> x;
-#ifdef AVL
-    AVL_TreeListNodeStor<nat, double> stor;
-    DynArray<AVL_TreeList<nat, double>> data1;
-#else
-    DynArray<Suite<SortItem<nat, double>>> data1;
-#endif
-    for ( nat k = 0; k < 100; ++k )
-    {
-        initPolyhedron ( poly, 120 + k );
-#ifdef AVL
-    fillData ( poly, data1, x, & stor );
-#else
-    fillData ( poly, data1, x );
-#endif
-        fillData ( poly, data, x );
-        const nat nr = data1.size();
-        const nat nc = x.size();
-        DynArray<nat> index(nc);
-        Suite<Set2<nat> > index1 ( nr );
-        double t0 = timeInSec();
-        sluGaussRow ( data, nr, nc, index(), nr, nc );
-        double t1 = timeInSec();
-#ifdef AVL
-        sluGaussRowT ( data1, index1 );
-#else
-        sluGaussRowS ( data1 );
-#endif
-        double t2 = timeInSec();
-    display << nr * nc << t1-t0 << t2-t1 << (t1-t0) / (t2-t1) << NL;
-    }
 }
 
 } // end of namespace
