@@ -139,6 +139,86 @@ bool sluGaussRowNS ( nat n, Suite<SortItem<nat, double>> * data, double * b )
     return true;
 }
 
+bool sluGaussRowS2 ( nat n, Suite<SortItem<nat, double>> * data, double * b )
+{
+    Suite<SortItem<nat, double> > temp;
+// Прямой ход
+    nat i, j, k;
+    for ( k = 0; k < n; ++k )
+    {
+        Suite<SortItem<nat, double> > & rk = data[k];
+        const nat nk = rk.size();
+        if ( ! nk || rk[0].head != k )
+            return false;
+        SortItem<nat, double> & rkm = rk[0];
+// Нормализация строки
+        const double p = 1. / rkm.tail;
+        for ( i = 0; i < nk; ++i ) rk[i].tail *= p;
+        rkm.tail = 1;
+        b[k] *= p;
+// Вычитание строк
+        for ( j = k+1; j < n; ++j )
+        {
+            Suite<SortItem<nat, double> > & rj = data[j];
+            if ( rj[0].head != k ) continue;
+            const nat nj = rj.size();
+            const double t = rj[0].tail;
+            temp.resize();
+            nat l = 1;
+            for ( i = 1;; )
+            {
+                if ( i == nk )
+                {
+                    while ( l < nj ) temp.inc() = rj[l++];
+                    break;
+                }
+                if ( l == nj )
+                {
+                    while ( l < nj ) temp.inc() = rj[l++];
+                    break;
+                }
+                const SortItem<nat, double> & rki = rk[i];
+                const double tt = - rki.tail * t;
+                SortItem<nat, double> & rjl = rj[l];
+                if ( rjl.head < rki.head )
+                {
+                    temp.inc() = rjl;
+                    ++l;
+                }
+                else
+                if ( rjl.head > rki.head )
+                {
+                    if ( fabs ( tt ) > 1e-290 ) temp.inc() = SortItem<nat, double> ( rki.head, tt );
+                    ++i;
+                }
+                else
+                {
+                    if ( fabs ( rjl.tail += tt ) > 1e-14 * fabs ( tt ) ) temp.inc() = rjl;
+                    ++i;
+                    ++l;
+                }
+            }
+            temp.swap ( rj );
+            b[j] -= t * b[k];
+        }
+    }
+//return true;
+// Обратная подстановка
+    for ( k = n; --k > 0; )
+    {
+        const double d = b[k];
+        for ( j = 0; j < k; ++j )
+        {
+            Suite<SortItem<nat, double> > & rj = data[j];
+            const SortItem<nat, double> & si = rj.las();
+            if ( si.head != k ) continue;
+            b[j] -= si.tail * d;
+            rj.dec();
+        }
+    }
+    return true;
+}
+
 bool calcSLU2 ( nat k, nat nf, CCArrRef<Set2<DynArray<nat>, Vector3d> > & facet, 
                CCArrRef<Vector3d> & vertex, CCArrRef<Suite<Set2<nat, Vector3d> > > & vp, double * x )
 {
