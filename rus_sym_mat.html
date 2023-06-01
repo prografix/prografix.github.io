@@ -3,7 +3,7 @@
 <link rel="stylesheet" type="text/css" href="stylle.css">
 </head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
-<div align="center"><center>
+<div align="center">
 <table width="800" cellspacing="0" cellpadding="0">
 <div align=center><br>
 <font color="" style="font-size: 20pt">Симметричные положительно определённые матрицы</font>
@@ -62,23 +62,18 @@ public:
 <p>Оба класса были написаны на основе соответствующих программ 
 из книги "Справочник алгоритмов на языке Алгол" ( Уилкинсон, Райнш ).
 </p>
-Описание шаблона классов DynArray находится <a href=array.html>здесь</a>.
+<p>Если матрица сильно разреженна, то в этом случае лучшим по скорости будет метод сопряжённых градиентов:
+</p>
+<pre>
+void slu_cg ( nat n, const Suite&lt;SortItem&lt;nat, double> > * data, const double * b, double * x );
+</pre>
+Описание шаблонов классов DynArray и Suite находится <a href=array.html>здесь</a>.
 <p>Исходники находятся в файле <a href="source/source.zip">mathem.cpp</a>.</p>
 <a href="rus_lin_alg.html">Наверх</a>
 <pre>
 
-</pre></td></div>
+</pre></td>
 </table>
-<script type="text/javascript">
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
-
-<script type="text/javascript">
-try {
-var pageTracker = _gat._getTracker("UA-10825496-1");
-pageTracker._trackPageview();
-} catch(err) {}
-</script>
+</div>
 </body>
 </html>

@@ -4,11 +4,9 @@
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
 <div align="center">
 <table width="800" cellspacing="0" cellpadding="0">
-<div align=center>
 <br><font color="" style="font-size: 20pt">Аппроксимация многоугольника</font>
-</div>
-<br><div align=left><td>
-<p>Если многоугольник надо аппроксимировать кругом, то можно построить круг у которого центр масс и площадь
+<div align=left><td>
+<p><br>Если многоугольник надо аппроксимировать кругом, то можно построить круг у которого центр масс и площадь
 будут такие же, как у многоугольника.
 Если многоугольник надо аппроксимировать эллипсом ( прямоугольником ), то можно воспользоваться 
 <a href="mom2.html">моментами 2-го порядка</a>
@@ -24,7 +22,7 @@ Def&lt;Rectangle2d> getRectanglePlg ( CArrRef&lt;Vector2d> poly );
 </p>
 <p>
 &bull; Совмещение множества точек (point) и выпуклого многоугольника (vert) при помощи сдвига, без вращения. 
-<br>Минимизируется максимальное растояние точек от многоугольника: 
+<br>Минимизируется максимальное расстояние точек от многоугольника: 
 </p>
 <pre>
 Def&lt;Vector2d> minMaxPointsConvexPolygonNR ( CCArrRef&lt;Vector2d> & point, CCArrRef&lt;Vector2d> & vert );
@@ -38,7 +36,7 @@ Def&lt;Vector2d> overlayConvexPolygonsNR ( CCArrRef&lt;Vector2d> & vert1, CCArrR
 </pre>
 <p>
 &bull; Совмещение множества точек (point) и выпуклого многоугольника (vert) при помощи вращения и сдвига. 
-<br>Минимизируется максимальное растояние точек от многоугольника: 
+<br>Минимизируется максимальное расстояние точек от многоугольника: 
 </p>
 <pre>
 Def&lt;Conform2d> minMaxPointsConvexPolygon ( CCArrRef&lt;Vector2d> & point, CCArrRef&lt;Vector2d> & vert );
@@ -61,8 +59,8 @@ Def&lt;Conform2d> overlayConvexPolygons ( CCArrRef&lt;Vector2d> & vert1, CCArrRe
 <p>Исходники находятся в <a href="source/source.zip">approx2d.cpp</a></p>
 <p>Примеры использования всех этих функций можно посмотреть в приложении <a href="demo/demo.html">DEMO</a>.</p>
 <a href="rus_approx.html">Наверх</a>
-</td></div>
-</table>
+</td>
+</table></div>
 <pre>
 
 </pre>
