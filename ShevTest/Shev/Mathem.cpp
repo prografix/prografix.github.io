@@ -1099,7 +1099,7 @@ static double inprod ( nat n, const double * x, const double * y )
     return s;
 }
 
-static void op ( nat n, const Suite<SortItem<nat, double>> * data, const double * x, double * r )
+static void op ( nat n, const Suite<SortItem<nat, double> > * data, const double * x, double * r )
 {
     for ( nat i = 0; i < n; ++i )
     {
@@ -1115,39 +1115,80 @@ static void op ( nat n, const Suite<SortItem<nat, double>> * data, const double 
     }
 }
 
-void slu_cg ( nat n, const Suite<SortItem<nat, double> > * data, const double * b, double * x )
+static double dif ( nat n, const Suite<SortItem<nat, double> > * data, const double * x, const double * b, const double * r )
 {
-    DynArray<double> buf ( 3*n );
-    double * g = buf();
-    double * d = g + n;
-    double * ad = d + n;
+    double sum = 0;
     for ( nat i = 0; i < n; ++i )
     {
-        x[i] = 0;
+        CCArrRef<SortItem<nat, double> > & ri = data[i];
+        const nat ni = ri.size();
+        double s = 0;
+        for ( nat j = 0; j < ni; ++j )
+        {
+             const SortItem<nat, double> & rij = ri[j];
+             s += rij.tail * x[rij.head];
+        }
+        s -= b[i];
+        s -= r[i];
+        sum += s * s;
+    }
+    return sum;
+}
+
+bool slu_cg ( nat n, const Suite<SortItem<nat, double> > * data, const double * b, double * x )
+{
+    const nat sqn = (nat) sqrt ( n );
+    nat i, ksqn = sqn;
+    double factor = 1, rfe = 0, f = 1 + 2. / n;
+    const double f2 = f * f;
+    DynArray<double> buf ( 4*n );
+    double * g = buf();
+    double * y = g + n;
+    double * d = y + n;
+    double * ad = d + n;
+    for ( i = 0; i < n; ++i )
+    {
+        x[i] = y[i] = 0;
         g[i] = - ( d[i] = b[i] );
     }
     double gg = inprod ( n, g, g );
-    if ( ! gg ) return;
-    const double eps = 1e-26 * gg;
-    const nat nn = n + n/2;
+    double mingg = gg;
+    const nat nn = 3 * n;
+    nat km = 0;
     for ( nat k = 0; k < nn; ++k )
     {
+        if ( k > n && km + km < k )
+            return true;
+        if ( k == ksqn )
+        {
+            ksqn += sqn;
+            rfe = dif ( n, data, y, b, g );
+        }
+        if ( gg <= factor * rfe )
+            return true;
         op ( n, data, d, ad );
         const double dad = inprod ( n, d, ad );
-        if ( ! dad ) return;
+        if ( ! dad )
+            return false;
         const double alfa = gg / dad;
-        for ( nat i = 0; i < n; ++i )
+        for ( i = 0; i < n; ++i )
         {
-            x[i] += alfa * d[i];
+            y[i] += alfa * d[i];
             g[i] += alfa * ad[i];
         }
         const double gg1 = inprod ( n, g, g );
-        if ( gg1 < eps )
-            return;
         const double beta = gg1 / gg;
-        for ( nat i = 0; i < n; ++i ) d[i] = beta * d[i] - g[i];
         gg = gg1;
+        if ( mingg > gg )
+        {
+            mingg = gg;
+            for ( i = 0; i < n; ++i ) x[i] = y[i];
+            km = k;
+        }
+        for ( i = 0; i < n; ++i ) d[i] = beta * d[i] - g[i];
+        factor *= f;
     }
+    return true;
 }
 
 //*********************** 08.04.2010 **************************//

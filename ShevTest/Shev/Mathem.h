@@ -190,7 +190,7 @@ public:
 //
 //*********************** 01.06.2023 **************************//
 
-void slu_cg ( nat n, const Suite<SortItem<nat, double> > * data, const double * b, double * x );
+bool slu_cg ( nat n, const Suite<SortItem<nat, double> > * data, const double * b, double * x );
 
 
 //*********************** 08.04.2010 **************************//
