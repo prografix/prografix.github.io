@@ -1,6 +1,5 @@
 
-#ifndef POLYHEDRON_H
-#define POLYHEDRON_H
+#pragma once
 
 #include "ShevArray.h"
 #include "Vector3d.h"
@@ -231,4 +230,11 @@ inline bool distance ( const Polyhedron & poly, const Vector3d & point, double &
     return distance ( poly, point, dist, vi, ei, fi );
 }
 
-#endif
+//********************** 04.05.2023 ***************************//
+//
+//              Ќормализаци€ многогранника
+//      с минимизацией суммы квадратов сдвигов вершин
+//
+//********************** 04.05.2023 ***************************//
+
+bool normalize ( Polyhedron & poly );

@@ -924,3 +924,34 @@ bool distance ( const Polyhedron & poly, const Vector3d & p, double & dist,
     }
     return true;
 }
+
+//********************** 04.05.2023 ***************************//
+//
+//              Ќормализаци€ многогранника
+//      с минимизацией суммы квадратов сдвигов вершин
+//
+//********************** 04.05.2023 ***************************//
+
+bool normalize ( Polyhedron & poly )
+{
+    DynArray<Vector3d> vertex ( * poly.vertex );
+    const nat nf = poly.facet.size();
+    DynArray<Set2<DynArray<nat>, Plane3d> > facet ( nf );
+    for ( nat i = 0; i < nf; ++i )
+    {
+        const Facet & f = poly.facet[i];
+        if ( f.nv < 3 ) continue;
+        Set2<DynArray<nat>, Plane3d> & s = facet[i];
+        s.b = f.plane;
+        s.a.resize ( f.nv );
+        for ( nat j = 0; j < f.nv; ++j ) s.a[j] = f.index[j];
+    }
+    if ( ! normalizePolyhedron ( facet, vertex ) )
+        return false;
+    for ( nat i = 0; i < nf; ++i )
+    {
+        poly.facet[i].plane = facet[i].b;
+    }
+    vertex.swap ( poly.vertex );
+    return true;
+}
