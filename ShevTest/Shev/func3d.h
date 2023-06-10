@@ -200,3 +200,13 @@ bool isConvex ( const Polyhedron & poly );
 //****************** 22.04.2018 *******************************//
 
 Spin3d makeSpin3d ( CArrRef<Set2<Vector3d> > data );
+
+
+//********************** 04.05.2023 ***************************//
+//
+//              Ќормализаци€ многогранника
+//      с минимизацией суммы квадратов сдвигов вершин
+//
+//********************** 04.05.2023 ***************************//
+
+bool normalizePolyhedron ( ArrRef<Set2<DynArray<nat>, Plane3d> > & facet, ArrRef<Vector3d> & vertex );
