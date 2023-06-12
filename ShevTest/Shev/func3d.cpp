@@ -1264,6 +1264,9 @@ Spin3d makeSpin3d ( CArrRef<Set2<Vector3d> > data )
 //
 //********************** 04.05.2023 ***************************//
 
+bool calcSLU2 ( nat k, nat nf, CCArrRef<Set2<DynArray<nat>, Plane3d> > & facet, 
+    CCArrRef<Vector3d> & vertex, CCArrRef<Suite<Set2<nat, Vector3d> > > & vp, double * x );
+
 namespace {
 
 double maxDif ( CCArrRef<Vector3d> & vert, CCArrRef<Set2<DynArray<nat>, Plane3d> > & facet )
@@ -1418,6 +1421,54 @@ void vertN ( Set2<DynArray<nat>, Plane3d> & f, CCArrRef<Vector3d> & vertex )
 
 } // namespace
 
+bool slu_ldlt ( nat n, Suite<SortItem<nat, double> > * data, const double * b, double * x )
+{
+    nat i;
+    Suite<SortItem<nat, double> > v;
+    for ( nat j = 0; j < n; ++j )
+    {
+        Suite<SortItem<nat, double> > & aj = data[j];
+        const nat n1 = aj.size() - 1;
+        for ( i = 0; i < n1; ++i )
+        {
+            SortItem<nat, double> & vi = v.inc();
+            vi = aj[i];
+            vi.tail *= data[i].las().tail;
+        }
+        SortItem<nat, double> & ajj = aj.las();
+        for ( i = 0; i < n1; ++i )
+        {
+            ajj.tail -= v[i].tail * aj[i].tail;
+        }
+        v.resize();
+    }
+    return true;
+}
+
+bool slu_chol ( nat n, Suite<SortItem<nat, double> > * data, const double * b, double * x )
+{
+    nat i;
+    for ( nat j = 0; j < n; ++j )
+    {
+        Suite<SortItem<nat, double> > & aj = data[j];
+        const nat m = aj.size();
+        const nat n1 = aj.size() - 1;
+        for ( nat k = 0; k < j-1; ++k )
+        {
+            const double d = data[j][k].tail;
+            for ( i = 0; i < n1; ++i )
+            {
+                data[i][j].tail -= data[i][k].tail * d;
+            }
+        }
+        double & d = aj[0].tail;
+        if ( d <= 0 ) return false;
+        d = sqrt ( d );
+        for ( i = 1; i < m; ++i ) aj[i].tail /= d;
+    }
+    return true;
+}
+
 bool normalizePolyhedron ( ArrRef<Set2<DynArray<nat>, Plane3d> > & facet, ArrRef<Vector3d> & vertex )
 {
     const nat nv = vertex.size();
@@ -1441,7 +1492,7 @@ bool normalizePolyhedron ( ArrRef<Set2<DynArray<nat>, Plane3d> > & facet, ArrRef
     {
         const double dif1 = maxDif ( vertex, facet );
         DynArray<double> x ( k );
-        if ( ! calcSLU ( k, nf, facet, vertex, vp, x() ) ) return false;
+        if ( ! calcSLU2 ( k, nf, facet, vertex, vp, x() ) ) return false;
         for ( i = 0; i < nv; ++i )
         {
             Vector3d & v = vertex[i];
