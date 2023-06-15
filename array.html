@@ -45,7 +45,7 @@ public:
     const T & cprev ( nat i )        const { if ( _size <= i ) error ( _size, i ); return _data.con[i>0 ? i-1:_size-1]; }
     const T & cprev ( nat i, nat k ) const { if ( _size <= i ) error ( _size, i ); return _data.con[(i+_size-k)%_size]; }
 // Ссылка на следущий элемент в цикле:
-    const T & cnext ( nat i )        const { if ( _size <= i ) error ( _size, i ); return _data.con[i+1<_size?i+1:0]; }
+    const T & cnext ( nat i )        const { if ( _size <= i ) error ( _size, i ); return _data.con[i+1&lt;_size?i+1:0]; }
     const T & cnext ( nat i, nat k ) const { if ( _size <= i ) error ( _size, i ); return _data.con[(i+k)%_size]; }
 #else
     CArrRef ( CCArrRef&lt;T> & a, nat i, nat n ) : _size(n) { _data.con = a(i); }
@@ -57,7 +57,7 @@ public:
     const T & cprev ( nat i )        const { return _data.con[i>0 ? i-1:_size-1]; }
     const T & cprev ( nat i, nat k ) const { return _data.con[(i+_size-k)%_size]; }
 // Ссылка на следущий элемент в цикле:
-    const T & cnext ( nat i )        const { return _data.con[i+1<_size?i+1:0]; }
+    const T & cnext ( nat i )        const { return _data.con[i+1&lt;_size?i+1:0]; }
     const T & cnext ( nat i, nat k ) const { return _data.con[(i+k)%_size]; }
 #endif
 // Количество элементов
@@ -70,6 +70,11 @@ template &lt;class T> class MutCArrRef : public CArrRef&lt;T>
 {
     void operator= ( const MutCArrRef & );
 public:
+    void reset ( const T * d, nat n )
+    {
+        _data.con = d;
+        _size = n;
+    }
     void reset ( CCArrRef&lt;T> & a )
     {
         _data.con = a();
@@ -98,7 +103,7 @@ public:
     T & cprev ( nat i )        { if ( _size <= i ) error ( _size, i ); return _data.var[i>0 ? i-1:_size-1]; }
     T & cprev ( nat i, nat k ) { if ( _size <= i ) error ( _size, i ); return _data.var[(i+_size-k)%_size]; }
 // Ссылка на следущий элемент в цикле:
-    T & cnext ( nat i )        { if ( _size <= i ) error ( _size, i ); return _data.var[i+1<_size?i+1:0]; }
+    T & cnext ( nat i )        { if ( _size <= i ) error ( _size, i ); return _data.var[i+1&lt;_size?i+1:0]; }
     T & cnext ( nat i, nat k ) { if ( _size <= i ) error ( _size, i ); return _data.var[(i+k)%_size]; }
 // Ссылка на i-ый элемент:
     const T & operator[] ( nat i ) const { if ( _size <= i ) error ( _size, i ); return _data.var[i]; }
@@ -108,7 +113,7 @@ public:
     const T & cprev ( nat i )        const { if ( _size <= i ) error ( _size, i ); return _data.var[i>0 ? i-1:_size-1]; }
     const T & cprev ( nat i, nat k ) const { if ( _size <= i ) error ( _size, i ); return _data.var[(i+_size-k)%_size]; }
 // Ссылка на следущий элемент в цикле:
-    const T & cnext ( nat i )        const { if ( _size <= i ) error ( _size, i ); return _data.var[i+1<_size?i+1:0]; }
+    const T & cnext ( nat i )        const { if ( _size <= i ) error ( _size, i ); return _data.var[i+1&lt;_size?i+1:0]; }
     const T & cnext ( nat i, nat k ) const { if ( _size <= i ) error ( _size, i ); return _data.var[(i+k)%_size]; }
 #else
     ArrRef ( ArrRef&lt;T> a, nat i, nat n ) : CArrRef&lt;T>( a(i), n ) {}
@@ -120,7 +125,7 @@ public:
     T & cprev ( nat i )        { return _data.var[i>0 ? i-1:_size-1]; }
     T & cprev ( nat i, nat k ) { return _data.var[(i+_size-k)%_size]; }
 // Ссылка на следущий элемент в цикле:
-    T & cnext ( nat i ) { return _data.var[i+1<_size?i+1:0]; }
+    T & cnext ( nat i ) { return _data.var[i+1&lt;_size?i+1:0]; }
     T & cnext ( nat i, nat k ) { return _data.var[(i+k)%_size]; }
 // Ссылка на i-ый элемент:
     const T & operator[] ( nat i ) const { return _data.var[i]; }
@@ -130,7 +135,7 @@ public:
     const T & cprev ( nat i )        const { return _data.var[i>0 ? i-1:_size-1]; }
     const T & cprev ( nat i, nat k ) const { return _data.var[(i+_size-k)%_size]; }
 // Ссылка на следущий элемент в цикле:
-    const T & cnext ( nat i )        const { return _data.var[i+1<_size?i+1:0]; }
+    const T & cnext ( nat i )        const { return _data.var[i+1&lt;_size?i+1:0]; }
     const T & cnext ( nat i, nat k ) const { return _data.var[(i+k)%_size]; }
 #endif
 // Операторы присваивания
@@ -685,7 +690,7 @@ public:
 <pre>
 
 </pre></td>
-</div>
 </table>
+</div>
 </body>
 </html>

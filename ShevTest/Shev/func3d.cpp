@@ -1193,14 +1193,13 @@ bool isConvex ( const Polyhedron & poly )
     return true;
 }
 
-
-//****************** 22.04.2018 *******************************//
+//********************** 22.04.2018 ***************************//
 //
 //      Получение поворота совмещающего пары векторов
 //
-//****************** 22.04.2018 *******************************//
+//********************** 22.04.2018 ***************************//
 
-Spin3d makeSpin3d ( CArrRef<Set2<Vector3d> > data )
+Spin3d makeSpin3d ( CCArrRef<Set2<Vector3d> > & data )
 {
     Spin3d spin;
     const nat n = data.size();
@@ -1257,15 +1256,13 @@ Spin3d makeSpin3d ( CArrRef<Set2<Vector3d> > data )
     return spin;
 }
 
+
 //********************** 04.05.2023 ***************************//
 //
 //              Нормализация многогранника
 //      с минимизацией суммы квадратов сдвигов вершин
 //
 //********************** 04.05.2023 ***************************//
-
-bool calcSLU2 ( nat k, nat nf, CCArrRef<Set2<DynArray<nat>, Plane3d> > & facet, 
-    CCArrRef<Vector3d> & vertex, CCArrRef<Suite<Set2<nat, Vector3d> > > & vp, double * x );
 
 namespace {
 
@@ -1290,7 +1287,43 @@ double maxDif ( CCArrRef<Vector3d> & vert, CCArrRef<Set2<DynArray<nat>, Plane3d>
     return dif;
 }
 
-bool calcSLU ( nat k, nat nf, CCArrRef<Set2<DynArray<nat>, Plane3d> > & facet, 
+bool calcSLU1 ( nat k, nat nf, CCArrRef<Set2<DynArray<nat>, Plane3d> > & facet, 
+               CCArrRef<Vector3d> & vertex, CCArrRef<Suite<Set2<nat, Vector3d> > > & vp, double * x )
+{
+    nat i, l;
+    HMatrix<double> a ( k, k );
+    a.fill(0);
+    DynArray<double> b ( k );
+    for ( i = 0, k = 0; i < nf; ++i )
+    {
+        const Set2<DynArray<nat>, Plane3d> & f = facet[i];
+        if ( f.a.size() < 4 ) continue;
+        const nat i0 = f.a[0];
+        CCArrRef<Set2<nat, Vector3d> > & s0 = vp[i0];
+        for ( nat j = 1; j < f.a.size(); ++j )
+        {
+            double * r = a[k];
+            const nat ii = f.a[j];
+            CCArrRef<Set2<nat, Vector3d> > & si = vp[ii];
+            for ( l = 0; l < si.size(); ++l )
+            {
+                const Set2<nat, Vector3d> & sl = si[l];
+                r[sl.a] = f.b.norm * sl.b;
+            }
+            for ( l = 0; l < s0.size(); ++l )
+            {
+                const Set2<nat, Vector3d> & sl = s0[l];
+                r[sl.a] -= f.b.norm * sl.b;
+            }
+            b[k] = f.b.norm * ( vertex[ii] - vertex[i0] );
+            ++k;
+        }
+    }
+    SM_LDLt slu ( k, a );
+    return slu.solve ( b(), x );
+}
+
+bool calcSLU2 ( nat k, nat nf, CCArrRef<Set2<DynArray<nat>, Plane3d> > & facet, 
     CCArrRef<Vector3d> & vertex, CCArrRef<Suite<Set2<nat, Vector3d> > > & vp, double * x )
 {
     nat i, l;
@@ -1421,54 +1454,6 @@ void vertN ( Set2<DynArray<nat>, Plane3d> & f, CCArrRef<Vector3d> & vertex )
 
 } // namespace
 
-bool slu_ldlt ( nat n, Suite<SortItem<nat, double> > * data, const double * b, double * x )
-{
-    nat i;
-    Suite<SortItem<nat, double> > v;
-    for ( nat j = 0; j < n; ++j )
-    {
-        Suite<SortItem<nat, double> > & aj = data[j];
-        const nat n1 = aj.size() - 1;
-        for ( i = 0; i < n1; ++i )
-        {
-            SortItem<nat, double> & vi = v.inc();
-            vi = aj[i];
-            vi.tail *= data[i].las().tail;
-        }
-        SortItem<nat, double> & ajj = aj.las();
-        for ( i = 0; i < n1; ++i )
-        {
-            ajj.tail -= v[i].tail * aj[i].tail;
-        }
-        v.resize();
-    }
-    return true;
-}
-
-bool slu_chol ( nat n, Suite<SortItem<nat, double> > * data, const double * b, double * x )
-{
-    nat i;
-    for ( nat j = 0; j < n; ++j )
-    {
-        Suite<SortItem<nat, double> > & aj = data[j];
-        const nat m = aj.size();
-        const nat n1 = aj.size() - 1;
-        for ( nat k = 0; k < j-1; ++k )
-        {
-            const double d = data[j][k].tail;
-            for ( i = 0; i < n1; ++i )
-            {
-                data[i][j].tail -= data[i][k].tail * d;
-            }
-        }
-        double & d = aj[0].tail;
-        if ( d <= 0 ) return false;
-        d = sqrt ( d );
-        for ( i = 1; i < m; ++i ) aj[i].tail /= d;
-    }
-    return true;
-}
-
 bool normalizePolyhedron ( ArrRef<Set2<DynArray<nat>, Plane3d> > & facet, ArrRef<Vector3d> & vertex )
 {
     const nat nv = vertex.size();
@@ -1492,7 +1477,14 @@ bool normalizePolyhedron ( ArrRef<Set2<DynArray<nat>, Plane3d> > & facet, ArrRef
     {
         const double dif1 = maxDif ( vertex, facet );
         DynArray<double> x ( k );
-        if ( ! calcSLU2 ( k, nf, facet, vertex, vp, x() ) ) return false;
+        if ( k < 1200 )
+        {
+            if ( ! calcSLU2 ( k, nf, facet, vertex, vp, x() ) ) return false;
+        }
+        else
+        {
+            if ( ! calcSLU2 ( k, nf, facet, vertex, vp, x() ) ) return false;
+        }
         for ( i = 0; i < nv; ++i )
         {
             Vector3d & v = vertex[i];

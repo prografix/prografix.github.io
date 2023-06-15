@@ -63,6 +63,11 @@ template <class T> class MutCArrRef : public CArrRef<T>
 {
     void operator= ( const MutCArrRef & );
 public:
+    void reset ( const T * d, nat n )
+    {
+        _data.con = d;
+        _size = n;
+    }
     void reset ( CCArrRef<T> & a )
     {
         _data.con = a();

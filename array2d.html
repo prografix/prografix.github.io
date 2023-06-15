@@ -11,7 +11,7 @@
 <div align=left><td>
 <p><br>Шаблон классов ArrRef2 представляет собой ссылку на неконстантный двухмерный массив. 
 У него можно узнать размеры массива и получить доступ к <a href="array.html">одномерному массиву</a> по индексу:
-<pre>#define CArrRef2 const ArrRef2
+                                                        <pre>#define CArrRef2 const ArrRef2
 
 template &lt;class T> class ArrRef2 : protected ArrRef&lt;T>
 {
@@ -23,6 +23,8 @@ public:
     ArrRef2 ( ArrRef&lt;T> & a, nat i, nat n0, nat n1 ) : ArrRef&lt;T>( a, i, n0*n1 ), _size0(n0), _size1(n1) {}
     ArrRef &lt;T> operator[] ( nat i )       { return  ArrRef&lt;T> ( *this, i * _size1, _size1 ); }
     CArrRef&lt;T> operator[] ( nat i ) const { return CArrRef&lt;T> ( *this, i * _size1, _size1 ); }
+          T * operator() ( nat i )       { return this->ArrRef&lt;T>::operator() ( i * _size1 ); }
+    const T * operator() ( nat i ) const { return this->ArrRef&lt;T>::operator() ( i * _size1 ); }
     nat size0 () const { return _size0; }
     nat size1 () const { return _size1; }
     ArrRef2 & fill ( const T & p )
@@ -53,6 +55,8 @@ public:
 {
     DynArray2 ( const DynArray2 & );
 public:
+    DynArray2 () : ArrRef2&lt;T> ( 0, 0, 0 ) {}
+
     DynArray2 ( nat n0, nat n1 ) : ArrRef2&lt;T> ( new T[n0*n1], n0, n1 ) {}
 
     ~DynArray2 () { delete[] _data; }
@@ -135,7 +139,7 @@ public:
 <pre>
 
 </pre></td>
-</div>
 </table>
+</div>
 </body>
 </html>
