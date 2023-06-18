@@ -173,10 +173,11 @@ index и поле info для записи дополнительной инфо
 <br>Шаблон оператора *= предназначен для преобразования многогранника при помощи объектов разных типов 
 ( double, Similar3d, Affin3d и т.д. ). Для типов Conform3d и Spin3d сделаны специализации. 
 <br>Функции-члены makeModel создают указаные фигуры. Гладкие фигуры аппроксимируются.
+<br><br>Функция trianTest проверяет - можно ли грань разбить на положительные треугольники.
 <pre>
 bool trianTest ( const Facet & facet, CArrRef&lt;Vector3d> vert );
 </pre>
-Функция trianTest проверяет - можно ли грань разбить на положительные треугольники.
+Функция _swap обменивает содержимое двух многогранников.
 <pre>inline
 void _swap ( Polyhedron & poly1, Polyhedron & poly2 )
 {
@@ -184,7 +185,13 @@ void _swap ( Polyhedron & poly1, Polyhedron & poly2 )
     _swap ( poly1.facet, poly2.facet );
 }
 </pre>
-Функция _swap обменивает содержимое двух многогранников.
+Функция distance вычисляет расстояние от заданной точки до поверхности многогранника.
+Если точка находится внутри многогранника, то расстояние будет отрицательным. 
+Также выдаются индексы ближайшего к точке геометрического объекта ( vi - индекс вершины, 
+ei - индекс ребра, fi - индекс грани ). Если ближайшей будет вершина,
+то vi != undef_index, ei == undef_index, fi == undef_index. Если ближайшем будет ребро,
+то vi == undef_index, ei != undef_index, fi != undef_index. Если ближайшей будет грань,
+то vi == undef_index, ei == undef_index, fi != undef_index.
 <pre>
 bool distance ( const Polyhedron & poly, const Vector3d & point, double & dist, 
                 nat & vi, nat & ei, nat & fi );
@@ -195,15 +202,10 @@ inline bool distance ( const Polyhedron & poly, const Vector3d & point, double &
     return distance ( poly, point, dist, vi, ei, fi );
 }
 </pre>
-<p>
-Функция distance вычисляет расстояние от заданной точки до поверхности многогранника.
-Если точка находится внутри многогранника, то расстояние будет отрицательным. 
-Также выдаются индексы ближайшего к точке геометрического объекта ( vi - индекс вершины, 
-ei - индекс ребра, fi - индекс грани ). Если ближайшей будет вершина,
-то vi != undef_index, ei == undef_index, fi == undef_index. Если ближайшем будет ребро,
-то vi == undef_index, ei != undef_index, fi != undef_index. Если ближайшей будет грань,
-то vi == undef_index, ei == undef_index, fi != undef_index.
-</p>
+Функция normalize совмещает вершины и плоскости граней, если они расходятся, с минимизацией суммы квадратов сдвигов вершин:
+<pre>
+bool normalize ( Polyhedron & poly );
+</pre>
 <p>
 Описание класса Vector3d находится <a href="rus_vector.html">здесь</a>.
 <br>Описание классов Plane3d, Sphere3d, Ellipsoid3d, Cylinder3d, Cone3d, Tetrahedron и Cuboid3d находится <a href="figure3d.html">здесь</a>.

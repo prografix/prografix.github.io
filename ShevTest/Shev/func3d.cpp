@@ -1479,7 +1479,7 @@ bool normalizePolyhedron ( ArrRef<Set2<DynArray<nat>, Plane3d> > & facet, ArrRef
         DynArray<double> x ( k );
         if ( k < 1200 )
         {
-            if ( ! calcSLU2 ( k, nf, facet, vertex, vp, x() ) ) return false;
+            if ( ! calcSLU1 ( k, nf, facet, vertex, vp, x() ) ) return false;
         }
         else
         {
