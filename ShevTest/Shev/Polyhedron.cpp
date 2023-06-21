@@ -934,10 +934,11 @@ bool distance ( const Polyhedron & poly, const Vector3d & p, double & dist,
 
 bool normalize ( Polyhedron & poly )
 {
+    nat i;
     DynArray<Vector3d> vertex ( * poly.vertex );
     const nat nf = poly.facet.size();
     DynArray<Set2<DynArray<nat>, Plane3d> > facet ( nf );
-    for ( nat i = 0; i < nf; ++i )
+    for ( i = 0; i < nf; ++i )
     {
         const Facet & f = poly.facet[i];
         if ( f.nv < 3 ) continue;
@@ -948,7 +949,7 @@ bool normalize ( Polyhedron & poly )
     }
     if ( ! normalizePolyhedron ( facet, vertex ) )
         return false;
-    for ( nat i = 0; i < nf; ++i )
+    for ( i = 0; i < nf; ++i )
     {
         poly.facet[i].plane = facet[i].b;
     }
