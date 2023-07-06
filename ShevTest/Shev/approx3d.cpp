@@ -645,6 +645,193 @@ Def<Cuboid3d> getCuboid ( const Polyhedron & poly )
     return getCuboid ( momentum2plh ( poly ) );
 }
 
+//************************ 06.07.2023 *******************************//
+//
+//        Совмещение группы точек с выпуклым многогранником
+//           при помощи вращения вокруг оси Z и сдвига.
+//              Минимизация максимального расстояния 
+//              от точек до границы многогранника.
+//
+//************************ 06.07.2023 *******************************//
+
+Def<Double<4> > minMaxPointsConvexPolyhedronNR ( const double r, const double a, const double b, CCArrRef<Vector3d> & point, CCArrRef<Facet> & facet )
+{
+    const nat N = 4;
+    Double<N> arr[N+1], cor;
+    arr[0].init ( r, r, r, r );
+    arr[1].init ( -1., 0., 0., 0. );
+    arr[2].init ( 0., -1., 0., 0. );
+    arr[3].init ( 0., 0., -1., 0. );
+    arr[4].init ( 0., 0., 0., -1. );
+    const double eps = 1e-9 * r;
+    for ( nat k = 0; k < 100; ++k )
+    {
+        Double<N> & a0 = arr[0];
+        const Vector3d o ( a0.d1, a0.d2, a0.d3 );
+        double max = -1;
+        nat i, im, km;
+        for ( i = 0; i < facet.size(); ++i )
+        {
+            const Plane3d & li = facet[i].plane;
+            const Vector3d u ( a * li.norm.x + b * li.norm.y, a * li.norm.y - b * li.norm.x, li.norm.z );
+            nat jm = 0;
+            double pmax = u * point[0];
+            for ( nat j = 1; j < point.size(); ++j )
+            {
+                const double p = u * point[j];
+                if ( pmax < p ) pmax = p, jm = j;
+            }
+            pmax += li % o;
+            if ( max < pmax ) max = pmax, im = i, km = jm;
+        }
+        const double dist = max + a0.d0;
+        if ( dist < eps )
+            return a0;
+        const Plane3d & li = facet[im].plane;
+        cor.init ( 1, li.norm.x, li.norm.y, li.norm.z );
+        if ( ! cutSimplex ( arr, cor, dist ) )
+        {
+            return Def<Double<N> >();
+        }
+    }
+    return Def<Double<N> >();
+}
+
+bool minMaxPointsConvexPolyhedron1R ( CCArrRef<Vector3d> & point, CCArrRef<Facet> & facet, 
+                    ArrRef<Set2<Double<5>[6], Set2<double>>> & data, double eps, Vector2d & v )
+{
+    const nat n = data.size();
+    const nat N = 5;
+    Double<N> cor;
+    cor.d0 = 1;
+    nat km = 0;
+    for ( nat k = 0; k < 400; ++k )
+    {
+        Set2<Double<N>[N+1], Set2<double>> & dm = data[km];
+        Double<N> * arr = dm.a;
+        Double<N> & a0 = arr[0];
+        const Vector3d o ( a0.d1, a0.d2, a0.d3 );
+        const Vector2d w ( dm.b.a + dm.b.b * a0.d4, dm.b.b - dm.b.a * a0.d4 );
+        double max = -1;
+        nat i, im, jm;
+        for ( i = 0; i < facet.size(); ++i )
+        {
+            const Plane3d & li = facet[i].plane;
+            const Vector3d u ( w.x * li.norm.x + w.y * li.norm.y, w.x * li.norm.y - w.y * li.norm.x, li.norm.z );
+            nat jj = 0;
+            double pmax = u * point[0];
+            for ( nat j = 1; j < point.size(); ++j )
+            {
+                const double p = u * point[j];
+                if ( pmax < p ) pmax = p, jj = j;
+            }
+            pmax += li % o;
+            if ( max < pmax ) max = pmax, im = i, jm = jj;
+        }
+        const double dist = max + a0.d0;
+        if ( dist < eps )
+        {
+            v.x = dm.b.a + dm.b.b * a0.d4;
+            v.y = dm.b.b - dm.b.a * a0.d4;
+            v.setNorm2();
+            return true;
+        }
+        const Plane3d & li = facet[im].plane;
+        const Vector3d & vm = point[jm];
+        cor.d1 = li.norm.x;
+        cor.d2 = li.norm.y;
+        cor.d3 = li.norm.z;
+        const double ip = li.norm.x * vm.x + li.norm.y * vm.y;
+        const double op = li.norm.x * vm.y - li.norm.y * vm.x;
+        const double d0 = li.norm.z * vm.z + li.dist;
+        max = -1e300;
+        for ( i = 0; i < n; ++i )
+        {
+            Set2<Double<N>[N+1], Set2<double>> & di = data[i];
+            Double<N> * ai = di.a;
+            Double<N> & ai0 = ai[0];
+            cor.d4 = ip * di.b.b + op * di.b.a;
+            const double d1 = cor * ai0 + ip * di.b.a - op * di.b.b + d0;
+            if ( d1 > eps )
+            {
+                if ( ! cutSimplex ( ai, cor, d1 ) )
+                    return false;
+            }
+            if ( _maxa ( max, ai0.d0 ) ) km = i;
+        }
+    }
+    return false;
+}
+
+Def<Conform3d> minMaxPointsConvexPolyhedron1R ( CCArrRef<Vector3d> & point, const Polyhedron & poly )
+{
+    const nat N = 5;
+    Def<Conform3d> res;
+    const nat np = point.size();
+    const nat nv = poly.vertex.size();
+    if ( np < 3 || nv < 3 ) return res;
+    CCArrRef<Facet> & facet = poly.facet;
+// Определяем общие габариты
+    Def<Segment3d> dim = dimensions ( point );
+    Def<Segment3d> dim2 = dimensions ( poly.vertex );
+    if ( dim.a.x > dim2.a.x ) dim.a.x = dim2.a.x;
+    if ( dim.b.x < dim2.b.x ) dim.b.x = dim2.b.x;
+    if ( dim.a.y > dim2.a.y ) dim.a.y = dim2.a.y;
+    if ( dim.b.y < dim2.b.y ) dim.b.y = dim2.b.y;
+    if ( dim.a.z > dim2.a.z ) dim.a.z = dim2.a.z;
+    if ( dim.b.z < dim2.b.z ) dim.b.z = dim2.b.z;
+    const double r = norm2 ( dim.b - dim.a );
+    const double eps = 1e-9 * r;
+// Поиск на сетке с шагом 9 градусов
+    const nat n = 40;
+    const double step = M_2PI / n;
+    DynArray<Set2<Double<N>[N+1], Set2<double>>> data ( n );
+    for ( nat i = 0; i < n; ++i )
+    {
+        Set2<Double<N>[N+1], Set2<double>> & d = data[i];
+        d.a[0].init ( r, r, r, r, 1 );
+        d.a[1].init ( -1., 0., 0., 0., 0. );
+        d.a[2].init ( 0., -1., 0., 0., 0. );
+        d.a[3].init ( 0., 0., -1., 0., 0. );
+        d.a[4].init ( 0., 0., 0., -1., 0. );
+        d.a[5].init ( 0., 0., 0., 0., -1. );
+        const double a = i * step;
+        d.b.a = cos(a);
+        d.b.b = sin(a);
+    }
+    Vector2d v;
+    if ( ! minMaxPointsConvexPolyhedron1R ( point, facet, data, eps, v ) )
+        return res;
+// Поиск на сетке с шагом 1 градус в районе лучшего узла
+    const int m = 7;
+    const double step2 = M_PI / 180;
+    LtdSuiteRef<Set2<Double<N>[N+1], Set2<double>>> data2 ( data, 0, 7 );
+    for ( int j = 0; j < m; ++j )
+    {
+        Set2<Double<N>[N+1], Set2<double>> & d = data2.inc();
+        d.a[0].init ( r, r, r, r, 1 );
+        d.a[1].init ( -1., 0., 0., 0., 0. );
+        d.a[2].init ( 0., -1., 0., 0., 0. );
+        d.a[3].init ( 0., 0., -1., 0., 0. );
+        d.a[4].init ( 0., 0., 0., -1., 0. );
+        d.a[5].init ( 0., 0., 0., 0., -1. );
+        const Vector2d u = Spin2d ( ( j - 3 ) * step2 ) ( v );
+        d.b.a = u.x;
+        d.b.b = u.y;
+    }
+    if ( ! minMaxPointsConvexPolyhedron1R ( point, facet, data2, eps, v ) )
+        return res;
+// Поиск без вращения для точности вписания
+    Def<Double<4> > d4 = minMaxPointsConvexPolyhedronNR ( r, v.x, v.y, point, poly.facet );
+// Запись результата
+    res.spin = Spin3d ( Vector3d(0,0,1), atan2 ( v.y, v.x ) );
+    res.trans.x = d4.d1;
+    res.trans.y = d4.d2;
+    res.trans.z = d4.d3;
+    res.isDef = true;
+    return res;
+}
+
 //************************ 05.03.2023 *******************************//
 //
 //             Совмещение двух выпуклых многогранников

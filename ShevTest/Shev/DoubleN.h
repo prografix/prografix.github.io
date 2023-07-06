@@ -532,3 +532,40 @@ Double<N> operator * ( const Double<N> & a, const double & b )
 {
     return Double<N>(a) *= b;
 }
+
+template <unsigned int N>
+bool cutSimplex ( Double<N> * simplex, const Double<N> & norm, const double & dist )
+{
+    double sg, max;
+    unsigned int i, ib = 0;
+    for ( i = 1; i <= N; ++i )
+    {
+        const Double<N> & v = simplex[i];
+        double t = norm * v;
+        if ( t > -1e-8 ) continue;
+        t = 1./ t;
+        if ( ib == 0 )
+        {
+            max = v.d0 * t;
+            ib = i;
+            sg = t;
+        }
+        else
+        {
+            const double s = v.d0 * t;
+            if ( s < max ) max = s, ib = i, sg = t;
+        }
+    }
+    if ( ib == 0 )
+        return false;
+    const Double<N> & v = simplex[ib];
+    simplex[0] -= v * ( dist * sg );
+    for ( i = 1; i <= N; ++i )
+    {
+        if ( i == ib ) continue;
+        Double<N> & ai = simplex[i];
+        ai -= v * ( ( norm * ai ) * sg );
+        ai *= ( 1./ sqrt ( ai * ai ) );
+    }
+    return true;
+}

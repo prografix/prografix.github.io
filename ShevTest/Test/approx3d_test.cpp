@@ -26,6 +26,7 @@
 
 double timeInSec ();
 bool minConvexPolyhedronDiameter ( const Polyhedron & poly, Vector3d & dir, double & d1, double & d2 );
+Def<Double<4> > minMaxPointsConvexPolyhedronNR ( const double r, const double a, const double b, CCArrRef<Vector3d> & point, CCArrRef<Facet> & facet );
 
 namespace
 {
@@ -1329,7 +1330,7 @@ double t2 = timeInSec ();
     display << r1 - r2 << max1 - max2 << NL;
 }
 
-void minMaxPointsConvexPolygonNR_test()
+void minMaxPointsConvexPolyhedronNR_test()
 {
     static PRand rand;
     static QRandVector3d qrv;
@@ -1338,87 +1339,59 @@ void minMaxPointsConvexPolygonNR_test()
     poly1.makeEllipsoid ( 10, 0.5, 0.75, 1, qrv );
     poly2.makeEllipsoid ( 10, 0.5, 0.75, 1, qrv );
     Vector3d res;
-    //minMaxPointsConvexPolygonNR ( poly1.vertex, poly2, res );
     res = overlayConvexPolyhedronsNR ( poly1, poly2 );
     poly1 += res;
     draw ( poly1, 1, 1, 0, 1, VM_WIRE );
     draw ( poly2, 0, 1, 1, 1, VM_WIRE );
 }
 
-Def<Double<5> > minMaxPointsConvexPolyhedron ( const double r, const double a, const double b, CCArrRef<Vector3d> & vert, CCArrRef<Facet> & facet ) 
+Def<Double<5> > minMaxPointsConvexPolyhedron1R ( const double r, const double a, const double b, CCArrRef<Vector3d> & point, CCArrRef<Facet> & facet ) 
 {
-    Double<5> arr[6], cor;
-    arr[0].init ( r, r, 1, r, r );
+    const nat N = 5;
+    Double<N> arr[N+1], cor;
+    arr[0].init ( r, r, r, r, 1 );
     arr[1].init ( -1., 0., 0., 0., 0. );
     arr[2].init ( 0., -1., 0., 0., 0. );
     arr[3].init ( 0., 0., -1., 0., 0. );
     arr[4].init ( 0., 0., 0., -1., 0. );
     arr[5].init ( 0., 0., 0., 0., -1. );
+    const double eps = 1e-9 * r;
     for ( nat k = 0; k < 100; ++k )
     {
-        Double<5> & a0 = arr[0];
-        const Vector3d o ( a0.d0, a0.d1, a0.d2 );
-        const Vector2d w ( a + b * a0.d3, b - a * a0.d3 );
+        Double<N> & a0 = arr[0];
+        const Vector3d o ( a0.d1, a0.d2, a0.d3 );
+        const Vector2d w ( a + b * a0.d4, b - a * a0.d4 );
         double max = -1;
         nat i, im, km;
         for ( i = 0; i < facet.size(); ++i )
         {
             const Plane3d & li = facet[i].plane;
-            const Vector3d u ( w.x * li.norm.x + w.y * li.norm.y,  w.x * li.norm.y - w.y * li.norm.x, li.norm.z );
+            const Vector3d u ( w.x * li.norm.x + w.y * li.norm.y, w.x * li.norm.y - w.y * li.norm.x, li.norm.z );
             nat jm = 0;
-            double pmax = u * vert[0];
-            for ( nat j = 1; j < vert.size(); ++j )
+            double pmax = u * point[0];
+            for ( nat j = 1; j < point.size(); ++j )
             {
-                const double p = u * vert[j];
+                const double p = u * point[j];
                 if ( pmax < p ) pmax = p, jm = j;
             }
             pmax += li % o;
             if ( max < pmax ) max = pmax, im = i, km = jm;
         }
-        const double dist = max + a0.d4;
-        if ( dist < 1e-4 )
+        const double dist = max + a0.d0;
+        if ( dist < eps )
             return a0;
         const Plane3d & li = facet[im].plane;
-        const Vector3d & vm = vert[km];
-        cor.init ( li.norm.x, li.norm.y, li.norm.z, ( li.norm.x * vm.x + li.norm.y * vm.y ) * b + ( li.norm.x * vm.y - li.norm.y * vm.x ) * a, 1. );
-        nat ib = 0;
-        double sg;
-        for ( i = 1; i <= 4; ++i )
+        const Vector3d & vm = point[km];
+        cor.init ( 1, li.norm.x, li.norm.y, li.norm.z, ( li.norm.x * vm.x + li.norm.y * vm.y ) * b + ( li.norm.x * vm.y - li.norm.y * vm.x ) * a );
+        if ( ! cutSimplex ( arr, cor, dist ) )
         {
-            const Double<5> & v = arr[i];
-            double t = cor * v;
-            if ( t > -1e-8 ) continue;
-            t = 1./ t;
-            if ( ib == 0 )
-            {
-                max = v.d4 * t;
-                ib = i;
-                sg = t;
-            }
-            else
-            {
-                const double s = v.d4 * t;
-                if ( s < max ) max = s, ib = i, sg = t;
-            }
-        }
-        if ( ib == 0 )
-        {
-            return Def<Double<5> >();
-        }
-        const Double<5> & v = arr[ib];
-        a0 -= v * ( dist * sg );
-        for ( i = 1; i <= 4; ++i )
-        {
-            if ( i == ib ) continue;
-            Double<5> & ai = arr[i];
-            ai -= v * ( ( cor * ai ) * sg );
-            ai *= ( 1./ sqrt ( ai * ai ) );
+            return Def<Double<N> >();
         }
     }
-    return Def<Double<5> >();
+    return Def<Double<N> >();
 }
 
-Def<Conform3d> minMaxPointsConvexPolyhedron ( CCArrRef<Vector3d> & point, const Polyhedron & poly )
+Def<Conform3d> minMaxPointsConvexPolyhedron1R1 ( CCArrRef<Vector3d> & point, const Polyhedron & poly )
 {
     Def<Conform3d> res;
     const nat np = point.size();
@@ -1438,26 +1411,108 @@ Def<Conform3d> minMaxPointsConvexPolyhedron ( CCArrRef<Vector3d> & point, const 
     const nat n = 40;
     const double step = M_2PI / n;
     double max = -1e9;
+    Vector2d v;
     for ( nat i = 0; i < n; ++i )
     {
         const double a = i * step;
         const double cosa = cos(a);
         const double sina = sin(a);
-        Def<Double<5> > d;// = minMaxPointsConvexPolygon3 ( r, cosa, sina, point, line );
-        if ( d.isDef && max < d.d4 )
+        Def<Double<5> > d = minMaxPointsConvexPolyhedron1R ( r, cosa, sina, point, poly.facet );
+        if ( d.isDef && max < d.d0 )
         {
-            max = d.d4;
-            res.spin = Spin3d ( Vector3d(0,0,1), atan2 ( sina - cosa * d.d3, cosa + sina * d.d3 ) );
-            res.trans.x = d.d0;
-            res.trans.y = d.d2;
-            res.trans.z = d.d2;
+            max = d.d0;
+            v.x = cosa + sina * d.d4;
+            v.y = sina - cosa * d.d4;
         }
     }
-    if ( max > -1e9 ) res.isDef = true;
+    if ( max > -1e9 )
+    {
+        v.setNorm2();
+        Def<Double<4> > d4 = minMaxPointsConvexPolyhedronNR ( r, v.x, v.y, point, poly.facet );
+        res.spin = Spin3d ( Vector3d(0,0,1), atan2 ( v.y, v.x ) );
+        res.trans.x = d4.d1;
+        res.trans.y = d4.d2;
+        res.trans.z = d4.d3;
+        res.isDef = true;
+    }
     return res;
 }
+nat nnn = 0;
 
 } // end of namespace
+
+void minMaxPointsConvexPolyhedron_test()
+{
+    static PRand rand;
+    static QRandVector3d qrv;
+    double a = 0.35+0.5*rand();
+    double b = 0.35+0.5*rand();
+    double c = 0.35+0.5*rand();
+    Polyhedron poly1, poly2, poly3;
+    poly2.makeEllipsoid ( a, b, c, 100 );
+    poly1.makeEllipsoid ( a, b, c, 200 );
+    cut ( poly1, Plane3d ( Vector3d ( 1, 1, 0 ), -0.7 ), poly3 );
+    Spin3d spin ( Vector3d ( 0, 0, 1 ), rand() );
+    poly3 *= spin;
+    poly3 += qrv();
+    double t1 = timeInSec();
+    Def<Conform3d> res = minMaxPointsConvexPolyhedron1R ( poly3.vertex, poly2 );
+    double t2 = timeInSec();
+    poly3 *= res;
+    double max = 0;
+    for ( nat i = 0; i < poly2.facet.size(); ++i )
+    {
+        const Plane3d & plane = poly2.facet[i].plane;
+        for ( nat j = 0; j < poly3.vertex.size(); ++j )
+        {
+            _maxa ( max, plane % poly3.vertex[j] );
+        }
+    }
+    display << max << t2-t1 << NL;
+    draw ( poly3, 1, 1, 0, 1, VM_WIRE );
+    draw ( poly2, 0, 1, 1, 1, VM_WIRE );
+}
+
+void minMaxPointsConvexPolyhedron_test2()
+{
+    static PRand rand;
+    static QRandVector3d qrv;
+    Polyhedron poly1, poly2, poly3;
+    nat km;
+    double max = 0;
+    nnn = 0;
+    double t1 = timeInSec();
+    for ( nat k = 0; k < 1000; ++k )
+    {
+        double a = 0.35+0.5*rand();
+        double b = 0.35+0.5*rand();
+        double c = 0.35+0.5*rand();
+        Polyhedron poly1, poly2, poly3;
+        poly2.makeEllipsoid ( a, b, c, 100 );
+        poly1.makeEllipsoid ( a, b, c, 200 );
+        cut ( poly1, Plane3d ( Vector3d ( 1, 1, 0 ), -0.7 ), poly3 );
+        Spin3d spin ( Vector3d ( 0, 0, 1 ), rand() );
+        poly3 *= spin;
+        poly3 += qrv();
+        Def<Conform3d> res = minMaxPointsConvexPolyhedron1R ( poly3.vertex, poly2 );
+        poly3 *= res;
+        for ( nat i = 0; i < poly2.facet.size(); ++i )
+        {
+            const Plane3d & plane = poly2.facet[i].plane;
+            for ( nat j = 0; j < poly3.vertex.size(); ++j )
+            {
+                if ( _maxa (max, plane % poly3.vertex[j]) ) km = k;
+            }
+        }
+        if ( 0 )
+        {
+            draw ( poly3, 1, 1, 0, 1, VM_WIRE );
+            draw ( poly2, 0, 1, 1, 1, VM_WIRE );
+        }
+    }
+    double t2 = timeInSec();
+    display << max << km << t2-t1 << nnn << NL;
+}
 
 void approx3d_test ()
 {
@@ -1470,6 +1525,6 @@ void approx3d_test ()
 //    getCuboid_test();
 //    getNearPoint4_3_test1();
 //    getLinePoint_test1();
-    minMaxPointsConvexPolygonNR_test();
+    minMaxPointsConvexPolyhedron_test2();
     endNewList();
 }
