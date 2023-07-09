@@ -2,14 +2,14 @@
 <head><title>Преобразования в пространстве</title>
 <link rel="stylesheet" type="text/css" href="stylle.css"></head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
-<div align="center"><center>
+<div align="center">
 <table width="900" cellspacing="0" cellpadding="0">
 <div align=center>
 <br>
 <font color="" style="font-size: 20pt">Преобразования в пространстве</font>
 </div>
 <br>
-<div align=left><td>
+<td>
 <p>Класс Spin3d предназначен для описания поворота ( или вращения ) в пространстве. 
 У него 5 конструкторов. 
 Первый (без параметров) соответствует повороту на 0 градусов. 
@@ -60,10 +60,11 @@ public:
 У него 3 открытых конструктора. 
 Первый - без параметров. Второй в качестве параметра использует объект класса Spin3d. 
 Третий требует два параметра: направление оси поворота и угол в радианах. Направление необязательно должно быть единичным. 
-Операторы () осуществляют преобразования различных геометрических объектов ( векторов, отрезков, плоскостей ).
+Функция getSpin3d возвращает поворот в виде класса Spin3d. 
+Функции getVX, getVY и getVZ возвращаяют одну из строк матрицы преобразования.
 Функции getX, getY и getZ позволяют получить только одну координату преобразованного вектора.
-Оператор ~ возвращает преобразование обратное данному 
-( для ортогональных преобразований - это транспонированная матрица ).
+Операторы () осуществляют преобразования различных геометрических объектов ( векторов, отрезков, плоскостей ).
+Оператор ~ возвращает преобразование обратное данному ( для ортогональных преобразований - это транспонированная матрица ).
 </p>
 <pre>class Ortho3d
 {
@@ -77,6 +78,15 @@ public:
     }
 
     Ortho3d ( Vector3d a, double b );
+
+    Spin3d getSpin3d () const
+    {
+        return ~Spin3d ( x, y, z );
+    }
+
+    const Vector3d & getVX () const { return x; }
+    const Vector3d & getVY () const { return y; }
+    const Vector3d & getVZ () const { return z; }
 
     double getX ( const Vector3d & p ) const { return x * p; }
     double getY ( const Vector3d & p ) const { return y * p; }
@@ -97,7 +107,7 @@ public:
         return Plane3d ( Vector3d ( x * p.norm, y * p.norm, z * p.norm ), p.dist );
     }
 
-    const LinTran3d & operator* () const
+    const LinTran3d & operator * () const
     {
         return *(const LinTran3d *) this;
     }
@@ -361,7 +371,7 @@ public:
 <p>
 <br>
 </p>
-</td></div>
-</table>
+</td>
+</table></div>
 </body>
 </html>
