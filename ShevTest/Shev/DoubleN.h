@@ -253,9 +253,16 @@ template <> class Double<7>
 {
 public:
     double d0, d1, d2, d3, d4, d5, d6;
+
     Double<7> & fill ( double d )
     {
         d0 = d1 = d2 = d3 = d4 = d5 = d6 = d;
+        return *this;
+    }
+
+    Double<7> & init ( double p0, double p1, double p2, double p3, double p4, double p5, double p6 )
+    {
+        d0 = p0; d1 = p1; d2 = p2; d3 = p3; d4 = p4; d5 = p5; d6 = p6;
         return *this;
     }
 };
