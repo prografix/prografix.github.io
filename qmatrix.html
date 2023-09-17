@@ -2,14 +2,14 @@
 <head><title>Квадратные матрицы</title>
 <link rel="stylesheet" type="text/css" href="stylle.css"></head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
-<div align="center"><center>
+<div align="center">
 <table width="680" cellspacing="0" cellpadding="0">
-<div align=center>
 <font color="" style="font-size: 20pt">
 <br>Квадратные матрицы
 </font>
 </div>
-<div align=left><td><br>
+<div align=left><td>
+<br>
 Для квадратной матрицы 2-го порядка определены: заполнение матрицы указанным значением, вычисление детерминанта, операторы умножения и взятия обратной матрицы.
 <pre>
 template &lt;class T> class Matrix2
@@ -73,6 +73,31 @@ public:
         return  ( ab * bc - ac * bb ) * ca +
                 ( ac * ba - aa * bc ) * cb +
                 ( aa * bb - ab * ba ) * cc;
+    }
+};
+</pre>
+Симметричная квадратная матрица 3-го порядка.
+<pre>
+template &lt;class T> class SymMatrix3
+{
+public:
+    T aa, ab, ac,
+    bb, bc,
+    cc;
+
+    SymMatrix3 & set ( const T & v )
+    {
+        aa = ab = ac =
+        bb = bc =
+        cc = v;
+        return *this;
+    }
+
+    T determinant() const
+    {
+        return  ( ab * bc - ac * bb ) * ac +
+                ( ac * ab - aa * bc ) * bc +
+                ( aa * bb - ab * ab ) * cc;
     }
 };
 </pre>
@@ -147,8 +172,8 @@ public:
     }
 };
 </pre>
-<p>Исходники находятся в файле <a href="source/source.zip">LinAlg.h</a>.</p>
-<a href="template.html">Наверх</a>
+    <p>Исходники находятся в файле <a href="source/source.zip">LinAlg.h</a>.</p>
+    <a href="template.html">Наверх</a>
 </td></div>
 </table>
 <pre>

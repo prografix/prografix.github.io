@@ -55,7 +55,8 @@ double normU ( const IMatrix<double> & A ) // бесконечная норма
     for ( nat i = 0; i < A.nRow; ++i )
     {
         double t = 0.;
-        for ( nat j = 0; j < A.nCol; ++j ) t += fabs ( A[i][j] );
+        const double * p = A[i];
+        for ( nat j = 0; j < A.nCol; ++j ) t += fabs ( p[j] );
         if ( res < t ) res = t;
     }
     return res;

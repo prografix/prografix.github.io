@@ -1263,6 +1263,7 @@ Spin3d makeSpin3d ( CCArrRef<Set2<Vector3d> > & data )
 //      с минимизацией суммы квадратов сдвигов вершин
 //
 //********************** 04.05.2023 ***************************//
+#include "../Test/display.h"
 
 namespace {
 
@@ -1320,6 +1321,27 @@ bool calcSLU1 ( nat k, nat nf, CCArrRef<Set2<DynArray<nat>, Plane3d> > & facet,
         }
     }
     SM_LDLt slu ( k, a );
+    if ( 1 )
+    {
+        display << k << NL;
+        for ( nat j = 0; j < k; ++j )
+        {
+            double * r = a[j];
+            nat n1 = 0, n2 = 0;
+            for ( nat i = 0; i < k; ++i )
+            {
+                //if(fabs(r[i])>1e-9) display << r[i]; else display <<"0.000";
+                if(fabs(r[i])>1e-9) ++n1;
+                if(r[i]>1-1e-9) display << r[i];
+            }
+            display << NL;
+            double m = r[j];
+            for ( nat i = 0; i < k; ++i ) r[i] /= m;
+            r[j] = 0;
+        }display << NL;
+        double n = normU ( a );
+        n=n;
+    }
     return slu.solve ( b(), x );
 }
 
