@@ -317,6 +317,80 @@ public:
     }
 };
 
+//************************ 21.08.2023 *************************//
+//
+// Решение систем линейных уравнений 3-го порядка методом Гаусса
+//         Выбор ведущего элемента по столбцам
+//                Симметричная матрица
+//
+//************************ 21.08.2023 *************************//
+
+template <class T1, class T2 = T1> class SymSLU3 : public SymMatrix3<T1>
+{
+public:
+    T2 ad, bd, cd;
+
+    SymSLU3 & operator += ( const SymSLU3 & slu )
+    {
+        aa += slu.aa; ab += slu.ab; ac += slu.ac; ad += slu.ad;
+        bb += slu.bb; bc += slu.bc; bd += slu.bd;
+        cc += slu.cc; cd += slu.cd;
+        return *this;
+    }
+
+// Решение системы линейных уравнений 3-го порядка методом Гаусса
+// aa * x + ab * y + ac * z = ad
+// ab * x + bb * y + bc * z = bd
+// ac * x + bc * y + cc * z = cd
+    bool gauss ( T2 & x, T2 & y, T2 & z ) const
+    {
+        SLU2<T1, T2> slu;
+        T1 a, b;
+        T2 d, e;
+        const double ma = qmod ( ac );
+        const double mb = qmod ( bc );
+        const double mc = qmod ( cc );
+        if ( mc >= mb && mc >= ma )
+        {
+            if ( ! mc ) return false;
+            a = ac / cc;
+            b = bc / cc;
+            ( d = cd ) /= cc;
+            slu.aa = aa - a * ac;   slu.ab = ab - b * ac;   ( e = d ) *= ac;   ( slu.ac = ad ) -= e;
+            slu.ba = ab - a * bc;   slu.bb = bb - b * bc;   ( e = d ) *= bc;   ( slu.bc = bd ) -= e;
+        }
+        else
+        if ( mb >= ma )
+        {
+            a = ab / bc;
+            b = bb / bc;
+            ( d = bd ) /= bc;
+            slu.aa = aa - a * ac;   slu.ab = ab - b * ac;   ( e = d ) *= ac;    ( slu.ac = ad ) -= e;
+            slu.ba = ac - a * cc;   slu.bb = bc - b * cc;   ( e = d ) *= cc;    ( slu.bc = cd ) -= e;
+        }
+        else
+        {
+            a = aa / ac;
+            b = ab / ac;
+            ( d = ad ) /= ac;
+            slu.aa = ab - a * bc;   slu.ab = bb - b * bc;   ( e = d ) *= bc;    ( slu.ac = bd ) -= e;
+            slu.ba = ac - a * cc;   slu.bb = bc - b * cc;   ( e = d ) *= cc;    ( slu.bc = cd ) -= e;
+        }
+        if ( ! slu.gauss ( x, y ) ) return false;
+        z = d;
+        ( e = x ) *= a; z -= e;
+        ( e = y ) *= b; z -= e;
+        return true;
+    }
+
+    SymSLU3 & fill ( const T1 & v1, const T2 & v2 )
+    {
+        set ( v1 );
+        ad = bd = cd = v2;
+        return *this;
+    }
+};
+
 //************************ 12.05.2012 *************************//
 //
 // Решение систем линейных уравнений 4-го порядка методом Гаусса

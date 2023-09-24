@@ -1085,6 +1085,101 @@ double SM_LDLt::determinant () const
     return 1. / det;
 }
 
+//*********************** 22.09.2023 **************************//
+//
+//           Симметричные разреженные матрицы.
+//
+//*********************** 22.09.2023 **************************//
+
+bool slu_LDLt ( nat n, const nat * m, double * a, const double * b, double * x )
+{
+    nat i, j, k, l, nn = 0;
+// Заполнение индексов диагональных элементов
+    DynArray<nat> di ( n );
+    for ( i = 0; i < n; ++i )
+    {
+        if ( m[i] > i )
+            return false;
+        di[i] = nn += i - m[i];
+        ++nn;
+    }
+// Построение матрицы L
+    for ( i = l = 0; i < n; ++i )
+    {
+        const nat mi = m[i];
+        const nat ni = di[i] - i;
+        const double * ai = a + ni;
+        for ( j = mi; j <= i; ++j )
+        {
+            double * aj = a + di[j] - j;
+            double x = ai[j];
+            if ( i == j )
+            {
+                for ( k = mi; k < j; ++k )
+                {
+                    double & ajk = aj[k];
+                    const double y = ajk;
+                    ajk *= a[di[k]];
+                    x -= y * ajk;
+                }
+                const double ax = fabs ( x );
+                if ( ax < 1e-100 )
+                {
+                    return false;
+                }
+                a[l] = ax > 1e100 ? 0 : 1 / x;
+            }
+            else
+            {
+                for ( k = _max ( mi, m[j] ); k < j; ++k ) x -= ai[k] * aj[k];
+                const double ax = fabs ( x );
+                if ( ax > 1e100 )
+                {
+                    return false;
+                }
+                a[l] = ax < 1e-100 ? 0 : x;
+            }
+            ++l;
+        }
+    }
+// Решение системы Ly = b
+    for ( i = j = 0; i < n; ++i, ++j )
+    {
+        double t = b[i];
+        for ( k = m[i]; k < i; ++k ) t -= a[j++] * x[k];
+        x[i] = t;
+    }
+// Решение системы DUx = y;
+    for ( i = 0; i < n; ++i ) x[i] *= a[di[i]];
+    for ( l = nn; --i > 0; )
+    {
+        const double t = x[i];
+        const nat mi = m[i];
+        const double * p = a + ( l -= i + 1 );
+        l += mi;
+        for ( k = mi; k < i; ++k ) x[k] -= p[k] * t;
+    }
+    return true;
+}
+
+bool slu_LDLt ( nat n, const Suite<SortItem<nat, double> > * data, const double * b, double * x )
+{
+    nat i;
+    DynArray<nat> m ( n );
+    nat nbuf = n * ( n + 1 ) / 2;
+    for ( i = 0; i < n; ++i ) nbuf -= m[i] = data[i][0].head;
+    DynArray<double> buf ( nbuf );
+    for ( nat l = i = 0; i < n; ++i )
+    {
+        CCArrRef<SortItem<nat, double> > & arr = data[i];
+        for ( nat j = m[i], k = 0; j <= i; ++j )
+        {
+            buf[l++] = j == arr[k].head ? arr[k++].tail: 0;
+        }
+    }
+    return slu_LDLt ( n, m(), buf(), b, x );
+}
+
 //*********************** 01.06.2023 **************************//
 //
 //      Симметричные положительно определённые матрицы.

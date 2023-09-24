@@ -62,7 +62,14 @@ public:
 <p>Оба класса были написаны на основе соответствующих программ 
 из книги "Справочник алгоритмов на языке Алгол" ( Уилкинсон, Райнш ).
 </p>
-<p>Если матрица сильно разреженна, то в этом случае лучшим по скорости будет метод сопряжённых градиентов:
+<p>Если матрица сильно разреженна, то для неё применяют специальный вариант метода LDL<SUP>T</SUP>:
+</p>
+<pre>
+bool slu_LDLt ( nat n, const nat * m, double * a, const double * b, double * x );
+bool slu_LDLt ( nat n, const Suite&lt;SortItem&lt;nat, double> > * data, const double * b, double * x );
+</pre>
+Массив m содержит количество лидирующих нулей в каждой строке.
+<p>Также для разреженных матриц применяют метод сопряжённых градиентов:
 </p>
 <pre>
 void slu_cg ( nat n, const Suite&lt;SortItem&lt;nat, double> > * data, const double * b, double * x );
