@@ -510,6 +510,13 @@ Double<10> & operator *= ( Double<10> & a, const double & b )
 }
 
 inline
+double operator * ( const Double<10> & a, const Double<10> & b )
+{
+    return a.d0 * b.d0 + a.d1 * b.d1 + a.d2 * b.d2 + a.d3 * b.d3 + a.d4 * b.d4 + 
+           a.d5 * b.d5 + a.d6 * b.d6 + a.d7 * b.d7 + a.d8 * b.d8 + a.d9 * b.d9;
+}
+
+inline
 double operator % ( const Double<10> & a, const Double<9> & b )
 {
     return a.d0 * b.d0 + a.d1 * b.d1 + a.d2 * b.d2 + a.d3 * b.d3 + a.d4 * b.d4 + 

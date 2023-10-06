@@ -2,6 +2,8 @@
 #include "math.h"
 #include "Mathem.h"
 #include "LinAlg.h"
+#include "heap.h"
+#include "func1t.h"
 
 //*********************** 13.05.2004 ************************//
 //
@@ -628,7 +630,7 @@ double SLU_Gauss::determinant () const
 //      Решение систем линейных уравнений методом Гаусса.
 //      Выбор ведущего элемента по столбцам.
 //
-//*************************** 27.04.2016 ******************************//
+//*************************** 12.03.2023 ******************************//
 
 bool slu_gauss ( ArrRef2<double> & data )
 {
@@ -681,6 +683,65 @@ bool slu_gauss ( ArrRef2<double> & data )
             ArrRef<double> ri = data[i];
             const double t = ri[j];
             for ( k = n; k < n1; ++k ) ri[k] -= rj[k] * t;
+        }
+    }
+    return true;
+}
+
+bool slu_gauss ( ArrRef2<double> & data, const nat nc )
+{
+    const nat n = data.size0();
+    const nat n1 = data.size1();
+    if ( nc == 0 || nc > n || n1 <= n ) return false;
+// Прямой ход
+    nat i, j, k;
+    for ( k = 0; k < nc; ++k )
+    {
+        const nat k1 = k + 1;
+// Поиск максимального по модулю члена в k-том столбце
+        nat m = k;
+        double max = fabs ( data[m][k] );
+        for ( i = k1; i < n; ++i )
+        {
+            const double t = fabs ( data[i][k] );
+            if ( max < t ) max = t, m = i;
+        }
+        if ( max == 0 ) return false;
+        const double p = 1. / data[m][k];
+        double * rk = data(k);
+        if ( m > k )
+        {
+// Меняем местами k-ую и m-ую строки
+            double * rm = data(m);
+            for ( i = k; i < n1; ++i )
+            {
+                _swap ( rk[i], rm[i] ); rk[i] *= p;
+            }
+        }
+        else
+        {
+            for ( i = k1; i < n1; ++i ) rk[i] *= p;
+        }
+        rk[k] = 1;
+// Вычитание строк
+        for ( j = k1; j < n; ++j )
+        {
+            double * rj = data(j);
+            const double t = rj[k];
+            for ( i = k1; i < n1; ++i ) rj[i] -= rk[i] * t;
+            rj[k] = 0;
+        }
+    }
+// Обратная подстановка
+    for ( j = nc; --j > 0; )
+    {
+        CArrRef<double> rj = data[j];
+        for ( i = 0; i < j; ++i )
+        {
+            double * ri = data(i);
+            const double t = ri[j];
+            for ( k = nc; k < n1; ++k ) ri[k] -= rj[k] * t;
+            ri[j] = 0;
         }
     }
     return true;
@@ -913,10 +974,11 @@ SM_Chol::SM_Chol ( nat m, const double * const * a ) : n(m)
     {
         si += i;
         const double * sj = g();
+        const double * ai = a[i];
         for ( j = 0; j <= i; ++j )
         {
             sj += j;
-            double x = a[i][j];
+            double x = ai[j];
             const double * pi = si;
             const double * pj = sj;
             for ( k = j; k-- > 0; )
@@ -1001,10 +1063,11 @@ SM_LDLt::SM_LDLt ( nat m, const double * const * a ) : n(m)
     {
         si += i;
         double * sj = g();
+        const double * ai = a[i];
         for ( j = 0; j <= i; ++j )
         {
             sj += j;
-            double x = a[i][j];
+            double x = ai[j];
             double * pj = sj;
             if ( i == j )
             {
@@ -1180,12 +1243,142 @@ bool slu_LDLt ( nat n, const Suite<SortItem<nat, double> > * data, const double 
     return slu_LDLt ( n, m(), buf(), b, x );
 }
 
+//*********************** 04.10.2023 **************************//
+//
+//           Симметричные разреженные матрицы.
+// Перестановка столбцов и строк для увеличения лидирующих нулей.
+//
+//*********************** 04.10.2023 **************************//
+
+inline void _swap ( SortItem<Set2<nat>, Set2<nat> *> & p1, SortItem<Set2<nat>, Set2<nat> *> & p2 )
+{
+    const SortItem<Set2<nat>, Set2<nat> *> p ( p1 );
+    p1 = p2;
+    p2 = p;
+    _swap ( p1.tail->b, p2.tail->b );
+}
+
+bool slu_LDLtO ( nat n, const Suite<SortItem<nat, double> > * data, const double * b, double * x )
+{
+    nat i, j, k, l;
+    DynArray<nat> index ( 4*n );
+    nat * index2 = index ( n );
+    nat * fi = index2 + n;
+    nat * m = fi + n;
+    // Переставим столбцы и строки для увеличения лидирующих нулей
+    {
+        MaxHeap< SortItem<Set2<nat>, Set2<nat> *> > heap ( n );
+        DynArray<Set2<nat> > elem ( n );
+        for ( i = 0; i < n; ++i )
+        {
+            Set2<nat> & e = elem[i];
+            e.a = i;
+            e.b = heap.size();
+            heap << SortItem<Set2<nat>, Set2<nat> *> ( Set2<nat> ( 0, data[i].size() ), elem(i) );
+        }
+        l = n;
+        SortItem<Set2<nat>, Set2<nat> *> t;
+        while ( heap.size() > 0 )
+        {
+            heap >> t;
+            t.tail->b = n;
+            index[--l] = t.tail->a;
+            CCArrRef<SortItem<nat, double> > & a = data[t.tail->a];
+            for ( i = 0; i < a.size(); ++i )
+            {
+                const nat ii = a[i].head;
+                const Set2<nat> & e = elem[ii];
+                if ( e.b < heap.size() )
+                {
+                    SortItem<Set2<nat>, Set2<nat> *> * p = heap[e.b];
+                    p->head.a += l;
+                    heap.raise ( e.b );
+                }
+            }
+        }
+    }
+    for ( i = 0; i < n; ++i ) index2[index[i]] = i;
+    for ( i = 0; i < n; ++i )
+    {
+        CCArrRef<SortItem<nat, double> > & arr = data[i];
+        nat min = index2[arr[0].head];
+        for ( nat j = 1; j < arr.size(); ++j ) _mina ( min, index2[arr[j].head] );
+        fi[i] = min;
+    }
+    // Переставим соседние столбцы и строки для увеличения лидирующих нулей
+    for ( k = 0; k < 9; ++k )
+    {
+        bool stop = true;
+        for ( i = 1; i < n; ++i )
+        {
+            nat sj = 0, si = 0;
+            const nat j = i - 1;
+            CCArrRef<SortItem<nat, double> > & aj = data[index[j]];
+            for ( l = 0; l < aj.size(); ++l )
+            {
+                if ( fi[aj[l].head] == j ) ++sj;
+            }
+            CCArrRef<SortItem<nat, double> > & ai = data[index[i]];
+            for ( l = 0; l < ai.size(); ++l )
+            {
+                if ( fi[ai[l].head] >= j ) ++si;
+            }
+            if ( sj <= si ) continue;
+            if ( sj == si && aj.size() <= ai.size() ) continue;
+            for ( l = 0; l < aj.size(); ++l )
+            {
+                const nat ii = aj[l].head;
+                if ( fi[ii] == j ) fi[ii] = i;
+            }
+            for ( l = 0; l < ai.size(); ++l )
+            {
+                const nat ii = ai[l].head;
+                if ( fi[ii] == i ) fi[ii] = j;
+            }
+            _swap ( index[i], index[j] );
+            stop = false;
+        }
+        if ( stop ) break;
+    }
+    for ( i = 0; i < n; ++i ) index2[index[i]] = i;
+    nat nbuf = n * ( n + 1 ) / 2;
+    nat max = 0;
+    for ( i = 0; i < n; ++i )
+    {
+        nbuf -= m[i] = fi[index[i]];
+        _maxa ( max, data[i].size() );
+    }
+    DynArray<double> y ( n + n + nbuf );
+    double * b2 = y ( n );
+    for ( i = 0; i < n; ++i ) b2[index2[i]] = b[i];
+    double * buf = b2 + n;
+    Suite<SortItem<nat, double> > arr2 ( max );
+    for ( l = i = 0; i < n; ++i )
+    {
+        CCArrRef<SortItem<nat, double> > & arr = data[index[i]];
+        arr2.resize ( arr.size() );
+        for ( j = 0; j < arr.size(); ++j )
+        {
+            arr2[j].head = index2[arr[j].head];
+            arr2[j].tail = arr[j].tail;
+        }
+        insertSort123 ( arr2 );
+        for ( j = m[i], k = 0; j <= i; ++j )
+        {
+            buf[l++] = j == arr2[k].head ? arr2[k++].tail: 0;
+        }
+    }
+    if ( ! slu_LDLt ( n, m, buf, b2, y() ) ) return false;
+    for ( i = 0; i < n; ++i ) x[i] = y[index2[i]];
+    return true;
+}
+
 //*********************** 01.06.2023 **************************//
 //
 //      Симметричные положительно определённые матрицы.
 //              Метод сопряжённых градиентов.
 //
-//*********************** 01.06.2023 **************************//
+//*********************** 16.06.2023 **************************//
 
 static double inprod ( nat n, const double * x, const double * y )
 {
@@ -1230,7 +1423,7 @@ static double dif ( nat n, const Suite<SortItem<nat, double> > * data, const dou
     return sum;
 }
 
-bool slu_cg ( nat n, const Suite<SortItem<nat, double> > * data, const double * b, double * x )
+bool slu_cg ( nat n, const Suite<SortItem<nat, double> > * data, const double * b, double * x, bool isX )
 {
     const nat sqn = (nat) sqrt ( n );
     nat i, ksqn = sqn;
@@ -1241,10 +1434,22 @@ bool slu_cg ( nat n, const Suite<SortItem<nat, double> > * data, const double * 
     double * y = g + n;
     double * d = y + n;
     double * ad = d + n;
-    for ( i = 0; i < n; ++i )
+    if ( isX )
     {
-        x[i] = y[i] = 0;
-        g[i] = - ( d[i] = b[i] );
+        op ( n, data, x, ad );
+        for ( i = 0; i < n; ++i )
+        {
+            y[i] = x[i];
+            g[i] = - ( d[i] = b[i] - ad[i] );
+        }
+    }
+    else
+    {
+        for ( i = 0; i < n; ++i )
+        {
+            x[i] = y[i] = 0;
+            g[i] = - ( d[i] = b[i] );
+        }
     }
     double gg = inprod ( n, g, g );
     double mingg = gg;
