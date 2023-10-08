@@ -1263,7 +1263,6 @@ Spin3d makeSpin3d ( CCArrRef<Set2<Vector3d> > & data )
 //      с минимизацией суммы квадратов сдвигов вершин
 //
 //********************** 04.05.2023 ***************************//
-#include "../Test/display.h"
 
 namespace {
 
@@ -1288,64 +1287,7 @@ double maxDif ( CCArrRef<Vector3d> & vert, CCArrRef<Set2<DynArray<nat>, Plane3d>
     return dif;
 }
 
-bool calcSLU1 ( nat k, nat nf, CCArrRef<Set2<DynArray<nat>, Plane3d> > & facet, 
-               CCArrRef<Vector3d> & vertex, CCArrRef<Suite<Set2<nat, Vector3d> > > & vp, double * x )
-{
-    nat i, l;
-    HMatrix<double> a ( k, k );
-    a.fill(0);
-    DynArray<double> b ( k );
-    for ( i = 0, k = 0; i < nf; ++i )
-    {
-        const Set2<DynArray<nat>, Plane3d> & f = facet[i];
-        if ( f.a.size() < 4 ) continue;
-        const nat i0 = f.a[0];
-        CCArrRef<Set2<nat, Vector3d> > & s0 = vp[i0];
-        for ( nat j = 1; j < f.a.size(); ++j )
-        {
-            double * r = a[k];
-            const nat ii = f.a[j];
-            CCArrRef<Set2<nat, Vector3d> > & si = vp[ii];
-            for ( l = 0; l < si.size(); ++l )
-            {
-                const Set2<nat, Vector3d> & sl = si[l];
-                r[sl.a] = f.b.norm * sl.b;
-            }
-            for ( l = 0; l < s0.size(); ++l )
-            {
-                const Set2<nat, Vector3d> & sl = s0[l];
-                r[sl.a] -= f.b.norm * sl.b;
-            }
-            b[k] = f.b.norm * ( vertex[ii] - vertex[i0] );
-            ++k;
-        }
-    }
-    SM_LDLt slu ( k, a );
-    if ( 1 )
-    {
-        display << k << NL;
-        for ( nat j = 0; j < k; ++j )
-        {
-            double * r = a[j];
-            nat n1 = 0, n2 = 0;
-            for ( nat i = 0; i < k; ++i )
-            {
-                //if(fabs(r[i])>1e-9) display << r[i]; else display <<"0.000";
-                if(fabs(r[i])>1e-9) ++n1;
-                if(r[i]>1-1e-9) display << r[i];
-            }
-            display << NL;
-            double m = r[j];
-            for ( nat i = 0; i < k; ++i ) r[i] /= m;
-            r[j] = 0;
-        }display << NL;
-        double n = normU ( a );
-        n=n;
-    }
-    return slu.solve ( b(), x );
-}
-
-bool calcSLU2 ( nat k, nat nf, CCArrRef<Set2<DynArray<nat>, Plane3d> > & facet, 
+bool calcSLU ( nat k, nat nf, CCArrRef<Set2<DynArray<nat>, Plane3d> > & facet, 
     CCArrRef<Vector3d> & vertex, CCArrRef<Suite<Set2<nat, Vector3d> > > & vp, double * x )
 {
     nat i, l;
@@ -1366,7 +1308,7 @@ bool calcSLU2 ( nat k, nat nf, CCArrRef<Set2<DynArray<nat>, Plane3d> > & facet,
             {
                 const Set2<nat, Vector3d> & sl = si[l];
                 const double p = f.b.norm * sl.b;
-                if ( fabs ( p ) < 1e-15 )
+                if ( fabs ( p ) < 1e-12 )
                     continue;
                 SortItem<nat, double> & si = r.inc();
                 si.head = sl.a;
@@ -1376,12 +1318,12 @@ bool calcSLU2 ( nat k, nat nf, CCArrRef<Set2<DynArray<nat>, Plane3d> > & facet,
             {
                 const Set2<nat, Vector3d> & sl = s0[l];
                 const double p = f.b.norm * sl.b;
-                if ( fabs ( p ) < 1e-15 )
+                if ( fabs ( p ) < 1e-12 )
                     continue;
                 const nat m = firEqu ( r, SortItem<nat, double> ( sl.a ) );
                 if ( m < r.size() )
                 {
-                    if ( fabs ( r[m].tail -= p ) < 1e-15 )
+                    if ( fabs ( r[m].tail -= p ) < 1e-12 )
                         r.del ( m );
                 }
                 else
@@ -1395,7 +1337,9 @@ bool calcSLU2 ( nat k, nat nf, CCArrRef<Set2<DynArray<nat>, Plane3d> > & facet,
             ++k;
         }
     }
-    return slu_cg ( k, data(), b(), x );
+    for ( i = 0; i < k; ++i ) insertSort123 ( data[i] );
+    bool ok = k < 200 ? slu_LDLt ( k, data(), b(), x ) : slu_LDLtO ( k, data(), b(), x );
+    return ok;
 }
 
 void vert2 ( Set2<DynArray<nat>, Plane3d> & f, CCArrRef<Vector3d> & vertex )
@@ -1499,14 +1443,7 @@ bool normalizePolyhedron ( ArrRef<Set2<DynArray<nat>, Plane3d> > & facet, ArrRef
     {
         const double dif1 = maxDif ( vertex, facet );
         DynArray<double> x ( k );
-        if ( k < 1200 )
-        {
-            if ( ! calcSLU1 ( k, nf, facet, vertex, vp, x() ) ) return false;
-        }
-        else
-        {
-            if ( ! calcSLU2 ( k, nf, facet, vertex, vp, x() ) ) return false;
-        }
+        if ( ! calcSLU ( k, nf, facet, vertex, vp, x() ) ) return false;
         for ( i = 0; i < nv; ++i )
         {
             Vector3d & v = vertex[i];
