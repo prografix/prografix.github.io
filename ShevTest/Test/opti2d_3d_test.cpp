@@ -418,15 +418,15 @@ bool maxEllipseInConvexPolyhedron(const Polyhedron& plh,
 
 bool maxRectangleArea(const WireModel<9>& model, Double<9>& best);
 
-Def<Ellipse3d> maxEllipseInConvexPolyhedronA(const Polyhedron& outer)
+Def<Ellipse3d> maxEllipseInConvexPolyhedronA ( const Polyhedron & outer )
 {
     Vector3d o, a, b;
     Def<Ellipse3d> res;
-    if (!maxEllipseInConvexPolyhedron(outer, maxRectangleArea, o, a, b)) return res;
+    if ( ! maxEllipseInConvexPolyhedron ( outer, maxRectangleArea, o, a, b ) ) return res;
     res.o = o;
-    res.a = norm2(a);
-    res.b = norm2(b);
-    res.spin = Spin3d(a, b, a % b);
+    res.a = norm2 ( a );
+    res.b = norm2 ( b );
+    res.spin = Spin3d ( a, b, a % b );
     res.isDef = true;
     return res;
 }
