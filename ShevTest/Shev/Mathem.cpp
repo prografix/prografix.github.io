@@ -1248,11 +1248,11 @@ bool slu_LDLt ( nat n, const Suite<SortItem<nat, double> > * data, const double 
 //           Симметричные разреженные матрицы.
 // Перестановка столбцов и строк для увеличения лидирующих нулей.
 //
-//*********************** 04.10.2023 **************************//
+//*********************** 11.11.2023 **************************//
 
-inline void _swap ( SortItem<Set2<nat>, Set2<nat> *> & p1, SortItem<Set2<nat>, Set2<nat> *> & p2 )
+inline void _swap ( SortItem<nat, Set2<nat> *> & p1, SortItem<nat, Set2<nat> *> & p2 )
 {
-    const SortItem<Set2<nat>, Set2<nat> *> p ( p1 );
+    const SortItem<nat, Set2<nat> *> p ( p1 );
     p1 = p2;
     p2 = p;
     _swap ( p1.tail->b, p2.tail->b );
@@ -1267,33 +1267,33 @@ bool slu_LDLtO ( nat n, const Suite<SortItem<nat, double> > * data, const double
     nat * m = fi + n;
     // Переставим столбцы и строки для увеличения лидирующих нулей
     {
-        MaxHeap< SortItem<Set2<nat>, Set2<nat> *> > heap ( n );
+        MinHeap< SortItem<nat, Set2<nat> *> > heap ( n );
         DynArray<Set2<nat> > elem ( n );
         for ( i = 0; i < n; ++i )
         {
             Set2<nat> & e = elem[i];
             e.a = i;
             e.b = heap.size();
-            heap << SortItem<Set2<nat>, Set2<nat> *> ( Set2<nat> ( 0, data[i].size() ), elem(i) );
+            heap << SortItem<nat, Set2<nat> *> ( data[i].size(), elem(i) );
         }
-        l = n;
-        SortItem<Set2<nat>, Set2<nat> *> t;
-        while ( heap.size() > 0 )
+        DynArray<bool> flag ( n, 0 );
+        SortItem<nat, Set2<nat> *> t;
+        for ( l = 0; l < n; ++l )
         {
             heap >> t;
             t.tail->b = n;
-            index[--l] = t.tail->a;
+            index[l] = t.tail->a;
             CCArrRef<SortItem<nat, double> > & a = data[t.tail->a];
+            for ( i = 0; i < a.size(); ++i ) flag[a[i].head] = true;
             for ( i = 0; i < a.size(); ++i )
             {
-                const nat ii = a[i].head;
-                const Set2<nat> & e = elem[ii];
-                if ( e.b < heap.size() )
-                {
-                    SortItem<Set2<nat>, Set2<nat> *> * p = heap[e.b];
-                    p->head.a += l;
-                    heap.raise ( e.b );
-                }
+                const Set2<nat> & e = elem[a[i].head];
+                if ( e.b == n ) continue;
+                CCArrRef<SortItem<nat, double> > & b = data[e.a];
+                nat sum = 0;
+                for ( j = 0; j < b.size(); ++j ) if ( ! flag[b[j].head] ) ++sum;
+                heap[e.b]->head = sum;
+                heap.raise ( e.b );
             }
         }
     }
@@ -1305,42 +1305,6 @@ bool slu_LDLtO ( nat n, const Suite<SortItem<nat, double> > * data, const double
         for ( nat j = 1; j < arr.size(); ++j ) _mina ( min, index2[arr[j].head] );
         fi[i] = min;
     }
-    // Переставим соседние столбцы и строки для увеличения лидирующих нулей
-    for ( k = 0; k < 9; ++k )
-    {
-        bool stop = true;
-        for ( i = 1; i < n; ++i )
-        {
-            nat sj = 0, si = 0;
-            const nat j = i - 1;
-            CCArrRef<SortItem<nat, double> > & aj = data[index[j]];
-            for ( l = 0; l < aj.size(); ++l )
-            {
-                if ( fi[aj[l].head] == j ) ++sj;
-            }
-            CCArrRef<SortItem<nat, double> > & ai = data[index[i]];
-            for ( l = 0; l < ai.size(); ++l )
-            {
-                if ( fi[ai[l].head] >= j ) ++si;
-            }
-            if ( sj <= si ) continue;
-            if ( sj == si && aj.size() <= ai.size() ) continue;
-            for ( l = 0; l < aj.size(); ++l )
-            {
-                const nat ii = aj[l].head;
-                if ( fi[ii] == j ) fi[ii] = i;
-            }
-            for ( l = 0; l < ai.size(); ++l )
-            {
-                const nat ii = ai[l].head;
-                if ( fi[ii] == i ) fi[ii] = j;
-            }
-            _swap ( index[i], index[j] );
-            stop = false;
-        }
-        if ( stop ) break;
-    }
-    for ( i = 0; i < n; ++i ) index2[index[i]] = i;
     nat nbuf = n * ( n + 1 ) / 2;
     nat max = 0;
     for ( i = 0; i < n; ++i )
