@@ -1212,15 +1212,13 @@ bool slu_LDLt ( nat n, const nat * m, double * a, const double * b, double * x )
         for ( k = m[i]; k < i; ++k ) t -= a[j++] * x[k];
         x[i] = t;
     }
-// Решение системы DUx = y;
+// Решение системы DLtx = y;
     for ( i = 0; i < n; ++i ) x[i] *= a[di[i]];
     for ( l = nn; --i > 0; )
     {
         const double t = x[i];
-        const nat mi = m[i];
         const double * p = a + ( l -= i + 1 );
-        l += mi;
-        for ( k = mi; k < i; ++k ) x[k] -= p[k] * t;
+        for ( l += k = m[i]; k < i; ++k ) x[k] -= p[k] * t;
     }
     return true;
 }
