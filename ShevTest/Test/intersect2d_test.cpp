@@ -5,6 +5,7 @@
 
 #include "../Shev/rand.h"
 #include "../Shev/func2d.h"
+#include "../Shev/opti2d.h"
 #include "../Shev/trian2d.h"
 #include "../Shev/Vector2d.h"
 #include "../Shev/ShevArray.h"
@@ -569,6 +570,41 @@ void intersectPolygons2()
     display << "end" << NL;
 }
 
+void intersectHalfPlanes()
+{
+    Suite<Vector2d> poly1, poly2;
+    poly1.resize ( 7 );
+    poly2.resize ( 7 );
+    randConvexPolygon ( poly1 );
+    randConvexPolygon ( poly2 );
+    drawPolygon ( poly1, 0, 1, 1 );
+    drawPolygon ( poly2, 0, 1, 1 );
+    DynArray<Line2d> line1 ( poly1.size() ), line2 ( poly2.size() );
+    if ( ! points2lines ( poly1, line1 ) )
+    {
+        display << "! points2lines" << NL;
+        return;
+    }
+    if ( ! points2lines ( poly2, line2 ) )
+    {
+        display << "! points2lines" << NL;
+        return;
+    }
+    nat i;
+    Suite<const Line2d *> line;
+    for ( i = 0; i < line1.size(); ++i ) line.inc() = line1(i);
+    for ( i = 0; i < line2.size(); ++i ) line.inc() = line2(i);
+    for ( i = 0; i < line1.size(); ++i ) line.inc() = line1(i);
+    for ( i = 0; i < line2.size(); ++i ) line.inc() = line2(i);
+    Suite<Vector2d> poly;
+    if ( ! intersectHalfPlanes ( line, poly ) )
+    {
+        display << "! intersectHalfPlanes" << NL;
+        return;
+    }
+    drawPolygon ( poly, 1, 1, 0 );
+}
+
 } // end of namespace
 
 void intersect2d_test ()
@@ -586,6 +622,7 @@ void intersect2d_test ()
 //    intersectSegmentPolygon();
 //    cutLinePolygon2();
 //    intersect1c_test();
-    intersectPolygons();
+//    intersectPolygons();
+    intersectHalfPlanes();
     endNewList();
 }
