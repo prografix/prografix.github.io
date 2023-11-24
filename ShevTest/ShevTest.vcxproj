@@ -253,6 +253,7 @@
     <ClInclude Include="ShevTestDoc.h" />
     <ClInclude Include="ShevTestView.h" />
     <ClInclude Include="Shev\AVL_TreeList.h" />
+    <ClInclude Include="Shev\TrianFacet.h" />
     <ClInclude Include="StdAfx.h" />
     <ClInclude Include="Shev\acoder.h" />
     <ClInclude Include="Shev\approx.h" />

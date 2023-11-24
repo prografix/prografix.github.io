@@ -15,6 +15,7 @@
 #include "Lists.h"
 #include "trans.h"
 #include "heap.h"
+#include "TrianFacet.h"
 
 //**************************** 17.11.2012 *********************************//
 //
@@ -511,14 +512,6 @@ Def<Sphere3d> spherePPPP ( const Plane3d & a, const Plane3d & b, const Plane3d &
 //      ¬ыпукла€ оболочка точек в пространстве.
 //
 //****************** 23.01.2010 *******************************//
-
-class TrianFacet
-{
-public:
-    nat vertex[3], facet[3], edge[3], index;
-    Plane3d plane;
-    List1d list;
-};
 
 inline void _swap ( SortItem<double, TrianFacet *> & p1, SortItem<double, TrianFacet *> & p2 )
 {
