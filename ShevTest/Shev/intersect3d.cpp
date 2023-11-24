@@ -7,6 +7,7 @@
 #include "Polyhedron.h"
 #include "intersect2d.h"
 #include "intersect3d.h"
+#include "TrianFacet.h"
 
 //**************************** 01.02.2007 *********************************//
 //
@@ -1206,6 +1207,80 @@ bool intersect1c ( const Polyhedron & conv, const Polyhedron & poly, Polyhedron 
         _swap ( tmp1, tmp2 );
     }
     _swap ( tmp1, res );
+    return true;
+}
+
+//**************************** 16.08.2012 *********************************//
+//
+//           ѕересечение полупространств содержащих центр координат
+//
+//**************************** 16.08.2012 *********************************//
+
+bool intersectHalfSpaces ( CCArrRef<const Plane3d *> & plane, Polyhedron & poly )
+{
+    const nat n = plane.size();
+    if ( n < 4 )
+    {
+        poly.makeVoid();
+        return false;
+    }
+    nat i, nf, nv;
+// ƒвойственное преобразование
+    DynArray<Vector3d> point ( n );
+    for ( i = 0; i < n; ++i )
+    {
+        const Plane3d * p = plane[i];
+        if ( p->dist >= 0 )
+        {
+            poly.makeVoid();
+            return false;
+        }
+        Vector3d & v = point[i];
+        v.x = p->norm.x / p->dist;
+        v.y = p->norm.y / p->dist;
+        v.z = p->norm.z / p->dist;
+    }
+// ѕостроение выпуклой оболочки
+    DynArray<nat> iv ( n );
+    DynArray<TrianFacet> facet ( 2*n - 4 );
+    if ( ! convexHull ( point, nv, iv, nf, facet ) )
+    {
+        poly.makeVoid();
+        return false;
+    }
+// «аполнение многогранника с двойственным преобразованием
+    poly.vertex.resize ( nf );
+    for ( i = 0; i < nf; ++i )
+    {
+        const Plane3d & p = facet[i].plane;
+        if ( p.dist >= 0 )
+        {
+            poly.makeVoid();
+            return false;
+        }
+        Vector3d & v = point[i];
+        v.x = p.norm.x / p.dist;
+        v.y = p.norm.y / p.dist;
+        v.z = p.norm.z / p.dist;
+    }
+    poly.facet.resize ( nv );
+    for ( i = 0; i < nv; ++i )
+    {
+        const TrianFacet & cf = facet[i];
+        poly.vertex[i] = point[iv[i]];
+        Facet & fi = poly.facet[i];
+        fi.plane = cf.plane;
+        fi.resize ( 3 );
+        fi.index[0] = fi.index[3] = cf.vertex[0];
+        fi.index[1] = cf.vertex[1];
+        fi.index[2] = cf.vertex[2];
+        fi.index[4] = cf.facet[0];
+        fi.index[5] = cf.facet[1];
+        fi.index[6] = cf.facet[2];
+        fi.index[7] = cf.edge[0];
+        fi.index[8] = cf.edge[1];
+        fi.index[9] = cf.edge[2];
+    }
     return true;
 }
 
