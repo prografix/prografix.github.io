@@ -3,73 +3,75 @@
 <link rel="stylesheet" type="text/css" href="stylle.css"></head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
 <div align="center">
-<table width="800" cellspacing="0" cellpadding="0">
+<table width="900" cellspacing="0" cellpadding="0">
 <div align=center><br>
 <font color="" style="font-size: 20pt">Пересечения на плоскости</font>
 </div>
 <div align=left><td><br>
-<p>Первая функция определяет пересекаются ли точка и многоугольник.
+<p>&bull; Определение факта пересечения точки и многоугольника.
 Направление обхода вершин многоугольника может быть произвольным.
 Для определения применяется метод луча:
 <pre>
 bool isIntersect ( const Vector2d & p, CArrRef&lt;Vector2d> poly );
 </pre>
-<p>Следующая функция определяет пересекаются ли точка и круг:
+<p>&bull; Определение факта пересечения точки и круга:
 <pre>
 bool isIntersect ( const Vector2d & p, const Circle2d & fig );
 </pre>
-<p>Следующие функции находят точку пересечения прямых и отрезков, если она единственная:
+<p>&bull; Точка пересечения прямых и отрезков, если она единственная:
 <pre>Def&lt;Vector2d> intersection ( const Line2d & line1, const Line2d & line2 );
 Def&lt;Vector2d> intersection ( const Line2d & line, const Segment2d & seg );
 Def&lt;Vector2d> intersection ( const Segment2d & s1, const Segment2d & s2 );
 </pre>
-Функция cut отсекает заданной прямой часть отрезка находящуюся в положительной полуплоскости
+&bull; Функция cut отсекает заданной прямой часть отрезка находящуюся в положительной полуплоскости
 ( или другими словами находит пересечение отрезка с отрицательной полуплоскостью ).
 Если в положительной полуплоскости находятся оба конца отрезка, то функция возвращает неопределённый отрезок:
 <pre>Def&lt;Segment2d> cut ( const Line2d & line, const Segment2d & seg );
 </pre>
 </p>
-<p>Следующие функции находят пересечения прямых и отрезков с кругом.
+<p>&bull; Пересечение прямых и отрезков с кругом.
 Результатом пересечения будет отрезок, возможно неопределённый:
 <pre>Def&lt;Segment2d> intersection ( const Line2d & line, const Circle2d & cir );
 Def&lt;Segment2d> intersection ( const Segment2d & seg, const Circle2d & cir );
 </pre>
 </p>
-<p>Следующие функции находят пересечения прямых и отрезков с эллипсом:
+<p>&bull; Пересечение прямых и отрезков с эллипсом:
 <pre>Def&lt;Segment2d> intersection ( const Line2d & line, const Ellipse2d & e );
 Def&lt;Segment2d> intersection ( const Segment2d & seg, const Ellipse2d & e );
 </pre>
-<p>Следующие функции находят пересечения прямых и отрезков с многоугольником.
+<p>&bull; Пересечение прямых и отрезков с многоугольником.
 Обход вершин многоугольника может быть произвольным.
 Результатом пересечения будет массив отрезков, возможно пустой:
-<pre>DynArrRef&lt;Segment2d> & 
-intersection ( const Line2d & line, CArrRef&lt;Vector2d> poly, DynArrRef&lt;Segment2d> & res );
-SuiteRef&lt;Segment2d> & 
-intersection ( const Segment2d & seg, CArrRef&lt;Vector2d> poly, SuiteRef&lt;Segment2d> & res );
+<pre>DynArrRef&lt;Segment2d> & intersection ( const Line2d & line, CArrRef&lt;Vector2d> poly, DynArrRef&lt;Segment2d> & res );
+SuiteRef&lt;Segment2d> & intersection ( const Segment2d & seg, CArrRef&lt;Vector2d> poly, SuiteRef&lt;Segment2d> & res );
 </pre>
 </p>
-<p>Следующая функция отсекает прямой часть многоугольника находящуюся в положительной полуплоскости.
+<p>&bull; Следующая функция отсекает прямой часть многоугольника находящуюся в положительной полуплоскости.
 Обход вершин многоугольника может быть произвольным.
 Результатом пересечения будет массив многоугольников, возможно пустой:
 <pre>
-SuiteRef&lt; Suite&lt;Vector2d> > & 
-cut ( CArrRef&lt;Vector2d> poly, const Line2d & line, SuiteRef&lt; Suite&lt;Vector2d> > & res );
+SuiteRef&lt;Suite&lt;Vector2d>> & cut ( CArrRef&lt;Vector2d> poly, const Line2d & line, SuiteRef&lt; Suite&lt;Vector2d> > & res );
 </pre>
 </p>
-<p>Следующая функция находит пересечение выпуклого многоугольника с простым многоугольником.
+<p>&bull; Пересечение выпуклого многоугольника с простым многоугольником.
 Обход вершин многоугольников должен быть против часовой стрелки.
 По сторонам выпуклого многоугольника строятся прямые, которые по очереди отсекают части от второго многоугольника.
 В результате получаем массив многоугольников, возможно пустой:
 <pre>
-Suite&lt; Suite&lt;Vector2d> > & 
-intersect1c ( CArrRef&lt;Vector2d> conv, CArrRef&lt;Vector2d> poly, Suite&lt; Suite&lt;Vector2d> > & res );
+Suite&lt;Suite&lt;Vector2d>> & intersect1c ( CArrRef&lt;Vector2d> conv, CArrRef&lt;Vector2d> poly, Suite&lt; Suite&lt;Vector2d> > & res );
 </pre>
 </p>
-<p>Следующая функция находит пересечение двух простых многоугольников.
+<p>&bull; Пересечение двух простых многоугольников.
 Обход вершин многоугольников должен быть против часовой стрелки.
 В результате получаем массив многоугольников, возможно пустой:
 <pre>
-bool intersection ( CArrRef&lt;Vector2d> poly1, CArrRef&lt;Vector2d> poly2, Suite&lt; Suite&lt;Vector2d> > & res );
+bool intersection ( CCArrRef&lt;Vector2d> & poly1, CCArrRef&lt;Vector2d> & poly2, Suite&lt; Suite&lt;Vector2d> > & res );
+</pre>
+В случае обнаружения ошибки в ходе выполнения функция возвращает значение false.
+</p>
+<p>&bull; Пересечение множества полуплоскостей содержащих центр координат. Результатом будет выпуклый многоугольник:
+<pre>
+bool intersectHalfPlanes ( CCArrRef&lt;const Line2d *> & line, DynArrRef&lt;Vector2d> & poly );
 </pre>
 В случае обнаружения ошибки в ходе выполнения функция возвращает значение false.
 </p>
@@ -82,21 +84,10 @@ bool intersection ( CArrRef&lt;Vector2d> poly1, CArrRef&lt;Vector2d> poly2, Suit
 <br>Исходники алгоритмов находятся в файле <a href="source/source.zip">intersect2d.cpp</a>.
 </p>
 <a href="rus_geom.html">Наверх</a>
-</pre>
-
 <pre>
+
+</pre>
 </td></div>
 </table>
-<script type="text/javascript">
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
-
-<script type="text/javascript">
-try {
-var pageTracker = _gat._getTracker("UA-10825496-1");
-pageTracker._trackPageview();
-} catch(err) {}
-</script>
 </body>
 </html>
