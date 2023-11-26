@@ -1,6 +1,5 @@
 
-#ifndef INTERSECT3D_H
-#define INTERSECT3D_H
+#pragma once
 
 #include "ShevArray.h"
 #include "Vector3d.h"
@@ -193,4 +192,11 @@ bool cut ( const Polyhedron & poly, const Plane3d & plane, Polyhedron & res, int
 
 bool intersect1c ( const Polyhedron & conv, const Polyhedron & poly, Polyhedron & res );
 
-#endif
+
+//**************************** 26.11.2023 *********************************//
+//
+//           Пересечение полупространств содержащих центр координат
+//
+//**************************** 26.11.2023 *********************************//
+
+bool intersectHalfSpaces ( CCArrRef<const Plane3d *> & plane, Polyhedron & poly );

@@ -23,8 +23,6 @@
 #include "display.h"
 
 double timeInSec();
-void link ( List2n & plus, List<ListItem<List2n> > & minus, CArrRef<Vector3d> & vert, 
-            const Vector3d & norm, CutStor3d & stor );
 bool loadSTL ( const char * filename, Polyhedron & poly );
 bool cut ( const Polyhedron & poly, int n, const Plane3d * plane, int mark, Polyhedron & res );
 
@@ -605,6 +603,29 @@ void proba ()
     display << "end" << NL;
 }
 
+void intersectHalfSpaces()
+{
+    Polyhedron poly1, poly2;
+    poly1.makeCube(1);
+    poly1.makeTetrahedron(1);
+    nat i;
+    Suite<const Plane3d *> plane;
+    for ( i = 0; i < poly1.facet.size(); ++i ) plane.inc() = & poly1.facet[i].plane;
+    Polyhedron poly;
+    if ( ! intersectHalfSpaces ( plane, poly ) )
+    {
+        display << "! intersectHalfSpaces" << NL;
+        return;
+    }
+    draw ( poly, 1, 1, 0, 1, VM_WIRE );
+    for ( i = 0; i < poly1.facet.size(); ++i )
+    {
+        for ( nat j = 0; j < 3; ++j ) display << poly1.facet[i].index[j];
+        for ( nat j = 0; j < 3; ++j ) display << poly.facet[i].index[j];
+        display << NL;
+    }
+}
+
 } // namespace
 
 void intersect3d_test ()
@@ -622,6 +643,7 @@ void intersect3d_test ()
 //    intersect1c_test();
 //    link_test();
 //    intersect_2_Polyhedron();
-    proba ();
+//    proba ();
+    intersectHalfSpaces();
     endNewList ();
 }

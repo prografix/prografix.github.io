@@ -226,11 +226,11 @@ void tree_test();
 
 void CMainFrame::OnTest() 
 {
-//    intersect3d_test();
+    intersect3d_test();
 //    momentum2d_test();
 //    polyhedron_test();
 //    S2D_Model_test();
-    approx3d_test();
+//    approx3d_test();
 //    testBlackRing();
 //    compress_test();
 //    shevlist_test();

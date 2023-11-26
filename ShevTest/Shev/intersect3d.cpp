@@ -1210,11 +1210,11 @@ bool intersect1c ( const Polyhedron & conv, const Polyhedron & poly, Polyhedron 
     return true;
 }
 
-//**************************** 16.08.2012 *********************************//
+//**************************** 26.11.2023 *********************************//
 //
 //           ѕересечение полупространств содержащих центр координат
 //
-//**************************** 16.08.2012 *********************************//
+//**************************** 26.11.2023 *********************************//
 
 bool intersectHalfSpaces ( CCArrRef<const Plane3d *> & plane, Polyhedron & poly )
 {
@@ -1249,38 +1249,61 @@ bool intersectHalfSpaces ( CCArrRef<const Plane3d *> & plane, Polyhedron & poly 
         return false;
     }
 // «аполнение многогранника с двойственным преобразованием
+    Suite<SortItem<nat,Set2<nat>>> arr ( 3*nf );
     poly.vertex.resize ( nf );
     for ( i = 0; i < nf; ++i )
     {
-        const Plane3d & p = facet[i].plane;
+        const TrianFacet & tf = facet[i];
+        const Plane3d & p = tf.plane;
         if ( p.dist >= 0 )
         {
             poly.makeVoid();
             return false;
         }
-        Vector3d & v = point[i];
+        // «аполнение вершин многогранника
+        Vector3d & v = poly.vertex[i];
         v.x = p.norm.x / p.dist;
         v.y = p.norm.y / p.dist;
         v.z = p.norm.z / p.dist;
+        // «аполнение вспомогательного массива
+        arr.inc() = SortItem<nat,Set2<nat>> ( tf.vertex[0], Set2<nat> ( i, tf.facet[0] ) );
+        arr.inc() = SortItem<nat,Set2<nat>> ( tf.vertex[1], Set2<nat> ( i, tf.facet[1] ) );
+        arr.inc() = SortItem<nat,Set2<nat>> ( tf.vertex[2], Set2<nat> ( i, tf.facet[2] ) );
     }
+    // ќпределение пор€дка вершин в гран€х
+    quickSort123 ( arr );
+    DynArray<Set2<nat>> varr ( nv );
+    for ( nat k = i = 0; i < nv; ++i )
+    {
+        Set2<nat> & s = varr[i];
+        s.a = k;
+        for ( ++k; k < arr.size(); ++k ) if ( arr[k].head != i ) break;
+        s.b = k - s.a;
+        SortItem<nat, Set2<nat>> * p = arr(s.a);
+        for ( nat j = 1; j + 1 < s.b; ++j )
+        {
+            const nat b = p[j-1].tail.b;
+            nat l = j;
+            for ( ; l < s.b; ++l ) if ( p[l].tail.a == b ) break;
+            if ( l == s.b )
+            {
+                poly.makeVoid();
+                return false;
+            }
+            if ( l > j ) _swap ( arr[l], arr[j] );
+        }
+    }
+    // «аполнение граней многогранника
     poly.facet.resize ( nv );
     for ( i = 0; i < nv; ++i )
     {
-        const TrianFacet & cf = facet[i];
-        poly.vertex[i] = point[iv[i]];
         Facet & fi = poly.facet[i];
-        fi.plane = cf.plane;
-        fi.resize ( 3 );
-        fi.index[0] = fi.index[3] = cf.vertex[0];
-        fi.index[1] = cf.vertex[1];
-        fi.index[2] = cf.vertex[2];
-        fi.index[4] = cf.facet[0];
-        fi.index[5] = cf.facet[1];
-        fi.index[6] = cf.facet[2];
-        fi.index[7] = cf.edge[0];
-        fi.index[8] = cf.edge[1];
-        fi.index[9] = cf.edge[2];
+        fi.plane = *plane[iv[i]];
+        const Set2<nat> & s = varr[i];
+        fi.resize ( s.b );
+        for ( nat j = 0; j < s.b; ++j ) fi.index[j] = arr[s.a+j].tail.a;
     }
+    poly.linkFacets();
     return true;
 }
 
