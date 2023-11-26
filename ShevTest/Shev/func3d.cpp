@@ -764,7 +764,6 @@ bool convexHull ( CCArrRef<Vector3d> & point, nat & nv, ArrRef<nat> & iv, nat & 
         const nat n2 = nf + 1;
         nf += 2;
         const nat if0 = f0.facet[0];
-        const nat ie0 = f0.edge[0];
         TrianFacet & f1 = facet[n1];
         f1.vertex[0] = f0.vertex[1];
         f1.vertex[1] = f0.vertex[2];
