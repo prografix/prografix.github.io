@@ -1248,60 +1248,61 @@ bool intersectHalfSpaces ( CCArrRef<const Plane3d *> & plane, Polyhedron & poly 
         poly.makeVoid();
         return false;
     }
-// «аполнение многогранника с двойственным преобразованием
-    Suite<SortItem<nat,Set2<nat>>> arr ( 3*nf );
+// «аполнение вершин многогранника
+    DynArray<nat> start ( nv );
     poly.vertex.resize ( nf );
     for ( i = 0; i < nf; ++i )
     {
-        const TrianFacet & tf = facet[i];
-        const Plane3d & p = tf.plane;
+        const TrianFacet & f = facet[i];
+        const Plane3d & p = f.plane;
         if ( p.dist >= 0 )
         {
             poly.makeVoid();
             return false;
         }
-        // «аполнение вершин многогранника
         Vector3d & v = poly.vertex[i];
         v.x = p.norm.x / p.dist;
         v.y = p.norm.y / p.dist;
         v.z = p.norm.z / p.dist;
-        // «аполнение вспомогательного массива
-        arr.inc() = SortItem<nat,Set2<nat>> ( tf.vertex[0], Set2<nat> ( i, tf.facet[0] ) );
-        arr.inc() = SortItem<nat,Set2<nat>> ( tf.vertex[1], Set2<nat> ( i, tf.facet[1] ) );
-        arr.inc() = SortItem<nat,Set2<nat>> ( tf.vertex[2], Set2<nat> ( i, tf.facet[2] ) );
+        start[f.vertex[0]] = i;
+        start[f.vertex[1]] = i;
+        start[f.vertex[2]] = i;
     }
-    // ќпределение пор€дка вершин в гран€х
-    quickSort123 ( arr );
-    DynArray<Set2<nat>> varr ( nv );
-    for ( nat k = i = 0; i < nv; ++i )
-    {
-        Set2<nat> & s = varr[i];
-        s.a = k;
-        for ( ++k; k < arr.size(); ++k ) if ( arr[k].head != i ) break;
-        s.b = k - s.a;
-        SortItem<nat, Set2<nat>> * p = arr(s.a);
-        for ( nat j = 1; j + 1 < s.b; ++j )
-        {
-            const nat b = p[j-1].tail.b;
-            nat l = j;
-            for ( ; l < s.b; ++l ) if ( p[l].tail.a == b ) break;
-            if ( l == s.b )
-            {
-                poly.makeVoid();
-                return false;
-            }
-            if ( l > j ) _swap ( arr[l], arr[j] );
-        }
-    }
-    // «аполнение граней многогранника
+// «аполнение граней многогранника
+    Suite<nat> temp;
     poly.facet.resize ( nv );
     for ( i = 0; i < nv; ++i )
     {
         Facet & fi = poly.facet[i];
         fi.plane = *plane[iv[i]];
-        const Set2<nat> & s = varr[i];
-        fi.resize ( s.b );
-        for ( nat j = 0; j < s.b; ++j ) fi.index[j] = arr[s.a+j].tail.a;
+        temp.resize();
+        const nat s = start[i];
+        for ( nat ii = s;; )
+        {
+            temp.inc() = ii;
+            const TrianFacet & f = facet[ii];
+            if ( i == f.vertex[0] )
+            {
+                ii = f.facet[0];
+                goto m1;
+            }
+            if ( i == f.vertex[1] )
+            {
+                ii = f.facet[1];
+                goto m1;
+            }
+            if ( i == f.vertex[2] )
+            {
+                ii = f.facet[2];
+                goto m1;
+            }
+            poly.makeVoid(); // Ётого не должно быть
+            return false;
+m1:;        if ( ii == s ) break;
+        }
+        const nat ni = temp.size();
+        fi.resize ( ni );
+        for ( nat j = 0; j < ni; ++j ) fi.index[j] = temp[j];
     }
     poly.linkFacets();
     return true;

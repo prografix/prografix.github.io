@@ -3275,7 +3275,7 @@ Conform3d maxPointsInConvexPolyhedron2 ( CCArrRef<Vector3d> & inner, const Polyh
     return best;
 }
 
-void maxPolyhedronInConvexPolyhedron2_test()
+void maxPointsInConvexPolyhedron2_test()
 {
     double time = 0;
     static PRand rand;
@@ -3776,198 +3776,6 @@ void minTetrahedronAroundPoints_test1()
 //    display << outer.volume() << NL;
 }
 
-void divide4 ( const Triangle3d & trian1, Triangle3d trian2[4] );
-
-struct MaxCuboid
-{
-    Double<6> func, con[7];
-    FixArray<Double<7>, 3> cor;
-    void init ( const Segment3d & seg, const Triangle3d & trian )
-    {
-        Double<6> & vn = con[0];
-        vn.d0 = seg.b.x - seg.a.x;
-        vn.d1 = seg.b.y - seg.a.y;
-        vn.d2 = seg.b.z - seg.a.z;
-        vn.d3 = seg.b.x;
-        vn.d4 = seg.b.y;
-        vn.d5 = seg.b.z;
-        for ( nat l = 1; l <= 6; ++l )
-        {
-            con[l].fill(0);
-            (&con[l].d0)[l-1] = -1;
-        }
-        {
-            Triangle3d t = trian;
-            t.a /= root3 ( t.a.x * t.a.y * t.a.z );
-            t.b /= root3 ( t.b.x * t.b.y * t.b.z );
-            t.c /= root3 ( t.c.x * t.c.y * t.c.z );
-            const Vector3d u = t.getNormal();
-            const double c = 1 / ( u * t.a );
-            func.d0 = c * u.x;
-            func.d1 = c * u.y;
-            func.d2 = c * u.z;
-            func.d3 = func.d4 = func.d5 = 0;
-        }
-        {
-            const Vector3d v = ( trian.b % trian.a ).setNorm2 ( 1e6 );
-            Double<7> & dn = cor[0];
-            dn.d0 = v.x;
-            dn.d1 = v.y;
-            dn.d2 = v.z;
-            dn.d3 = dn.d4 = dn.d5 = dn.d6 = 0;
-        }
-        {
-            const Vector3d v = ( trian.c % trian.b ).setNorm2 ( 1e6 );
-            Double<7> & dn = cor[1];
-            dn.d0 = v.x;
-            dn.d1 = v.y;
-            dn.d2 = v.z;
-            dn.d3 = dn.d4 = dn.d5 = dn.d6 = 0;
-        }
-        {
-            const Vector3d v = ( trian.a % trian.c ).setNorm2 ( 1e6 );
-            Double<7> & dn = cor[2];
-            dn.d0 = v.x;
-            dn.d1 = v.y;
-            dn.d2 = v.z;
-            dn.d3 = dn.d4 = dn.d5 = dn.d6 = 0;
-        }
-    }
-};
-
-Def<Cuboid3d> maxCuboidInConvexPolyhedron ( const Polyhedron & poly, const Spin3d & spin = Spin3d() )
-{
-    Def<Cuboid3d> res;
-    const nat nf = poly.facet.size();
-    const nat nv = poly.vertex.size();
-    if ( nf < 4 || nv < 4 ) return res;
-    Vector3d ax, ay, az;
-    (~spin).getReper ( ax, ay, az );
-    DynArray<Double<7> > cor ( nf );
-    for ( nat l = 0; l < nf; ++l )
-    {
-        const Plane3d & p = poly.facet[l].plane;
-        Double<7> & c = cor[l];
-        c.d0 = fabs ( p.norm * ax );
-        c.d1 = fabs ( p.norm * ay );
-        c.d2 = fabs ( p.norm * az );
-        c.d3 = p.norm.x;
-        c.d4 = p.norm.y;
-        c.d5 = p.norm.z;
-        c.d6 = p.dist;
-    }
-    Suite<Triangle3d> trian1, trian2;
-    Triangle3d & t = trian1.inc();
-    t.a = Vector3d ( 0.998, 1e-3, 1e-3 );
-    t.b = Vector3d ( 1e-3, 0.998, 1e-3 );
-    t.c = Vector3d ( 1e-3, 1e-3, 0.998 );
-    for ( nat i = 0; i < 5; ++i )
-    {
-        trian2.resize ( 4*trian1.size() );
-        for ( nat j = 0; j < trian1.size(); ++j ) divide4 ( trian1[j], trian2(4*j) );
-        trian1.swap ( trian2 );
-    }
-    const nat nn = trian1.size();
-    DynArray<MaxCuboid> variant ( nn );
-    MaxHeap<SortItem<double,nat> > heap ( nn );
-    Def<Segment3d> seg = dimensions ( poly.vertex );
-    for ( nat k = 0; k < nn; ++k )
-    {
-        MaxCuboid & var = variant[k];
-        var.init ( seg, trian1[k] );
-        heap << SortItem<double,nat> ( var.func * var.con[0], k );
-    }
-    const double eps = 1e-9;
-    for ( nat j = 0; j < nn*nf; ++j )
-    {
-        MaxCuboid & var = variant[heap[0]->tail];
-        Double<6> & r = var.con[0];
-        double max = var.cor[0] % r;
-        nat i, im = 0;
-        Double<6> norm;
-        for ( i = 1; i < 3; ++i )
-        {
-            const double t = var.cor[i] % r;
-            if ( max < t ) max = t, im = i;
-        }
-        if ( max <= eps )
-        {
-            for ( i = 0; i < nf; ++i )
-            {
-                const double t = cor[i] % r;
-                if ( max < t ) max = t, im = i;
-            }
-            if ( max <= eps )
-            {
-                res.a = r.d0;
-                res.b = r.d1;
-                res.c = r.d2;
-                res.o.x = r.d3;
-                res.o.y = r.d4;
-                res.o.z = r.d5;
-                res.spin = spin;
-                res.isDef = true;
-                return res;
-            }
-            norm = ( const Double<6> & ) cor[im];
-        }
-        else
-            norm = ( const Double<6> & ) var.cor[im];
-        const double dist = max;
-        const double lvl = -1e-8 * sqrt ( norm * norm );
-        nat ib = 0;
-        double sm = 0; // дл€ оптимизатора
-        for ( i = 1; i <= 6; ++i )
-        {
-            const Double<6> & v = var.con[i];
-            double t = norm * v;
-            if ( t > lvl ) continue;
-            t = -1./ t;
-            if ( !ib )
-            {
-                max = ( var.func * v ) * t;
-                ib = i;
-                sm = t;
-            }
-            else
-            {
-                const double s = ( var.func * v ) * t;
-                if ( max < s ) max = s, ib = i, sm = t;
-            }
-        }
-        if ( !ib )
-        {
-            return res;
-        }
-        const Double<6> & v = var.con[ib];
-        r += v * ( dist * sm );
-        for ( i = 1; i <= 6; ++i )
-        {
-            if ( i == ib ) continue;
-            Double<6> & ai = var.con[i];
-            ai += v * ( ( norm * ai ) * sm );
-            ai *= ( 1./ sqrt ( ai * ai ) );
-        }
-        heap[0]->head = var.func * r;
-        heap.down ( 0 );
-    }
-    return res;
-}
-
-void makeRRHset ( nat nsym, Suite<Triangle3d> & trian )
-{
-    const nat n = 16;
-    DynArray<DynArray<Vector3d> > vert ( n-1 );
-    for ( nat i = 0; i < n-1; ++i )
-    {
-        DynArray<Vector3d> & vi = vert[i];
-        vi.resize ( n-i );
-        for ( nat j = 0; j < vi.size(); ++j )
-        {
-        }
-    }
-}
-
 void maxCuboidInConvexPolyhedron_test()
 {
     static PRandVector3d rand;
@@ -3998,6 +3806,159 @@ void maxCuboidInConvexPolyhedron_test()
     display << "end" << time << NL;
 }
 
+class D4 {};
+
+inline double operator * ( const D4 &, const Double<10> & b )
+{
+    return b.d0 + b.d1 + b.d2 + b.d3;
+}
+
+bool maxPolyhedronInConvexPolyhedron2 ( const Polyhedron & inner, const Polyhedron & outer, LinTran3d & lt )
+{
+    nat i;
+    const nat nv = inner.vertex.size();
+    if ( nv < 2 ) return false;
+    const nat np = outer.facet.size();
+    if ( nv < 4 ) return false;
+    CCArrRef<Vector3d> & vert = inner.vertex;
+    DynArray<Plane3d> plane ( np );
+    /*Def<Segment3d> dim1 = dimensions (inner.vertex);
+    Def<Segment3d> dim2 = dimensions ( outer.vertex );
+    if ( ! dim2.isDef ) return err;
+    const double r1 = normU ( dim1.a - dim1.b );
+    const double r2 = normU ( dim2.a - dim2.b );
+    if ( ! r1 || ! r2 ) return err;
+    const Vector3d o1 = 0.5 * ( dim1.a + dim1.b );
+    const Vector3d o2 = 0.5 * ( dim2.a + dim2.b );
+    const double c1 = 4 / r1;
+    for ( i = 0; i < nv; ++i )
+    {
+        vert[i] = ( inner.vertex[i] - o1 ) * c1;
+    }
+    const Conform3d conf1 = Conform3d ( c1 ) * Conform3d ( -o1 );
+    const Conform3d conf2 = Conform3d ( 2 / r2 ) * Conform3d ( -o2 );
+    const Similar3d sim2 ( conf2 );*/
+    for ( i = 0; i < np; ++i )
+    {
+        plane[i] =  ( outer.facet[i].plane );
+    }
+// »нициализаци€ области допустимых преобразований
+    const nat N = 10;
+    Double<N> arr[N+1], cor;
+    arr[0].fill ( 1 );
+    arr[1].fill ( 0 );
+    arr[2].fill ( 0 );
+    arr[3].fill ( 0 );
+    arr[4].fill ( 0 );
+    arr[5].fill ( 0 );
+    arr[6].fill ( 0 );
+    arr[7].fill ( 0 );
+    arr[8].fill ( 0 );
+    arr[9].fill ( 0 );
+    arr[10].fill ( 0 );
+    arr[1].d0 = arr[2].d1 = arr[3].d2 = arr[4].d3 = arr[5].d4 = arr[6].d5 = arr[7].d6 = arr[8].d7 = arr[9].d8 = arr[10].d9 = -1;
+    const double eps = 1e-6;
+    for ( i = 0; i < 400; ++i )
+    {
+// ѕоиск максимального решени€
+        Double<10> & best = arr[0];
+// ѕоиск максимального нарушени€ ограничений дл€ выбранного решени€
+        const double tt = best.d0;
+        const double xx = best.d1;
+        const double yy = best.d2;
+        const double zz = best.d3;
+        const double xy = best.d4;
+        const double yz = best.d5;
+        const double zx = best.d6;
+        const double xt = best.d7;
+        const double yt = best.d8;
+        const double zt = best.d9;
+        lt.x.x = tt + xx - yy - zz; lt.x.y = xy - zt;           lt.x.z = zx + yt;
+        lt.y.x = xy + zt;           lt.y.y = tt + yy - zz - xx; lt.y.z = yz - xt;
+        lt.z.x = zx - yt;           lt.z.y = yz + xt;           lt.z.z = tt + zz - xx - yy;
+        double max = 0;
+        nat jm, km;
+        for ( nat j = 0; j < nv; ++j )
+        {
+            const Vector3d p = lt ( vert[j] );
+            for ( nat k = 0; k < np; ++k )
+            {
+                const double d = plane[k] % p;
+                if ( max < d ) max = d, jm = j, km = k;
+            }
+        }
+// ≈сли нарушение мало, то завершение программы
+        if ( max < eps )
+        {
+            double t1 = tt * xx - xt * xt;
+            double t2 = tt * yy - yt * yt;
+            double t3 = tt * zz - zt * zt;
+            double t4 = yy * xx - xy * xy;
+            double t5 = yy * zz - yz * yz;
+            double t6 = zz * xx - zx * zx;
+//display << i << NL;
+            return true;
+        }
+// ѕрименение ограничени€ к области допустимых преобразований
+        const Vector3d & n = plane[km].norm;
+        const Vector3d & v = vert[jm];
+        const double nxx = n.x * v.x;
+        const double nxy = n.x * v.y;
+        const double nxz = n.x * v.z;
+        const double nyx = n.y * v.x;
+        const double nyy = n.y * v.y;
+        const double nyz = n.y * v.z;
+        const double nzx = n.z * v.x;
+        const double nzy = n.z * v.y;
+        const double nzz = n.z * v.z;
+        cor.d0 = nxx + nyy + nzz;
+        cor.d1 = nxx - nyy - nzz;
+        cor.d2 = nyy - nzz - nxx;
+        cor.d3 = nzz - nxx - nyy;
+        cor.d4 = nxy + nyx;
+        cor.d5 = nyz + nzy;
+        cor.d6 = nzx + nxz;
+        cor.d7 = nzy - nyz;
+        cor.d8 = nxz - nzx;
+        cor.d9 = nyx - nxy;
+//double t = cor * best + plane[km].dist; t -= max;
+        if ( ! cutSimplex ( arr, D4(), cor, max ) )
+            return false;
+//double dd = cor * arr[0] + plane[km].dist;
+//dd=dd;
+    }
+    return false;
+}
+
+void maxPolyhedronInConvexPolyhedron2_test()
+{
+    static PRandVector3d rand;
+    const Spin3d spin ( rand(), rand() );
+    double time = 0;
+    Polyhedron inner;
+    inner.makeCube(1);
+//    for ( nat k = 0; k < 340; ++k )
+//    {
+        const nat np = 27;//4 + prand.number(nn-3);
+        Polyhedron outer;
+        randPolyhedron ( np, outer );
+//        if ( k != 333 ) continue;
+//        display << k << NL;
+        draw ( outer, 0, 1, 1, 0, VM_WIRE );
+        LinTran3d lt;
+        double t1 = timeInSec();
+        if ( ! maxPolyhedronInConvexPolyhedron2 ( inner, outer, lt ) )
+        {
+            display << "error" << NL;
+        }
+        inner *= lt;
+        double t2 = timeInSec();
+        time += t2 - t1;
+        draw ( inner, 1, 1, 0, 1, VM_WIRE );
+//    }
+    display << "end" << time << lt.x * ( lt.y % lt.z ) << NL;
+}
+
 void opti3d_test ()
 {
     drawNewList2d();
@@ -4007,10 +3968,9 @@ void opti3d_test ()
 //    minEllipsoid_test();
 //    maxEllipsoidInConvexPolyhedron_test();
 //    maxCuboidInConvexPolyhedron_test();
-//    maxPolyhedronInConvexPolyhedron_test();
+    maxPolyhedronInConvexPolyhedron2_test();
 //    maxConvexPolyhedronInPolyhedronNR_test();
-    maxPolyhedronInConvexPolyhedron1R_test();
-//    maxPolyhedronInConvexPolyhedron2_test();
+//    maxPolyhedronInConvexPolyhedron1R_test();
 //    maxSphereInConvexPolyhedron_test();
 //    minSphereAroundPoints_test();
 //    minSphereAroundSpheres_test2();

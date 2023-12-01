@@ -606,11 +606,20 @@ void proba ()
 void intersectHalfSpaces()
 {
     Polyhedron poly1, poly2;
-    poly1.makeCube(1);
-    poly1.makeTetrahedron(1);
+    randPolyhedron ( 6, poly1 );
+    randPolyhedron ( 6, poly2 );
+    poly1 -= poly1.centerOfMass();
+    poly2 -= poly2.centerOfMass();
+    //poly1.makeCube(1);
+    //poly1.makeTetrahedron(1);
     nat i;
     Suite<const Plane3d *> plane;
     for ( i = 0; i < poly1.facet.size(); ++i ) plane.inc() = & poly1.facet[i].plane;
+    for ( i = 0; i < poly2.facet.size(); ++i ) plane.inc() = & poly2.facet[i].plane;
+    for ( i = 0; i < poly1.facet.size(); ++i ) plane.inc() = & poly1.facet[i].plane;
+    for ( i = 0; i < poly2.facet.size(); ++i ) plane.inc() = & poly2.facet[i].plane;
+    draw ( poly1, 0, 1, 1, 1, VM_WIRE );
+    draw ( poly2, 0, 1, 1, 1, VM_WIRE );
     Polyhedron poly;
     if ( ! intersectHalfSpaces ( plane, poly ) )
     {
@@ -618,7 +627,7 @@ void intersectHalfSpaces()
         return;
     }
     draw ( poly, 1, 1, 0, 1, VM_WIRE );
-    for ( i = 0; i < poly1.facet.size(); ++i )
+    if(0)for ( i = 0; i < poly1.facet.size(); ++i )
     {
         for ( nat j = 0; j < 3; ++j ) display << poly1.facet[i].index[j];
         for ( nat j = 0; j < 3; ++j ) display << poly.facet[i].index[j];

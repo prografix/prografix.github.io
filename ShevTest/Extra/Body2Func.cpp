@@ -9,12 +9,14 @@
 #include "../shev/Vector2d.h"
 #include "../shev/Vector3d.h"
 #include "../shev/moment3d.h"
+#include "../shev/AVL_Tree.h"
 #include "vert.h"
 #include "body2.h"
 #include "../shev/lists.h"
 //#include "../shev/Polygon.h"
 #include "../shev/Polyhedron.h"
 #include "../shev/intersect3d.h"
+#include "../shev/TrianFacet.h"
 #include "../shev/trans.h"
 //#include "../shev/OList.h"
 #include "../shev/func1t.h"
@@ -2621,5 +2623,124 @@ bool cut ( const Polyhedron & poly, int n, const Plane3d * plane, int mark, Poly
     for ( int i = 0; i < n; ++i ) cut ( body, plane[i], mark );
     clearSides ( body ); // ”брать грани которые содержат меньше 3 точек
     copy ( body, res );
+    return true;
+}
+
+//**************************** 26.11.2023 *********************************//
+//
+//           ѕересечение полупространств содержащих центр координат
+//
+//**************************** 26.11.2023 *********************************//
+
+bool intersectHalfSpaces ( CCArrRef<const Plane3d *> & plane, Body & poly )
+{
+    const nat n = plane.size();
+    if ( n < 4 )
+    {
+        poly.makeVoid();
+        return false;
+    }
+    nat i, nf, nv;
+// ƒвойственное преобразование
+    DynArray<Vector3d> point ( n );
+    for ( i = 0; i < n; ++i )
+    {
+        const Plane3d * p = plane[i];
+        if ( p->dist >= 0 )
+        {
+            poly.makeVoid();
+            return false;
+        }
+        Vector3d & v = point[i];
+        v.x = p->norm.x / p->dist;
+        v.y = p->norm.y / p->dist;
+        v.z = p->norm.z / p->dist;
+    }
+// ѕостроение выпуклой оболочки
+    DynArray<nat> iv ( n );
+    DynArray<TrianFacet> facet ( 2*n - 4 );
+    if ( ! convexHull ( point, nv, iv, nf, facet ) )
+    {
+        poly.makeVoid();
+        return false;
+    }
+// «аполнение вершин многогранника
+    DynArray<nat> start ( nv );
+    DynArray<Vert *> varr ( nf );
+    for ( i = 0; i < nf; ++i )
+    {
+        const TrianFacet & f = facet[i];
+        const Plane3d & p = f.plane;
+        if ( p.dist >= 0 )
+        {
+            poly.makeVoid();
+            return false;
+        }
+        Vert * vert = new Vert;
+        poly.verts.addAftLas ( vert );
+        varr[i] = vert;
+        Vector3d & v = vert->point;
+        v.x = p.norm.x / p.dist;
+        v.y = p.norm.y / p.dist;
+        v.z = p.norm.z / p.dist;
+        start[f.vertex[0]] = i;
+        start[f.vertex[1]] = i;
+        start[f.vertex[2]] = i;
+    }
+// «аполнение граней многогранника
+    AVL_TreeNodeStor<Set2<nat>, Bone *> stor;
+    AVL_Tree<Set2<nat>, Bone *> tree ( stor );
+    Suite<nat> temp;
+    for ( i = 0; i < nv; ++i )
+    {
+        Side * side = new Side;
+        poly.sides.addAftLas ( side );
+        side->plane = *plane[iv[i]];
+        temp.resize();
+        const nat s = start[i];
+        for ( nat ii = s;; )
+        {
+            temp.inc() = ii;
+            const TrianFacet & f = facet[ii];
+            if ( i == f.vertex[0] )
+            {
+                ii = f.facet[0];
+                goto m1;
+            }
+            if ( i == f.vertex[1] )
+            {
+                ii = f.facet[1];
+                goto m1;
+            }
+            if ( i == f.vertex[2] )
+            {
+                ii = f.facet[2];
+                goto m1;
+            }
+            poly.makeVoid(); // Ётого не должно быть
+            return false;
+m1:;        if ( ii == s ) break;
+        }
+        for ( nat j = 0, a = temp.las(); j < temp.size(); ++j )
+        {
+            const nat b = temp[j];
+            Bone ** bb = tree.find ( Set2<nat> ( b, a ) );
+            if ( bb )
+            {
+                Bone * bone = * bb;
+                bone->s1 = side;
+                side->addAftLas ( & bone->b1 );
+                tree.del ( Set2<nat> ( b, a ) );
+            }
+            else
+            {
+                Bone * bone = new Bone ( varr[a], varr[b], side, 0 );
+                poly.bones.addAftLas ( bone );
+                side->addAftLas ( & bone->b0 );
+                tree.add ( Set2<nat> ( a, b ), bone );
+            }
+            a = b;
+        }
+    }
     return true;
 }
