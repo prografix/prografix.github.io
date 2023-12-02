@@ -3,57 +3,60 @@
 <link rel="stylesheet" type="text/css" href="stylle.css"></head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
 <div align="center">
-<table width="800" cellspacing="0" cellpadding="0">
+<table width="900" cellspacing="0" cellpadding="0">
 <div align=center><br>
 <font color="" style="font-size: 20pt">Пересечения в пространстве</font>
 </div>
 <div align=left><td><br>
-<p>В этом разделе представлены различные пересечения в пространстве.
-<p>Первая функция определяет пересекаются ли точка и шар:
+<p>В этом разделе представлены различные варианты пересечения в пространстве.
+<p>&bull; Определение факта пересечения точки и шара:
 <pre>
 bool isIntersect ( const Vector3d & p, const Sphere3d & fig );
 </pre>
-Следующие функции находят точку пересечения плоскостей, прямых и отрезков, если она единственная:
-<pre>Def&lt;Vector3d> intersection ( const Plane3d & plane1, const Plane3d & plane2, 
-                             const Plane3d & plane3 );
+&bull; Пересечения плоскостей, прямых и отрезков:
+<pre>
+Def&lt;Line3d>   intersection ( const Plane3d & plane1, const Plane3d & plane2 );
+Def&lt;Vector3d> intersection ( const Plane3d & plane1, const Plane3d & plane2, const Plane3d & plane3 );
 Def&lt;Vector3d> intersection ( const Plane3d & plane, const Line3d & line );
 Def&lt;Vector3d> intersection ( const Plane3d & plane, const Segment3d & seg );
 </pre>
-Следующая функция находит пересечение двух плоскостей:
-<pre>Def&lt;Line3d> intersection ( const Plane3d & plane1, const Plane3d & plane2 );
-</pre>
-Функция cut отсекает заданной плоскостью часть отрезка находящуюся в положительном полупространстве.
+&bull; Функция cut отсекает заданной плоскостью часть отрезка находящуюся в положительном полупространстве.
 Если там находятся оба конца отрезка, то функция возвращает неопределённый отрезок:
 <pre>Def&lt;Segment3d> cut ( const Plane3d & plane, const Segment3d & seg );
 </pre>
 </p>
-<p>Следующие функции находят пересечения прямых и отрезков с шаром:
+<p>&bull; Пересечения прямых и отрезков с шаром:
 <pre>Def&lt;Segment3d> intersection ( const Line3d & line, const Sphere3d & sphere );
 Def&lt;Segment3d> intersection ( const Segment3d & seg, const Sphere3d & sphere );
 </pre>
 </p>
-<p>Следующие функции находят пересечения прямых и отрезков с эллипсоидом:
+<p>&bull; Пересечения прямых и отрезков с эллипсоидом:
 <pre>Def&lt;Segment3d> intersection ( const Line3d & line, const Ellipsoid3d & e );
 Def&lt;Segment3d> intersection ( const Segment3d & seg, const Ellipsoid3d & e );
 </pre>
 </p>
-<p>Следующая функция находит пересечение многогранника и плоскости:
-<pre>bool intersection ( const Polyhedron & poly, const Plane3d & plane, 
-                    DynArrRef&lt;DynArray&lt;Vector3d> > & res );
+<p>&bull; Пересечение многогранника и плоскости:
+<pre>bool intersection ( const Polyhedron & poly, const Plane3d & plane, DynArrRef&lt;DynArray&lt;Vector3d> > & res );
 </pre>
 В результате будет получено множество ( возможно пустое ) многоугольников в пространстве.
 </p>
-<p>Функция cut отсекает данной плоскостью часть многогранника или, другими словами, находит пересечение
+<p>&bull; Функция cut отсекает данной плоскостью часть многогранника или, другими словами, находит пересечение
 многогранника и отрицательного полупространства, заданного плоскостью:
 <pre>bool cut ( const Polyhedron & poly, const Plane3d & plane, Polyhedron & res, int info = 0 );
 </pre>
 Ссылки poly и res должны ссылаться на разные объекты. Новые грани помечаются значением параметра info.
 </p>
-<p>Следующая функция находит пересечение выпуклого многогранника с произвольным:
+<p>&bull; Пересечение выпуклого многогранника с произвольным:
 <pre>
 bool intersect1c ( const Polyhedron & conv, const Polyhedron & poly, Polyhedron & res );
 </pre>
 Здесь ссылка res может ссылаться на объект conv или poly.</p>
+<p>&bull; Пересечение множества полупространств содержащих центр координат. Результатом будет выпуклый многогранник:
+<pre>
+bool intersectHalfSpaces ( CCArrRef&lt;const Plane3d *> & plane, Polyhedron & poly );
+</pre>
+В случае обнаружения ошибки в ходе выполнения функция возвращает значение false.
+</p>
 <p>Описание класса Vector3d находится <a href="rus_vector.html">здесь</a>.
 <br>Описание класса Polyhedron находится <a href="rus_polyhedron.html">здесь</a>
 <br>Описание шаблона классов Def находится <a href="def.html">здесь</a>.
@@ -64,21 +67,10 @@ bool intersect1c ( const Polyhedron & conv, const Polyhedron & poly, Polyhedron 
 <p>В приложении <a href="demo/demo.html">DEMO</a> можно посмотреть на результаты некоторых пересечений.
 </p>
 <a href="rus_geom.html">Наверх</a>
-</pre>
-
 <pre>
+
+</pre>
 </td></div>
 </table>
-<script type="text/javascript">
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
-
-<script type="text/javascript">
-try {
-var pageTracker = _gat._getTracker("UA-10825496-1");
-pageTracker._trackPageview();
-} catch(err) {}
-</script>
 </body>
 </html>
