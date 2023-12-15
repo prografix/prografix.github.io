@@ -916,9 +916,9 @@ bool intersection ( CCArrRef<Vector2d> & poly1, CCArrRef<Vector2d> & poly2, Suit
 //
 //           ѕересечение полуплоскостей содержащих центр координат
 //
-//**************************** 24.11.2023 *********************************//
+//**************************** 15.12.2023 *********************************//
 
-bool intersectHalfPlanes ( CCArrRef<const Line2d *> & line, DynArrRef<Vector2d> & poly )
+bool intersectHalfPlanes ( CCArrRef<Line2d> & line, DynArrRef<Vector2d> & poly )
 {
     const nat n = line.size();
     if ( n < 3 )
@@ -928,12 +928,12 @@ bool intersectHalfPlanes ( CCArrRef<const Line2d *> & line, DynArrRef<Vector2d> 
     DynArray<Vector2d> point ( n );
     for ( i = 0; i < n; ++i )
     {
-        const Line2d * p = line[i];
-        if ( p->dist >= 0 )
+        const Line2d & p = line[i];
+        if ( p.dist >= 0 )
             return false;
         Vector2d & v = point[i];
-        v.x = p->norm.x / p->dist;
-        v.y = p->norm.y / p->dist;
+        v.x = p.norm.x / p.dist;
+        v.y = p.norm.y / p.dist;
     }
 // ѕостроение выпуклой оболочки
     Suite<nat> index;

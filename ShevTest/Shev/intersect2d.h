@@ -203,6 +203,6 @@ bool intersection ( CCArrRef<Vector2d> & poly1, CCArrRef<Vector2d> & poly2, Suit
 //
 //           Пересечение полуплоскостей содержащих центр координат
 //
-//**************************** 24.11.2023 *********************************//
+//**************************** 15.12.2023 *********************************//
 
-bool intersectHalfPlanes ( CCArrRef<const Line2d *> & line, DynArrRef<Vector2d> & poly );
+bool intersectHalfPlanes ( CCArrRef<Line2d> & line, DynArrRef<Vector2d> & poly );
