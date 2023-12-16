@@ -613,11 +613,11 @@ void intersectHalfSpaces()
     //poly1.makeCube(1);
     //poly1.makeTetrahedron(1);
     nat i;
-    Suite<const Plane3d *> plane;
-    for ( i = 0; i < poly1.facet.size(); ++i ) plane.inc() = & poly1.facet[i].plane;
-    for ( i = 0; i < poly2.facet.size(); ++i ) plane.inc() = & poly2.facet[i].plane;
-    for ( i = 0; i < poly1.facet.size(); ++i ) plane.inc() = & poly1.facet[i].plane;
-    for ( i = 0; i < poly2.facet.size(); ++i ) plane.inc() = & poly2.facet[i].plane;
+    Suite<Plane3d> plane;
+    for ( i = 0; i < poly1.facet.size(); ++i ) plane.inc() = poly1.facet[i].plane;
+    for ( i = 0; i < poly2.facet.size(); ++i ) plane.inc() = poly2.facet[i].plane;
+    for ( i = 0; i < poly1.facet.size(); ++i ) plane.inc() = poly1.facet[i].plane;
+    for ( i = 0; i < poly2.facet.size(); ++i ) plane.inc() = poly2.facet[i].plane;
     draw ( poly1, 0, 1, 1, 1, VM_WIRE );
     draw ( poly2, 0, 1, 1, 1, VM_WIRE );
     Polyhedron poly;

@@ -71,7 +71,7 @@ bool intersection ( CCArrRef&lt;Vector2d> & poly1, CCArrRef&lt;Vector2d> & poly2
 </p>
 <p>&bull; Пересечение множества полуплоскостей содержащих центр координат. Результатом будет выпуклый многоугольник:
 <pre>
-bool intersectHalfPlanes ( CCArrRef&lt;const Line2d *> & line, DynArrRef&lt;Vector2d> & poly );
+bool intersectHalfPlanes ( CCArrRef&lt;Line2d> & line, DynArrRef&lt;Vector2d> & poly );
 </pre>
 В случае обнаружения ошибки в ходе выполнения функция возвращает значение false.
 </p>

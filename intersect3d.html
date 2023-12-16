@@ -53,7 +53,7 @@ bool intersect1c ( const Polyhedron & conv, const Polyhedron & poly, Polyhedron 
 Здесь ссылка res может ссылаться на объект conv или poly.</p>
 <p>&bull; Пересечение множества полупространств содержащих центр координат. Результатом будет выпуклый многогранник:
 <pre>
-bool intersectHalfSpaces ( CCArrRef&lt;const Plane3d *> & plane, Polyhedron & poly );
+bool intersectHalfSpaces ( CCArrRef&lt;Plane3d> & plane, Polyhedron & poly );
 </pre>
 В случае обнаружения ошибки в ходе выполнения функция возвращает значение false.
 </p>

@@ -591,11 +591,11 @@ void intersectHalfPlanes()
         return;
     }
     nat i;
-    Suite<const Line2d *> line;
-    for ( i = 0; i < line1.size(); ++i ) line.inc() = line1(i);
-    for ( i = 0; i < line2.size(); ++i ) line.inc() = line2(i);
-    for ( i = 0; i < line1.size(); ++i ) line.inc() = line1(i);
-    for ( i = 0; i < line2.size(); ++i ) line.inc() = line2(i);
+    Suite<Line2d> line;
+    for ( i = 0; i < line1.size(); ++i ) line.inc() = line1[i];
+    for ( i = 0; i < line2.size(); ++i ) line.inc() = line2[i];
+    for ( i = 0; i < line1.size(); ++i ) line.inc() = line1[i];
+    for ( i = 0; i < line2.size(); ++i ) line.inc() = line2[i];
     Suite<Vector2d> poly;
     if ( ! intersectHalfPlanes ( line, poly ) )
     {

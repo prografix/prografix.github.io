@@ -1214,9 +1214,9 @@ bool intersect1c ( const Polyhedron & conv, const Polyhedron & poly, Polyhedron 
 //
 //           ѕересечение полупространств содержащих центр координат
 //
-//**************************** 26.11.2023 *********************************//
+//**************************** 16.12.2023 *********************************//
 
-bool intersectHalfSpaces ( CCArrRef<const Plane3d *> & plane, Polyhedron & poly )
+bool intersectHalfSpaces ( CCArrRef<Plane3d> & plane, Polyhedron & poly )
 {
     const nat n = plane.size();
     if ( n < 4 )
@@ -1229,16 +1229,16 @@ bool intersectHalfSpaces ( CCArrRef<const Plane3d *> & plane, Polyhedron & poly 
     DynArray<Vector3d> point ( n );
     for ( i = 0; i < n; ++i )
     {
-        const Plane3d * p = plane[i];
-        if ( p->dist >= 0 )
+        const Plane3d & p = plane[i];
+        if ( p.dist >= 0 )
         {
             poly.makeVoid();
             return false;
         }
         Vector3d & v = point[i];
-        v.x = p->norm.x / p->dist;
-        v.y = p->norm.y / p->dist;
-        v.z = p->norm.z / p->dist;
+        v.x = p.norm.x / p.dist;
+        v.y = p.norm.y / p.dist;
+        v.z = p.norm.z / p.dist;
     }
 // ѕостроение выпуклой оболочки
     DynArray<nat> iv ( n );
@@ -1274,7 +1274,7 @@ bool intersectHalfSpaces ( CCArrRef<const Plane3d *> & plane, Polyhedron & poly 
     for ( i = 0; i < nv; ++i )
     {
         Facet & fi = poly.facet[i];
-        fi.plane = *plane[iv[i]];
+        fi.plane = plane[iv[i]];
         temp.resize();
         const nat s = start[i];
         for ( nat ii = s;; )
