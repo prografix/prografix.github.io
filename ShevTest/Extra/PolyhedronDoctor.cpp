@@ -194,7 +194,7 @@ PolyhedronDoctorReturn doctorPolyhedron ( Suite<Vector3d> & vertex, CArrRef<Set2
                 const nat i0 = index[s.a];
                 const nat i1 = index[s.b];
                 const nat i2 = index[s.c];
-                if ( i0 == i1 || i1 == i2 || i2 == i1 ) continue;
+                if ( i0 == i1 || i1 == i2 || i2 == i0 ) continue;
                 Set2<CmbArray<nat, 3>, Plane3d> & side2 = facet2.inc();
                 side2.a.resize ( 3 );
                 side2.a[0] = i0;
