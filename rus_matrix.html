@@ -2,11 +2,11 @@
 <head><title>Матрицы</title>
 <link rel="stylesheet" type="text/css" href="stylle.css"></head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
-<div align="center"><center>
-<table width="680" cellspacing="0" cellpadding="0">
+<div align="center">
+<table width="800" cellspacing="0" cellpadding="0">
 <div align=center><br>
 <font color="" style="font-size: 20pt">Матрицы</font>
-</div><br><td>
+</div><tr><td>
 <p>В этот разделе описаны шаблоны классов предназначенные для представления математических матриц.
 <br>Шаблон IMatrix является интерфейсным, и его классы не выделяют память для элементов матриц:
 <pre>
@@ -212,20 +212,139 @@ bool trans  ( const IMatrix&lt;Complex> & a, IMatrix&lt;Complex> & b ); // b = a
 
 bool lss_h ( IMatrix&lt;Complex> & a, const Complex * b, Complex * x ); // b[a.nRow], x[a.nCol]
 </pre>
+Следующий шаблон создаёт матрицы размер которых можно менять в ходе выполнения программы ( метод resize ).
+Также у этих матриц можно менять местами строки при помощи метода swapRows.
+<pre>
+template &lt;class Type> class DMatrix
+{
+    Type * data;
+    Type ** row;
+    nat nRow; // к-во строк
+    nat nCol; // к-во столбцов
+// Запрет оператора присваивания
+    DMatrix & operator = ( const DMatrix & m );
+public:
+    DMatrix () : nRow(0), nCol(0), row(0), data(0) {}
+
+    DMatrix ( nat r, nat c ) : nRow(r), nCol(c)
+    {
+        if ( nRow > 0 )
+        {
+            row = new Type*[nRow];
+            if ( nCol > 0 )
+            {
+                row[0] = data = new Type[nRow*nCol];
+                for ( nat i = 1; i < nRow; ++i ) row[i] = row[i-1] + nCol;
+            }
+            else
+            {
+                data = 0;
+                for ( nat i = 0; i < nRow; ++i ) row[i] = 0;
+            }
+        }
+        else
+        {
+            row = 0;
+            data = 0;
+        }
+    }
+
+    explicit DMatrix ( const DMatrix&lt;Type> & m ) : nRow ( m.nRow ), nCol ( m.nCol )
+    {
+        if ( nRow > 0 )
+        {
+            row = new Type*[nRow];
+            if ( nCol > 0 )
+            {
+                nat i;
+                row[0] = data = new Type[nRow*nCol];
+                for ( i = 1; i < nRow; ++i ) row[i] = row[i-1] + nCol;
+                for ( i = 0; i < nRow; ++i )
+                {
+                    Type * pi = row[i];
+                    const Type * mi = m[i];
+                    for ( nat j = 0; j < nCol; ++j ) pi[j] = mi[j];
+                }
+            }
+            else
+            {
+                data = 0;
+                for ( nat i = 0; i < nRow; ++i ) row[i] = 0;
+            }
+        }
+        else
+        {
+            row = 0;
+            data = 0;
+        }
+    }
+
+    ~DMatrix()
+    {
+        delete[] data;
+        delete[] row;
+    }
+
+    nat rowSize () { return nRow; } // к-во строк
+    nat colSize () { return nCol; } // к-во столбцов
+
+    DMatrix & resize ( nat r, nat c )
+    {
+        delete[] data;
+        delete[] row;
+        nRow = r;
+        nCol = c;
+        if ( r > 0 )
+        {
+            row = new Type*[r];
+            if ( c > 0 )
+            {
+                row[0] = data = new Type[r*c];
+                for ( nat i = 1; i < r; ++i ) row[i] = row[i-1] + c;
+            }
+            else
+            {
+                data = 0;
+                for ( nat i = 0; i < r; ++i ) row[i] = 0;
+            }
+        }
+        else
+        {
+            row = 0;
+            data = 0;
+        }
+        return *this;
+    }
+
+          Type * operator [] ( nat i )       { return row[i]; }
+    const Type * operator [] ( nat i ) const { return row[i]; }
+
+    bool swapRows ( nat i1, nat i2 )
+    {
+        if ( i1 >= nRow || i2 >= nRow ) return false;
+        _swap ( row[i1], row[i2] );
+        return true;
+    }
+
+    DMatrix & fill ( const Type & p )
+    {
+        const nat n = nRow * nCol;
+        for ( nat i = 0; i < n; ++i ) data[i] = p;
+        return *this;
+    }
+
+    DMatrix & operator *= ( const Type & p )
+    {
+        const nat n = nRow * nCol;
+        for ( nat i = 0; i < n; ++i ) data[i] *= p;
+        return *this;
+    }
+};
+</pre>
 <a href="template.html">Наверх</a>
 <p>
 <br>
-</p></td>
-</table>
-<script type="text/javascript">
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
-<script type="text/javascript">
-try {
-var pageTracker = _gat._getTracker("UA-10825496-1");
-pageTracker._trackPageview();
-} catch(err) {}
-</script>
+</p></td></tr>
+</table></div>
 </body>
 </html>
