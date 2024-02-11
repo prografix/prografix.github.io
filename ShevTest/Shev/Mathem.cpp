@@ -630,7 +630,7 @@ double SLU_Gauss::determinant () const
 //      Решение систем линейных уравнений методом Гаусса.
 //      Выбор ведущего элемента по столбцам.
 //
-//*************************** 12.03.2023 ******************************//
+//*************************** 27.04.2016 ******************************//
 
 bool slu_gauss ( ArrRef2<double> & data )
 {
@@ -683,65 +683,6 @@ bool slu_gauss ( ArrRef2<double> & data )
             ArrRef<double> ri = data[i];
             const double t = ri[j];
             for ( k = n; k < n1; ++k ) ri[k] -= rj[k] * t;
-        }
-    }
-    return true;
-}
-
-bool slu_gauss ( ArrRef2<double> & data, const nat nc )
-{
-    const nat n = data.size0();
-    const nat n1 = data.size1();
-    if ( nc == 0 || nc > n || n1 <= n ) return false;
-// Прямой ход
-    nat i, j, k;
-    for ( k = 0; k < nc; ++k )
-    {
-        const nat k1 = k + 1;
-// Поиск максимального по модулю члена в k-том столбце
-        nat m = k;
-        double max = fabs ( data[m][k] );
-        for ( i = k1; i < n; ++i )
-        {
-            const double t = fabs ( data[i][k] );
-            if ( max < t ) max = t, m = i;
-        }
-        if ( max == 0 ) return false;
-        const double p = 1. / data[m][k];
-        double * rk = data(k);
-        if ( m > k )
-        {
-// Меняем местами k-ую и m-ую строки
-            double * rm = data(m);
-            for ( i = k; i < n1; ++i )
-            {
-                _swap ( rk[i], rm[i] ); rk[i] *= p;
-            }
-        }
-        else
-        {
-            for ( i = k1; i < n1; ++i ) rk[i] *= p;
-        }
-        rk[k] = 1;
-// Вычитание строк
-        for ( j = k1; j < n; ++j )
-        {
-            double * rj = data(j);
-            const double t = rj[k];
-            for ( i = k1; i < n1; ++i ) rj[i] -= rk[i] * t;
-            rj[k] = 0;
-        }
-    }
-// Обратная подстановка
-    for ( j = nc; --j > 0; )
-    {
-        CArrRef<double> rj = data[j];
-        for ( i = 0; i < j; ++i )
-        {
-            double * ri = data(i);
-            const double t = ri[j];
-            for ( k = nc; k < n1; ++k ) ri[k] -= rj[k] * t;
-            ri[j] = 0;
         }
     }
     return true;

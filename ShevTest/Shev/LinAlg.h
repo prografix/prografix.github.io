@@ -503,7 +503,7 @@ bool _sluGaussRow ( Matrix & data, nat nRow, nat nCol, nat index[], nat mRow, na
 {
     if ( mRow > nRow ) mRow = nRow;
     if ( mCol > nCol ) mCol = nCol;
-    if ( mRow < 2 || mRow > mCol ) return false;
+    if ( mRow < 1 || mRow > mCol ) return false;
 // Прямой ход
     nat i, j, k;
     for ( i = 0; i < nCol; ++i ) index[i] = i;
@@ -573,3 +573,62 @@ bool sluGaussRow ( ArrRef2<T> & data, nat nRow, nat nCol, unsigned * index, nat 
 {
     return _sluGaussRow ( data, nRow, nCol, index, mRow, mCol );
 }
+
+//*************************** 10.02.2024 ******************************//
+//
+//    Метод исключений Гаусса. Выбор ведущего элемента по столбцам.
+//    nc - количество первых столбцов для выбора.
+//
+//*************************** 10.02.2024 ******************************//
+
+template <class T> bool sluGaussCol ( T & data, const nat nc )
+{
+    const nat nRow = data.rowSize();
+    const nat nCol = data.colSize();
+    if ( nc > nRow || nc >= nCol ) return false;
+// Прямой ход
+    nat i, j, k;
+    for ( k = 0; k < nc; ++k )
+    {
+        const nat k1 = k + 1;
+// Поиск максимального по модулю члена в k-том столбце
+        nat m = k;
+        double max = fabs ( data[m][k] );
+        for ( i = k1; i < nRow; ++i )
+        {
+            const double t = fabs ( data[i][k] );
+            if ( max < t ) max = t, m = i;
+        }
+        if ( max == 0 )
+            return false;
+        const double p = 1. / data[m][k];
+// Меняем местами k-ую и m-ую строки
+        data.swapRows ( k, m );
+// Нормализуем k-ую строку
+        double * rk = data[k];
+        for ( i = k1; i < nCol; ++i ) rk[i] *= p;
+        rk[k] = 1;
+// Вычитание строк
+        for ( j = k1; j < nRow; ++j )
+        {
+            double * rj = data[j];
+            const double t = rj[k];
+            for ( i = k1; i < nCol; ++i ) rj[i] -= rk[i] * t;
+            rj[k] = 0;
+        }
+    }
+// Обратная подстановка
+    for ( j = nc; --j > 0; )
+    {
+        const double * rj = data[j];
+        for ( i = 0; i < j; ++i )
+        {
+            double * ri = data[i];
+            const double t = ri[j];
+            for ( k = nc; k < nCol; ++k ) ri[k] -= rj[k] * t;
+            ri[j] = 0;
+        }
+    }
+    return true;
+}
+
