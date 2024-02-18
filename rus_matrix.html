@@ -285,8 +285,8 @@ public:
         delete[] row;
     }
 
-    nat rowSize () { return nRow; } // к-во строк
-    nat colSize () { return nCol; } // к-во столбцов
+    nat rowSize () const { return nRow; } // к-во строк
+    nat colSize () const { return nCol; } // к-во столбцов
 
     DMatrix & resize ( nat r, nat c )
     {

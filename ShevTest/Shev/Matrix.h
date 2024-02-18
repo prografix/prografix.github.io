@@ -303,8 +303,8 @@ public:
         delete[] row;
     }
 
-    nat rowSize () { return nRow; } // ך-גמ סענמך
-    nat colSize () { return nCol; } // ך-גמ סעמכבצמג
+    nat rowSize () const { return nRow; } // ך-גמ סענמך
+    nat colSize () const { return nCol; } // ך-גמ סעמכבצמג
 
     DMatrix & resize ( nat r, nat c )
     {
