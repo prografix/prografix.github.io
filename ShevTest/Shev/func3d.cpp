@@ -1463,3 +1463,35 @@ bool normalizePolyhedron ( ArrRef<Set2<DynArray<nat>, Plane3d> > & facet, ArrRef
     }
     return true;
 }
+
+bool normalizePolyhedron2 ( ArrRef<Set2<DynArray<nat>, Plane3d> > & facet, ArrRef<Vector3d> & vertex )
+{
+    const nat nv = vertex.size();
+    const nat nf = facet.size();
+    DynArray<Suite<Set2<nat, double> > > vp ( 3*nv );
+    DynArray<DMatrix<double> > fp ( nf );
+    nat i, k = 0;
+    for ( i = 0; i < nf; ++i )
+    {
+        const Set2<DynArray<nat>, Plane3d> & f = facet[i];
+        if ( f.a.size() < 4 ) continue;
+        const DMatrix<double> & mat = fp[i];
+        for ( nat j = 0; j < mat.rowSize(); ++j )
+        {
+            const double * row = mat[j];
+            for ( nat m = 3; m < mat.colSize(); ++m )
+            {
+                const double a = row[m];
+                if ( ! a ) continue;
+                const nat i0 = 3 * f.a[m-3];
+                const nat i1 = i0 + 1;
+                const nat i2 = i1 + 1;
+                vp[i0].inc() = Set2<nat, double> ( k, f.b.norm.x * a );
+                vp[i1].inc() = Set2<nat, double> ( k, f.b.norm.y * a );
+                vp[i2].inc() = Set2<nat, double> ( k, f.b.norm.z * a );
+            }
+            ++k;
+        }
+    }
+    return true;
+}
