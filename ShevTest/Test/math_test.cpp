@@ -274,6 +274,15 @@ void rootN_test ()
     display << "end" << NL;
 }
 
+void log_test ()
+{
+    static PRand rand;
+    Complex x ( -rand(), -rand() );
+    Complex y = log ( x );
+    Complex z = exp ( y );
+    x = y;
+}
+
 void lss_test1()
 {
     SMatrix<double, 6, 5> a;
@@ -2074,6 +2083,7 @@ void math_test ()
 //    ellipseCircumference_test ();
 //    fmax_test();
 //    over_lin_sys2();
-    minNorm_test3();
+//    minNorm_test3();
+    log_test ();
 //    slu_gauss_test();
 }
