@@ -276,11 +276,29 @@ void rootN_test ()
 
 void log_test ()
 {
+    Complex g ( -0.5, 0.5*sqrt(3) );
     static PRand rand;
     Complex x ( -rand(), -rand() );
     Complex y = log ( x );
     Complex z = exp ( y );
     x = y;
+    double s = 0;
+    for ( nat i = 1; i <= 300000; ++i )
+    {
+        if ( i % 3 == 1 ) s += 1./i;
+        if ( i % 3 == 0 ) s -= 1./i;
+    }
+    display << 1000*s << 1000* ( log(3)/2 + M_PI*sqrt(3)/18 ) << NL;
+    s = 0;
+    for ( nat i = 1; i <= 300000; ++i )
+    {
+        if ( i % 3 == 2 ) s += 1./i;
+        if ( i % 3 == 0 )
+            s -= 1./i;
+    }
+    display << 1000*s << 1000*( log(3)/2 - M_PI*sqrt(3)/18 ) << NL;
+   // display << 1000*( ~g * log ( Complex(1) - g ) ).re << 250*log(3) + 1000*M_PI*sqrt(3)/12 << NL;
+   // display << 1000*( ~g * log ( Complex(1) - g ) ).im << 250*log(3)*sqrt(3) - 1000*M_PI/12 << NL;
 }
 
 void lss_test1()
