@@ -239,8 +239,6 @@ template <class Type> class DMatrix
     Type ** row;
     nat nRow; // к-во строк
     nat nCol; // к-во столбцов
-// Запрет оператора присваивания
-    DMatrix & operator = ( const DMatrix & m );
 public:
     DMatrix () : nRow(0), nCol(0), row(0), data(0) {}
 
@@ -301,17 +299,31 @@ public:
     {
         delete[] data;
         delete[] row;
+    } 
+ 
+    DMatrix & operator = ( const DMatrix & m )
+    {
+        if ( this == & m ) return *this;
+        resize ( m.nRow, m.nCol );
+        for ( nat i = 0; i < nRow; ++i )
+        {
+            Type * pi = row[i];
+            const Type * mi = m[i];
+            for ( nat j = 0; j < nCol; ++j ) pi[j] = mi[j];
+        }
+        return *this;
     }
 
     nat rowSize () const { return nRow; } // к-во строк
     nat colSize () const { return nCol; } // к-во столбцов
 
     DMatrix & resize ( nat r, nat c )
-    {
-        delete[] data;
-        delete[] row;
+    { 
+        if ( nRow == r && nCol == c ) return *this;
         nRow = r;
         nCol = c;
+        delete[] data;
+        delete[] row;
         if ( r > 0 )
         {
             row = new Type*[r];
