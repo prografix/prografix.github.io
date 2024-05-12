@@ -2,7 +2,7 @@
 #ifndef SHEV_LIST_H
 #define SHEV_LIST_H
 
-#include "typedef.h"
+#include "template.h"
 
 namespace SL
 {
@@ -427,21 +427,11 @@ public:
 
 //***************************************************************************//
 
-template <class T> class ListItem : public T, public ShevItem
+template <class T> class ListItem : public Derived<T>, public ShevItem
 {
 public:
     ListItem () {}
-    explicit ListItem ( const T & t, int i = -123456789 ) : T(t), ShevItem(i) {}
-    T & base () { return *this; }
-};
-
-template <class T> class ListItemA : public ShevItem
-{
-public:
-    T a;
-    ListItemA () {}
-    explicit ListItemA ( const T & t, int i = -123456789 ) : a(t), ShevItem(i) {}
-    operator const T & () const { return a; }
+    explicit ListItem ( const T & t, int i = -123456789 ) : Derived<T>(t), ShevItem(i) {}
 };
 
 template <class T> class List : public ShevList

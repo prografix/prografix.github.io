@@ -7,16 +7,16 @@
 
 /***********************************************/
 
-typedef ListItemA<int> Item1i;
+typedef ListItem<int> Item1i;
 typedef List<Item1i> List1i;
 
-typedef ListItemA<nat> Item1n;
+typedef ListItem<nat> Item1n;
 typedef List<Item1n> List1n;
 
-typedef ListItemA<double> Item1d;
+typedef ListItem<double> Item1d;
 typedef List<Item1d> List1d;
 
-typedef ListItemA<void *> Item1p;
+typedef ListItem<void *> Item1p;
 typedef List<Item1p> List1p;
 
 /***********************************************/

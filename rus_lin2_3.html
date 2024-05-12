@@ -63,11 +63,6 @@ public:
         return *this;
     }
 
-    Matrix2&lt;T1> & matrix ()
-    {
-        return (Matrix2&lt;T1> &) *this;
-    }
-
     SLU2 & operator += ( const SLU2 & slu )
     {
         aa += slu.aa; ab += slu.ab; ac += slu.ac;

@@ -461,20 +461,61 @@ template <class T> inline T & operator <= ( T & v, const NegY & ) { v.y = - v.y;
 class NegXY {};
 template <class T> inline T & operator <= ( T & v, const NegXY & ) { v.x = - v.x; v.y = - v.y; return v; }
 
+/************************* Derived ***************************/
+
+template <class T> struct Derived : public T
+{
+    Derived () {}
+    Derived ( const T & t ) : T(t) {}
+    T & base () { return *this; }
+    const T & base () const { return *this; }
+};
+
+template <class T> struct DerivedA : public Set1<T>
+{
+    DerivedA () {}
+    DerivedA ( const T & t ) : Set1<T>(t) {}
+    T & base () { return a; }
+    const T & base () const { return a; }
+};
+
+template <> struct Derived <int> : public DerivedA<int>
+{
+    Derived () {}
+    Derived ( int t ) : DerivedA<int>(t) {}
+};
+
+template <> struct Derived <nat> : public DerivedA<nat>
+{
+    Derived () {}
+    Derived ( nat t ) : DerivedA<nat>(t) {}
+};
+
+template <> struct Derived <bool> : public DerivedA<bool>
+{
+    Derived () {}
+    Derived ( bool t ) : DerivedA<bool>(t) {}
+};
+
+template <> struct Derived <double> : public DerivedA<double>
+{
+    Derived () {}
+    Derived ( double t ) : DerivedA<double>(t) {}
+};
+
+template <> struct Derived <void *> : public DerivedA<void *>
+{
+    Derived () {}
+    Derived ( void * t ) : DerivedA<void *>(t) {}
+};
+
 /************************* Def ***************************/
 
-template <class T> struct BaseType { typedef T type; };
-template <> struct BaseType <int> { typedef Set1<int> type; };
-template <> struct BaseType <nat> { typedef Set1<nat> type; };
-template <> struct BaseType <bool> { typedef Set1<bool> type; };
-template <> struct BaseType <double> { typedef Set1<double> type; };
-
-template <class T> struct Def : public BaseType<T>::type
+template <class T> struct Def : public Derived<T>
 {
-    typedef typename BaseType<T>::type base;
     bool isDef;
 
     Def () : isDef(false) {}
-    Def ( const T & v, bool d = true ) : base ( v ), isDef ( d ) {}
-    Def & operator = ( const T & v ) { isDef = true; *(base*) this = v; return *this; }
+    Def ( const T & v, bool d = true ) : Derived<T> ( v ), isDef ( d ) {}
+    Def & operator = ( const T & v ) { isDef = true; base() = v; return *this; }
 };
