@@ -339,12 +339,6 @@ inline bool operator == ( const Set4<A,B,C,D> & a, const Set4<A,B,C,D> & b )
     return a.a == b.a && a.b == b.b && a.c == b.c && a.d == b.d;
 }
 
-/***********************  Merge... *************************/
-
-template<class A, class B> struct Merge2 : public A, public B {};
-
-template<class A, class B, class C> struct Merge3 : public A, public B, public C {};
-
 /************************ SortItem *************************/
 
 template <class H, class T=H> 

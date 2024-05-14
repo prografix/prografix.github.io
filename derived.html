@@ -1,0 +1,69 @@
+﻿<html>
+<head><title>Шаблон Derived</title><link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor="#eeeeba" MARGINWIDTH=0 MARGINHEIGHT=0 link="#0000F0" alink="#aaaaFF" vlink="#339900">
+<div align="center"><br>
+<font color="" style="font-size: 20pt">Шаблон Derived</font>
+<table width="800" cellspacing="0" cellpadding="0">
+<tr><td>
+<p>
+<br>Шаблон Derived предназначен для двух целей. Во-первых, чтобы создавать производный класс
+с интерфейсом преобразования его к базовому. А во-вторых, чтобы делать производные классы от встроенных типов:
+</p>
+<pre>
+template &lt;class T> struct Derived : public T
+{
+    Derived () {}
+    Derived ( const T & t ) : T(t) {}
+    T & base () { return *this; }
+    const T & base () const { return *this; }
+};
+
+template &lt;class T> struct DerivedA : public Set1&lt;T>
+{
+    DerivedA () {}
+    DerivedA ( const T & t ) : Set1&lt;T>(t) {}
+    T & base () { return a; }
+    const T & base () const { return a; }
+};
+
+template <> struct Derived &lt;int> : public DerivedA&lt;int>
+{
+    Derived () {}
+    Derived ( int t ) : DerivedA&lt;int>(t) {}
+};
+
+template <> struct Derived &lt;nat> : public DerivedA&lt;nat>
+{
+    Derived () {}
+    Derived ( nat t ) : DerivedA&lt;nat>(t) {}
+};
+
+template <> struct Derived &lt;bool> : public DerivedA&lt;bool>
+{
+    Derived () {}
+    Derived ( bool t ) : DerivedA&lt;bool>(t) {}
+};
+
+template <> struct Derived &lt;double> : public DerivedA&lt;double>
+{
+    Derived () {}
+    Derived ( double t ) : DerivedA&lt;double>(t) {}
+};
+
+template <> struct Derived &lt;void *> : public DerivedA&lt;void *>
+{
+    Derived () {}
+    Derived ( void * t ) : DerivedA&lt;void *>(t) {}
+};
+</pre>
+<p>Описание шаблона Set1 находится <a href="composition.html">здесь</a>.
+</p>
+<p>
+Исходники находятся в файле <a href="source/source.zip">Template.h</a>.
+</p>
+<a href="template.html">Наверх</a>
+</td></tr>
+</table>
+</div>
+</body>
+</html>

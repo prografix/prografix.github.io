@@ -1,17 +1,12 @@
 ﻿<html>
-<head><title>Наборы объектов</title>
-<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<head><title>Наборы объектов</title><link rel="stylesheet" type="text/css" href="stylle.css"></head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
-<div align="center"><center>
-<table width="700" cellspacing="0" cellpadding="0">
-<div align=center>
-<br>
+<div align="center"><br>
 <font color="" style="font-size: 20pt">Наборы объектов</font>
-</div>
-<br>
-<div align=left><td>
+<table width="800" cellspacing="0" cellpadding="0">
+<tr><td>
 <p>
-Шаблон классов Set1 предназначен для создания набора с одним объектом указанного типа:
+<br>Шаблон классов Set1 предназначен для создания набора с одним объектом указанного типа:
 </p>
 <pre>template < class A > struct Set1
 {
@@ -62,23 +57,10 @@
 };
 </pre>
 <p>
-Обратите внимание, что, например, записи Set2&lt;int> и Set2&lt;int, int> обозначают один и тот же тип.
-</p>
-<p>Шаблоны Merge2 и Merge3 предназначены для создания типов состоящих из полей указанных классов:
-</p>
-<pre>
-template &lt; class A, class B > struct Merge2 : public A, public B {};
-
-template &lt; class A, class B, class C > struct Merge3 : public A, public B, public C {};
-</pre>
-<p>
 Исходники находятся в файле <a href="source/source.zip">Template.h</a>.
 </p>
 <a href="template.html">Наверх</a>
-<pre>
-
-</pre>
-</td></div>
+</td></tr>
 </table>
 </div>
 </body>
