@@ -4,6 +4,7 @@
 #include <afx.h> 
 #define new DEBUG_NEW
 
+#include "../Shev/tempext.h"
 #include "../Shev/template.h"
 #include "../Shev/trian2t.h"
 #include "../Shev/trian2d.h"
