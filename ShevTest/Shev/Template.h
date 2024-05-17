@@ -3,134 +3,82 @@
 
 #include "typedef.h"
 
-// Несколько простых функций
+// Возведение в степень
 
-template<class T> inline 
-T _pow2 ( const T & i )
-{
-    return i * i;
-}
+template<class T> inline T _pow2 ( const T & i ) { return i * i; }
+template<class T> inline T _pow3 ( const T & i ) { return i * i * i; }
+template<class T> inline T _pow4 ( const T & i ) { return _pow2 ( i * i ); }
+template<class T> inline T _pow5 ( const T & i ) { return _pow2 ( i * i ) * i; }
+template<class T> inline T _pow6 ( const T & i ) { return _pow3 ( i * i ); }
+template<class T> inline T _pow7 ( const T & i ) { return _pow3 ( i * i ) * i; }
+template<class T> inline T _pow8 ( const T & i ) { return _pow4 ( i * i ); }
+template<class T> inline T _pow9 ( const T & i ) { return _pow3 ( i * i * i ); }
+template<class T> inline T _pow10 ( const T & i ){ return _pow5 ( i * i ); }
 
-template<class T> inline 
-T _pow3 ( const T & i )
-{
-    return i * i * i;
-}
+// Обмен данными
 
-template<class T> inline 
-T _pow4 ( const T & i )
-{
-    return _pow2 ( i * i );
-}
-
-template<class T> inline 
-T _pow5 ( const T & i )
-{
-    return _pow2 ( i * i ) * i;
-}
-
-template<class T> inline 
-T _pow6 ( const T & i )
-{
-    return _pow3 ( i * i );
-}
-
-template<class T> inline 
-T _pow7 ( const T & i )
-{
-    return _pow3 ( i * i ) * i;
-}
-
-template<class T> inline 
-T _pow8 ( const T & i )
-{
-    return _pow4 ( i * i );
-}
-
-template<class T> inline 
-T _pow9 ( const T & i )
-{
-    return _pow3 ( i * i * i );
-}
-
-template<class T> inline 
-T _pow10 ( const T & i )
-{
-    return _pow5 ( i * i );
-}
-
-template<class T> inline 
-void _swap ( T & i1, T & i2 )
+template<class T> inline void _swap ( T & i1, T & i2 )
 {
     const T i ( i1 );
     i1 = i2;
     i2 = i;
 }
 
-template<class T> inline 
-const T & _min ( const T & i1, const T & i2 )
+// Минимумы и максимумы
+
+template<class T> inline const T & _min ( const T & i1, const T & i2 )
 {
     return i1 < i2 ? i1 : i2;
 }
 
-template<class T> inline 
-const T & _max ( const T & i1, const T & i2 )
+template<class T> inline const T & _max ( const T & i1, const T & i2 )
 {
     return i1 > i2 ? i1 : i2;
 }
 
-template<class T> inline 
-const T & _min ( const T & i1, const T & i2, const T & i3 )
+template<class T> inline const T & _min ( const T & i1, const T & i2, const T & i3 )
 {
     return i1 < i2 ? i1 < i3 ? i1 : i3 : i3 < i2 ? i3 : i2;
 }
 
-template<class T> inline 
-const T & _max ( const T & i1, const T & i2, const T & i3 )
+template<class T> inline const T & _max ( const T & i1, const T & i2, const T & i3 )
 {
     return i1 > i2 ? i1 > i3 ? i1 : i3 : i3 > i2 ? i3 : i2;
 }
 
-template<class T> inline 
-const T & _min ( const T & i1, const T & i2, const T & i3, const T & i4 )
+template<class T> inline const T & _min ( const T & i1, const T & i2, const T & i3, const T & i4 )
 {
     return _min ( i1, _min ( i2, i3, i4 ) );
 }
 
-template<class T> inline 
-const T & _max ( const T & i1, const T & i2, const T & i3, const T & i4 )
+template<class T> inline const T & _max ( const T & i1, const T & i2, const T & i3, const T & i4 )
 {
     return _max ( i1, _max ( i2, i3, i4 ) );
 }
 
-template<class T> inline 
-const T & _min ( const T & i1, const T & i2, const T & i3, const T & i4, const T & i5 )
+template<class T> inline const T & _min ( const T & i1, const T & i2, const T & i3, const T & i4, const T & i5 )
 {
     return _min ( i1, _min ( i2, i3, i4, i5 ) );
 }
 
-template<class T> inline 
-const T & _max ( const T & i1, const T & i2, const T & i3, const T & i4, const T & i5 )
+template<class T> inline const T & _max ( const T & i1, const T & i2, const T & i3, const T & i4, const T & i5 )
 {
     return _max ( i1, _max ( i2, i3, i4, i5 ) );
 }
 
-template<class T> inline 
-bool _mina ( T & i1, const T & i2 )
+template<class T> inline bool _mina ( T & i1, const T & i2 )
 {
     return i1 > i2 ? i1 = i2, true : false;
 }
 
-template<class T> inline 
-bool _maxa ( T & i1, const T & i2 )
+template<class T> inline bool _maxa ( T & i1, const T & i2 )
 {
     return i1 < i2 ? i1 = i2, true : false;
 }
 
 /************************ Set1 ***************************/
 
-template<class A>
-struct Set1
+template<class A> struct Set1
 {
     A a;
 
@@ -142,8 +90,7 @@ struct Set1
 
 /************************ Set2 ***************************/
 
-template < class A, class B = A > 
-struct Set2
+template < class A, class B = A > struct Set2
 {
     A a;
     B b;
@@ -218,10 +165,9 @@ Set2<A,B> operator / ( const Set2<A,B> & a, const C & b )
 
 /************************* Set3 **************************/
 
-template < class A, class B = A, class C = B > 
-struct Set3
+template < class A, class B = A, class C = B > struct Set3
 {
-	A a;
+    A a;
     B b;
     C c;
 
@@ -291,10 +237,9 @@ Set3<A,B,C> operator / ( const Set3<A,B,C> & x, const D & y )
 
 /************************* Set4 **************************/
 
-template < class A, class B = A, class C = B, class D = C > 
-struct Set4
+template < class A, class B = A, class C = B, class D = C > struct Set4
 {
-	A a;
+    A a;
     B b;
     C c;
     D d;
@@ -341,8 +286,7 @@ inline bool operator == ( const Set4<A,B,C,D> & a, const Set4<A,B,C,D> & b )
 
 /************************ SortItem *************************/
 
-template <class H, class T=H> 
-struct SortItem
+template <class H, class T=H> struct SortItem
 {
     H head;
     T tail;
