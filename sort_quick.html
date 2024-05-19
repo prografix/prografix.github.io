@@ -1,20 +1,16 @@
 ﻿<html>
-<head><title>"Быстрая" сортировка</title>
-<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<head><title>"Быстрая" сортировка</title><link rel="stylesheet" type="text/css" href="stylle.css"></head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
-<div align="center"><center>
-<table width="800" cellspacing="0" cellpadding="0">
 <div align=center><br>
 <font color="" style="font-size: 20pt">"Быстрая" сортировка</font>
-</div>
-<div align=left><td><br>
+<table width="800" cellspacing="0" cellpadding="0">
+<tr><td>
 <p>"Быстрая" сортировка работает в среднем за время O ( n*log(n) ), а в худшем случае за O ( n<sup>2</sup> ),
 но в отличии от <a href="sort_merge.html">сортировки слиянием</a> не требует дополнительного массива. 
 Здесь эта сортировка представлена в виде двух шаблонов.
 Первый шаблон quickSort123 сортируют элементы массивов по возрастанию: 
 </p>
-<pre>template &lt;class T>
-ArrRef&lt;T> quickSort123 ( ArrRef&lt;T> a )
+<pre>template &lt;class T> ArrRef&lt;T> quickSort123 ( ArrRef&lt;T> & a )
 {
     const nat n = a.size();
     if ( n < 2 ) return a;
@@ -101,17 +97,9 @@ m1:
 <a href="rus_sort.html">Наверх</a>
 <pre>
 
-</pre></td></div>
+</pre>
+</td></tr>
 </table>
-<script type="text/javascript">
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
-<script type="text/javascript">
-try {
-var pageTracker = _gat._getTracker("UA-10825496-1");
-pageTracker._trackPageview();
-} catch(err) {}
-</script>
+</div>
 </body>
 </html>
