@@ -1,13 +1,10 @@
 ﻿<html>
-<head><title>Сортировка слиянием</title>
-<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<head><title>Сортировка слиянием</title><link rel="stylesheet" type="text/css" href="stylle.css"></head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
-<div align="center"><center>
-<table width="800" cellspacing="0" cellpadding="0">
 <div align=center><br>
 <font color="" style="font-size: 20pt">Сортировка слиянием</font>
-</div>
-<div align=left><td><br>
+<table width="800" cellspacing="0" cellpadding="0">
+<tr><td><br>
 <p>Сортировка слиянием работает за время O ( n*log(n) ), как в среднем, так и в худшем случае.
 Единственным недостатком для сортировки массива является необходимость наличия дополнительной памяти (buf)
 равной по размеру исходному массиву (arr). Для сортировки <a href="rus_list.html">списков</a> дополнительная память не требуется.
@@ -23,8 +20,7 @@
 В самом начале размер массива сравнивается с величиной small_size и если он меньше неё, то
 этот массив сортируется <a href="sort_insert.html">сортировкой вставками</a>.
 </p>
-<pre>template&lt;class T> 
-ArrRef&lt;T> mergeSort123 ( ArrRef&lt;T> arr, ArrRef&lt;T> buf )
+<pre>template&lt;class T> ArrRef&lt;T> mergeSort123 ( ArrRef&lt;T> & arr, ArrRef&lt;T> & buf )
 {
     const nat n = arr.size();
     const nat small_size = sizeof(T) > 8 ? 32 : sizeof(T) > 4 ? 50 : 64;
@@ -129,17 +125,9 @@ ArrRef&lt;T> mergeSort123 ( ArrRef&lt;T> arr, ArrRef&lt;T> buf )
 <a href="rus_sort.html">Наверх</a>
 <pre>
 
-</pre></td></div>
+</pre>
+</td></tr>
 </table>
-<script type="text/javascript">
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
-<script type="text/javascript">
-try {
-var pageTracker = _gat._getTracker("UA-10825496-1");
-pageTracker._trackPageview();
-} catch(err) {}
-</script>
+</div>
 </body>
 </html>
