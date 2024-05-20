@@ -3,8 +3,8 @@
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
 <div align=center><br>
 <font color="" style="font-size: 20pt">Шаблон SemiRef</font>
-<table width="680" cellspacing="0" cellpadding="0">
- <tr><td>
+<table width="800" cellspacing="0" cellpadding="0">
+<tr><td>
 <p><br>Шаблон классов SemiRef ( полу-ссылка ) ведёт себя, как ссылка, за исключением оператора присваивания.
 Поэтому эта ссылка может ссылаться на разные объекты:
 </p>
@@ -16,44 +16,37 @@ template &lt;class T> struct SemiRef
     explicit SemiRef ( T & t ) : p(&t) {} 
 };
 
-template &lt;class T> inline
-bool operator < ( const SemiRef&lt;T> & a, const SemiRef&lt;T> & b )
+template &lt;class T> inline bool operator < ( const SemiRef&lt;T> & a, const SemiRef&lt;T> & b )
 {
     return *a.p < *b.p;
 }
 
-template &lt;class T> inline
-bool operator > ( const SemiRef&lt;T> & a, const SemiRef&lt;T> & b )
+template &lt;class T> inline bool operator > ( const SemiRef&lt;T> & a, const SemiRef&lt;T> & b )
 {
     return *a.p > *b.p;
 }
 
-template &lt;class T> inline
-bool operator <= ( const SemiRef&lt;T> & a, const SemiRef&lt;T> & b )
+template &lt;class T> inline bool operator <= ( const SemiRef&lt;T> & a, const SemiRef&lt;T> & b )
 {
     return *a.p <= *b.p;
 }
 
-template &lt;class T> inline
-bool operator >= ( const SemiRef&lt;T> & a, const SemiRef&lt;T> & b )
+template &lt;class T> inline bool operator >= ( const SemiRef&lt;T> & a, const SemiRef&lt;T> & b )
 {
     return *a.p >= *b.p;
 }
 
-template &lt;class T> inline
-bool operator == ( const SemiRef&lt;T> & a, const SemiRef&lt;T> & b )
+template &lt;class T> inline bool operator == ( const SemiRef&lt;T> & a, const SemiRef&lt;T> & b )
 {
     return *a.p == *b.p;
 }
 
-template &lt;class T> inline
-bool operator != ( const SemiRef&lt;T> & a, const SemiRef&lt;T> & b )
+template &lt;class T> inline bool operator != ( const SemiRef&lt;T> & a, const SemiRef&lt;T> & b )
 {
     return *a.p != *b.p;
 }
 
-template &lt;class T> inline
-T operator + ( const SemiRef&lt;T> & a, const SemiRef&lt;T> & b )
+template &lt;class T> inline T operator + ( const SemiRef&lt;T> & a, const SemiRef&lt;T> & b )
 {
     return *a.p + *b.p;
 }
