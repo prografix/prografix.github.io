@@ -1176,7 +1176,9 @@ bool slu_LDLt ( nat n, const Suite<SortItem<nat, double> > * data, const double 
         CCArrRef<SortItem<nat, double> > & arr = data[i];
         for ( nat j = m[i], k = 0; j <= i; ++j )
         {
-            buf[l++] = j == arr[k].head ? arr[k++].tail: 0;
+            // 21.05.2024 исправлена ошибка.
+            // Раньше было buf[l++] = j == arr[k].head ? arr[k++].tail: 0;
+            buf[l++] = k < arr.size() && j == arr[k].head ? arr[k++].tail: 0;
         }
     }
     return slu_LDLt ( n, m(), buf(), b, x );
@@ -1259,8 +1261,9 @@ bool slu_LDLtO ( nat n, const Suite<SortItem<nat, double> > * data, const double
     for ( l = i = 0; i < n; ++i )
     {
         CCArrRef<SortItem<nat, double> > & arr = data[index[i]];
-        arr2.resize ( arr.size() );
-        for ( j = 0; j < arr.size(); ++j )
+        const nat na = arr.size();
+        arr2.resize ( na );
+        for ( j = 0; j < na; ++j )
         {
             arr2[j].head = index2[arr[j].head];
             arr2[j].tail = arr[j].tail;
@@ -1268,7 +1271,9 @@ bool slu_LDLtO ( nat n, const Suite<SortItem<nat, double> > * data, const double
         insertSort123 ( arr2 );
         for ( j = m[i], k = 0; j <= i; ++j )
         {
-            buf[l++] = j == arr2[k].head ? arr2[k++].tail: 0;
+            // 23.05.2024 исправлена ошибка.
+            // Раньше было buf[l++] = j == arr2[k].head ? arr2[k++].tail: 0;
+            buf[l++] = k < na && j == arr2[k].head ? arr2[k++].tail: 0;
         }
     }
     if ( ! slu_LDLt ( n, m, buf, b2, y() ) ) return false;
