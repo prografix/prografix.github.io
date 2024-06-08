@@ -78,14 +78,17 @@ void initPolyhedron ( Polyhedron & poly, nat n )
     static QRand2Vector3d vrand;
     Polyhedron temp;
     //poly.makeCube ( 1 );
-    poly.makeTetrahedron ( 1 );
+    //poly.makeTetrahedron ( 1 );
+    poly.makeOctahedron ( 1 );
+    //poly.makePyramid ( 1 );
+        cut ( poly, Plane3d ( Vector3d(0,0,1), -0.6), temp); _swap (temp, poly);
     for ( nat i = 0; i < n; ++i )
     {
-        cut ( poly, Plane3d ( vrand(), -0.9), temp ); _swap ( temp, poly );
+        cut ( poly, Plane3d ( vrand(), -0.6), temp ); _swap ( temp, poly );
     }
     poly *= getRandOrtho3d ( rand(), rand(), rand() );
-    poly += Vector3d ( rand(), rand(), rand() );
-    for ( nat i = 0; i < poly.vertex.size(); ++i ) poly.vertex[i] += 1e-3 * vrand();
+    poly += Vector3d ( 0.2*rand(), 0.2*rand(), 0.2*rand() );
+    for ( nat i = 0; i < poly.vertex.size(); ++i ) poly.vertex[i] += 1e-2 * vrand();
 }
 
 double maxDif ( const Polyhedron & poly )
@@ -107,12 +110,28 @@ double maxDif ( const Polyhedron & poly )
     return dif;
 }
 
+double stdDif ( CCArrRef<Vector3d> & vert1, CCArrRef<Vector3d> & vert2 )
+{
+    double sum = 0;
+    for ( nat i = 0; i < vert1.size(); ++i )
+    {
+        sum += qmod ( vert1[i] - vert2[i] );
+    }
+    return sum / vert1.size();
+}
+
 void normalizePolyhedron_test()
 {
     Polyhedron poly;
-    initPolyhedron ( poly, 2 ); //poly.makeOctahedron(1);
+    initPolyhedron ( poly, 40 ); //poly.makeOctahedron(1);
+    double d1 = maxDif ( poly );
+    DynArray<Vector3d> vert1 ( *poly.vertex );
     draw ( poly, 0, 1, 1, 1, VM_WIRE );
-    normalize ( poly );
+    normalizeV2 ( poly );
+    draw ( poly, 1, 1, 0, 1, VM_WIRE );
+    double s = stdDif ( vert1, poly.vertex );
+    double d2 = maxDif ( poly );
+    display << d1 << d2 << s << NL;
 }
 
 void normalizePolyhedron_test2()
@@ -123,7 +142,7 @@ void normalizePolyhedron_test2()
         initPolyhedron ( poly, 100*k );
         double d1 = maxDif ( poly );
 double t1 = timeInSec();
-        normalize ( poly );
+        normalizeV2 ( poly );
 double t2 = timeInSec();
         double d2 = maxDif ( poly );
     display << k << poly.facet.size() + poly.vertex.size() << d1 << d2 << t2-t1 << NL;
@@ -141,6 +160,6 @@ void polyhedron_test()
 //    makeOctahedron_test();
 //    centerOfMass_test();
 //    makeModel_test();
-    normalizePolyhedron_test2();
+    normalizePolyhedron_test();
     endNewList ();
 }

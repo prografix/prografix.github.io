@@ -331,6 +331,64 @@ Polyhedron & Polyhedron::operator = ( const Tetrahedron & fig )
     return initPlanes().linkFacets();
 }
 
+//**************************** 19.04.2023 ****************************
+//
+//      Создание пирамиды ( r - макс. значение координат вершин )
+//
+//**************************** 19.04.2023 ****************************
+
+Polyhedron & Polyhedron::makePyramid ( double r )
+{
+    makeVoid();
+    if ( r <= 0 ) return *this;
+
+    vertex.resize ( 5 );
+    facet .resize ( 5 );
+
+    const double m = -r;
+    vertex[0] = Vector3d ( 0, m, 0 );
+    vertex[1] = Vector3d ( m, 0, 0 );
+    vertex[2] = Vector3d ( 0, r, 0 );
+    vertex[3] = Vector3d ( r, 0, 0 );
+    vertex[4] = Vector3d ( 0, 0, r );
+
+    facet[0].resize ( 4 );
+    facet[1].resize ( 3 );
+    facet[2].resize ( 3 );
+    facet[3].resize ( 3 );
+    facet[4].resize ( 3 );
+
+    nat * p;
+    p = facet[0].index();
+    p[0] = 0;
+    p[1] = 1;
+    p[2] = 2;
+    p[3] = 3;
+    p[4] = 0;
+    p = facet[1].index();
+    p[0] = 0;
+    p[1] = 4;
+    p[2] = 1;
+    p[3] = 0;
+    p = facet[2].index();
+    p[0] = 1;
+    p[1] = 4;
+    p[2] = 2;
+    p[3] = 1;
+    p = facet[3].index();
+    p[0] = 2;
+    p[1] = 4;
+    p[2] = 3;
+    p[3] = 2;
+    p = facet[4].index();
+    p[0] = 3;
+    p[1] = 4;
+    p[2] = 0;
+    p[3] = 3;
+
+    return initPlanes().linkFacets();
+}
+
 //**************************** 10.06.2009 ****************************
 //
 //      Создание октаэдра ( r - макс. значение координат вершин )
@@ -927,12 +985,13 @@ bool distance ( const Polyhedron & poly, const Vector3d & p, double & dist,
 
 //********************** 04.05.2023 ***************************//
 //
-//              Нормализация многогранника
-//      с минимизацией суммы квадратов сдвигов вершин
+//           Нормализация многогранника ( версия 1 )
+//         Минимизация суммы квадратов сдвигов вершин
+// Нормали граней с количеством вершин больше трёх не меняются
 //
 //********************** 04.05.2023 ***************************//
 
-bool normalize ( Polyhedron & poly )
+bool normalizeV1 ( Polyhedron & poly )
 {
     nat i;
     DynArray<Vector3d> vertex ( * poly.vertex );
@@ -947,7 +1006,39 @@ bool normalize ( Polyhedron & poly )
         s.a.resize ( f.nv );
         for ( nat j = 0; j < f.nv; ++j ) s.a[j] = f.index[j];
     }
-    if ( ! normalizePolyhedron ( facet, vertex ) )
+    if ( ! normalizePolyhedronV1 ( facet, vertex ) )
+        return false;
+    for ( i = 0; i < nf; ++i )
+    {
+        poly.facet[i].plane = facet[i].b;
+    }
+    vertex.swap ( poly.vertex );
+    return true;
+}
+
+//********************** 08.04.2024 ***************************//
+//
+//           Нормализация многогранника ( версия 2 )
+//         Минимизация суммы квадратов сдвигов вершин
+//
+//********************** 08.04.2024 ***************************//
+
+bool normalizeV2 ( Polyhedron & poly )
+{
+    nat i;
+    DynArray<Vector3d> vertex ( * poly.vertex );
+    const nat nf = poly.facet.size();
+    DynArray<Set2<DynArray<nat>, Plane3d> > facet ( nf );
+    for ( i = 0; i < nf; ++i )
+    {
+        const Facet & f = poly.facet[i];
+        if ( f.nv < 3 ) continue;
+        Set2<DynArray<nat>, Plane3d> & s = facet[i];
+        s.b = f.plane;
+        s.a.resize ( f.nv );
+        for ( nat j = 0; j < f.nv; ++j ) s.a[j] = f.index[j];
+    }
+    if ( ! normalizePolyhedronV2 ( facet, vertex ) )
         return false;
     for ( i = 0; i < nf; ++i )
     {

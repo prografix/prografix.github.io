@@ -1248,11 +1248,11 @@ Spin3d makeSpin3d ( CCArrRef<Set2<Vector3d> > & data )
     return spin;
 }
 
-
 //********************** 04.05.2023 ***************************//
 //
-//              Нормализация многогранника
-//      с минимизацией суммы квадратов сдвигов вершин
+//           Нормализация многогранника ( версия 1 )
+//         Минимизация суммы квадратов сдвигов вершин
+// Нормали граней с количеством вершин больше трёх не меняются
 //
 //********************** 04.05.2023 ***************************//
 
@@ -1412,7 +1412,7 @@ void vertN ( Set2<DynArray<nat>, Plane3d> & f, CCArrRef<Vector3d> & vertex )
 
 } // namespace
 
-bool normalizePolyhedron ( ArrRef<Set2<DynArray<nat>, Plane3d> > & facet, ArrRef<Vector3d> & vertex )
+bool normalizePolyhedronV1 ( ArrRef<Set2<DynArray<nat>, Plane3d> > & facet, ArrRef<Vector3d> & vertex )
 {
     const nat nv = vertex.size();
     const nat nf = facet.size();
@@ -1464,34 +1464,177 @@ bool normalizePolyhedron ( ArrRef<Set2<DynArray<nat>, Plane3d> > & facet, ArrRef
     return true;
 }
 
-bool normalizePolyhedron2 ( ArrRef<Set2<DynArray<nat>, Plane3d> > & facet, ArrRef<Vector3d> & vertex )
+//********************** 08.04.2024 ***************************//
+//
+//           Нормализация многогранника ( версия 2 )
+//         Минимизация суммы квадратов сдвигов вершин
+//
+//********************** 08.04.2024 ***************************//
+
+bool normalizePlanes ( ArrRef<Set2<DynArray<nat>, Plane3d> > & facet, CCArrRef<Vector3d> & vertex )
 {
-    const nat nv = vertex.size();
     const nat nf = facet.size();
-    DynArray<Suite<Set2<nat, double> > > vp ( 3*nv );
-    DynArray<DMatrix<double> > fp ( nf );
+    DynArray<DMatrix<double> > matr ( nf );
     nat i, k = 0;
+    for ( i = 0; i < nf; ++i )
+    {
+        Set2<DynArray<nat>, Plane3d> & f = facet[i];
+        const nat nr = f.a.size();
+        if ( nr < 4 ) continue;
+        insertSort123 ( f.a );
+        DMatrix<double> & mat = matr[i];
+        mat.resize ( nr, nr+4 );
+        const double ax = fabs ( f.b.norm.x );
+        const double ay = fabs ( f.b.norm.y );
+        const double az = fabs ( f.b.norm.z );
+        for ( nat j = 0; j < nr; ++j )
+        {
+            const Vector3d & v = vertex[f.a[j]];
+            double * row = mat[j];
+            if ( ax >= ay && ax >= az )
+            {
+                row[0] = v.y;
+                row[1] = v.z;
+            }
+            else
+            if ( ay >= az )
+            {
+                row[0] = v.x;
+                row[1] = v.z;
+            }
+            else
+            {
+                row[0] = v.x;
+                row[1] = v.y;
+            }
+            for ( nat l = 0; l < nr; ++l ) row[l+4] = 0;
+            row[2] = row[j+4] = 1;
+            row[3] = f.b % v;
+        }
+        if ( ! sluGaussCol ( mat, 3 ) )
+            return false;
+        k += nr - 3;
+    }
+    const nat nv = vertex.size();
+    DynArray<Suite<SortItem<nat, double> > > vp ( 3*nv ), at ( k ), aa ( k );
+    DynArray<double> dv ( 3*nv, 0 ), la ( k, 0 ), b ( k );
+    k = 0;
     for ( i = 0; i < nf; ++i )
     {
         const Set2<DynArray<nat>, Plane3d> & f = facet[i];
         if ( f.a.size() < 4 ) continue;
-        const DMatrix<double> & mat = fp[i];
-        for ( nat j = 0; j < mat.rowSize(); ++j )
+        const DMatrix<double> & mat = matr[i];
+        for ( nat j = 3; j < mat.rowSize(); ++j )
         {
             const double * row = mat[j];
-            for ( nat m = 3; m < mat.colSize(); ++m )
+            b[k] = row[3];
+            for ( nat m = 0; m < f.a.size(); ++m )
             {
-                const double a = row[m];
+                const double a = row[m+4];
                 if ( ! a ) continue;
-                const nat i0 = 3 * f.a[m-3];
+                const nat i0 = 3 * f.a[m];
                 const nat i1 = i0 + 1;
                 const nat i2 = i1 + 1;
-                vp[i0].inc() = Set2<nat, double> ( k, f.b.norm.x * a );
-                vp[i1].inc() = Set2<nat, double> ( k, f.b.norm.y * a );
-                vp[i2].inc() = Set2<nat, double> ( k, f.b.norm.z * a );
+                vp[i0].inc() = SortItem<nat, double> ( k, f.b.norm.x * a );
+                vp[i1].inc() = SortItem<nat, double> ( k, f.b.norm.y * a );
+                vp[i2].inc() = SortItem<nat, double> ( k, f.b.norm.z * a );
+                at[k].inc() = SortItem<nat, double> ( i0, f.b.norm.x * a );
+                at[k].inc() = SortItem<nat, double> ( i1, f.b.norm.y * a );
+                at[k].inc() = SortItem<nat, double> ( i2, f.b.norm.z * a );
             }
             ++k;
         }
     }
+    // Перемножение матриц aa = at * vp
+    for ( i = 0; i < k; ++i )
+    {
+        CCArrRef<SortItem<nat, double> > & ai = at[i];
+        for ( nat j = 0; j < ai.size(); ++j )
+        {
+            const SortItem<nat, double> & aij = ai[j];
+            CCArrRef<SortItem<nat, double> > & aj = vp[aij.head];
+            for ( nat l = 0; l < aj.size(); ++l )
+            {
+                const SortItem<nat, double> & ajl = aj[l];
+                Suite<SortItem<nat, double> > & row = aa[ajl.head];
+                if ( row.size() > 0 )
+                {
+                    SortItem<nat, double> & si = row.las();
+                    if ( si.head == i )
+                    {
+                        si.tail += aij.tail * ajl.tail;
+                        continue;
+                    }
+                }
+                row.inc() = SortItem<nat, double> ( i, aij.tail * ajl.tail);
+            }
+        }
+    }
+    // Решение СЛАУ aa * la == b
+    bool ok = k < 150 ? slu_LDLt ( k, aa(), b(), la() ) : slu_LDLtO ( k, aa(), b(), la() );
+    // Вычисляем смещения вершин
+    for ( i = 0; i < k; ++i )
+    {
+        CCArrRef<SortItem<nat, double> > & row = at[i];
+        for ( nat j = 0; j < row.size(); ++j )
+        {
+            const SortItem<nat, double> & s = row[j];
+            dv[s.head] -= la[i] * s.tail;
+        }
+    }
+    // Исправляем плоскости
+    for ( i = 0; i < nf; ++i )
+    {
+        Set2<DynArray<nat>, Plane3d> & f = facet[i];
+        const nat nr = f.a.size();
+        if ( nr < 4 ) continue;
+        const DMatrix<double> & mat = matr[i];
+        const nat nc = mat.colSize();
+        const double * r0 = mat[0];
+        const double * r1 = mat[1];
+        const double * r2 = mat[2];
+        double d0 = r0[3];
+        double d1 = r1[3];
+        double d2 = r2[3];
+        for ( nat j = 4; j < nc; ++j )
+        {
+            const nat i0 = 3 * f.a[j-4];
+            const nat i1 = i0 + 1;
+            const nat i2 = i1 + 1;
+            const double t = f.b.norm.x * dv[i0] + f.b.norm.y * dv[i1] + f.b.norm.z * dv[i2];
+            d0 += r0[j] * t;
+            d1 += r1[j] * t;
+            d2 += r2[j] * t;
+        }
+        Plane3d plane = f.b;
+        const double ax = fabs ( f.b.norm.x );
+        const double ay = fabs ( f.b.norm.y );
+        const double az = fabs ( f.b.norm.z );
+        if ( ax >= ay && ax >= az )
+        {
+            plane.norm.y -= d0;
+            plane.norm.z -= d1;
+        }
+        else
+        if ( ay >= az )
+        {
+            plane.norm.x -= d0;
+            plane.norm.z -= d1;
+        }
+        else
+        {
+            plane.norm.x -= d0;
+            plane.norm.y -= d1;
+        }
+        plane.dist -= d2;
+        f.b = plane.setNorm2();
+    }
+    return true;
+}
+
+bool normalizePolyhedronV2 ( ArrRef<Set2<DynArray<nat>, Plane3d> > & facet, ArrRef<Vector3d> & vertex )
+{
+    if ( ! normalizePlanes ( facet, vertex ) ) return false;
+    if ( ! normalizePolyhedronV1 ( facet, vertex ) ) return false;
     return true;
 }
