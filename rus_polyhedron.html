@@ -2,12 +2,10 @@
 <head><title>Класс Polyhedron</title>
 <link rel="stylesheet" type="text/css" href="stylle.css"></head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
-<div align="center">
-<table width="980" cellspacing="0" cellpadding="0">
 <div align=center><br>
 <font color="" style="font-size: 20pt">Класс Polyhedron</font>
-</div>
-<div align=left><td>
+<table width="980" cellspacing="0" cellpadding="0">
+<tr><td>
 <p><br>
 Этот класс предназначен для представления многогранника в трёхмерном пространстве.
 В него входят два массива - вершин и граней. Вершины представлены классом Vector3d,
@@ -202,9 +200,11 @@ inline bool distance ( const Polyhedron & poly, const Vector3d & point, double &
     return distance ( poly, point, dist, vi, ei, fi );
 }
 </pre>
-Функция normalize совмещает вершины и плоскости граней, если они расходятся, с минимизацией суммы квадратов сдвигов вершин:
+Функции normalize.. совмещают вершины и плоскости граней, если они расходятся, с минимизацией суммы квадратов сдвигов вершин.
+При этом normalizeV1 не меняет нормали граней с количеством вершин больше трёх:
 <pre>
-bool normalize ( Polyhedron & poly );
+bool normalizeV1 ( Polyhedron & poly );
+bool normalizeV2 ( Polyhedron & poly );
 </pre>
 <p>
 Описание класса Vector3d находится <a href="rus_vector.html">здесь</a>.
@@ -217,7 +217,8 @@ bool normalize ( Polyhedron & poly );
 <pre>
 
 </pre>
-</td></div>
+</td></tr>
 </table>
+</div>
 </body>
 </html>
