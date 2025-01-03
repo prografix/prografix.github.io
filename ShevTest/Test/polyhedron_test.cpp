@@ -150,6 +150,56 @@ double t2 = timeInSec();
     display << "end" << NL;
 }
 
+struct TrinSegm
+{
+    nat vert, prev;
+};
+
+double getVol ( CArrRef<Vector3d> & vert, const nat a, const nat b, const nat c, const nat d )
+{
+    const Vector3d & va = vert[a] - vert[d];
+    const Vector3d & vb = vert[b] - vert[d];
+    const Vector3d & vc = vert[c] - vert[d];
+    return ( va % vc ) * vb;
+}
+
+bool makeConvexTrian ( CArrRef<Vector3d> & vert, nat im )
+{
+    const nat n = vert.size();
+    const nat nn = 3*n - 6;
+    const nat m = nn - n;
+    DynArray<TrinSegm> segm ( nn );
+    for ( nat i = 0; i < m; ++i )
+    {
+        TrinSegm & s = segm[i];
+        s.vert = i - m;
+       // if ( s.b >= n ) s.b - n;
+    }
+    for ( nat i = m; i < nn; ++i )
+    {
+        TrinSegm & s = segm[i];
+        s.vert = i - m;
+    }
+    for ( nat i = 0; i < m; i += 2 )
+    {
+        TrinSegm & s0 = segm[i];
+        TrinSegm & s1 = segm[i+1];
+        const nat ia = s0.prev;
+        const nat ic = s1.prev;
+        const nat a = segm[ia].vert;
+        const nat b = s0.vert;
+        const nat c = segm[ic].vert;
+        const nat d = s1.vert;
+        double v1 = getVol ( vert, a, b, c, d );
+        double v2 = getVol ( vert, b, c, d, a );
+        if ( v1 >= v2 ) continue;
+        s0.vert = a;
+        s0.prev = 
+        s1.vert = c;
+    }
+    return false;
+}
+
 } // end of namespace
 
 void polyhedron_test()

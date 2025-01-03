@@ -507,9 +507,6 @@
     <ClInclude Include="Shev\S2D_Model.h">
       <Filter>Shev h</Filter>
     </ClInclude>
-    <ClInclude Include="Shev\SemiRib.h">
-      <Filter>Shev h</Filter>
-    </ClInclude>
     <ClInclude Include="Shev\ShevArray.h">
       <Filter>Shev h</Filter>
     </ClInclude>

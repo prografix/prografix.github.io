@@ -2,6 +2,7 @@
 #include "math.h"
 
 #include "../Shev/tune.h"
+#include "../Shev/atrian.h"
 #include "../Shev/trian3d.h"
 #include "../draw.h"
 
@@ -73,6 +74,130 @@ void trian2_test()
 }
 
 } // namespace
+
+template <class F, class A1, class A2=A1, class A3=A2, class A4=A3>
+class Func4a // Функция четырёх аргументов
+{
+public:
+    virtual F operator () ( A1 a1, A2 a2, A3 a3, A4 a4 ) const = 0;
+};
+
+template <> class TriDiag<void>
+{
+public:
+    nat rib, facet1, facet2; // Индексы полуребра и соседних граней
+};
+
+void optiL ( Func4a<bool,nat> & change, ArrRef<SemiRib> & rib )
+{
+    const nat nr = rib.size();
+    if ( nr < 6 || nr % 3 != 0 ) return;
+    const nat nf = nr / 3;
+    nat i;
+    DynArray<nat> dinx ( nr, nr );
+    Suite<TriDiag<void> > diag ( nr/2 ); // Массив диагоналей
+    for ( i = 0; i < nf; ++i )
+    {
+        const nat ia = 3 * i;
+        const SemiRib & a = rib[ia];
+        const nat ib = a.next;
+        const SemiRib & b = rib[ib];
+        const nat ic = b.next;
+        const SemiRib & c = rib[ic];
+        if ( a.twin < nr )
+        {
+            dinx[ia] = dinx[a.twin] = diag.size();
+            TriDiag<void> & d = diag.inc();
+            d.facet1 = i;
+            d.facet2 = a.twin/3;
+            d.rib = ia;
+        }
+        if ( b.twin < nr )
+        {
+            dinx[ib] = dinx[b.twin] = diag.size();
+            TriDiag<void> & d = diag.inc();
+            d.facet1 = i;
+            d.facet2 = b.twin/3;
+            d.rib = ib;
+        }
+        if ( c.twin < nr )
+        {
+            dinx[ic] = dinx[c.twin] = diag.size();
+            TriDiag<void> & d = diag.inc();
+            d.facet1 = i;
+            d.facet2 = c.twin/3;
+            d.rib = ic;
+        }
+    }
+    const nat nd = diag.size();
+    Suite<nat> stack ( nd, nd ); // Очередь на проверку оптимальности диагоналей
+    for ( i = 0; i < nd; ++i ) stack[i] = i;
+    while ( stack.size() > 0 )
+    {
+        TriDiag<void> & d = diag[stack.las()];
+        stack.dec();
+        const nat a1 = d.rib;
+        const nat b1 = rib[a1].next;
+        const nat c1 = rib[b1].next;
+        const nat a2 = rib[a1].twin;
+        const nat b2 = rib[a2].next;
+        const nat c2 = rib[b2].next;
+        if ( change ( b1, c1, b2, c2 ) )
+        {
+            rib[a1].vert = rib[c1].vert;
+            rib[a1].next = c2;
+            rib[c2].next = b1;
+            rib[b1].next = a1;
+            rib[a2].vert = rib[c2].vert;
+            rib[a2].next = c1;
+            rib[c1].next = b2;
+            rib[b2].next = a2;
+            i = dinx[c1];
+            if ( i < nr )
+            {
+                TriDiag<void> & di = diag[i];
+                if ( di.rib >= nr )
+                {
+                    di.rib -= nr;
+                    stack.inc() = i;
+                }
+                ( di.facet1 == d.facet1 ? di.facet1 : di.facet2 ) = d.facet2;
+            }
+            i = dinx[b1];
+            if ( i < nr )
+            {
+                TriDiag<void> & di = diag[i];
+                if ( di.rib >= nr )
+                {
+                    di.rib -= nr;
+                    stack.inc() = i;
+                }
+            }
+            i = dinx[c2];
+            if ( i < nr )
+            {
+                TriDiag<void> & di = diag[i];
+                if ( di.rib >= nr )
+                {
+                    di.rib -= nr;
+                    stack.inc() = i;
+                }
+                ( di.facet1 == d.facet2 ? di.facet1 : di.facet2 ) = d.facet1;
+            }
+            i = dinx[b2];
+            if ( i < nr )
+            {
+                TriDiag<void> & di = diag[i];
+                if ( di.rib >= nr )
+                {
+                    di.rib -= nr;
+                    stack.inc() = i;
+                }
+            }
+        }
+        d.rib += nr;
+    }
+}
 
 void trian3d_test ()
 {

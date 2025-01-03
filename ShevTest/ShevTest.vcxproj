@@ -300,7 +300,6 @@
     <ClInclude Include="Shev\Rand.h" />
     <ClInclude Include="Shev\RealFile.h" />
     <ClInclude Include="Shev\S2D_Model.h" />
-    <ClInclude Include="Shev\SemiRib.h" />
     <ClInclude Include="Shev\ShevArray.h" />
     <ClInclude Include="Shev\ShevArray2.h" />
     <ClInclude Include="Shev\ShevList.h" />

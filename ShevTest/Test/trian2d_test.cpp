@@ -22,6 +22,27 @@
 
 double timeInSec();
 bool rebuildDelauney ( CCArrRef<Vector2d> & vert, CCArrRef<Set3<nat> > & trian, DynArray<SemiRib> & rib );
+bool rebuildDelauney2( CCArrRef<Vector2d> & vert, CCArrRef<Set3<nat> > & trian, DynArray<SemiRib> & rib );
+
+ArrRef<Set3<nat> > & rebuildDelauney2 ( CCArrRef<Vector2d> & vert, ArrRef<Set3<nat> > & res )
+{
+    DynArray<SemiRib> rib;
+    rebuildDelauney2 ( vert, res, rib );
+    const nat nv = vert.size();
+    for ( nat i = 0, k = 0; i < rib.size(); ++i )
+    {
+        SemiRib & a = rib[i];
+        if ( a.vert >= nv ) continue;
+        SemiRib & b = rib[a.next];
+        SemiRib & c = rib[b.next];
+        Set3<nat> & t = res[k++];
+        t.a = a.vert;
+        t.b = b.vert;
+        t.c = c.vert;
+        a.vert = b.vert = c.vert = nv;
+    }
+    return res;
+}
 
 namespace Test
 {
@@ -966,7 +987,15 @@ void trianSweepLine_test()
 if ( a < 0 ) display << a << NL;
         }
     }
+    Suite<Set3<nat> > res2;
+    res2 = res;
+    double t1 = timeInSec();
     rebuildDelauney ( vert, res );
+    double t2 = timeInSec();
+    rebuildDelauney2 ( vert, res2 );
+    double t3 = timeInSec();
+    display << t2-t1 << t3-t2 << NL;
+    for ( i = 0; i < res.size(); ++i ) if ( res[i] != res2[i] ) display << "no" << NL;
     if(1)
     {
         for ( i = 0; i < res.size(); ++i )
@@ -1049,7 +1078,7 @@ void trianSweepLine_test2()
     }
 }
 
-void trianSeidel_test2 ( const Spin2d & spin, const char * filename )
+void trian_test ( const Spin2d & spin, const char * filename )
 {
     RealFile file ( filename, "r" );
     if ( ! file.isValid() )
@@ -1061,7 +1090,7 @@ void trianSeidel_test2 ( const Spin2d & spin, const char * filename )
     int n1=0, n2=0;
     Suite<SortItem<nat, double> > stat;
     Suite<Vector2d> vert;
-    Suite<Set3<nat> > res;
+    Suite<Set3<nat> > res, res2;
     Suite<nat> cntr;
     Suite<nat> index;
     while ( readIntDec ( file, nv ) )
@@ -1080,17 +1109,23 @@ void trianSeidel_test2 ( const Spin2d & spin, const char * filename )
 //        if ( nv > 60 ) continue;
         vert *= spin;
 //display << nv << area ( vert ) << NL;
-            DynArray<SemiRib> rib ( 3 * nv - 6 );
-//            trianSeidel ( vert, res );
-//            ::trianSweepLine ( vert, res );
+//            DynArray<SemiRib> rib ( 3 * nv - 6 );
+            ::trianSweepLine ( vert, res );
+            res2 = res;
             double t1 = timeInSec();
-//            rebuildDelauney ( vert, res );
-            convexParts ( vert, cntr, index );
+            rebuildDelauney ( vert, res );
+//            convexParts ( vert, cntr, index );
 //            ::trianSweepLine ( vert, res );
 //            tempTrianNat1<double, Vector2d> ( vert, rib );
 //            trianNat1L1MaxMinTan ( vert, res );
             double t2 = timeInSec();
             stat.inc() = SortItem<nat, double> ( nv, t2-t1 );
+            rebuildDelauney2 ( vert, res2 );
+    for ( nat j = 0; j < res.size(); ++j ) if ( res[j] != res2[j] )
+    {
+        j=j;
+        display << "no" << NL; return;
+    }
             /*double max1 = 1e9, max2 = 1e9, sum1 = 0, sum2 = 0, sum = 0, 
                 area = tempArea2<double, Vector2d> ( vert );
             for ( i = 0; i < res.size(); ++i )
@@ -1163,16 +1198,16 @@ void trianSeidel_test2 ( const Spin2d & spin, const char * filename )
     display << "end" << NL;
 }
 
-void trianSeidel_test2()
+void trian_test4()
 {
-    trianSeidel_test2 ( Spin2d()    , "data/cont 99.txt" );
-    //trianSeidel_test2 ( Spin2d::d090, "data/cont 99.txt" );
-    //trianSeidel_test2 ( Spin2d::d180, "data/cont 99.txt" );
-    //trianSeidel_test2 ( Spin2d::d270, "data/cont 99.txt" );
-    trianSeidel_test2 ( Spin2d()    , "data/cont 707.txt" );
-    trianSeidel_test2 ( Spin2d::d090, "data/cont 707.txt" );
-    trianSeidel_test2 ( Spin2d::d180, "data/cont 707.txt" );
-    trianSeidel_test2 ( Spin2d::d270, "data/cont 707.txt" );
+    trian_test ( Spin2d()    , "data/cont 99.txt" );return;
+    trian_test ( Spin2d::d090, "data/cont 99.txt" );
+    trian_test ( Spin2d::d180, "data/cont 99.txt" );
+    trian_test ( Spin2d::d270, "data/cont 99.txt" );
+    trian_test ( Spin2d()    , "data/cont 707.txt" );
+    trian_test ( Spin2d::d090, "data/cont 707.txt" );
+    trian_test ( Spin2d::d180, "data/cont 707.txt" );
+    trian_test ( Spin2d::d270, "data/cont 707.txt" );
 }
 
 void splitFacet1 ( CCArrRef<nat> & cntr, CCArrRef<Vector2d> & vert, CCArrRef<Set3<nat> > & trian, Suite<Set2<nat> > & res )
@@ -1483,13 +1518,167 @@ void splitPolygon_test2 ()
 
 using namespace Test;
 
+template <class F, class A1, class A2=A1, class A3=A2, class A4=A3>
+class Func4a // Функция четырёх аргументов
+{
+public:
+    virtual F operator () ( A1 a1, A2 a2, A3 a3, A4 a4 ) = 0;
+};
+
+void optiL ( Func4a<bool, nat> & change, ArrRef<SemiRib> & rib );
+/*
+1.170e-005 7.100e-006 
+6.200e-006 3.500e-006 
+7.500e-006 5.100e-006 
+9.800e-006 5.000e-006 
+1.100e-005 6.200e-006 
+8.800e-006 5.100e-006 
+8.100e-006 5.500e-006 
+1.000e-005 5.500e-006 
+1.110e-005 6.500e-006 
+8.300e-006 4.600e-006 
+*/
+double minTan ( const Vector2d & ab, const Vector2d & bc, const Vector2d & ca )
+{
+    const double aa = ca * ab;
+    const double bb = ab * bc;
+    const double cc = bc * ca;
+    if ( aa <= bb )
+    {
+        if ( aa <= cc )
+        {
+            if ( aa < 0 ) return ( ca % bc ) / aa;
+        }
+        else
+        {
+            if ( cc < 0 ) return ( bc % ab ) / cc;
+        }
+    }
+    else
+    {
+        if ( bb <= cc )
+        {
+            if ( bb < 0 ) return ( ca % bc ) / bb;
+        }
+        else
+        {
+            if ( cc < 0 ) return ( ab % ca ) / cc;
+        }
+    }
+    return 0;
+}
+
+class F_MinTan : public Func4a<bool, nat>
+{
+    CArrRef<Vector2d> vert; // Массив вершин
+    CArrRef<SemiRib> rib;   // Массив полурёбер
+    DynArray<double> value; // Массив качества граней
+public:
+    F_MinTan ( CCArrRef<Vector2d> & v, CArrRef<SemiRib> & r ) : vert(v), rib(r)
+    {
+        const nat nr = rib.size();
+        const nat nf = nr / 3;
+        value.resize ( nf );
+        for ( nat i = 0; i < nf; ++i )
+        {
+            const SemiRib & a = rib[3 * i];
+            const SemiRib & b = rib[a.next];
+            const SemiRib & c = rib[b.next];
+            const Vector2d ab = vert[b.vert] - vert[a.vert];
+            const Vector2d bc = vert[c.vert] - vert[b.vert];
+            const Vector2d ca = vert[a.vert] - vert[c.vert];
+            value[i] = minTan ( ab, bc, ca );
+        }
+    }
+    virtual bool operator () ( nat b1, nat c1, nat b2, nat c2 )
+    {
+        const nat a = rib[b1].vert;
+        const nat b = rib[c1].vert;
+        const nat c = rib[b2].vert;
+        const nat d = rib[c2].vert;
+        const Vector2d ab = vert[b] - vert[a];
+        const Vector2d bc = vert[c] - vert[b];
+        const Vector2d cd = vert[d] - vert[c];
+        const Vector2d da = vert[a] - vert[d];
+        const Vector2d ca = vert[a] - vert[c];
+        const Vector2d db = vert[b] - vert[d];
+        //const double t1 = _min ( value[b1/3], value[b2/3] );
+        const double t1 = _min ( minTan ( ab, bc, ca ), minTan ( da, -ca, cd ) );
+        const double q1 = minTan ( ab, -db, da );
+        const double q2 = minTan ( db, bc, cd );
+        const double t2 = _min ( q1, q2 );
+        if ( t2 > t1 )
+        {
+            value[b1/3] = q1;
+            value[b2/3] = q2;
+            return true;
+        }
+        return false;
+    }
+};
+
+bool rebuildDelauney2 ( CCArrRef<Vector2d> & vert, CCArrRef<Set3<nat> > & trian, DynArray<SemiRib> & rib )
+{
+    const nat nt = trian.size();
+    const nat nv = vert.size();
+    if ( nt < 1 || nv < 3 ) return false;
+    const nat nr = 3 * nt;
+    rib.resize ( nr );
+    // Запишем массив полурёбер SemiRib.
+    // Причём рёбра принадлежащие к одному треугольнику должны находится последовательно, 
+    // а поле twin должно быть меньше количества рёбер только у одного ребра из пары.
+    nat i, k;
+    DynArray<SortItem<Set2<nat>, nat> > sar ( nr );
+    for ( k = 0; k < nt; ++k )
+    {
+        const Set3<nat> & t = trian[k];
+        const nat na = 3 * k;
+        const nat nb = na + 1;
+        const nat nc = nb + 1;
+        SemiRib & ra = rib[na];
+        ra.next = nb;
+        ra.twin = nr;
+        ra.vert = t.a;
+        SemiRib & rb = rib[nb];
+        rb.next = nc;
+        rb.twin = nr;
+        rb.vert = t.b;
+        SemiRib & rc = rib[nc];
+        rc.next = na;
+        rc.twin = nr;
+        rc.vert = t.c;
+        SortItem<Set2<nat>, nat> & sa = sar[na];
+        sa.head = t.a < t.b ? Set2<nat> ( t.a, t.b ) : Set2<nat> ( t.b, t.a );
+        sa.tail = na;
+        SortItem<Set2<nat>, nat> & sb = sar[nb];
+        sb.head = t.b < t.c ? Set2<nat> ( t.b, t.c ) : Set2<nat> ( t.c, t.b );
+        sb.tail = nb;
+        SortItem<Set2<nat>, nat> & sc = sar[nc];
+        sc.head = t.c < t.a ? Set2<nat> ( t.c, t.a ) : Set2<nat> ( t.a, t.c );
+        sc.tail = nc;
+    }
+    quickSort123 ( sar );
+    for ( i = 1; i < nr; ++i )
+    {
+        SortItem<Set2<nat>, nat> & sa = sar[i];
+        SortItem<Set2<nat>, nat> & sb = sar[i-1];
+        if ( sa == sb )
+        {
+            rib[sa.tail].twin = sb.tail;
+            ++i;
+        }
+    }
+    optiL ( F_MinTan ( vert, rib ), rib );
+    return true;
+}
+
 void trian2d_test ()
 {
     drawNewList2d();
-//    trian_test2();
+    trian_test4();
 //    convexParts_test2();
 //    trianSeidel_test2();
 //    trianSweepLine_test();
-    splitPolygon_test();
+//    splitPolygon_test();
     endNewList();
 }
