@@ -82,6 +82,13 @@ public:
     virtual F operator () ( A1 a1, A2 a2, A3 a3, A4 a4 ) const = 0;
 };
 
+template <class F, class A>
+class Func1a // Функция одного аргумента
+{
+public:
+    virtual F operator () ( A a ) const = 0;
+};
+
 template <> class TriDiag<void>
 {
 public:
@@ -196,6 +203,118 @@ void optiL ( Func4a<bool,nat> & change, ArrRef<SemiRib> & rib )
             }
         }
         d.rib += nr;
+    }
+}
+
+double minTan ( const Vector2d & ab, const Vector2d & bc, const Vector2d & ca );
+
+class F_MinTan2 : public Func4a<bool, nat>
+{
+    CArrRef<Vector2d> vert; // Массив вершин
+    CArrRef<Set2<nat>> rib; // Массив полурёбер
+    DynArray<double> value; // Массив качества граней
+public:
+    F_MinTan2 ( CCArrRef<Vector2d> & v, CArrRef<Set2<nat>> & r ) : vert(v), rib(r)
+    {
+        const nat nr = rib.size();
+        const nat nf = nr / 3;
+        value.resize ( nf );
+        for ( nat i = 0; i < nf; ++i )
+        {
+            nat j = 3 * i;
+            const nat a = rib[j++].a;
+            const nat b = rib[j++].a;
+            const nat c = rib[j].a;
+            const Vector2d ab = vert[b] - vert[a];
+            const Vector2d bc = vert[c] - vert[b];
+            const Vector2d ca = vert[a] - vert[c];
+            value[i] = minTan ( ab, bc, ca );
+        }
+    }
+    virtual bool operator () ( nat b1, nat c1, nat b2, nat c2 )
+    {
+        const nat a = rib[b1].a;
+        const nat b = rib[c1].a;
+        const nat c = rib[b2].a;
+        const nat d = rib[c2].a;
+        const Vector2d ab = vert[b] - vert[a];
+        const Vector2d bc = vert[c] - vert[b];
+        const Vector2d cd = vert[d] - vert[c];
+        const Vector2d da = vert[a] - vert[d];
+        const Vector2d ca = vert[a] - vert[c];
+        const Vector2d db = vert[b] - vert[d];
+        const double t1 = _min ( minTan ( ab, bc, ca ), minTan ( da, -ca, cd ) );
+        const double q1 = minTan ( ab, -db, da );
+        const double q2 = minTan ( db, bc, cd );
+        const double t2 = _min ( q1, q2 );
+        if ( t2 > t1 )
+        {
+            value[b1/3] = q1;
+            value[b2/3] = q2;
+            return true;
+        }
+        return false;
+    }
+};
+
+void optiL2 ( Func4a<bool,nat> & change, ArrRef<Set2<nat>> & rib )
+{
+    const nat nr = rib.size();
+    if ( nr < 6 || nr % 3 != 0 ) return;
+    Suite<nat> stack ( nr ); // Очередь на проверку оптимальности диагоналей
+    DynArray<nat> index ( nr ); // Индексы полурёбер в стеке
+    // Заполнение стека
+    for ( nat i = 0; i < nr; ++i )
+    {
+        const Set2<nat> & r = rib[i];
+        if ( r.b == nr || rib[r.b].b < r.b )
+        {
+            index[i] = nr;
+        }
+        else
+        {
+            index[i] = stack.size();
+            stack.inc() = i;
+        }
+    }
+    // Использование стека
+    while ( stack.size() > 0 )
+    {
+        nat a1 = stack.las(), b1, c1;
+        index[a1] = nr;
+        stack.dec();
+        switch ( a1 % 3 )
+        {
+        case 0:
+            b1 = a1 + 1;
+            c1 = b1 + 1; break;
+        case 1:
+            b1 = a1 + 1;
+            c1 = b1 - 2; break;
+        case 2:
+            b1 = a1 - 2;
+            c1 = b1 + 1; break;
+        }
+        nat a2 = rib[a1].b, b2, c2;
+        switch ( a2 % 3 )
+        {
+        case 0:
+            b2 = a2 + 1;
+            c2 = b2 + 1; break;
+        case 1:
+            b2 = a2 + 1;
+            c2 = b2 - 2; break;
+        case 2:
+            b2 = a2 - 2;
+            c2 = b2 + 1; break;
+        }
+        if ( ! change ( b1, c1, b2, c2 ) ) continue;
+        Set2<nat> & ra1 = rib[a1];
+        Set2<nat> & rb1 = rib[b1];
+        Set2<nat> & rc1 = rib[c1];
+        Set2<nat> & ra2 = rib[a2];
+        Set2<nat> & rb2 = rib[b2];
+        Set2<nat> & rc2 = rib[c2];
     }
 }
 
