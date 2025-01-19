@@ -309,12 +309,131 @@ void optiL2 ( Func4a<bool,nat> & change, ArrRef<Set2<nat>> & rib )
             c2 = b2 + 1; break;
         }
         if ( ! change ( b1, c1, b2, c2 ) ) continue;
+        //
+        //     b1 a2              a2
+        //    / | | \            /  \
+        //   /  | |  \        b2/    \c2
+        // c1   | |   c2  ->    ======
+        //   \  | |  /        c1\    /b1
+        //    \ | | /            \  /
+        //     a1 b2              a1
+        //
         Set2<nat> & ra1 = rib[a1];
         Set2<nat> & rb1 = rib[b1];
         Set2<nat> & rc1 = rib[c1];
         Set2<nat> & ra2 = rib[a2];
         Set2<nat> & rb2 = rib[b2];
         Set2<nat> & rc2 = rib[c2];
+        rb1.a = rc2.a;
+        rb2.a = rc1.a;
+        if ( rb1.b < nr )
+        {
+            rib[rb1.b].b = a2;
+            if ( index[rb1.b] < nr )
+            {
+
+            }
+        }
+        if ( rb2.b < nr ) rib[rb2.b].b = a1;
+        ra1.b = rb2.b;
+        ra2.b = rb1.b;
+        rb1.b = a2;
+        rb2.b = a1;
+    }
+}
+
+void optiL3 ( Func4a<bool,nat> & change, ArrRef<Set2<nat>> & rib, ArrRef<Set3<nat>> & diag )
+{
+    const nat nr = rib.size();
+    if ( nr < 6 || nr % 3 != 0 ) return;
+    const nat nd = diag.size();
+    if ( nd == 0 ) return;
+    // Очередь на проверку оптимальности диагоналей
+    nat list = 0;
+    for ( nat i = 0; i < nd; ++i ) diag[i].c = i + 1;
+    // Проверка диагоналей
+    while ( list < nd )
+    {
+        Set3<nat> & d = diag[list];
+        list = d.c;
+        d.c = nr;
+        nat a1 = d.a, b1, c1;
+        switch ( a1 % 3 )
+        {
+        case 0:
+            b1 = a1 + 1;
+            c1 = b1 + 1; break;
+        case 1:
+            b1 = a1 + 1;
+            c1 = b1 - 2; break;
+        case 2:
+            b1 = a1 - 2;
+            c1 = b1 + 1; break;
+        }
+        nat a2 = d.b, b2, c2;
+        switch ( a2 % 3 )
+        {
+        case 0:
+            b2 = a2 + 1;
+            c2 = b2 + 1; break;
+        case 1:
+            b2 = a2 + 1;
+            c2 = b2 - 2; break;
+        case 2:
+            b2 = a2 - 2;
+            c2 = b2 + 1; break;
+        }
+        if ( ! change ( b1, c1, b2, c2 ) ) continue;
+        //
+        //     b1 a2              a2
+        //    / | | \            /  \
+        //   /  | |  \        b2/    \c2
+        // c1   | |   c2  ->    ======
+        //   \  | |  /        c1\    /b1
+        //    \ | | /            \  /
+        //     a1 b2              a1
+        //
+        Set2<nat> & ra1 = rib[a1];
+        Set2<nat> & rb1 = rib[b1];
+        Set2<nat> & rc1 = rib[c1];
+        Set2<nat> & ra2 = rib[a2];
+        Set2<nat> & rb2 = rib[b2];
+        Set2<nat> & rc2 = rib[c2];
+        rb1.a = rc2.a;
+        rb2.a = rc1.a;
+        if ( rb1.b < nr )
+        {
+            rib[rb1.b].b = a2;
+            //if ( index[rb1.b] < nr )
+            {
+
+            }
+        }
+        if ( rb2.b < nr ) rib[rb2.b].b = a1;
+        ra1.b = rb2.b;
+        ra2.b = rb1.b;
+        rb1.b = a2;
+        rb2.b = a1;
+        if ( diag[ra1.b].c == nr )
+        {
+            diag[ra1.b].c = list;
+            list = ra1.b;
+        }
+        if ( diag[rc1.b].c == nr )
+        {
+            diag[rc1.b].c = list;
+            list = rc1.b;
+        }
+        if ( diag[ra2.b].c == nr )
+        {
+            diag[ra2.b].c = list;
+            list = ra2.b;
+        }
+        if ( diag[rc2.b].c == nr )
+        {
+            diag[rc2.b].c = list;
+            list = rc2.b;
+        }
     }
 }
 
