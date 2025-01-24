@@ -257,107 +257,20 @@ public:
     }
 };
 
-void optiL2 ( Func4a<bool,nat> & change, ArrRef<Set2<nat>> & rib )
-{
-    const nat nr = rib.size();
-    if ( nr < 6 || nr % 3 != 0 ) return;
-    Suite<nat> stack ( nr ); // Очередь на проверку оптимальности диагоналей
-    DynArray<nat> index ( nr ); // Индексы полурёбер в стеке
-    // Заполнение стека
-    for ( nat i = 0; i < nr; ++i )
-    {
-        const Set2<nat> & r = rib[i];
-        if ( r.b == nr || rib[r.b].b < r.b )
-        {
-            index[i] = nr;
-        }
-        else
-        {
-            index[i] = stack.size();
-            stack.inc() = i;
-        }
-    }
-    // Использование стека
-    while ( stack.size() > 0 )
-    {
-        nat a1 = stack.las(), b1, c1;
-        index[a1] = nr;
-        stack.dec();
-        switch ( a1 % 3 )
-        {
-        case 0:
-            b1 = a1 + 1;
-            c1 = b1 + 1; break;
-        case 1:
-            b1 = a1 + 1;
-            c1 = b1 - 2; break;
-        case 2:
-            b1 = a1 - 2;
-            c1 = b1 + 1; break;
-        }
-        nat a2 = rib[a1].b, b2, c2;
-        switch ( a2 % 3 )
-        {
-        case 0:
-            b2 = a2 + 1;
-            c2 = b2 + 1; break;
-        case 1:
-            b2 = a2 + 1;
-            c2 = b2 - 2; break;
-        case 2:
-            b2 = a2 - 2;
-            c2 = b2 + 1; break;
-        }
-        if ( ! change ( b1, c1, b2, c2 ) ) continue;
-        //
-        //     b1 a2              a2
-        //    / | | \            /  \
-        //   /  | |  \        b2/    \c2
-        // c1   | |   c2  ->    ======
-        //   \  | |  /        c1\    /b1
-        //    \ | | /            \  /
-        //     a1 b2              a1
-        //
-        Set2<nat> & ra1 = rib[a1];
-        Set2<nat> & rb1 = rib[b1];
-        Set2<nat> & rc1 = rib[c1];
-        Set2<nat> & ra2 = rib[a2];
-        Set2<nat> & rb2 = rib[b2];
-        Set2<nat> & rc2 = rib[c2];
-        rb1.a = rc2.a;
-        rb2.a = rc1.a;
-        if ( rb1.b < nr )
-        {
-            rib[rb1.b].b = a2;
-            if ( index[rb1.b] < nr )
-            {
-
-            }
-        }
-        if ( rb2.b < nr ) rib[rb2.b].b = a1;
-        ra1.b = rb2.b;
-        ra2.b = rb1.b;
-        rb1.b = a2;
-        rb2.b = a1;
-    }
-}
-
-void optiL3 ( Func4a<bool,nat> & change, ArrRef<Set2<nat>> & rib, ArrRef<Set3<nat>> & diag )
+void optiL3 ( Func4a<bool,nat> & change, ArrRef<Set2<nat>> & rib, ArrRef<nat> & diag )
 {
     const nat nr = rib.size();
     if ( nr < 6 || nr % 3 != 0 ) return;
     const nat nd = diag.size();
-    if ( nd == 0 ) return;
+    if ( nd < 3 || nd % 3 != 0) return;
+    const nat m = nd + 1; // Метка для диагоналей вне списка проверок
     // Очередь на проверку оптимальности диагоналей
     nat list = 0;
-    for ( nat i = 0; i < nd; ++i ) diag[i].c = i + 1;
+    for ( nat i = 0; i < nd; i += 3 ) diag[i] = i + 3;
     // Проверка диагоналей
     while ( list < nd )
     {
-        Set3<nat> & d = diag[list];
-        list = d.c;
-        d.c = nr;
-        nat a1 = d.a, b1, c1;
+        nat a1 = diag[list+1], b1, c1;
         switch ( a1 % 3 )
         {
         case 0:
@@ -370,7 +283,7 @@ void optiL3 ( Func4a<bool,nat> & change, ArrRef<Set2<nat>> & rib, ArrRef<Set3<na
             b1 = a1 - 2;
             c1 = b1 + 1; break;
         }
-        nat a2 = d.b, b2, c2;
+        nat a2 = diag[list+2], b2, c2;
         switch ( a2 % 3 )
         {
         case 0:
@@ -383,6 +296,11 @@ void optiL3 ( Func4a<bool,nat> & change, ArrRef<Set2<nat>> & rib, ArrRef<Set3<na
             b2 = a2 - 2;
             c2 = b2 + 1; break;
         }
+        // Вывод диагонали из списка проверок
+        nat & d = diag[list];
+        list = d;
+        d = m;
+        // Проверка на изменение диагонали
         if ( ! change ( b1, c1, b2, c2 ) ) continue;
         //
         //     b1 a2              a2
@@ -401,38 +319,50 @@ void optiL3 ( Func4a<bool,nat> & change, ArrRef<Set2<nat>> & rib, ArrRef<Set3<na
         Set2<nat> & rc2 = rib[c2];
         rb1.a = rc2.a;
         rb2.a = rc1.a;
-        if ( rb1.b < nr )
+        rb1.b = ra1.b;
+        diag[rb1.b] = b1;
+        rb2.b = ra2.b;
+        diag[rb2.b] = b2;
+        ra1.b = rb2.b;
+        if ( ra1.b < nd ) diag[ra1.b] = a1;
+        ra2.b = rb1.b;
+        if ( ra2.b < nd ) diag[ra2.b] = a2;
+        // Добавим соседние диагонали в список проверок, если их там нет
+        if ( ra1.b < nd )
         {
-            rib[rb1.b].b = a2;
-            //if ( index[rb1.b] < nr )
+            const nat da1 = ra1.b - ra1.b % 3;
+            if ( diag[da1] == m )
             {
-
+                diag[da1] = list;
+                list = da1;
             }
         }
-        if ( rb2.b < nr ) rib[rb2.b].b = a1;
-        ra1.b = rb2.b;
-        ra2.b = rb1.b;
-        rb1.b = a2;
-        rb2.b = a1;
-        if ( diag[ra1.b].c == nr )
+        if ( rc1.b < nd )
         {
-            diag[ra1.b].c = list;
-            list = ra1.b;
+            const nat dc1 = rc1.b - rc1.b % 3;
+            if ( diag[dc1] == m )
+            {
+                diag[dc1] = list;
+                list = dc1;
+            }
         }
-        if ( diag[rc1.b].c == nr )
+        if ( ra2.b < nd )
         {
-            diag[rc1.b].c = list;
-            list = rc1.b;
+            const nat da2 = ra2.b - ra2.b % 3;
+            if ( diag[da2] == m )
+            {
+                diag[da2] = list;
+                list = da2;
+            }
         }
-        if ( diag[ra2.b].c == nr )
+        if ( rc2.b < nd )
         {
-            diag[ra2.b].c = list;
-            list = ra2.b;
-        }
-        if ( diag[rc2.b].c == nr )
-        {
-            diag[rc2.b].c = list;
-            list = rc2.b;
+            const nat dc2 = rc2.b - rc2.b % 3;
+            if ( diag[dc2] == m )
+            {
+                diag[dc2] = list;
+                list = dc2;
+            }
         }
     }
 }

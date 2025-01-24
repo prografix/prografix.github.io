@@ -1672,6 +1672,114 @@ bool rebuildDelauney2 ( CCArrRef<Vector2d> & vert, CCArrRef<Set3<nat> > & trian,
     return true;
 }
 
+class F_MinTan2 : public Func4a<bool, nat>
+{
+    CArrRef<Vector2d> vert; // Массив вершин
+    CArrRef<Set2<nat>> rib; // Массив полурёбер
+    DynArray<double> value; // Массив качества граней
+public:
+    F_MinTan2 ( CCArrRef<Vector2d> & v, CArrRef<Set2<nat>> & r ) : vert(v), rib(r)
+    {
+        const nat nr = rib.size();
+        const nat nf = nr / 3;
+        value.resize ( nf );
+        for ( nat i = 0; i < nf; ++i )
+        {
+            const nat j = 3 * i;
+            const nat a = rib[ j ].a;
+            const nat b = rib[j+1].a;
+            const nat c = rib[j+2].a;
+            const Vector2d ab = vert[b] - vert[a];
+            const Vector2d bc = vert[c] - vert[b];
+            const Vector2d ca = vert[a] - vert[c];
+            value[i] = minTan ( ab, bc, ca );
+        }
+    }
+    virtual bool operator () ( nat b1, nat c1, nat b2, nat c2 )
+    {
+        const nat a = rib[b1].a;
+        const nat b = rib[c1].a;
+        const nat c = rib[b2].a;
+        const nat d = rib[c2].a;
+        const Vector2d ab = vert[b] - vert[a];
+        const Vector2d bc = vert[c] - vert[b];
+        const Vector2d cd = vert[d] - vert[c];
+        const Vector2d da = vert[a] - vert[d];
+        const Vector2d ca = vert[a] - vert[c];
+        const Vector2d db = vert[b] - vert[d];
+        const double t1 = _min ( minTan ( ab, bc, ca ), minTan ( da, -ca, cd ) );
+        const double q1 = minTan ( ab, -db, da );
+        const double q2 = minTan ( db, bc, cd );
+        const double t2 = _min ( q1, q2 );
+        if ( t2 > t1 )
+        {
+            value[b1/3] = q1;
+            value[b2/3] = q2;
+            return true;
+        }
+        return false;
+    }
+};
+
+void optiL3 ( Func4a<bool,nat> & change, ArrRef<Set2<nat>> & rib, ArrRef<nat> & diag );
+
+bool rebuildDelauney3 ( CCArrRef<Vector2d> & vert, CCArrRef<Set3<nat> > & trian, DynArray<Set2<nat>> & rib )
+{
+    const nat nt = trian.size();
+    const nat nv = vert.size();
+    if ( nt < 1 || nv < 3 ) return false;
+    const nat nr = 3 * nt;
+    const nat nu = 5 * nt;
+    rib.resize ( nr );
+    // Запишем массив полурёбер rib.
+    // Причём рёбра принадлежащие к одному треугольнику должны находится последовательно.
+    nat i, k;
+    DynArray<SortItem<Set2<nat>, nat> > sar ( nr );
+    for ( k = 0; k < nt; ++k )
+    {
+        const Set3<nat> & t = trian[k];
+        const nat na = 3 * k;
+        const nat nb = na + 1;
+        const nat nc = nb + 1;
+        Set2<nat> & ra = rib[na];
+        ra.a = t.a;
+        ra.b = nu;
+        Set2<nat> & rb = rib[nb];
+        rb.a = t.b;
+        rb.b = nu;
+        Set2<nat> & rc = rib[nc];
+        rc.a = t.c;
+        rc.b = nu;
+        SortItem<Set2<nat>, nat> & sa = sar[na];
+        sa.head = t.a < t.b ? Set2<nat> ( t.a, t.b ) : Set2<nat> ( t.b, t.a );
+        sa.tail = na;
+        SortItem<Set2<nat>, nat> & sb = sar[nb];
+        sb.head = t.b < t.c ? Set2<nat> ( t.b, t.c ) : Set2<nat> ( t.c, t.b );
+        sb.tail = nb;
+        SortItem<Set2<nat>, nat> & sc = sar[nc];
+        sc.head = t.c < t.a ? Set2<nat> ( t.c, t.a ) : Set2<nat> ( t.a, t.c );
+        sc.tail = nc;
+    }
+    quickSort123 ( sar );
+    Suite<nat> diag;
+    for ( i = 1; i < nr; ++i )
+    {
+        SortItem<Set2<nat>, nat> & sa = sar[i];
+        SortItem<Set2<nat>, nat> & sb = sar[i-1];
+        if ( sa == sb )
+        {
+            nat j = diag.size();
+            diag.inc(3);
+            diag[j] = j + 3;
+            diag[rib[sa.tail].b = j+1] = sa.tail;
+            diag[rib[sb.tail].b = j+2] = sb.tail;
+            ++i;
+        }
+    }
+    optiL3 ( F_MinTan2 ( vert, rib ), rib, diag );
+    return true;
+}
+
 void trian2d_test ()
 {
     drawNewList2d();
