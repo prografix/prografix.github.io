@@ -23,6 +23,8 @@
 double timeInSec();
 bool rebuildDelauney ( CCArrRef<Vector2d> & vert, CCArrRef<Set3<nat> > & trian, DynArray<SemiRib> & rib );
 bool rebuildDelauney2( CCArrRef<Vector2d> & vert, CCArrRef<Set3<nat> > & trian, DynArray<SemiRib> & rib );
+bool rebuildDelauney3 ( CCArrRef<Vector2d> & vert, ArrRef<Set3<nat> > & trian );
+void initRibDiag ( CCArrRef<Set3<nat>> & trian, DynArray<Set2<nat>> & rib, Suite<nat> & diag );
 
 ArrRef<Set3<nat> > & rebuildDelauney2 ( CCArrRef<Vector2d> & vert, ArrRef<Set3<nat> > & res )
 {
@@ -949,10 +951,34 @@ SuiteRef<Set3<nat> > & trianSweepLine ( CArrRef<Vector2d> vert, SuiteRef<Set3<na
     return res;
 }
 
+void normalize ( ArrRef<Set3<nat>> & res )
+{
+    for ( nat i = 0; i < res.size(); ++i )
+    {
+        Set3<nat> & s = res[i];
+        if ( s.a < s.b && s.a < s.c ) continue;
+        if ( s.b < s.c )
+        {
+            nat j = s.a;
+            s.a = s.b;
+            s.b = s.c;
+            s.c = j;
+        }
+        else
+        {
+            nat j = s.b;
+            s.b = s.a;
+            s.a = s.c;
+            s.c = j;
+        }
+    }
+    insertSort123 ( res );
+}
+
 void trianSweepLine_test()
 {
     nat i;
-    const nat n = 7;
+    const nat n = 9;
     Suite<Vector2d> vert;
     for ( i = 0; i < 1; ++i ) randPolygon ( vert.resize(n) );
     vert.reverse();
@@ -992,15 +1018,17 @@ if ( a < 0 ) display << a << NL;
     double t1 = timeInSec();
     rebuildDelauney ( vert, res );
     double t2 = timeInSec();
-    rebuildDelauney2 ( vert, res2 );
+    rebuildDelauney3 ( vert, res2 );
     double t3 = timeInSec();
     display << t2-t1 << t3-t2 << NL;
+    normalize ( res );
+    normalize ( res2 );
     for ( i = 0; i < res.size(); ++i ) if ( res[i] != res2[i] ) display << "no" << NL;
     if(1)
     {
-        for ( i = 0; i < res.size(); ++i )
+        for ( i = 0; i < res2.size(); ++i )
         {
-            const Set3<nat> & s = res[i];
+            const Set3<nat> & s = res2[i];
             draw ( Segment2d ( vert[s.a], vert[s.b] ), 1, 1, 0 );
             draw ( Segment2d ( vert[s.b], vert[s.c] ), 1, 1, 0 );
             draw ( Segment2d ( vert[s.c], vert[s.a] ), 1, 1, 0 );
@@ -1518,26 +1546,6 @@ void splitPolygon_test2 ()
 
 using namespace Test;
 
-template <class F, class A1, class A2=A1, class A3=A2, class A4=A3>
-class Func4a // Функция четырёх аргументов
-{
-public:
-    virtual F operator () ( A1 a1, A2 a2, A3 a3, A4 a4 ) = 0;
-};
-
-void optiL ( Func4a<bool, nat> & change, ArrRef<SemiRib> & rib );
-/*
-1.170e-005 7.100e-006 
-6.200e-006 3.500e-006 
-7.500e-006 5.100e-006 
-9.800e-006 5.000e-006 
-1.100e-005 6.200e-006 
-8.800e-006 5.100e-006 
-8.100e-006 5.500e-006 
-1.000e-005 5.500e-006 
-1.110e-005 6.500e-006 
-8.300e-006 4.600e-006 
-*/
 double minTan ( const Vector2d & ab, const Vector2d & bc, const Vector2d & ca )
 {
     const double aa = ca * ab;
@@ -1602,7 +1610,6 @@ public:
         const Vector2d da = vert[a] - vert[d];
         const Vector2d ca = vert[a] - vert[c];
         const Vector2d db = vert[b] - vert[d];
-        //const double t1 = _min ( value[b1/3], value[b2/3] );
         const double t1 = _min ( minTan ( ab, bc, ca ), minTan ( da, -ca, cd ) );
         const double q1 = minTan ( ab, -db, da );
         const double q2 = minTan ( db, bc, cd );
@@ -1668,7 +1675,7 @@ bool rebuildDelauney2 ( CCArrRef<Vector2d> & vert, CCArrRef<Set3<nat> > & trian,
             ++i;
         }
     }
-    optiL ( F_MinTan ( vert, rib ), rib );
+    //optiL ( F_MinTan ( vert, rib ), rib );
     return true;
 }
 
@@ -1721,72 +1728,39 @@ public:
     }
 };
 
-void optiL3 ( Func4a<bool,nat> & change, ArrRef<Set2<nat>> & rib, ArrRef<nat> & diag );
+void optiL ( Func4a<bool,nat> & change, ArrRef<Set2<nat>> & rib, ArrRef<nat> & diag );
 
 bool rebuildDelauney3 ( CCArrRef<Vector2d> & vert, CCArrRef<Set3<nat> > & trian, DynArray<Set2<nat>> & rib )
 {
-    const nat nt = trian.size();
-    const nat nv = vert.size();
-    if ( nt < 1 || nv < 3 ) return false;
-    const nat nr = 3 * nt;
-    const nat nu = 5 * nt;
-    rib.resize ( nr );
-    // Запишем массив полурёбер rib.
-    // Причём рёбра принадлежащие к одному треугольнику должны находится последовательно.
-    nat i, k;
-    DynArray<SortItem<Set2<nat>, nat> > sar ( nr );
-    for ( k = 0; k < nt; ++k )
-    {
-        const Set3<nat> & t = trian[k];
-        const nat na = 3 * k;
-        const nat nb = na + 1;
-        const nat nc = nb + 1;
-        Set2<nat> & ra = rib[na];
-        ra.a = t.a;
-        ra.b = nu;
-        Set2<nat> & rb = rib[nb];
-        rb.a = t.b;
-        rb.b = nu;
-        Set2<nat> & rc = rib[nc];
-        rc.a = t.c;
-        rc.b = nu;
-        SortItem<Set2<nat>, nat> & sa = sar[na];
-        sa.head = t.a < t.b ? Set2<nat> ( t.a, t.b ) : Set2<nat> ( t.b, t.a );
-        sa.tail = na;
-        SortItem<Set2<nat>, nat> & sb = sar[nb];
-        sb.head = t.b < t.c ? Set2<nat> ( t.b, t.c ) : Set2<nat> ( t.c, t.b );
-        sb.tail = nb;
-        SortItem<Set2<nat>, nat> & sc = sar[nc];
-        sc.head = t.c < t.a ? Set2<nat> ( t.c, t.a ) : Set2<nat> ( t.a, t.c );
-        sc.tail = nc;
-    }
-    quickSort123 ( sar );
+    if ( trian.size() < 1 || vert.size() < 3 ) return false;
     Suite<nat> diag;
-    for ( i = 1; i < nr; ++i )
+    initRibDiag ( trian, rib, diag );
+    optiL ( F_MinTan2 ( vert, rib ), rib, diag );
+    return true;
+}
+
+bool rebuildDelauney3 ( CCArrRef<Vector2d> & vert, ArrRef<Set3<nat> > & trian )
+{
+    DynArray<Set2<nat>> rib;
+    if ( ! rebuildDelauney3 ( vert, trian, rib ) ) return false;
+    const nat nr = rib.size();
+    for ( nat i = 0; i < nr; i += 3 )
     {
-        SortItem<Set2<nat>, nat> & sa = sar[i];
-        SortItem<Set2<nat>, nat> & sb = sar[i-1];
-        if ( sa == sb )
-        {
-            nat j = diag.size();
-            diag.inc(3);
-            diag[j] = j + 3;
-            diag[rib[sa.tail].b = j+1] = sa.tail;
-            diag[rib[sb.tail].b = j+2] = sb.tail;
-            ++i;
-        }
+        Set3<nat> & t = trian[i/3];
+        t.a = rib[ i ].a;
+        t.b = rib[i+1].a;
+        t.c = rib[i+2].a;
     }
-    optiL3 ( F_MinTan2 ( vert, rib ), rib, diag );
     return true;
 }
 
 void trian2d_test ()
 {
     drawNewList2d();
-    trian_test4();
+//    trian_test4();
 //    convexParts_test2();
 //    trianSeidel_test2();
-//    trianSweepLine_test();
+    trianSweepLine_test();
 //    splitPolygon_test();
     endNewList();
 }

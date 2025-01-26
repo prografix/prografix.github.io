@@ -147,6 +147,7 @@
     <ClCompile Include="Shev\approx2d.cpp" />
     <ClCompile Include="Shev\approx3d.cpp" />
     <ClCompile Include="Shev\asc.cpp" />
+    <ClCompile Include="Shev\atrian.cpp" />
     <ClCompile Include="Shev\CMatrix.cpp" />
     <ClCompile Include="Shev\Complex.cpp" />
     <ClCompile Include="Shev\File.cpp" />

@@ -344,6 +344,9 @@
     <ClCompile Include="Test\opti2d_3d_test.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="Shev\atrian.cpp">
+      <Filter>Shev cpp</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ShevTest.rc">

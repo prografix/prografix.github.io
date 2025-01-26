@@ -19,6 +19,13 @@ public:
     virtual F operator () ( A1 a1, A2 a2, A3 a3 ) const = 0;
 };
 
+template <class F, class A1, class A2=A1, class A3=A2, class A4=A3>
+class Func4a // Функция четырёх аргументов
+{
+public:
+    virtual F operator () ( A1 a1, A2 a2, A3 a3, A4 a4 ) = 0;
+};
+
 //*****************************************************************************************//
 
 template <class T> // Минимум двух аргументов
