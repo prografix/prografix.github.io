@@ -2,14 +2,126 @@
 #include "atrian.h"
 #include "func1t.h"
 
-void initRibDiag ( CCArrRef<Set3<nat>> & trian, DynArray<Set2<nat>> & rib, Suite<nat> & diag )
+void optiL ( IDiagFunc & change, ArrRef<SemiRib> & rib )
+{
+    const nat nr = rib.size();
+    if ( nr < 6 || nr % 3 != 0 ) return;
+    const nat nf = nr / 3;
+    nat i;
+    DynArray<nat> dinx ( nr, nr );
+    Suite<TriDiag<void> > diag ( nr/2 ); // Массив диагоналей
+    for ( i = 0; i < nf; ++i )
+    {
+        const nat ia = 3 * i;
+        const SemiRib & a = rib[ia];
+        const nat ib = a.next;
+        const SemiRib & b = rib[ib];
+        const nat ic = b.next;
+        const SemiRib & c = rib[ic];
+        if ( a.twin < nr )
+        {
+            dinx[ia] = dinx[a.twin] = diag.size();
+            TriDiag<void> & d = diag.inc();
+            d.facet1 = i;
+            d.facet2 = a.twin/3;
+            d.rib = ia;
+        }
+        if ( b.twin < nr )
+        {
+            dinx[ib] = dinx[b.twin] = diag.size();
+            TriDiag<void> & d = diag.inc();
+            d.facet1 = i;
+            d.facet2 = b.twin/3;
+            d.rib = ib;
+        }
+        if ( c.twin < nr )
+        {
+            dinx[ic] = dinx[c.twin] = diag.size();
+            TriDiag<void> & d = diag.inc();
+            d.facet1 = i;
+            d.facet2 = c.twin/3;
+            d.rib = ic;
+        }
+    }
+    const nat nd = diag.size();
+    Suite<nat> stack ( nd, nd ); // Очередь на проверку оптимальности диагоналей
+    for ( i = 0; i < nd; ++i ) stack[i] = i;
+    while ( stack.size() > 0 )
+    {
+        TriDiag<void> & d = diag[stack.las()];
+        stack.dec();
+        const nat a1 = d.rib;
+        const nat b1 = rib[a1].next;
+        const nat c1 = rib[b1].next;
+        const nat a2 = rib[a1].twin;
+        const nat b2 = rib[a2].next;
+        const nat c2 = rib[b2].next;
+        if ( change ( d.rib, d.facet1, d.facet2 ) )
+        {
+            rib[a1].vert = rib[c1].vert;
+            rib[a1].next = c2;
+            rib[c2].next = b1;
+            rib[b1].next = a1;
+            rib[a2].vert = rib[c2].vert;
+            rib[a2].next = c1;
+            rib[c1].next = b2;
+            rib[b2].next = a2;
+            i = dinx[c1];
+            if ( i < nr )
+            {
+                TriDiag<void> & di = diag[i];
+                if ( di.rib >= nr )
+                {
+                    di.rib -= nr;
+                    stack.inc() = i;
+                }
+                ( di.facet1 == d.facet1 ? di.facet1 : di.facet2 ) = d.facet2;
+            }
+            i = dinx[b1];
+            if ( i < nr )
+            {
+                TriDiag<void> & di = diag[i];
+                if ( di.rib >= nr )
+                {
+                    di.rib -= nr;
+                    stack.inc() = i;
+                }
+            }
+            i = dinx[c2];
+            if ( i < nr )
+            {
+                TriDiag<void> & di = diag[i];
+                if ( di.rib >= nr )
+                {
+                    di.rib -= nr;
+                    stack.inc() = i;
+                }
+                ( di.facet1 == d.facet2 ? di.facet1 : di.facet2 ) = d.facet1;
+            }
+            i = dinx[b2];
+            if ( i < nr )
+            {
+                TriDiag<void> & di = diag[i];
+                if ( di.rib >= nr )
+                {
+                    di.rib -= nr;
+                    stack.inc() = i;
+                }
+            }
+        }
+        d.rib += nr;
+    }
+}
+
+void optiL ( IDiagFunc & change, CCArrRef<Set3<nat> > & trian, DynArray<SemiRib> & rib )
 {
     const nat nt = trian.size();
+    if ( nt < 2 ) return;
     const nat nr = 3 * nt;
-    const nat nu = 5 * nt;
     rib.resize ( nr );
-    // Запишем массив полурёбер rib.
-    // Причём рёбра принадлежащие к одному треугольнику должны располагаться последовательно.
+    // Запишем массив полурёбер SemiRib.
+    // Причём рёбра принадлежащие к одному треугольнику должны находится последовательно, 
+    // а поле twin должно быть меньше количества рёбер только у одного ребра из пары.
     nat i, k;
     DynArray<SortItem<Set2<nat>, nat> > sar ( nr );
     for ( k = 0; k < nt; ++k )
@@ -18,15 +130,18 @@ void initRibDiag ( CCArrRef<Set3<nat>> & trian, DynArray<Set2<nat>> & rib, Suite
         const nat na = 3 * k;
         const nat nb = na + 1;
         const nat nc = nb + 1;
-        Set2<nat> & ra = rib[na];
-        ra.a = t.a;
-        ra.b = nu;
-        Set2<nat> & rb = rib[nb];
-        rb.a = t.b;
-        rb.b = nu;
-        Set2<nat> & rc = rib[nc];
-        rc.a = t.c;
-        rc.b = nu;
+        SemiRib & ra = rib[na];
+        ra.next = nb;
+        ra.twin = nr;
+        ra.vert = t.a;
+        SemiRib & rb = rib[nb];
+        rb.next = nc;
+        rb.twin = nr;
+        rb.vert = t.b;
+        SemiRib & rc = rib[nc];
+        rc.next = na;
+        rc.twin = nr;
+        rc.vert = t.c;
         SortItem<Set2<nat>, nat> & sa = sar[na];
         sa.head = t.a < t.b ? Set2<nat> ( t.a, t.b ) : Set2<nat> ( t.b, t.a );
         sa.tail = na;
@@ -38,130 +153,15 @@ void initRibDiag ( CCArrRef<Set3<nat>> & trian, DynArray<Set2<nat>> & rib, Suite
         sc.tail = nc;
     }
     quickSort123 ( sar );
-    // Запишем массив диагоналей diag
-    diag.resize();
     for ( i = 1; i < nr; ++i )
     {
         SortItem<Set2<nat>, nat> & sa = sar[i];
         SortItem<Set2<nat>, nat> & sb = sar[i-1];
         if ( sa == sb )
         {
-            nat j = diag.size();
-            diag.inc(3);
-            diag[j] = j + 3;
-            diag[rib[sa.tail].b = j+1] = sa.tail;
-            diag[rib[sb.tail].b = j+2] = sb.tail;
+            rib[sa.tail].twin = sb.tail;
             ++i;
         }
     }
-}
-
-void optiL ( Func4a<bool,nat> & change, ArrRef<Set2<nat>> & rib, ArrRef<nat> & diag )
-{
-    const nat nr = rib.size();
-    if ( nr < 6 || nr % 3 != 0 ) return;
-    const nat nd = diag.size();
-    if ( nd < 3 || nd % 3 != 0) return;
-    const nat m = nd + 1; // Метка для диагоналей вне списка проверок
-    nat list = 0;
-    // Проверка диагоналей
-    while ( list < nd )
-    {
-        nat a1 = diag[list+1], b1, c1;
-        switch ( a1 % 3 )
-        {
-        case 0:
-            b1 = a1 + 1;
-            c1 = b1 + 1; break;
-        case 1:
-            b1 = a1 + 1;
-            c1 = b1 - 2; break;
-        case 2:
-            b1 = a1 - 2;
-            c1 = b1 + 1; break;
-        }
-        nat a2 = diag[list+2], b2, c2;
-        switch ( a2 % 3 )
-        {
-        case 0:
-            b2 = a2 + 1;
-            c2 = b2 + 1; break;
-        case 1:
-            b2 = a2 + 1;
-            c2 = b2 - 2; break;
-        case 2:
-            b2 = a2 - 2;
-            c2 = b2 + 1; break;
-        }
-        // Вывод диагонали из списка проверок
-        nat & d = diag[list];
-        list = d;
-        d = m;
-        // Проверка на изменение диагонали
-        if ( ! change ( b1, c1, b2, c2 ) ) continue;
-        //
-        //     b1 a2              a2
-        //    / | | \            /  \
-        //   /  | |  \        b2/    \c2
-        // c1   | |   c2  ->    ======
-        //   \  | |  /        c1\    /b1
-        //    \ | | /            \  /
-        //     a1 b2              a1
-        //
-        Set2<nat> & ra1 = rib[a1];
-        Set2<nat> & rb1 = rib[b1];
-        Set2<nat> & rc1 = rib[c1];
-        Set2<nat> & ra2 = rib[a2];
-        Set2<nat> & rb2 = rib[b2];
-        Set2<nat> & rc2 = rib[c2];
-        rb1.a = rc2.a;
-        rb2.a = rc1.a;
-        const nat db1 = rb1.b;
-        rb1.b = ra1.b;
-        diag[rb1.b] = b1;
-        const nat db2 = rb2.b;
-        rb2.b = ra2.b;
-        diag[rb2.b] = b2;
-        ra1.b = db2;
-        if ( ra1.b < nd ) diag[ra1.b] = a1;
-        ra2.b = db1;
-        if ( ra2.b < nd ) diag[ra2.b] = a2;
-        // Добавим соседние диагонали в список проверок, если их там нет
-        if ( ra1.b < nd )
-        {
-            const nat da1 = ra1.b - ra1.b % 3;
-            if ( diag[da1] == m )
-            {
-                diag[da1] = list;
-                list = da1;
-            }
-        }
-        if ( rc1.b < nd )
-        {
-            const nat dc1 = rc1.b - rc1.b % 3;
-            if ( diag[dc1] == m )
-            {
-                diag[dc1] = list;
-                list = dc1;
-            }
-        }
-        if ( ra2.b < nd )
-        {
-            const nat da2 = ra2.b - ra2.b % 3;
-            if ( diag[da2] == m )
-            {
-                diag[da2] = list;
-                list = da2;
-            }
-        }
-        if ( rc2.b < nd )
-        {
-            const nat dc2 = rc2.b - rc2.b % 3;
-            if ( diag[dc2] == m )
-            {
-                diag[dc2] = list;
-                list = dc2;
-            }
-        }
-    }
+    optiL ( change.link ( rib ), rib );
 }

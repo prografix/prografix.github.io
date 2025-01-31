@@ -22,9 +22,7 @@
 
 double timeInSec();
 bool rebuildDelauney ( CCArrRef<Vector2d> & vert, CCArrRef<Set3<nat> > & trian, DynArray<SemiRib> & rib );
-bool rebuildDelauney2( CCArrRef<Vector2d> & vert, CCArrRef<Set3<nat> > & trian, DynArray<SemiRib> & rib );
-bool rebuildDelauney3 ( CCArrRef<Vector2d> & vert, ArrRef<Set3<nat> > & trian );
-void initRibDiag ( CCArrRef<Set3<nat>> & trian, DynArray<Set2<nat>> & rib, Suite<nat> & diag );
+void rebuildDelauney2( CCArrRef<Vector2d> & vert, CCArrRef<Set3<nat> > & trian, DynArray<SemiRib> & rib );
 
 ArrRef<Set3<nat> > & rebuildDelauney2 ( CCArrRef<Vector2d> & vert, ArrRef<Set3<nat> > & res )
 {
@@ -1018,11 +1016,11 @@ if ( a < 0 ) display << a << NL;
     double t1 = timeInSec();
     rebuildDelauney ( vert, res );
     double t2 = timeInSec();
-    rebuildDelauney3 ( vert, res2 );
+    rebuildDelauney2 ( vert, res2 );
     double t3 = timeInSec();
     display << t2-t1 << t3-t2 << NL;
-    normalize ( res );
-    normalize ( res2 );
+//    normalize ( res );
+//    normalize ( res2 );
     for ( i = 0; i < res.size(); ++i ) if ( res[i] != res2[i] ) display << "no" << NL;
     if(1)
     {
@@ -1576,14 +1574,16 @@ double minTan ( const Vector2d & ab, const Vector2d & bc, const Vector2d & ca )
     return 0;
 }
 
-class F_MinTan : public Func4a<bool, nat>
+class F_MinTan : public IDiagFunc
 {
     CArrRef<Vector2d> vert; // Массив вершин
-    CArrRef<SemiRib> rib;   // Массив полурёбер
+    MutCArrRef<SemiRib> rib;   // Массив полурёбер
     DynArray<double> value; // Массив качества граней
 public:
-    F_MinTan ( CCArrRef<Vector2d> & v, CArrRef<SemiRib> & r ) : vert(v), rib(r)
+    F_MinTan ( CCArrRef<Vector2d> & v ) : vert(v) {}
+    F_MinTan & link ( CArrRef<SemiRib> & r )
     {
+        rib.reset ( r );
         const nat nr = rib.size();
         const nat nf = nr / 3;
         value.resize ( nf );
@@ -1597,9 +1597,14 @@ public:
             const Vector2d ca = vert[a.vert] - vert[c.vert];
             value[i] = minTan ( ab, bc, ca );
         }
+        return *this;
     }
-    virtual bool operator () ( nat b1, nat c1, nat b2, nat c2 )
+    virtual bool operator () ( nat r, nat s1, nat s2 )
     {
+        const nat b1 = rib[r].next;
+        const nat c1 = rib[b1].next;
+        const nat b2 = rib[rib[r].twin].next;
+        const nat c2 = rib[b2].next;
         const nat a = rib[b1].vert;
         const nat b = rib[c1].vert;
         const nat c = rib[b2].vert;
@@ -1610,148 +1615,23 @@ public:
         const Vector2d da = vert[a] - vert[d];
         const Vector2d ca = vert[a] - vert[c];
         const Vector2d db = vert[b] - vert[d];
-        const double t1 = _min ( minTan ( ab, bc, ca ), minTan ( da, -ca, cd ) );
+        const double t1 = _min ( value[s1], value[s2] );
         const double q1 = minTan ( ab, -db, da );
         const double q2 = minTan ( db, bc, cd );
         const double t2 = _min ( q1, q2 );
         if ( t2 > t1 )
         {
-            value[b1/3] = q1;
-            value[b2/3] = q2;
+            value[s1] = q1;
+            value[s2] = q2;
             return true;
         }
         return false;
     }
 };
 
-bool rebuildDelauney2 ( CCArrRef<Vector2d> & vert, CCArrRef<Set3<nat> > & trian, DynArray<SemiRib> & rib )
+void rebuildDelauney2 ( CCArrRef<Vector2d> & vert, CCArrRef<Set3<nat> > & trian, DynArray<SemiRib> & rib )
 {
-    const nat nt = trian.size();
-    const nat nv = vert.size();
-    if ( nt < 1 || nv < 3 ) return false;
-    const nat nr = 3 * nt;
-    rib.resize ( nr );
-    // Запишем массив полурёбер SemiRib.
-    // Причём рёбра принадлежащие к одному треугольнику должны находится последовательно, 
-    // а поле twin должно быть меньше количества рёбер только у одного ребра из пары.
-    nat i, k;
-    DynArray<SortItem<Set2<nat>, nat> > sar ( nr );
-    for ( k = 0; k < nt; ++k )
-    {
-        const Set3<nat> & t = trian[k];
-        const nat na = 3 * k;
-        const nat nb = na + 1;
-        const nat nc = nb + 1;
-        SemiRib & ra = rib[na];
-        ra.next = nb;
-        ra.twin = nr;
-        ra.vert = t.a;
-        SemiRib & rb = rib[nb];
-        rb.next = nc;
-        rb.twin = nr;
-        rb.vert = t.b;
-        SemiRib & rc = rib[nc];
-        rc.next = na;
-        rc.twin = nr;
-        rc.vert = t.c;
-        SortItem<Set2<nat>, nat> & sa = sar[na];
-        sa.head = t.a < t.b ? Set2<nat> ( t.a, t.b ) : Set2<nat> ( t.b, t.a );
-        sa.tail = na;
-        SortItem<Set2<nat>, nat> & sb = sar[nb];
-        sb.head = t.b < t.c ? Set2<nat> ( t.b, t.c ) : Set2<nat> ( t.c, t.b );
-        sb.tail = nb;
-        SortItem<Set2<nat>, nat> & sc = sar[nc];
-        sc.head = t.c < t.a ? Set2<nat> ( t.c, t.a ) : Set2<nat> ( t.a, t.c );
-        sc.tail = nc;
-    }
-    quickSort123 ( sar );
-    for ( i = 1; i < nr; ++i )
-    {
-        SortItem<Set2<nat>, nat> & sa = sar[i];
-        SortItem<Set2<nat>, nat> & sb = sar[i-1];
-        if ( sa == sb )
-        {
-            rib[sa.tail].twin = sb.tail;
-            ++i;
-        }
-    }
-    //optiL ( F_MinTan ( vert, rib ), rib );
-    return true;
-}
-
-class F_MinTan2 : public Func4a<bool, nat>
-{
-    CArrRef<Vector2d> vert; // Массив вершин
-    CArrRef<Set2<nat>> rib; // Массив полурёбер
-    DynArray<double> value; // Массив качества граней
-public:
-    F_MinTan2 ( CCArrRef<Vector2d> & v, CArrRef<Set2<nat>> & r ) : vert(v), rib(r)
-    {
-        const nat nr = rib.size();
-        const nat nf = nr / 3;
-        value.resize ( nf );
-        for ( nat i = 0; i < nf; ++i )
-        {
-            const nat j = 3 * i;
-            const nat a = rib[ j ].a;
-            const nat b = rib[j+1].a;
-            const nat c = rib[j+2].a;
-            const Vector2d ab = vert[b] - vert[a];
-            const Vector2d bc = vert[c] - vert[b];
-            const Vector2d ca = vert[a] - vert[c];
-            value[i] = minTan ( ab, bc, ca );
-        }
-    }
-    virtual bool operator () ( nat b1, nat c1, nat b2, nat c2 )
-    {
-        const nat a = rib[b1].a;
-        const nat b = rib[c1].a;
-        const nat c = rib[b2].a;
-        const nat d = rib[c2].a;
-        const Vector2d ab = vert[b] - vert[a];
-        const Vector2d bc = vert[c] - vert[b];
-        const Vector2d cd = vert[d] - vert[c];
-        const Vector2d da = vert[a] - vert[d];
-        const Vector2d ca = vert[a] - vert[c];
-        const Vector2d db = vert[b] - vert[d];
-        const double t1 = _min ( minTan ( ab, bc, ca ), minTan ( da, -ca, cd ) );
-        const double q1 = minTan ( ab, -db, da );
-        const double q2 = minTan ( db, bc, cd );
-        const double t2 = _min ( q1, q2 );
-        if ( t2 > t1 )
-        {
-            value[b1/3] = q1;
-            value[b2/3] = q2;
-            return true;
-        }
-        return false;
-    }
-};
-
-void optiL ( Func4a<bool,nat> & change, ArrRef<Set2<nat>> & rib, ArrRef<nat> & diag );
-
-bool rebuildDelauney3 ( CCArrRef<Vector2d> & vert, CCArrRef<Set3<nat> > & trian, DynArray<Set2<nat>> & rib )
-{
-    if ( trian.size() < 1 || vert.size() < 3 ) return false;
-    Suite<nat> diag;
-    initRibDiag ( trian, rib, diag );
-    optiL ( F_MinTan2 ( vert, rib ), rib, diag );
-    return true;
-}
-
-bool rebuildDelauney3 ( CCArrRef<Vector2d> & vert, ArrRef<Set3<nat> > & trian )
-{
-    DynArray<Set2<nat>> rib;
-    if ( ! rebuildDelauney3 ( vert, trian, rib ) ) return false;
-    const nat nr = rib.size();
-    for ( nat i = 0; i < nr; i += 3 )
-    {
-        Set3<nat> & t = trian[i/3];
-        t.a = rib[ i ].a;
-        t.b = rib[i+1].a;
-        t.c = rib[i+2].a;
-    }
-    return true;
+    optiL ( F_MinTan ( vert ), trian, rib );
 }
 
 void trian2d_test ()

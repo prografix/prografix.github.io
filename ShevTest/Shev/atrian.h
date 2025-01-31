@@ -28,6 +28,12 @@ public:
 
 //*****************************************************************************************//
 
+void initRibDiag ( CCArrRef<Set3<nat>> & trian, DynArray<Set2<nat>> & rib, Suite<nat> & diag );
+
+void optiL ( Func4a<bool,nat> & change, ArrRef<Set2<nat>> & rib, ArrRef<nat> & diag );
+
+//*****************************************************************************************//
+
 template <class T> // Минимум двух аргументов
 class Min2a : public Func2a<T,T>
 {
@@ -83,6 +89,22 @@ public:
     T value; // Качество диагонали
     nat rib, facet1, facet2; // Индексы полуребра и соседних граней
 };
+
+template <> class TriDiag<void>
+{
+public:
+    nat rib, facet1, facet2; // Индексы полуребра и соседних граней
+};
+
+class IDiagFunc
+{
+public:
+    virtual IDiagFunc & link ( CArrRef<SemiRib> & r ) = 0;
+    virtual bool operator () ( nat r, nat s1, nat s2 ) = 0;
+};
+
+void optiL ( IDiagFunc & change, ArrRef<SemiRib> & rib );
+void optiL ( IDiagFunc & change, CCArrRef<Set3<nat> > & trian, DynArray<SemiRib> & rib );
 
 template <class T>
 void maxL1 ( const Func3a<T,nat> & quality, const Func2a<T,T> & merge, ArrRef<SemiRib> & rib )
