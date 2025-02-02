@@ -19,19 +19,6 @@ public:
     virtual F operator () ( A1 a1, A2 a2, A3 a3 ) const = 0;
 };
 
-template <class F, class A1, class A2=A1, class A3=A2, class A4=A3>
-class Func4a // Функция четырёх аргументов
-{
-public:
-    virtual F operator () ( A1 a1, A2 a2, A3 a3, A4 a4 ) = 0;
-};
-
-//*****************************************************************************************//
-
-void initRibDiag ( CCArrRef<Set3<nat>> & trian, DynArray<Set2<nat>> & rib, Suite<nat> & diag );
-
-void optiL ( Func4a<bool,nat> & change, ArrRef<Set2<nat>> & rib, ArrRef<nat> & diag );
-
 //*****************************************************************************************//
 
 template <class T> // Минимум двух аргументов

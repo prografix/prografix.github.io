@@ -22,27 +22,6 @@
 
 double timeInSec();
 bool rebuildDelauney ( CCArrRef<Vector2d> & vert, CCArrRef<Set3<nat> > & trian, DynArray<SemiRib> & rib );
-void rebuildDelauney2( CCArrRef<Vector2d> & vert, CCArrRef<Set3<nat> > & trian, DynArray<SemiRib> & rib );
-
-ArrRef<Set3<nat> > & rebuildDelauney2 ( CCArrRef<Vector2d> & vert, ArrRef<Set3<nat> > & res )
-{
-    DynArray<SemiRib> rib;
-    rebuildDelauney2 ( vert, res, rib );
-    const nat nv = vert.size();
-    for ( nat i = 0, k = 0; i < rib.size(); ++i )
-    {
-        SemiRib & a = rib[i];
-        if ( a.vert >= nv ) continue;
-        SemiRib & b = rib[a.next];
-        SemiRib & c = rib[b.next];
-        Set3<nat> & t = res[k++];
-        t.a = a.vert;
-        t.b = b.vert;
-        t.c = c.vert;
-        a.vert = b.vert = c.vert = nv;
-    }
-    return res;
-}
 
 namespace Test
 {
@@ -1016,7 +995,7 @@ if ( a < 0 ) display << a << NL;
     double t1 = timeInSec();
     rebuildDelauney ( vert, res );
     double t2 = timeInSec();
-    rebuildDelauney2 ( vert, res2 );
+    rebuildDelauney ( vert, res2 );
     double t3 = timeInSec();
     display << t2-t1 << t3-t2 << NL;
 //    normalize ( res );
@@ -1146,7 +1125,7 @@ void trian_test ( const Spin2d & spin, const char * filename )
 //            trianNat1L1MaxMinTan ( vert, res );
             double t2 = timeInSec();
             stat.inc() = SortItem<nat, double> ( nv, t2-t1 );
-            rebuildDelauney2 ( vert, res2 );
+            rebuildDelauney ( vert, res2 );
     for ( nat j = 0; j < res.size(); ++j ) if ( res[j] != res2[j] )
     {
         j=j;
@@ -1544,103 +1523,13 @@ void splitPolygon_test2 ()
 
 using namespace Test;
 
-double minTan ( const Vector2d & ab, const Vector2d & bc, const Vector2d & ca )
-{
-    const double aa = ca * ab;
-    const double bb = ab * bc;
-    const double cc = bc * ca;
-    if ( aa <= bb )
-    {
-        if ( aa <= cc )
-        {
-            if ( aa < 0 ) return ( ca % bc ) / aa;
-        }
-        else
-        {
-            if ( cc < 0 ) return ( bc % ab ) / cc;
-        }
-    }
-    else
-    {
-        if ( bb <= cc )
-        {
-            if ( bb < 0 ) return ( ca % bc ) / bb;
-        }
-        else
-        {
-            if ( cc < 0 ) return ( ab % ca ) / cc;
-        }
-    }
-    return 0;
-}
-
-class F_MinTan : public IDiagFunc
-{
-    CArrRef<Vector2d> vert; // Массив вершин
-    MutCArrRef<SemiRib> rib;   // Массив полурёбер
-    DynArray<double> value; // Массив качества граней
-public:
-    F_MinTan ( CCArrRef<Vector2d> & v ) : vert(v) {}
-    F_MinTan & link ( CArrRef<SemiRib> & r )
-    {
-        rib.reset ( r );
-        const nat nr = rib.size();
-        const nat nf = nr / 3;
-        value.resize ( nf );
-        for ( nat i = 0; i < nf; ++i )
-        {
-            const SemiRib & a = rib[3 * i];
-            const SemiRib & b = rib[a.next];
-            const SemiRib & c = rib[b.next];
-            const Vector2d ab = vert[b.vert] - vert[a.vert];
-            const Vector2d bc = vert[c.vert] - vert[b.vert];
-            const Vector2d ca = vert[a.vert] - vert[c.vert];
-            value[i] = minTan ( ab, bc, ca );
-        }
-        return *this;
-    }
-    virtual bool operator () ( nat r, nat s1, nat s2 )
-    {
-        const nat b1 = rib[r].next;
-        const nat c1 = rib[b1].next;
-        const nat b2 = rib[rib[r].twin].next;
-        const nat c2 = rib[b2].next;
-        const nat a = rib[b1].vert;
-        const nat b = rib[c1].vert;
-        const nat c = rib[b2].vert;
-        const nat d = rib[c2].vert;
-        const Vector2d ab = vert[b] - vert[a];
-        const Vector2d bc = vert[c] - vert[b];
-        const Vector2d cd = vert[d] - vert[c];
-        const Vector2d da = vert[a] - vert[d];
-        const Vector2d ca = vert[a] - vert[c];
-        const Vector2d db = vert[b] - vert[d];
-        const double t1 = _min ( value[s1], value[s2] );
-        const double q1 = minTan ( ab, -db, da );
-        const double q2 = minTan ( db, bc, cd );
-        const double t2 = _min ( q1, q2 );
-        if ( t2 > t1 )
-        {
-            value[s1] = q1;
-            value[s2] = q2;
-            return true;
-        }
-        return false;
-    }
-};
-
-void rebuildDelauney2 ( CCArrRef<Vector2d> & vert, CCArrRef<Set3<nat> > & trian, DynArray<SemiRib> & rib )
-{
-    optiL ( F_MinTan ( vert ), trian, rib );
-}
-
 void trian2d_test ()
 {
     drawNewList2d();
-//    trian_test4();
+    trian_test4();
 //    convexParts_test2();
 //    trianSeidel_test2();
-    trianSweepLine_test();
+//    trianSweepLine_test();
 //    splitPolygon_test();
     endNewList();
 }
