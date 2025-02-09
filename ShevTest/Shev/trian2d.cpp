@@ -11,11 +11,11 @@
 #include "ShevArray.h"
 #include "lists.h"
 
-//**************************** 18.07.2007 *********************************//
+//**************************** 09.02.2025 *********************************//
 //
 //      Триангуляция многоугольника алгоритмами tempTrianNat1 и OptiL
 //
-//**************************** 27.08.2011 *********************************//
+//**************************** 09.02.2025 *********************************//
 
 SuiteRef<Set3<nat> > & trianNat1OptiL ( IDiagFunc & change, CCArrRef<Vector2d> & vert, SuiteRef<Set3<nat> > & res )
 {
@@ -539,7 +539,7 @@ SuiteRef<Set3<nat> > & trianSweepLine ( CCArrRef<Vector2d> & vert, SuiteRef<Set3
 //
 //      Перестройка триангуляции на триангуляцию Делоне
 //
-//**************************** 24.08.2018 *********************************//
+//**************************** 09.02.2025 *********************************//
 
 double minTan ( const Vector2d & ab, const Vector2d & bc, const Vector2d & ca )
 {
@@ -574,7 +574,7 @@ double minTan ( const Vector2d & ab, const Vector2d & bc, const Vector2d & ca )
 class F_MinTan : public IDiagFunc
 {
     CArrRef<Vector2d> vert; // Массив вершин
-    MutCArrRef<SemiRib> rib;   // Массив полурёбер
+    MutCArrRef<SemiRib> rib;// Массив полурёбер
     DynArray<double> value; // Массив качества граней
 public:
     F_MinTan ( CCArrRef<Vector2d> & v ) : vert(v) {}
