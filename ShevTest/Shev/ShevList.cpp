@@ -1791,6 +1791,8 @@ const char * ShevList::test() const
         if ( lPtr != fPtr ) return "listSize == 1 && lPtr != fPtr";
         return 0;
     }
+    if ( fPtr != cPtr && ! cPtr->prevPtr ) return "fPtr != cPtr && ! cPtr->prevPtr";
+    if ( lPtr != cPtr && ! cPtr->nextPtr ) return "lPtr != cPtr && ! cPtr->nextPtr";
     if ( ! fPtr->nextPtr ) return "listSize > 1 && fPtr->nextPtr == 0";
     if ( ! lPtr->prevPtr ) return "listSize > 1 && lPtr->prevPtr == 0";
     if ( fPtr == lPtr    ) return "listSize > 1 && fPtr == lPtr";
