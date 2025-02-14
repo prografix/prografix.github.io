@@ -298,14 +298,14 @@ double diameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir )
     return diameterPnt ( point, dir, imin, imax );
 }
 
-//**************************** 07.02.2009 *********************************//
+//**************************** 03.03.2009 *********************************//
 //
-//  Минимальный диаметр множества точек вдоль заданного сектора направлений.
+//  Максимальный диаметр множества точек вдоль заданного сектора направлений.
 //  Сектор задаётся средним направлением dir и половинным углом в градусах angle.
 //  Ответ получаем в виде возвращаемого диаметра, минимального направления res
 //  и пары индексов исходных точек imin и imax.
 //
-//**************************** 07.02.2009 *********************************//
+//**************************** 03.03.2009 *********************************//
 
 class Diameter : public MathFunc1
 {
@@ -318,38 +318,6 @@ public:
         return diameterPnt ( point, Spin2d ( x, true ) ( dir ) );
     }
 };
-
-double minDiameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, double angle,
-                        double eps, Vector2d & res, nat & imin, nat & imax )
-{
-// Вычислим минимум методом золотого сечения
-    res = Spin2d ( goldenRatioMin ( -angle, angle, Diameter ( point, dir ), eps ), true ) ( dir );
-    return diameterPnt ( point, res, imin, imax );
-}
-
-double minDiameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, double angle,
-                        double eps, Vector2d & res )
-{
-    nat imin, imax;
-    return minDiameterPnt ( point, dir, angle, eps, res, imin, imax );
-}
-
-double minDiameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, double angle,
-                        double eps )
-{
-    Vector2d res;
-    nat imin, imax;
-    return minDiameterPnt ( point, dir, angle, eps, res, imin, imax );
-}
-
-//**************************** 03.03.2009 *********************************//
-//
-//  Максимальный диаметр множества точек вдоль заданного сектора направлений.
-//  Сектор задаётся средним направлением dir и половинным углом в градусах angle.
-//  Ответ получаем в виде возвращаемого диаметра, минимального направления res
-//  и пары индексов исходных точек imin и imax.
-//
-//**************************** 03.03.2009 *********************************//
 
 double maxDiameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, double angle,
                         double eps, Vector2d & res, nat & imin, nat & imax )
@@ -523,6 +491,48 @@ double minConvexPolygonDiameter ( CArrRef<Vector2d> vert )
     nat i1, i2;
     Vector2d dir;
     return minConvexPolygonDiameter ( vert, dir, i1, i2 );
+}
+
+//**************************** 11.02.2025 *********************************//
+//
+//  Минимальный диаметр выпуклого многоугольника вдоль заданного сектора направлений за время O ( n ).
+//  Сектор задаётся средним направлением dir и половинным углом в градусах angle.
+//  Ответ получаем в виде возвращаемого диаметра и минимального направления res.
+//
+//**************************** 11.02.2025 *********************************//
+
+double minConvexPolygonDiameter ( CCArrRef<Vector2d> & vert, Vector2d dir, double angle, Vector2d & res )
+{
+    dir.setNorm2();
+    const nat n = vert.size();
+    if ( n < 2 )
+    {
+        res = dir;
+        return 0.;
+    }
+    Vector2d va = Spin2d (-angle, true ) ( dir );
+    Vector2d vb = Spin2d ( angle, true ) ( dir );
+    if ( va % vb < 0 ) _swap ( va, vb );
+    const double da = diameterPnt ( vert, va );
+    const double db = diameterPnt ( vert, vb );
+    double min = da < db ? ( res = va, da ) : ( res = vb, db );
+    nat k = 1;
+    for ( nat i = 0; i < n; ++i )
+    {
+        const Line2d line ( vert[i], i > 0 ? vert[i-1] : vert[n-1] );
+        double max = line % vert[k];
+        for ( nat j = k+1; ; ++j )
+        {
+            if ( j == n ) j = 0;
+            const double t = line % vert[j];
+            if ( max < t ) max = t, k = j;
+            else break;
+        }
+        Vector2d v = line.norm;
+        if ( v * dir < 0 ) v = - v;
+        if ( va % v > 0 && v % vb > 0 && min > max ) min = max, res = v;
+    }
+    return min;
 }
 
 //**************************** 04.06.2008 *********************************//

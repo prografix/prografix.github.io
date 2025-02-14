@@ -22,6 +22,50 @@ double timeInSec();
 namespace
 {
 
+//**************************** 07.02.2009 *********************************//
+//
+//  Минимальный диаметр множества точек вдоль заданного сектора направлений.
+//  Сектор задаётся средним направлением dir и половинным углом в градусах angle.
+//  Ответ получаем в виде возвращаемого диаметра, минимального направления res
+//  и пары индексов исходных точек imin и imax.
+//
+//**************************** 07.02.2009 *********************************//
+
+class Diameter : public MathFunc1
+{
+    CArrRef<Vector2d> point;
+    const Vector2d dir;
+public:
+    Diameter ( CArrRef<Vector2d> p, const Vector2d & d ) : point(p), dir(d) {}
+    double operator () ( double x ) const
+    {
+        return diameterPnt ( point, Spin2d ( x, true ) ( dir ) );
+    }
+};
+
+double minDiameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, double angle,
+                        double eps, Vector2d & res, nat & imin, nat & imax )
+{
+// Вычислим минимум методом золотого сечения
+    res = Spin2d ( goldenRatioMin ( -angle, angle, Diameter ( point, dir ), eps ), true ) ( dir );
+    return diameterPnt ( point, res, imin, imax );
+}
+
+double minDiameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, double angle,
+                        double eps, Vector2d & res )
+{
+    nat imin, imax;
+    return minDiameterPnt ( point, dir, angle, eps, res, imin, imax );
+}
+
+double minDiameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, double angle,
+                        double eps )
+{
+    Vector2d res;
+    nat imin, imax;
+    return minDiameterPnt ( point, dir, angle, eps, res, imin, imax );
+}
+
 void convex_test()
 {
     FixArray<Vector2d,19> p;
@@ -543,6 +587,47 @@ void minConvexPolygonDiameter_test2()
         double t2 = timeInSec();
         display << point.size() << t1-t0 << t2-t1 << NL;
     }
+    display << "end" << NL;
+}
+
+void minConvexPolygonDiameter_test3()
+{
+    const nat nn = 17;
+    Suite<Vector2d> point;
+    PRandVector2d vrand;
+    double time1 = 0, time2 = 0;
+    for ( nat32 i = 0; i < 9000; ++i )
+    {
+        point.resize ( nn );
+        randConvexPolygon ( point );
+        Vector2d v1, v2;
+        Vector2d dir = vrand();
+if ( i == -5410 ) drawPolygon ( point, 0, 1, 1 );
+double t0 = timeInSec();
+        double d1 = minConvexPolygonDiameter ( point, dir, 5, v1 );
+double t1 = timeInSec();
+        double d2 = minDiameterPnt ( point, dir, 5, 1e-4, v2 );
+double t2 = timeInSec();
+time1 += t1-t0;
+time2 += t2-t1;
+if ( i == -5410 )
+{
+    Vector2d va = Spin2d (-5, true ) ( dir );
+    Vector2d vb = Spin2d ( 5, true ) ( dir );
+    draw ( Segment2d ( null2d, va ), 1, 1, 1 );
+    draw ( Segment2d ( null2d, vb ), 1, 1, 1 );
+    draw ( Segment2d ( null2d, v1 ), 1, 1, 0 );
+    draw ( Segment2d ( null2d, v2 ), 1, 0, 0 );
+    display << dir << NL;
+    display << v1 << NL << v2 << NL;
+    display << "d" << diameterPnt ( point, v1 ) << diameterPnt ( point, v2 ) << NL;
+}
+        if ( fabs ( d1 - d2 ) > 5e-3 )
+        {
+            display << i << d2 - d1 << NL;
+        }
+    }
+    display << time1 << time2 << NL;
     display << "end" << NL;
 }
 
@@ -1220,11 +1305,11 @@ void func2d_test()
     drawNewList2d ();
 //    distanceElp_test();
 //    convex_test();
-    convexPolygon_test();
+//    convexPolygon_test();
 //    isConvex_test();
 //    circle_test ();
 //    nearPoint_test1();
-//    minConvexPolygonDiameter_test2();
+    minConvexPolygonDiameter_test3();
 //    simplify_test();
 //    closestPoints2_test();
 //    getSym();

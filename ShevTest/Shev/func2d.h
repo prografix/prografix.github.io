@@ -93,25 +93,6 @@ double diameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, nat & imin, 
 double diameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir );
 
 
-//**************************** 07.02.2009 *********************************//
-//
-//  Минимальный диаметр множества точек вдоль заданного сектора направлений.
-//  Сектор задаётся средним направлением dir и половинным углом в градусах angle.
-//  Ответ получаем в виде возвращаемого диаметра, минимального направления res
-//  и пары индексов исходных точек imin и imax.
-//
-//**************************** 07.02.2009 *********************************//
-
-double minDiameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, double angle,
-                        double eps, Vector2d & res, nat & imin, nat & imax );
-
-double minDiameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, double angle,
-                        double eps, Vector2d & res );
-
-double minDiameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, double angle,
-                        double eps );
-
-
 //**************************** 03.03.2009 *********************************//
 //
 //  Максимальный диаметр множества точек вдоль заданного сектора направлений.
@@ -171,6 +152,17 @@ double minConvexPolygonDiameter ( CArrRef<Vector2d> vert, Vector2d & dir, nat & 
 double minConvexPolygonDiameter ( CArrRef<Vector2d> vert, Vector2d & dir );
 
 double minConvexPolygonDiameter ( CArrRef<Vector2d> vert );
+
+
+//**************************** 11.02.2025 *********************************//
+//
+//  Минимальный диаметр выпуклого многоугольника вдоль заданного сектора направлений за время O ( n ).
+//  Сектор задаётся средним направлением dir и половинным углом в градусах angle.
+//  Ответ получаем в виде возвращаемого диаметра и минимального направления res.
+//
+//**************************** 11.02.2025 *********************************//
+
+double minConvexPolygonDiameter ( CCArrRef<Vector2d> & vert, Vector2d dir, double angle, Vector2d & res );
 
 
 //**************************** 04.06.2008 *********************************//
