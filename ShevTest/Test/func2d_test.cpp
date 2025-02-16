@@ -22,14 +22,14 @@ double timeInSec();
 namespace
 {
 
-//**************************** 07.02.2009 *********************************//
+//**************************** 03.03.2009 *********************************//
 //
-//  Минимальный диаметр множества точек вдоль заданного сектора направлений.
+//  Максимальный диаметр множества точек вдоль заданного сектора направлений.
 //  Сектор задаётся средним направлением dir и половинным углом в градусах angle.
 //  Ответ получаем в виде возвращаемого диаметра, минимального направления res
 //  и пары индексов исходных точек imin и imax.
 //
-//**************************** 07.02.2009 *********************************//
+//**************************** 03.03.2009 *********************************//
 
 class Diameter : public MathFunc1
 {
@@ -42,6 +42,38 @@ public:
         return diameterPnt ( point, Spin2d ( x, true ) ( dir ) );
     }
 };
+
+double maxDiameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, double angle,
+                        double eps, Vector2d & res, nat & imin, nat & imax )
+{
+// Вычислим максимум методом золотого сечения
+    res = Spin2d ( goldenRatioMax ( -angle, angle, Diameter ( point, dir ), eps ), true ) ( dir );
+    return diameterPnt ( point, res, imin, imax );
+}
+
+double maxDiameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, double angle,
+                        double eps, Vector2d & res )
+{
+    nat imin, imax;
+    return maxDiameterPnt ( point, dir, angle, eps, res, imin, imax );
+}
+
+double maxDiameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, double angle,
+                        double eps )
+{
+    Vector2d res;
+    nat imin, imax;
+    return maxDiameterPnt ( point, dir, angle, eps, res, imin, imax );
+}
+
+//**************************** 07.02.2009 *********************************//
+//
+//  Минимальный диаметр множества точек вдоль заданного сектора направлений.
+//  Сектор задаётся средним направлением dir и половинным углом в градусах angle.
+//  Ответ получаем в виде возвращаемого диаметра, минимального направления res
+//  и пары индексов исходных точек imin и imax.
+//
+//**************************** 07.02.2009 *********************************//
 
 double minDiameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, double angle,
                         double eps, Vector2d & res, nat & imin, nat & imax )
@@ -592,25 +624,25 @@ void minConvexPolygonDiameter_test2()
 
 void minConvexPolygonDiameter_test3()
 {
-    const nat nn = 17;
+    const nat nn = 7;
     Suite<Vector2d> point;
     PRandVector2d vrand;
     double time1 = 0, time2 = 0;
-    for ( nat32 i = 0; i < 9000; ++i )
+    for ( nat32 i = 0; i < 20000; ++i )
     {
         point.resize ( nn );
         randConvexPolygon ( point );
         Vector2d v1, v2;
         Vector2d dir = vrand();
-if ( i == -5410 ) drawPolygon ( point, 0, 1, 1 );
+if ( i == 15500 ) drawPolygon ( point, 0, 1, 1 );
 double t0 = timeInSec();
-        double d1 = minConvexPolygonDiameter ( point, dir, 5, v1 );
+        double d1 = maxConvexPolygonDiameter ( point, dir, 5, v1 );
 double t1 = timeInSec();
-        double d2 = minDiameterPnt ( point, dir, 5, 1e-4, v2 );
+        double d2 = maxDiameterPnt ( point, dir, 5, 1e-4, v2 );
 double t2 = timeInSec();
 time1 += t1-t0;
 time2 += t2-t1;
-if ( i == -5410 )
+if ( i == 15500 )
 {
     Vector2d va = Spin2d (-5, true ) ( dir );
     Vector2d vb = Spin2d ( 5, true ) ( dir );
@@ -618,13 +650,13 @@ if ( i == -5410 )
     draw ( Segment2d ( null2d, vb ), 1, 1, 1 );
     draw ( Segment2d ( null2d, v1 ), 1, 1, 0 );
     draw ( Segment2d ( null2d, v2 ), 1, 0, 0 );
-    display << dir << NL;
+    display << va << vb << NL;
     display << v1 << NL << v2 << NL;
     display << "d" << diameterPnt ( point, v1 ) << diameterPnt ( point, v2 ) << NL;
 }
-        if ( fabs ( d1 - d2 ) > 5e-3 )
+        if ( fabs ( d1 - d2 ) > 0.1 )
         {
-            display << i << d2 - d1 << NL;
+            display << i << d1 - d2 << NL;
         }
     }
     display << time1 << time2 << NL;
