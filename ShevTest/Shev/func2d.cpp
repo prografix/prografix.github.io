@@ -277,7 +277,7 @@ Def<Vector2d> getFarthestPoint ( CCArrRef<Vector2d> & ar, const Vector2d & dir )
 //
 //**************************** 03.12.2008 *********************************//
 
-double diameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, nat & imin, nat & imax )
+double diameterPnt ( CCArrRef<Vector2d> & point, const Vector2d & dir, nat & imin, nat & imax )
 {
     if ( point.size() == 0 ) return 0.;
     double min = dir * point[0];
@@ -292,54 +292,10 @@ double diameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, nat & imin, 
     return max - min;
 }
 
-double diameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir )
+double diameterPnt ( CCArrRef<Vector2d> & point, const Vector2d & dir )
 {
     nat imin, imax;
     return diameterPnt ( point, dir, imin, imax );
-}
-
-//**************************** 03.03.2009 *********************************//
-//
-//  Максимальный диаметр множества точек вдоль заданного сектора направлений.
-//  Сектор задаётся средним направлением dir и половинным углом в градусах angle.
-//  Ответ получаем в виде возвращаемого диаметра, минимального направления res
-//  и пары индексов исходных точек imin и imax.
-//
-//**************************** 03.03.2009 *********************************//
-
-class Diameter : public MathFunc1
-{
-    CArrRef<Vector2d> point;
-    const Vector2d dir;
-public:
-    Diameter ( CArrRef<Vector2d> p, const Vector2d & d ) : point(p), dir(d) {}
-    double operator () ( double x ) const
-    {
-        return diameterPnt ( point, Spin2d ( x, true ) ( dir ) );
-    }
-};
-
-double maxDiameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, double angle,
-                        double eps, Vector2d & res, nat & imin, nat & imax )
-{
-// Вычислим максимум методом золотого сечения
-    res = Spin2d ( goldenRatioMax ( -angle, angle, Diameter ( point, dir ), eps ), true ) ( dir );
-    return diameterPnt ( point, res, imin, imax );
-}
-
-double maxDiameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, double angle,
-                        double eps, Vector2d & res )
-{
-    nat imin, imax;
-    return maxDiameterPnt ( point, dir, angle, eps, res, imin, imax );
-}
-
-double maxDiameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, double angle,
-                        double eps )
-{
-    Vector2d res;
-    nat imin, imax;
-    return maxDiameterPnt ( point, dir, angle, eps, res, imin, imax );
 }
 
 //*************************************************************************//
@@ -373,7 +329,7 @@ double perimeter ( CCArrRef<Vector2d> & vert )
 //
 //**************************** 02.03.2012 *********************************//
 
-double maxConvexPolygonDiameter ( CArrRef<Vector2d> vert, nat & ix1, nat & ix2 )
+double maxConvexPolygonDiameter ( CCArrRef<Vector2d> & vert, nat & ix1, nat & ix2 )
 {
     ix1 = ix2 = 0;
     const nat n = vert.size();
@@ -418,10 +374,75 @@ double maxConvexPolygonDiameter ( CArrRef<Vector2d> vert, nat & ix1, nat & ix2 )
     return sqrt ( result );
 }
 
-double maxConvexPolygonDiameter ( CArrRef<Vector2d> vert )
+double maxConvexPolygonDiameter ( CCArrRef<Vector2d> & vert )
 {
     nat ix1, ix2;
     return maxConvexPolygonDiameter ( vert, ix1, ix2 );
+}
+
+//**************************** 15.02.2025 *********************************//
+//
+//  Максимальный диаметр выпуклого многоугольника вдоль заданного сектора направлений за время O ( n ).
+//  Сектор задаётся средним направлением dir и половинным углом в градусах angle.
+//  Ответ получаем в виде возвращаемого диаметра и минимального направления res.
+//
+//**************************** 15.02.2025 *********************************//
+
+double maxConvexPolygonDiameter ( CCArrRef<Vector2d> & vert, Vector2d dir, double angle, Vector2d & res )
+{
+    dir.setNorm2();
+    const nat n = vert.size();
+    if ( n < 2 )
+    {
+        res = dir;
+        return 0.;
+    }
+    Vector2d va = Spin2d (-angle, true ) ( dir );
+    Vector2d vb = Spin2d ( angle, true ) ( dir );
+    if ( va % vb < 0 ) _swap ( va, vb );
+    const double da = diameterPnt ( vert, va );
+    const double db = diameterPnt ( vert, vb );
+    double result = da > db ? ( res = va, da ) : ( res = vb, db );
+    const Vector2d v = vert[0] - vert[n-1];
+    nat r = 1;
+    double max = v % vert[r];
+    for ( nat j = 2; j < n; ++j )
+    {
+        const double t = v % vert[j];
+        if ( max < t ) max = t, r = j;
+        else break;
+    }
+    for ( nat i = 1; ; ++i )
+    {
+        const nat i1 = i - 1;
+        const Vector2d v = vert[i] - vert[i1];
+        nat l = r;
+        double max = v % vert[r];
+        nat j;
+        for ( j = r+1; j < n; ++j )
+        {
+            const double t = v % vert[j];
+            if ( max <= t ) max = t, l = j;
+            else break;
+        }
+        for ( j = r; j <= l; ++j )
+        {
+            Vector2d u = vert[j] - vert[i1];
+            const double t = norm2 ( u );
+            if ( result < t )
+            {
+                if ( u * dir < 0 ) u = - u;
+                if ( va % u > 0 && u % vb > 0 )
+                {
+                    res = u / t;
+                    result = t;
+                }
+            }
+        }
+        if ( l == n - 1 && max <= v % vert[0] ) break;
+        r = l;
+    }
+    return result;
 }
 
 //**************************** 29.03.2008 *********************************//
@@ -430,7 +451,7 @@ double maxConvexPolygonDiameter ( CArrRef<Vector2d> vert )
 //
 //**************************** 02.03.2012 *********************************//
 
-double minConvexPolygonDiameter ( CArrRef<Vector2d> vert, Vector2d & dir, nat & i1, nat & i2 )
+double minConvexPolygonDiameter ( CCArrRef<Vector2d> & vert, Vector2d & dir, nat & i1, nat & i2 )
 {
     i1 = i2 = 0;
     const nat n = vert.size();
@@ -480,13 +501,13 @@ double minConvexPolygonDiameter ( CArrRef<Vector2d> vert, Vector2d & dir, nat & 
     return min;
 }
 
-double minConvexPolygonDiameter ( CArrRef<Vector2d> vert, Vector2d & dir )
+double minConvexPolygonDiameter ( CCArrRef<Vector2d> & vert, Vector2d & dir )
 {
     nat i1, i2;
     return minConvexPolygonDiameter ( vert, dir, i1, i2 );
 }
 
-double minConvexPolygonDiameter ( CArrRef<Vector2d> vert )
+double minConvexPolygonDiameter ( CCArrRef<Vector2d> & vert )
 {
     nat i1, i2;
     Vector2d dir;

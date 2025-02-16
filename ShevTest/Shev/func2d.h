@@ -88,28 +88,9 @@ Def<Vector2d> getFarthestPoint ( CCArrRef<Vector2d> & ar, const Vector2d & dir )
 //
 //**************************** 03.12.2008 *********************************//
 
-double diameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, nat & imin, nat & imax );
+double diameterPnt ( CCArrRef<Vector2d> & point, const Vector2d & dir, nat & imin, nat & imax );
 
-double diameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir );
-
-
-//**************************** 03.03.2009 *********************************//
-//
-//  Максимальный диаметр множества точек вдоль заданного сектора направлений.
-//  Сектор задаётся средним направлением dir и половинным углом в градусах angle.
-//  Ответ получаем в виде возвращаемого диаметра, минимального направления res
-//  и пары индексов исходных точек imin и imax.
-//
-//**************************** 03.03.2009 *********************************//
-
-double maxDiameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, double angle,
-                        double eps, Vector2d & res, nat & imin, nat & imax );
-
-double maxDiameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, double angle,
-                        double eps, Vector2d & res );
-
-double maxDiameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, double angle,
-                        double eps );
+double diameterPnt ( CCArrRef<Vector2d> & point, const Vector2d & dir );
 
 
 //*************************************************************************//
@@ -136,9 +117,20 @@ double perimeter ( CCArrRef<Vector2d> & vert );
 //
 //**************************** 02.03.2012 *********************************//
 
-double maxConvexPolygonDiameter ( CArrRef<Vector2d> vert, nat & ix1, nat & ix2 );
+double maxConvexPolygonDiameter ( CCArrRef<Vector2d> & vert, nat & ix1, nat & ix2 );
 
-double maxConvexPolygonDiameter ( CArrRef<Vector2d> vert );
+double maxConvexPolygonDiameter ( CCArrRef<Vector2d> & vert );
+
+
+//**************************** 15.02.2025 *********************************//
+//
+//  Максимальный диаметр выпуклого многоугольника вдоль заданного сектора направлений за время O ( n ).
+//  Сектор задаётся средним направлением dir и половинным углом в градусах angle.
+//  Ответ получаем в виде возвращаемого диаметра и максимального направления res.
+//
+//**************************** 15.02.2025 *********************************//
+
+double maxConvexPolygonDiameter ( CCArrRef<Vector2d> & vert, Vector2d dir, double angle, Vector2d & res );
 
 
 //**************************** 29.03.2008 *********************************//
@@ -147,11 +139,11 @@ double maxConvexPolygonDiameter ( CArrRef<Vector2d> vert );
 //
 //**************************** 02.03.2012 *********************************//
 
-double minConvexPolygonDiameter ( CArrRef<Vector2d> vert, Vector2d & dir, nat & i1, nat & i2 );
+double minConvexPolygonDiameter ( CCArrRef<Vector2d> & vert, Vector2d & dir, nat & i1, nat & i2 );
 
-double minConvexPolygonDiameter ( CArrRef<Vector2d> vert, Vector2d & dir );
+double minConvexPolygonDiameter ( CCArrRef<Vector2d> & vert, Vector2d & dir );
 
-double minConvexPolygonDiameter ( CArrRef<Vector2d> vert );
+double minConvexPolygonDiameter ( CCArrRef<Vector2d> & vert );
 
 
 //**************************** 11.02.2025 *********************************//
