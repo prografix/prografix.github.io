@@ -1046,3 +1046,189 @@ Body & Body::operator -= ( const Vector3d & v )
     while ( sides.next() );
     return *this;
 }
+
+bool split ( const Body & body, const Plane3d & plane, Body & bm, Body & bp, BodyStor & stor, int mark )
+{
+    if ( ! plane.norm ) return false;
+    if ( ! body.verts.size() || ! body.bones.size() || ! body.sides.size() ) return false;
+
+    bool isErr = false;
+    Show<Bone> bones ( body.bones );
+    bones.top();
+    do
+    {
+        const Bone * b = bones.cur();
+        if ( ! b->v0 || ! b->v1 || ! b->s0 || ! b->s1 )
+        {
+            isErr = true;
+            break;
+        }
+    }
+    while ( bones.next() );
+    if ( isErr ) return false;
+
+    double bx = plane.norm.x;
+    double by = plane.norm.y;
+    double bz = plane.norm.z;
+    double bd = plane.dist;
+    double ax = fabs ( bx );
+    double ay = fabs ( by );
+    double az = fabs ( bz );
+    nat way = ay > az ? ( ay > ax ? 1 : 0 ) : ( az > ax ? 2 : 0 );
+    switch ( way )
+    {
+        case 0: bx /= ax; by /= ax; bz /= ax; bd /= ax; break;
+        case 1: bx /= ay; by /= ay; bz /= ay; bd /= ay; break;
+        case 2: bx /= az; by /= az; bz /= az; bd /= az; break;
+    }
+
+    DynArray<SortItem<const Vert *, Vert *>> dist ( body.verts.size() );
+    Show<Vert> verts ( body.verts );
+    verts.top();
+    for ( nat i = 0; i < dist.size(); ++i )
+    {
+        SortItem<const Vert *, Vert *> & si = dist[i];
+        si.head = verts.cur();
+        si.tail = 0;
+        const Vector3d & v = si.head->point; 
+        double d = 0; // для оптимизатора
+        switch ( way )
+        {
+            case 0: d = bx * v.x + by * v.y + bz * v.z + bd; break;
+            case 1: d = by * v.y + bz * v.z + bx * v.x + bd; break;
+            case 2: d = bz * v.z + bx * v.x + by * v.y + bd; break;
+        }
+        if ( d > 0 )
+        {
+            ( si.tail = bp.verts.addNewAftLas ( stor.verts ) )->d = d;
+        }
+        if ( d < 0 )
+        {
+            ( si.tail = bm.verts.addNewAftLas ( stor.verts ) )->d = d;
+        }
+        verts.next();
+    }
+    if ( ! bp.verts.size() )
+    {
+        copy ( body, stor, bm );
+        return true;
+    }
+    if ( ! bm.verts.size() )
+    {
+        copy ( body, stor, bp );
+        return true;
+    }
+    quickSort123 ( dist );
+    
+    VertList vtmp;
+    SortItem<const Vert *, Vert *> si;
+    bones.top();
+    for (;;)
+    {
+        const Bone & b = * bones.cur();
+        si.head = b.v0;
+        nat i = lasEqu123 ( dist, si );
+        if ( i == dist.size() ) return false;
+        Vert * v0 = dist[i].tail;
+        if ( v0 )
+        {
+            if ( v0->d > 0 )
+            {
+ //               b.s0->flag = b.s1->flag = 1;
+                si.head = b.v1;
+                nat i = lasEqu123 ( dist, si );
+                if ( i == dist.size() ) return false;
+                Vert * v1 = dist[i].tail;
+                if ( v1->d < 0 )
+                {
+                    Vector3d point;
+                    double a = b.v0->d / ( b.v0->d - b.v1->d );
+                    double c = b.v1->d / ( b.v1->d - b.v0->d );
+                    switch ( way )
+                    {
+                        case 0: point.y = a * b.v1->point.y + c * b.v0->point.y;
+                                point.z = a * b.v1->point.z + c * b.v0->point.z;
+                                point.x = by * point.y + bz * point.z + bd;
+                                if ( bx > 0 ) point.x = - point.x;
+                                break;
+                        case 1: point.z = a * b.v1->point.z + c * b.v0->point.z;
+                                point.x = a * b.v1->point.x + c * b.v0->point.x;
+                                point.y = bz * point.z + bx * point.x + bd;
+                                if ( by > 0 ) point.y = - point.y;
+                                break;
+                        case 2: point.x = a * b.v1->point.x + c * b.v0->point.x;
+                                point.y = a * b.v1->point.y + c * b.v0->point.y;
+                                point.z = bx * point.x + by * point.y + bd;
+                                if ( bz > 0 ) point.z = - point.z;
+                                break;
+                    }
+                    if ( point != b.v1->point )
+                    {
+                        b.v0 = vtmp.addNewAftLas ( stor.verts );
+                        b.v0->point = point;
+                        if ( ! bones.next () ) break;
+                        continue;
+                    }
+                }
+                b.s0->del ( & b.b0 );
+                b.s1->del ( & b.b1 );
+                if ( bones.movCurAftLas_ ( stor.bones ) ) break;
+            }
+        }
+        else
+        {
+            if ( b.v0->d < 0 )
+            {
+                if ( b.v1->d > 0 )
+                {
+                    b.s0->flag = b.s1->flag = 1;
+                    Vector3d point;
+                    double a = b.v0->d / ( b.v0->d - b.v1->d );
+                    double c = b.v1->d / ( b.v1->d - b.v0->d );
+                    switch ( way )
+                    {
+                        case 0: point.y = a * b.v1->point.y + c * b.v0->point.y;
+                                point.z = a * b.v1->point.z + c * b.v0->point.z;
+                                point.x = by * point.y + bz * point.z + bd;
+                                if ( bx > 0 ) point.x = - point.x;
+                                break;
+                        case 1: point.z = a * b.v1->point.z + c * b.v0->point.z;
+                                point.x = a * b.v1->point.x + c * b.v0->point.x;
+                                point.y = bz * point.z + bx * point.x + bd;
+                                if ( by > 0 ) point.y = - point.y;
+                                break;
+                        case 2: point.x = a * b.v1->point.x + c * b.v0->point.x;
+                                point.y = a * b.v1->point.y + c * b.v0->point.y;
+                                point.z = bx * point.x + by * point.y + bd;
+                                if ( bz > 0 ) point.z = - point.z;
+                                break;
+                    }
+                    if ( point == b.v0->point )
+                    {
+                        b.s0->del ( & b.b0 );
+                        b.s1->del ( & b.b1 );
+                        if ( bones.movCurAftLas_ ( stor.bones ) ) break;
+                        continue;
+                    }
+                    b.v1 = vtmp.addNewAftLas ( stor.verts );
+                    b.v1->point = point;
+                }
+                if ( ! bones.next () ) break;
+            }
+            else
+            {
+                if ( b.v1->d >= 0 )
+                {
+                    b.s0->flag = b.s1->flag = 1;
+                    b.s0->del ( & b.b0 );
+                    b.s1->del ( & b.b1 );
+                    if ( bones.movCurAftLas_ ( stor.bones ) ) break;
+                }
+                else
+                    if ( ! bones.next () ) break;
+            }
+        }
+    }
+
+    return false;
+}
