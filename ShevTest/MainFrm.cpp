@@ -223,6 +223,7 @@ void file_test();
 void math_test();
 void rand_test();
 void tree_test();
+void test();
 
 void CMainFrame::OnTest() 
 {
@@ -236,7 +237,7 @@ void CMainFrame::OnTest()
 //    shevlist_test();
 //    vector2d_test();
 //    complex_test();
-    trian2d_test();
+//    trian2d_test();
 //    func2d_test();
 //    opti3d_test();
 //    matrix_test();
@@ -248,5 +249,260 @@ void CMainFrame::OnTest()
 //    math_test();
 //    rand_test();
 //    tree_test();
-//    filePYH_test ();
+//    filePYH_test();
+    test();
+}
+
+//***************************************************************************//
+// 
+//  Метод Якоби нахождения собственных значений и собственных векторов
+//                       для симметричных матриц
+//    Входные данные:
+//        n - размерность матрицы
+//        a - исходная матрица. В процессе работы наддиагональные элементы
+//            будут изменены, но их легко восстановить по поддиагональным
+//    Выходные данные:
+//        d - массив собственных значений
+//        v - массив собственных векторов
+//
+//***************************************************************************//
+
+#include <vector>
+
+typedef unsigned int nat; // Натуральное число
+
+void jacobi1 ( const nat n, double * const * a, double * d, double * const * v )
+{
+    if ( n == 0 ) return;
+    std::vector<double> b ( n ), z ( n );
+    nat i, j;
+    for ( i = 0; i < n; ++i )
+    {
+        z[i] = 0.;
+        b[i] = d[i] = a[i][i];
+        for ( j = 0; j < n; ++j ) v[i][j] = i == j ? 1. : 0.;
+    }
+    for ( i = 0; i < 50; ++i )
+    {
+        double sm = 0.;
+        nat p, q;
+        for ( p = 0; p < n - 1; ++p )
+        {
+            for ( q = p + 1; q < n; ++q ) sm += fabs ( a[p][q] );
+        }
+        if ( sm == 0 ) break;
+        const double tresh = i < 3 ? 0.2 * sm / ( n*n ) : 0.;
+        for ( p = 0; p < n - 1; ++p )
+        {
+            for ( q = p + 1; q < n; ++q )
+            {
+                const double g = 1e12 * fabs ( a[p][q] );
+                if ( i >= 3 && fabs ( d[p] ) > g && fabs ( d[q] ) > g ) a[p][q] = 0.;
+                else
+                if ( fabs ( a[p][q] ) > tresh )
+                {
+                    const double theta = 0.5 * ( d[q] - d[p] ) / a[p][q];
+                    double t = 1. / ( fabs(theta) + sqrt(1.+theta*theta) );
+                    if ( theta < 0 ) t = - t;
+                    const double c = 1. / sqrt ( 1. + t*t );
+                    const double s = t * c;
+                    const double tau = s / ( 1. + c );
+                    const double h = t * a[p][q];
+                    z[p] -= h;
+                    z[q] += h;
+                    d[p] -= h;
+                    d[q] += h;
+                    a[p][q] = 0.;
+                    for ( j = 0; j < p; ++j )
+                    {
+                        const double g = a[j][p];
+                        const double h = a[j][q];
+                        a[j][p] = g - s * ( h + g * tau );
+                        a[j][q] = h + s * ( g - h * tau );
+                    }
+                    for ( j = p+1; j < q; ++j )
+                    {
+                        const double g = a[p][j];
+                        const double h = a[j][q];
+                        a[p][j] = g - s * ( h + g * tau );
+                        a[j][q] = h + s * ( g - h * tau );
+                    }
+                    for ( j = q+1; j < n; ++j )
+                    {
+                        const double g = a[p][j];
+                        const double h = a[q][j];
+                        a[p][j] = g - s * ( h + g * tau );
+                        a[q][j] = h + s * ( g - h * tau );
+                    }
+                    for ( j = 0; j < n; ++j )
+                    {
+                        const double g = v[j][p];
+                        const double h = v[j][q];
+                        v[j][p] = g - s * ( h + g * tau );
+                        v[j][q] = h + s * ( g - h * tau );
+                    }
+                }
+            }
+        }
+        for ( p = 0; p < n; ++p )
+        {
+            d[p] = ( b[p] += z[p] );
+            z[p] = 0.;
+        }
+    }
+}
+
+//********************** 22.04.2018 ***************************//
+//
+//      Получение поворота совмещающего пары векторов
+//
+//********************** 22.04.2018 ***************************//
+
+struct Quaternion
+{
+    double la, mu, nu, ro;
+};
+
+struct Vector3d
+{
+    double x, y, z;
+};
+
+bool makeQuaternion ( std::vector<std::pair<Vector3d, Vector3d>> & data, Quaternion & q )
+{
+    const nat n = data.size();
+    if ( n < 2 ) return false;
+    double xx = 0, xy = 0, xz = 0, yx = 0, yy = 0, yz = 0, zx = 0, zy = 0, zz = 0;
+    for ( nat i = 0; i < n; ++i )
+    {
+        const Vector3d & a = data[i].first;
+        const Vector3d & b = data[i].second;
+        xx += a.x * b.x;
+        xy += a.x * b.y;
+        xz += a.x * b.z;
+        yx += a.y * b.x;
+        yy += a.y * b.y;
+        yz += a.y * b.z;
+        zx += a.z * b.x;
+        zy += a.z * b.y;
+        zz += a.z * b.z;
+    }
+    double a0[4], a1[4], a2[4], a3[4], *a[4];
+    a[0] = a0;
+    a[1] = a1;
+    a[2] = a2;
+    a[3] = a3;
+    a[0][0] = xx - yy - zz;
+    a[0][1] = xy + yx;
+    a[0][2] = xz + zx;
+    a[0][3] = yz - zy;
+    a[1][1] = yy - zz - xx;
+    a[1][2] = yz + zy;
+    a[1][3] = zx - xz;
+    a[2][2] = zz - yy - xx;
+    a[2][3] = xy - yx;
+    a[3][3] = xx + yy + zz;
+    double d[4], v0[4], v1[4], v2[4], v3[4], *v[4];
+    v[0] = v0;
+    v[1] = v1;
+    v[2] = v2;
+    v[3] = v3;
+    jacobi1 ( 4, a, d, v );
+    double max = 0;
+    for ( nat i = 0; i < 4; ++i )
+    {
+        if ( max >= d[i] ) continue;
+        max = d[i];
+        q.mu = v[0][i];
+        q.mu = v[1][i];
+        q.nu = v[2][i];
+        q.ro = v[3][i];
+    }
+    if ( !max )
+    {
+        q.mu = 
+        q.mu = 
+        q.nu = 0;
+        q.ro = 1;
+    }
+    return true;
+}
+
+#include <typeinfo>
+
+class Set
+{
+public:
+    virtual bool operator () ( Set & ) = 0;
+};
+
+bool operator == ( Set & s1, Set & s2 )
+{
+    return typeid(s1) == typeid(s2);
+}
+
+int count ( Set & s ) { return 1; }
+
+Set * get_any ( Set & s ) { return & s; }
+
+class Empty : public Set
+{
+public:
+    bool operator () ( Set & ) { return false; }
+};
+
+class Univer : public Set
+{
+public:
+    bool operator () ( Set & ) { return true; }
+};
+
+template <class S> class Set1 : public Set
+{
+    S s;
+public:
+    bool operator () ( Set & x ) { return x == s; }
+};
+
+template <class S> class Dop : public Set
+{
+    S s;
+public:
+    bool operator () ( Set & x ) { return ! s(x); }
+};
+
+template <class S1, class S2> class Union : public Set
+{
+    S1 s1;
+    S2 s2;
+public:
+    bool operator () ( Set & x ) { return s1(x) || s2(x); }
+};
+
+template <class S1, class S2> class Inter : public Set
+{
+    S1 s1;
+    S2 s2;
+public:
+    bool operator () ( Set & x ) { return s1(x) && s2(x); }
+};
+
+template <class S> class Recur : public Set
+{
+    S s;
+public:
+    bool operator () ( Set & x )
+    {
+        return x == s || ( count ( x ) == 1 && (*this) ( *get_any ( x ) ) );
+    }
+};
+
+void test ()
+{
+    Empty empty;
+    Univer univer;
+    Set1<Empty> empty1;
+    const char * str = typeid(empty1).name();
+    Union<Empty, Univer> uni;
+    Recur<Empty> empty2;
 }
