@@ -430,9 +430,8 @@ bool makeQuaternion ( std::vector<std::pair<Vector3d, Vector3d>> & data, Quatern
 
 #include <typeinfo>
 
-class Set
+struct Set
 {
-public:
     virtual bool operator () ( Set & ) = 0;
 };
 
@@ -445,55 +444,41 @@ int count ( Set & s ) { return 1; }
 
 Set * get_any ( Set & s ) { return & s; }
 
-class Empty : public Set
+struct Empty : Set
 {
-public:
     bool operator () ( Set & ) { return false; }
 };
 
-class Univer : public Set
+struct Univer : Set
 {
-public:
     bool operator () ( Set & ) { return true; }
 };
 
-template <class S> class Set1 : public Set
+template <typename S> struct Set1 : Set
 {
-    S s;
-public:
-    bool operator () ( Set & x ) { return x == s; }
+    bool operator () ( Set & x ) { return x == S(); }
 };
 
-template <class S> class Dop : public Set
+template <typename S> struct Dop : Set
 {
-    S s;
-public:
-    bool operator () ( Set & x ) { return ! s(x); }
+    bool operator () ( Set & x ) { return ! S()(x); }
 };
 
-template <class S1, class S2> class Union : public Set
+template <typename S1, typename S2> struct Union : Set
 {
-    S1 s1;
-    S2 s2;
-public:
-    bool operator () ( Set & x ) { return s1(x) || s2(x); }
+    bool operator () ( Set & x ) { return S1()(x) || S2()(x); }
 };
 
-template <class S1, class S2> class Inter : public Set
+template <typename S1, typename S2> struct Inter : Set
 {
-    S1 s1;
-    S2 s2;
-public:
-    bool operator () ( Set & x ) { return s1(x) && s2(x); }
+    bool operator () ( Set & x ) { return S1()(x) && S2()(x); }
 };
 
-template <class S> class Recur : public Set
+template <typename S> struct Recur : Set
 {
-    S s;
-public:
     bool operator () ( Set & x )
     {
-        return x == s || ( count ( x ) == 1 && (*this) ( *get_any ( x ) ) );
+        return x == S() || ( count (x) == 1 && ( *this ) ( *get_any (x) ) );
     }
 };
 
@@ -505,4 +490,6 @@ void test ()
     const char * str = typeid(empty1).name();
     Union<Empty, Univer> uni;
     Recur<Empty> empty2;
+    Union<Empty, Union<Univer,Univer>> u1;
+    Union<Union<Empty, Univer>,Univer> u2;
 }
