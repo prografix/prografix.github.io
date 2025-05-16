@@ -2088,6 +2088,7 @@ bool sluGaussRow ( nat n, Suite<SortItem<nat, double> > * a, double * b, double 
         CCArrRef<SortItem<nat, double> > & row = a[i];
         for ( j = 0; j < row.size(); ++j ) col[row[j].head].inc() = i;
     }
+//nat sum = 0;
 // Прямой ход
     DynArray<nat> icol ( n );
     Suite<SortItem<nat, double> > tmp;
@@ -2175,38 +2176,52 @@ if ( ii == rj.size() )
         CCArrRef<SortItem<nat, double> > & rj = a[k];
         double & r = x[icol[k]];
         r = b[k];
+//sum += rj.size();
         for ( i = 0; i < rj.size(); ++i )
         {
             const SortItem<nat, double> & ei = rj[i];
             r -= x[ei.head] * ei.tail;
         }
     }
+//display << sum << NL;
     return true;
+}
+
+inline void _swap ( SortItem<nat, nat *> & p1, SortItem<nat, nat *> & p2 )
+{
+    const SortItem<nat, nat *> p ( p1 );
+    p1 = p2;
+    p2 = p;
+    ::_swap ( *p1.tail, *p2.tail );
 }
 
 bool sluGaussRowO ( nat n, Suite<SortItem<nat, double> > * a, double * b, double * x )
 {
     nat i, j, k;
-    MinHeap<SortItem<nat> > heap ( n );
+    MinHeap<SortItem<nat, nat *> > heap ( n );
     DynArray<Suite<nat> > col ( n );
+    DynArray<nat> icol ( 3*n );
+    nat * irow = icol ( n );
+    nat * ih = irow + n;
+    nat sum = 0;
     for ( i = 0; i < n; ++i )
     {
         CCArrRef<SortItem<nat, double> > & row = a[i];
         for ( j = 0; j < row.size(); ++j ) col[row[j].head].inc() = i;
-        heap << SortItem<nat> ( row.size(), i );
+        ih[i] = i;
+        heap << SortItem<nat, nat *> ( row.size(), ih + i );
     }
 // Прямой ход
     DynArray<bool> flag ( n, false );
-    DynArray<nat> icol ( n+n );
-    nat * irow = icol ( n );
     Suite<SortItem<nat, double> > tmp;
     for ( k = 0; k < n; ++k )
     {
-        SortItem<nat> si;
+        SortItem<nat, nat *> si;
         heap >> si;
-        irow[k] = si.tail;
-        flag[si.tail] = true;
-        Suite<SortItem<nat, double> > & rk = a[si.tail];
+//sum += si.head;
+        const nat ir = irow[k] = si.tail - ih;
+        flag[ir] = true;
+        Suite<SortItem<nat, double> > & rk = a[ir];
         const nat nc = rk.size();
         if ( ! nc )
             return false;
@@ -2220,11 +2235,11 @@ bool sluGaussRowO ( nat n, Suite<SortItem<nat, double> > * a, double * b, double
         if ( ! max )
             return false;
 //display << k << max << NL;
-        const nat kk = icol[si.tail] = rk[im].head;
+        const nat kk = icol[ir] = rk[im].head;
 // Нормализация строки
         const double p = 1. / rk[im].tail;
         for ( i = 0; i < nc; ++i ) rk[i].tail *= p;
-        b[si.tail] *= p;
+        b[ir] *= p;
 // Вычитание строк
         CCArrRef<nat> & ck = col[kk];
         for ( j = 0; j < ck.size(); ++j )
@@ -2277,7 +2292,21 @@ if ( ii == rj.size() )
             }
             rj.swap ( tmp );
             tmp.resize();
-            b[jj] -= t * b[si.tail];
+            nat & head = heap[ih[jj]]->head;
+            if ( head != rj.size() )
+            {
+                if ( head < rj.size() )
+                {
+                    head = rj.size();
+                    heap.down ( ih[ir] );
+                }
+                else
+                {
+                    head = rj.size();
+                    heap.raise ( ih[ir] );
+                }
+            }
+            b[jj] -= t * b[ir];
         }
         rk.delAndShift ( im );
     }
@@ -2289,12 +2318,14 @@ if ( ii == rj.size() )
         CCArrRef<SortItem<nat, double> > & rj = a[kk];
         double & r = x[icol[kk]];
         r = b[kk];
+//sum += rj.size();
         for ( i = 0; i < rj.size(); ++i )
         {
             const SortItem<nat, double> & ei = rj[i];
             r -= x[ei.head] * ei.tail;
         }
     }
+//display << sum << NL;
     return true;
 }
 
@@ -2306,12 +2337,12 @@ void sluGaussRow_test1()
     double c[n], x[n], b[n];
     for ( nat i = 0; i < n; ++i ) c[i] = rand();
     Suite<SortItem<nat, double>> a[n];
-    nat k = 0;
     for ( nat i = 0; i < n; ++i )
     {
-        b[i] = 0;
+        Suite<SortItem<nat, double>> & ai = a[i];
         for ( nat j = 0; j < n; ++j )
         {
+            if ( j > i ) continue;
             double t = rand();
             if ( i != j && fabs ( t ) < 1.8 )
             {
@@ -2319,16 +2350,30 @@ void sluGaussRow_test1()
                 continue;
             }
  //display << t;
-            a[i].inc() = SortItem<nat, double> ( j, t );
-            //if ( i == j ) a[i][j].tail += 1;
-            b[i] += t * c[j];
-            ++k;
+            ai.inc() = SortItem<nat, double> ( j, t );
+            if ( i == j )
+                ai.las().tail += 1;
+            else
+                a[j].inc() = SortItem<nat, double> ( i, t );
         }
 //display << NL;
     }
+    nat k = 0;
+    for ( nat i = 0; i < n; ++i )
+    {
+        b[i] = 0;
+        Suite<SortItem<nat, double>> & ai = a[i];
+        for ( nat j = 0; j < ai.size(); ++j )
+        {
+            SortItem<nat, double> & s = ai[j];
+            b[i] += s.tail * c[s.head];
+        }
+        k += ai.size();
+    }
 display << k << n*n << NL;
 double t0 = timeInSec();
-    if ( sluGaussRowO ( n, a, b, x ) )
+    if ( sluGaussRow ( n, a, b, x ) )
+//    if ( slu_LDLt ( n, a, b, x ) )
     {
 double t1 = timeInSec();
         double max = 0;

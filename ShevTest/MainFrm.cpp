@@ -229,7 +229,7 @@ void CMainFrame::OnTest()
 {
 //    intersect3d_test();
 //    momentum2d_test();
-//    polyhedron_test();
+    polyhedron_test();
 //    S2D_Model_test();
 //    approx3d_test();
 //    testBlackRing();
@@ -250,7 +250,7 @@ void CMainFrame::OnTest()
 //    rand_test();
 //    tree_test();
 //    filePYH_test();
-    test();
+//    test();
 }
 
 //***************************************************************************//
@@ -426,70 +426,4 @@ bool makeQuaternion ( std::vector<std::pair<Vector3d, Vector3d>> & data, Quatern
         q.ro = 1;
     }
     return true;
-}
-
-#include <typeinfo>
-
-struct Set
-{
-    virtual bool operator () ( Set & ) = 0;
-};
-
-bool operator == ( Set & s1, Set & s2 )
-{
-    return typeid(s1) == typeid(s2);
-}
-
-int count ( Set & s ) { return 1; }
-
-Set * get_any ( Set & s ) { return & s; }
-
-struct Empty : Set
-{
-    bool operator () ( Set & ) { return false; }
-};
-
-struct Univer : Set
-{
-    bool operator () ( Set & ) { return true; }
-};
-
-template <typename S> struct Set1 : Set
-{
-    bool operator () ( Set & x ) { return x == S(); }
-};
-
-template <typename S> struct Dop : Set
-{
-    bool operator () ( Set & x ) { return ! S()(x); }
-};
-
-template <typename S1, typename S2> struct Union : Set
-{
-    bool operator () ( Set & x ) { return S1()(x) || S2()(x); }
-};
-
-template <typename S1, typename S2> struct Inter : Set
-{
-    bool operator () ( Set & x ) { return S1()(x) && S2()(x); }
-};
-
-template <typename S> struct Recur : Set
-{
-    bool operator () ( Set & x )
-    {
-        return x == S() || ( count (x) == 1 && ( *this ) ( *get_any (x) ) );
-    }
-};
-
-void test ()
-{
-    Empty empty;
-    Univer univer;
-    Set1<Empty> empty1;
-    const char * str = typeid(empty1).name();
-    Union<Empty, Univer> uni;
-    Recur<Empty> empty2;
-    Union<Empty, Union<Univer,Univer>> u1;
-    Union<Union<Empty, Univer>,Univer> u2;
 }
