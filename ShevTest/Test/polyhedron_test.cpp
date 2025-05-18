@@ -195,7 +195,6 @@ bool changePolyhedronV2 ( const Polyhedron & poly, ArrRef<Suite<SortItem<nat, do
     const double c = 9;
     const nat nf = poly.facet.size();
     const nat nv = poly.vertex.size();
-    const nat n = a.size();
     DynArray<Suite<Set2<nat> > > va ( nv ), na ( nf );
     nat k = 0;
     for ( i = 0; i < nf; ++i )
@@ -205,7 +204,6 @@ bool changePolyhedronV2 ( const Polyhedron & poly, ArrRef<Suite<SortItem<nat, do
         {
             const nat iv = f.index[j];
             b[k] = f.plane % vertex[iv] + plane[i].norm * ( poly.vertex[iv] - vertex[iv] );
-//            b[k] = f.plane % vertex[iv];
             va[iv].inc() = Set2<nat> ( i, k );
             na[i].inc() = Set2<nat> ( iv, k );
             a[k].resize();
@@ -249,15 +247,13 @@ bool changePolyhedronV2 ( const Polyhedron & poly, ArrRef<Suite<SortItem<nat, do
         }
     }
 //sym_test ( a );
-    bool ok = slu_LDLt ( n, a(), b, x );
+    bool ok = slu_LDLt ( a.size(), a(), b, x );
     if ( ! ok )
     {
-        bool oko = slu_LDLtO ( n, a(), b, x );
-//display << ok << oko << NL;
+        bool oko = slu_LDLtO ( a.size(), a(), b, x );
         if ( ! oko ) return false;
     }
-//for ( i = 0; i < na; ++i ) display << x[i] << NL;
-    double maxv = 0;
+ //   double maxv = 0;
     for ( i = 0; i < nv; ++i )
     {
         Vector3d v = null3d;
@@ -267,10 +263,10 @@ bool changePolyhedronV2 ( const Polyhedron & poly, ArrRef<Suite<SortItem<nat, do
             const Set2<nat> & s = varr[l];
             v -= plane[s.a].norm * x[s.b];
         }
-        _maxa ( maxv, norm2 ( v ) );
+ //       _maxa ( maxv, norm2 ( v ) );
         vertex[i] = poly.vertex[i] + v;
     }
-    double maxn = 0, maxd = 0;
+//    double maxn = 0, maxd = 0;
     for ( i = 0; i < nf; ++i )
     {
         double d = 0;
@@ -283,8 +279,8 @@ bool changePolyhedronV2 ( const Polyhedron & poly, ArrRef<Suite<SortItem<nat, do
             d -= x[s.b];
         }
         v /= c;
-        _maxa ( maxn, norm2 ( v ) );
-        _maxa ( maxd, fabs ( d ) );
+ //       _maxa ( maxn, norm2 ( v ) );
+//        _maxa ( maxd, fabs ( d ) );
         const Facet & f = poly.facet[i];
         plane[i].norm = f.plane.norm + v;
         plane[i].dist = f.plane.dist + d;
@@ -376,7 +372,7 @@ bool changePolyhedron ( const Polyhedron & poly, ArrRef<Vector3d> & vertex, ArrR
     double timeInSec();
     double t1 = timeInSec();
     const nat nf = poly.facet.size();
-    const nat nv = poly.vertex.size();
+//    const nat nv = poly.vertex.size();
     nat i, n = 0;
     for ( i = 0; i < nf; ++i ) n += poly.facet[i].nv;
     DynArray<Suite<SortItem<nat, double> > > a ( n );
@@ -398,7 +394,10 @@ calcQ ( poly, vertex, plane );
 void changePolyhedron_test ()
 {
     Polyhedron poly;
-    poly.makeTetrahedron(1);
+//    poly.makeTetrahedron(1);
+//    poly.makeOctahedron(1);
+//    poly.makeCube(1);
+    poly.makeSphere(1,9);
     static PRandVector3d rand;
     double angle = 01 * 3.1415926 / 180;
     nat i;
@@ -434,6 +433,8 @@ void changePolyhedron_test ()
     im = 0;
     double max = 0;
     for ( i = 0; i < nv; ++i ) if ( _maxa ( max, norm2 ( poly.vertex[i] - vertex2[i] ) ) ) im = i;
+    poly.vertex.swap ( vertex );
+    draw ( poly, 0, 1, 1, 1, VM_WIRE );
 }
 
 } // end of namespace
