@@ -1,0 +1,34 @@
+﻿<html>
+<head><title>Разреженные матрицы</title>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
+<body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
+<div align="center"><br>
+<font color="" style="font-size: 20pt">Разреженные матрицы</font>
+<table width="800" cellspacing="0" cellpadding="0">
+<tr><td><br>
+<p>Будем представлять разреженные матрицы в виде массива строк. Каждая строка - это набор ненулевых элементов,
+которые заданы при помощи пары: индекс столбца и значение элемента ( SortItem&lt;nat, double> ).
+Обычно элементы располагаются по возрастанию индексов столбцов.
+Далее будем рассматривать системы линейных уравнений. 
+<br><br>Функция slu_LDLt решает систему уравнений с симметричной матрицей:
+<pre>typedef unsigned int nat;
+
+bool slu_LDLt ( nat n, const Suite&lt;SortItem&lt;nat, double> > * data, const double * b, double * x );
+</pre>
+<p>Функция slu_LDLtO ( O - оптимизирующая ) вначале переставляет строки и столбцы матрицы для того, 
+чтобы увеличить количество лидирующих нулей и тем самым в некоторых случаях ускоряет вычисления:
+</p>
+<pre>
+bool slu_LDLtO ( nat n, const Suite&lt;SortItem&lt;nat, double> > * data, const double * b, double * x );
+</pre>
+<p>Описание шаблона классов SortItem находится <a href=sortitem.html>здесь</a>.
+<br>Описание шаблона классов Suite находится <a href=array.html>здесь</a>.
+</p>
+<p>Исходники алгоритма находятся в файле <a href="source/source.zip">mathem.cpp</a>.</p>
+<a href="rus_lin_alg.html">Наверх</a>
+</td></tr></table></div>
+<pre>
+
+</pre>
+</body>
+</html>
