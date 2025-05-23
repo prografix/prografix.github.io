@@ -2409,6 +2409,47 @@ void sluGaussRow_test2()
     for ( nat i = 0; i < 5; ++i ) display << x[i] << c[i] << NL;
 }
 
+void chol ( nat n, const double * const * a )
+{
+    if ( n < 1 ) return;
+    CmbArray<double, 820> g;
+    g.resize ( n*(n+1)/2 );
+    const double * si = g();
+    nat l = 0, i, j, k;
+    for ( i = 0; i < n; ++i )
+    {
+        const nat m = n - i;
+        const double * sj = g();
+        const double * ai = a[i];
+        for ( j = 0; j <= i; ++j )
+        {
+            sj += j;
+            double x = ai[j];
+            const double * pi = si;
+            const double * pj = sj;
+            for ( k = j; k-- > 0; )
+            {
+                x -= (*pi++) * (*pj++);
+            }
+            if ( i == j )
+            {
+                if ( x <= 0 )
+                {
+                    g.resize(0);
+                    return;
+                }
+                g[l] = 1. / sqrt(x);
+            }
+            else
+            {
+                g[l] = x * (*pj);
+            }
+            ++l;
+        }
+        si += m;
+    }
+}
+
 } // namespace
 
 void math_test ()
