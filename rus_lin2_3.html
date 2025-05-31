@@ -2,17 +2,13 @@
 <head><title>Небольшие системы линейных уравнений</title>
 <link rel="stylesheet" type="text/css" href="stylle.css"></head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
-<div align="center"><center>
+<div align="center"><br>
+<font color="" style="font-size: 20pt">Небольшие системы линейных уравнений</font>
 <table width="900" cellspacing="0" cellpadding="0">
-<div align=center>
-<font color="" style="font-size: 20pt">
-<br>Небольшие системы линейных уравнений
-</font>
-</div>
-<div align=left><td><br>
-<p>Здесь представлены шаблоны классов SLU2, SLU3 и SLU4, предназначенные для решения систем линейных уравнений 
+<tr><td><br>
+<p>Здесь представлены шаблоны классов SLU2, SLU3, SymSLU3 и SLU4, предназначенные для решения систем линейных уравнений 
 второго, третьего и четвёртого порядка:
-    <pre>
+<pre>
 inline float qmod ( const float & x ) { return x * x; }
 inline double qmod ( const double & x ) { return x * x; }
 
@@ -21,7 +17,7 @@ inline double qmod ( const double & x ) { return x * x; }
 // aa * x + ab * y = ac
 // ba * x + bb * y = bc
 
-template &lt;class T1, class T2 = T1> class SLU2 : public Matrix2&lt;T1>
+template &lt;class T1, class T2 = T1> class SLU2 : public Derived&ltMatrix2&lt;T1>>
 {
 public:
     T2 ac, bc;
@@ -77,7 +73,7 @@ public:
 // ba * x + bb * y + bc * z = bd
 // ca * x + cb * y + cc * z = cd
 
-template &lt;class T1, class T2 = T1> class SLU3 : public Matrix3&lt;T1>
+template &lt;class T1, class T2 = T1> class SLU3 : public Derived&ltMatrix3&lt;T1>>
 {
 public:
     T2 ad, bd, cd;
@@ -138,7 +134,7 @@ public:
 // ab * x + bb * y + bc * z = bd
 // ac * x + bc * y + cc * z = cd
 
-template &lt;class T1, class T2=T1> class SymSLU3 : public SymMatrix3&lt;T1>
+template &lt;class T1, class T2=T1> class SymSLU3 : public Derived&ltSymMatrix3&lt;T1>>
 {
 public:
     T2 ad, bd, cd;
@@ -298,10 +294,10 @@ public:
 <a href="rus_vector.html">Vector3d</a>, <a href="vector4d.html">Vector4d</a>, <a href="array.html">FixArray</a> и т. д.
 </p>
 <p>Исходники находятся в файле <a href="source/source.zip">LinAlg.h</a>.
+<br>Описание шаблона классов Derived находится <a href="derived.html">здесь</a>
 <br>Описание шаблонов классов Matrix2, Matrix3 и Matrix4 находится <a href="qmatrix.html">здесь</a></p>
 <a href="rus_lin_alg.html">Наверх</a>
-</td></div>
-</table>
+</td></tr></table></div>
 <pre>
 
 </pre>
