@@ -29,13 +29,16 @@ public:
 
     Def<Matrix2> operator ~ () const
     {
-        SLU2<T> slu;
-        slu.matrix() = *this;
-        slu.ac = 1; slu.bc = 0;
+        SLU2<T, Set2<T>> slu;
+        slu.base() = *this;
+        slu.ac.a = 1; slu.bc.a = 0;
+        slu.ac.b = 0; slu.bc.b = 1;
         Def<Matrix2> m;
-        if ( ! slu.gauss ( m.aa, m.ba ) ) return m;
-        slu.ac = 0; slu.bc = 1; 
-        m.isDef = slu.gauss ( m.ab, m.bb );
+        Set2<T> sa, sb; 
+        if ( ! slu.gauss ( sa, sb ) ) return m;
+        m.isDef = true;
+        m.aa = sa.a; m.ab = sa.b;
+        m.ba = sb.a; m.bb = sb.b;
         return m;
     }
 
@@ -75,6 +78,23 @@ public:
         return *this;
     }
 
+    Def<Matrix3> operator ~ () const
+    {
+        SLU3<T, Set3<T>> slu;
+        slu.base() = *this;
+        slu.ad.a = 1; slu.ad.b = 0; slu.ad.c = 0;
+        slu.bd.a = 0; slu.bd.b = 1; slu.bd.c = 0;
+        slu.cd.a = 0; slu.cd.b = 0; slu.cd.c = 1;
+        Def<Matrix3> m;
+        Set3<T> sa, sb, sc; 
+        if ( ! slu.gauss ( sa, sb, sc ) ) return m;
+        m.isDef = true;
+        m.aa = sa.a; m.ab = sa.b; m.ac = sa.c;
+        m.ba = sb.a; m.bb = sb.b; m.bc = sb.c;
+        m.ca = sc.a; m.cb = sc.b; m.cc = sc.c;
+        return m;
+    }
+
     T determinant() const
     {
         return  ( ab * bc - ac * bb ) * ca +
@@ -82,6 +102,15 @@ public:
                 ( aa * bb - ab * ba ) * cc;
     }
 };
+
+template <class T> Matrix3<T> operator * ( const Matrix3<T> & l, const Matrix3<T> & r )
+{
+    Matrix3<T> m;
+    m.aa = l.aa * r.aa + l.ab * r.ba + l.ac * r.ca; m.ab = l.aa * r.ab + l.ab * r.bb + l.ac * r.cb; m.ac = l.aa * r.ac + l.ab * r.bc + l.ac * r.cc;
+    m.ba = l.ba * r.aa + l.bb * r.ba + l.bc * r.ca; m.bb = l.ba * r.ab + l.bb * r.bb + l.bc * r.cb; m.bc = l.ba * r.ac + l.bb * r.bc + l.bc * r.cc;
+    m.ca = l.ca * r.aa + l.cb * r.ba + l.cc * r.ca; m.cb = l.ca * r.ab + l.cb * r.bb + l.cc * r.cb; m.cc = l.ca * r.ac + l.cb * r.bc + l.cc * r.cc;
+    return m;
+}
 
 
 //************************ 21.08.2023 *************************//
@@ -105,6 +134,23 @@ public:
         return *this;
     }
 
+    Def<SymMatrix3> operator ~ () const
+    {
+        SymSLU3<T, Set3<T>> slu;
+        slu.base() = *this;
+        slu.ad.a = 1; slu.ad.b = 0; slu.ad.c = 0;
+        slu.bd.a = 0; slu.bd.b = 1; slu.bd.c = 0;
+        slu.cd.a = 0; slu.cd.b = 0; slu.cd.c = 1;
+        Def<SymMatrix3> m;
+        Set3<T> sa, sb, sc; 
+        if ( ! slu.gauss ( sa, sb, sc ) ) return m;
+        m.isDef = true;
+        m.aa = sa.a; m.ab = sa.b; m.ac = sa.c;
+        m.bb = sb.b; m.bc = sb.c;
+        m.cc = sc.c;
+        return m;
+    }
+
     T determinant() const
     {
         return  ( ab * bc - ac * bb ) * ac +
@@ -112,6 +158,15 @@ public:
                 ( aa * bb - ab * ab ) * cc;
     }
 };
+
+template <class T> Matrix3<T> operator * ( const SymMatrix3<T> & l, const SymMatrix3<T> & r )
+{
+    Matrix3<T> m;
+    m.aa = l.aa * r.aa + l.ab * r.ab + l.ac * r.ac; m.ab = l.aa * r.ab + l.ab * r.bb + l.ac * r.bc; m.ac = l.aa * r.ac + l.ab * r.bc + l.ac * r.cc;
+    m.ba = l.ab * r.aa + l.bb * r.ab + l.bc * r.ac; m.bb = l.ab * r.ab + l.bb * r.bb + l.bc * r.bc; m.bc = l.ab * r.ac + l.bb * r.bc + l.bc * r.cc;
+    m.ca = l.ac * r.aa + l.bc * r.ab + l.cc * r.ac; m.cb = l.ac * r.ab + l.bc * r.bb + l.cc * r.bc; m.cc = l.ac * r.ac + l.bc * r.bc + l.cc * r.cc;
+    return m;
+}
 
 
 //*************************************************************//
@@ -196,7 +251,7 @@ public:
 //
 //************************ 10.04.2015 *************************//
 
-template <class T1, class T2 = T1> class SLU2 : public Matrix2<T1>
+template <class T1, class T2 = T1> class SLU2 : public Derived<Matrix2<T1>>
 {
 public:
     T2 ac, bc;
@@ -254,7 +309,7 @@ public:
 //
 //************************ 24.04.2019 *************************//
 
-template <class T1, class T2 = T1> class SLU3 : public Matrix3<T1>
+template <class T1, class T2 = T1> class SLU3 : public Derived<Matrix3<T1>>
 {
 public:
     T2 ad, bd, cd;
@@ -320,7 +375,7 @@ public:
 //
 //************************ 21.08.2023 *************************//
 
-template <class T1, class T2 = T1> class SymSLU3 : public SymMatrix3<T1>
+template <class T1, class T2 = T1> class SymSLU3 : public Derived<SymMatrix3<T1>>
 {
 public:
     T2 ad, bd, cd;

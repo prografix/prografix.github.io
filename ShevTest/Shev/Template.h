@@ -103,6 +103,16 @@ template < class A, class B = A > struct Set2
         a += u.a; b += u.b; return * this;
     }
 
+    Set2 & operator -= ( const Set2 & u )
+    {
+        a -= u.a; b -= u.b; return * this;
+    }
+
+    template < class T > Set2 & operator *= ( const T & u )
+    {
+        a *= u; b *= u; return * this;
+    }
+
     template < class T > Set2 & operator /= ( const T & u )
     {
         a /= u; b /= u; return * this;
@@ -172,7 +182,27 @@ template < class A, class B = A, class C = B > struct Set3
     C c;
 
     Set3 () {}
-    Set3 ( const A & x, const B & y, const C & z ) : a(x), b(y), c(z) {} 
+    Set3 ( const A & x, const B & y, const C & z ) : a(x), b(y), c(z) {}
+ 
+    Set3 & operator += ( const Set3 & u )
+    {
+        a += u.a; b += u.b; c += u.c; return * this;
+    }
+
+    Set3 & operator -= ( const Set3 & u )
+    {
+        a -= u.a; b -= u.b; c -= u.c; return * this;
+    }
+
+    template < class T > Set3 & operator *= ( const T & u )
+    {
+        a *= u; b *= u; c *= u; return * this;
+    }
+
+    template < class T > Set3 & operator /= ( const T & u )
+    {
+        a /= u; b /= u; c /= u; return * this;
+    }
 };
 
 template<class A, class B, class C> inline

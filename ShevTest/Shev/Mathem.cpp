@@ -774,6 +774,117 @@ bool slu_gauss ( ArrRef2<double> & data, const nat nc, ArrRef<nat> & col )
     return true;
 }
 
+//*************************** 31.05.2025 ******************************//
+//
+//      Решение систем линейных уравнений методом Гаусса
+//      для разреженной матрицы. Выбор ведущего элемента по строкам.
+//
+//*************************** 31.05.2025 ******************************//
+
+bool sluGaussRow ( nat n, Suite<SortItem<nat, double> > * a, double * b, double * x )
+{
+    nat i, j, k;
+    DynArray<Suite<nat> > col ( n );
+    for ( i = 0; i < n; ++i )
+    {
+        CCArrRef<SortItem<nat, double> > & row = a[i];
+        for ( j = 0; j < row.size(); ++j ) col[row[j].head].inc() = i;
+    }
+// Прямой ход
+    DynArray<nat> icol ( n );
+    Suite<SortItem<nat, double> > tmp;
+    for ( k = 0; k < n; ++k )
+    {
+// Поиск максимального по модулю члена в k-ой строке
+        Suite<SortItem<nat, double> > & rk = a[k];
+        const nat nc = rk.size();
+        if ( ! nc )
+            return false;
+        nat im = 0;
+        double max = fabs ( rk[0].tail );
+        for ( i = 1; i < nc; ++i )
+        {
+            if ( _maxa ( max, fabs ( rk[i].tail ) ) ) im = i;
+        }
+        if ( ! max )
+            return false;
+        const nat kk = icol[k] = rk[im].head;
+// Нормализация строки
+        const double p = 1. / rk[im].tail;
+        for ( i = 0; i < nc; ++i ) rk[i].tail *= p;
+        b[k] *= p;
+// Вычитание строк
+        CCArrRef<nat> & ck = col[kk];
+        for ( j = 0; j < ck.size(); ++j )
+        {
+            const nat jj = ck[j];
+            if ( jj <= k ) continue;
+            Suite<SortItem<nat, double> > & rj = a[jj];
+            const nat ii = lasEqu123 ( rj, SortItem<nat, double> ( kk ) );
+if ( ii == rj.size() )
+    return false;
+            const double t = rj[ii].tail;
+            for ( nat ij = 0, ik = 0;; )
+            {
+                if ( ij == rj.size() )
+                {
+                    for (; ik < rk.size(); ++ik )
+                    {
+                        SortItem<nat, double> & ek = rk[ik];
+                        tmp.inc() = SortItem<nat, double> ( ek.head, - t * ek.tail );
+                        col[ek.head].inc() = jj;
+                    }
+                    break;
+                }
+                if ( ik == rk.size() )
+                {
+                    for (; ij < rj.size(); ++ij ) tmp.inc() = rj[ij];
+                    break;
+                }
+                SortItem<nat, double> & ek = rk[ik];
+                SortItem<nat, double> & ej = rj[ij];
+                if ( ek.head < ej.head )
+                {
+                    tmp.inc() = SortItem<nat, double> ( ek.head, - t * ek.tail );
+                    col[ek.head].inc() = jj;
+                    ++ik;
+                }
+                else
+                if ( ek.head > ej.head )
+                {
+                    tmp.inc() = ej;
+                    ++ij;
+                }
+                else
+                {
+                    if ( ek.head != kk )
+                        tmp.inc() = SortItem<nat, double> ( ek.head, ej.tail - t * ek.tail );
+                    ++ik;
+                    ++ij;
+                }
+            }
+            rj.swap ( tmp );
+            tmp.resize();
+            b[jj] -= t * b[k];
+        }
+        rk.delAndShift ( im );
+    }
+// Обратная подстановка
+    for ( j = 0; j < n; ++j )
+    {
+        k = n - 1 - j;
+        CCArrRef<SortItem<nat, double> > & rj = a[k];
+        double & r = x[icol[k]];
+        r = b[k];
+        for ( i = 0; i < rj.size(); ++i )
+        {
+            const SortItem<nat, double> & ei = rj[i];
+            r -= x[ei.head] * ei.tail;
+        }
+    }
+    return true;
+}
+
 //*********************************************************************//
 //
 //      Решение систем линейных уравнений методом
