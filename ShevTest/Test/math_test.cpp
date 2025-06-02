@@ -2019,174 +2019,6 @@ void slu_gauss_test()
     display << NL;
 }
 
-bool sluGaussRow ( ArrRef<Suite<SortItem<nat, double>>> & data, ArrRef<nat> & index )
-{
-    const nat nRow = data.size();
-    const nat nCol = index.size();
-    if ( nRow >= nCol ) return false;
-// Прямой ход
-    nat i, j, k;
-    for ( i = 0; i < nCol; ++i ) index[i] = i;
-    for ( k = 0; k < nRow; ++k )
-    {
-// Поиск максимального по модулю члена в k-ой строке
-        Suite<SortItem<nat, double> > & rk = data[k];
-        const nat nc = rk.size();
-        if ( ! nc ) return false;
-        nat im = 0;
-        double max = fabs ( rk[0].tail );
-        for ( i = 1; i < nc; ++i )
-        {
-            if ( _maxa ( max, fabs ( rk[i].tail ) ) ) im = i;
-        }
-        if ( ! max ) return false;
-        _swap ( index[k], index[rk[im].head] );
-        const nat ik = index[k];
-// Нормализация строки
-        const double p = 1. / rk[im].tail;
-        for ( i = 0; i < nc; ++i ) rk[i].tail *= p;
-        rk.delAndShift ( im );
-// Вычитание строк
-        for ( j = k+1; j < nRow; ++j )
-        {
-            Suite<SortItem<nat, double> > & rj = data[j];
-            const double t = rj[ik].tail;
-            for ( i = k+1; i < nCol; ++i )
-            {
-                const nat ii = index[i];
-                if ( fabs ( rj[ii].tail -= rk[ii].tail * t ) < 1e-290 ) rj[ii].tail = 0;
-            }
-            rj[ik].tail = 0;
-        }
-    }
-// Обратная подстановка
-    for ( j = nRow; --j > 0; )
-    {
-        Suite<SortItem<nat, double> > & rj = data[j];
-        const nat ij = index[j];
-        for ( i = 0; i < j; ++i )
-        {
-            Suite<SortItem<nat, double> > & ri = data[i];
-            const double t = ri[ij].tail;
-            for ( k = nRow; k < nCol; ++k )
-            {
-                const nat ik = index[k];
-                ri[ik].tail -= rj[ik].tail * t;
-            }
-            ri[ij].tail = 0;
-        }
-    }
-    return true;
-}
-
-bool sluGaussRow ( nat n, Suite<SortItem<nat, double> > * a, double * b, double * x )
-{
-    nat i, j, k;
-    DynArray<Suite<nat> > col ( n );
-    for ( i = 0; i < n; ++i )
-    {
-        CCArrRef<SortItem<nat, double> > & row = a[i];
-        for ( j = 0; j < row.size(); ++j ) col[row[j].head].inc() = i;
-    }
-//nat sum = 0;
-// Прямой ход
-    DynArray<nat> icol ( n );
-    Suite<SortItem<nat, double> > tmp;
-    for ( k = 0; k < n; ++k )
-    {
-// Поиск максимального по модулю члена в k-ой строке
-        Suite<SortItem<nat, double> > & rk = a[k];
-        const nat nc = rk.size();
-        if ( ! nc )
-            return false;
-        nat im = 0;
-        double max = fabs ( rk[0].tail );
-        for ( i = 1; i < nc; ++i )
-        {
-            if ( _maxa ( max, fabs ( rk[i].tail ) ) ) im = i;
-        }
-        if ( ! max )
-            return false;
-//display << k << max << NL;
-        const nat kk = icol[k] = rk[im].head;
-// Нормализация строки
-        const double p = 1. / rk[im].tail;
-        for ( i = 0; i < nc; ++i ) rk[i].tail *= p;
-        b[k] *= p;
-// Вычитание строк
-        CCArrRef<nat> & ck = col[kk];
-        for ( j = 0; j < ck.size(); ++j )
-        {
-            const nat jj = ck[j];
-            if ( jj <= k ) continue;
-            Suite<SortItem<nat, double> > & rj = a[jj];
-            const nat ii = lasEqu123 ( rj, SortItem<nat, double> ( kk ) );
-if ( ii == rj.size() )
-    continue;
-            const double t = rj[ii].tail;
-            for ( nat ij = 0, ik = 0;; )
-            {
-                if ( ij == rj.size() )
-                {
-                    for (; ik < rk.size(); ++ik )
-                    {
-                        SortItem<nat, double> & ek = rk[ik];
-                        tmp.inc() = SortItem<nat, double> ( ek.head, - t * ek.tail );
-                        col[ek.head].inc() = jj;
-                    }
-                    break;
-                }
-                if ( ik == rk.size() )
-                {
-                    for (; ij < rj.size(); ++ij ) tmp.inc() = rj[ij];
-                    break;
-                }
-                SortItem<nat, double> & ek = rk[ik];
-                SortItem<nat, double> & ej = rj[ij];
-                if ( ek.head < ej.head )
-                {
-                    tmp.inc() = SortItem<nat, double> ( ek.head, - t * ek.tail );
-                    col[ek.head].inc() = jj;
-                    ++ik;
-                }
-                else
-                if ( ek.head > ej.head )
-                {
-                    tmp.inc() = ej;
-                    ++ij;
-                }
-                else
-                {
-                    if ( ek.head != kk )
-                        tmp.inc() = SortItem<nat, double> ( ek.head, ej.tail - t * ek.tail );
-                    ++ik;
-                    ++ij;
-                }
-            }
-            rj.swap ( tmp );
-            tmp.resize();
-            b[jj] -= t * b[k];
-        }
-        rk.delAndShift ( im );
-    }
-// Обратная подстановка
-    for ( j = 0; j < n; ++j )
-    {
-        k = n - 1 - j;
-        CCArrRef<SortItem<nat, double> > & rj = a[k];
-        double & r = x[icol[k]];
-        r = b[k];
-//sum += rj.size();
-        for ( i = 0; i < rj.size(); ++i )
-        {
-            const SortItem<nat, double> & ei = rj[i];
-            r -= x[ei.head] * ei.tail;
-        }
-    }
-//display << sum << NL;
-    return true;
-}
-
 inline void _swap ( SortItem<nat, nat *> & p1, SortItem<nat, nat *> & p2 )
 {
     const SortItem<nat, nat *> p ( p1 );
@@ -2249,7 +2081,7 @@ bool sluGaussRowO ( nat n, Suite<SortItem<nat, double> > * a, double * b, double
             Suite<SortItem<nat, double> > & rj = a[jj];
             const nat ii = lasEqu123 ( rj, SortItem<nat, double> ( kk ) );
 if ( ii == rj.size() )
-    continue;
+    return false;
             const double t = rj[ii].tail;
             for ( nat ij = 0, ik = 0;; )
             {
@@ -2409,45 +2241,208 @@ void sluGaussRow_test2()
     for ( nat i = 0; i < 5; ++i ) display << x[i] << c[i] << NL;
 }
 
-void chol ( nat n, const double * const * a )
+void chol ( nat n, double * const * a, const double * b, double * x )
 {
-    if ( n < 1 ) return;
-    CmbArray<double, 820> g;
-    g.resize ( n*(n+1)/2 );
-    const double * si = g();
-    nat l = 0, i, j, k;
-    for ( i = 0; i < n; ++i )
+    if ( ! n ) return;
+    nat i, j, k;
+    /*for ( k = 0; k < n; ++k )
     {
-        const nat m = n - i;
-        const double * sj = g();
-        const double * ai = a[i];
-        for ( j = 0; j <= i; ++j )
+        double * ak = a[k];
+        const double t = ak[k] = 1. / sqrt(ak[k]);
+        for ( i = k+1; i < n; ++i )
         {
-            sj += j;
-            double x = ai[j];
-            const double * pi = si;
-            const double * pj = sj;
-            for ( k = j; k-- > 0; )
+            ak[i] *= t;
+            for ( j = k+1; j <= i; ++j ) a[j][i] -= ak[i] * ak[j];
+        }
+    }*/
+    for ( k = 0; k < n; ++k )
+    {
+        double t;
+        double * ak = a[k];
+        for ( i = 0; i < n; ++i )
+        {
+            double & si = ak[i];
+            if ( i < k ) continue;
+            if ( i == k )
             {
-                x -= (*pi++) * (*pj++);
-            }
-            if ( i == j )
-            {
-                if ( x <= 0 )
-                {
-                    g.resize(0);
-                    return;
-                }
-                g[l] = 1. / sqrt(x);
+                t = si = 1. / sqrt(si);
             }
             else
             {
-                g[l] = x * (*pj);
+                si *= t;
+                for ( j = 0; j <= i; ++j )
+                {
+                    double & sj = ak[j];
+                    if ( j <= k ) continue;
+                    double * aj = a[j];
+                    aj[i] -= si * sj;
+                }
             }
+        }
+    }
+    CmbArray<double, 820> g;
+    g.resize ( n*(n+1)/2 );
+    nat l = 0;
+    for ( i = 0; i < n; ++i )
+    {
+        for ( j = 0; j <= i; ++j )
+        {
+            g[l] = a[j][i];
             ++l;
         }
-        si += m;
     }
+// Решение системы Ly = b
+    nat p = 0;
+    for ( i = 0; i < n; ++i )
+    {
+        double t = b[i];
+        for ( k = 0; k < i; ++k )
+        {
+            t -= g[p] * x[k];
+            ++p;
+        }
+        x[i] = t * g[p++];
+    }
+// Решение системы Ux = y;
+    for ( i = n; i-- > 0; )
+    {
+        nat s = --p;
+        double t = x[i];
+        for ( k = n; --k > i; )
+        {
+            t -= g[s] * x[k];
+            s -= k;
+        }
+        x[i] = t * g[s];
+    }
+}
+
+void chol2 ( nat n, Suite<SortItem<nat, double>> * a, const double * b, double * x )
+{
+    if ( ! n ) return;
+    nat i, j, k;
+    for ( k = 0; k < n; ++k )
+    {
+        nat k1;
+        double t;
+        Suite<SortItem<nat, double>> & ak = a[k];
+        for ( i = 0; i < ak.size(); ++i )
+        {
+            SortItem<nat, double> & si = ak[i];
+            if ( si.head < k ) continue;
+            if ( si.head == k )
+            {
+                t = si.tail = 1. / sqrt(si.tail);
+                k1 = i + 1;
+            }
+            else
+            {
+                si.tail *= t;
+            }
+        }
+    /*for ( k = 0; k < n; ++k )
+    {
+        double * ak = a[k];
+        const double t = ak[k] = 1. / sqrt(ak[k]);
+        for ( i = k+1; i < n; ++i )
+        {
+            ak[i] *= t;
+            for ( j = k+1; j <= i; ++j ) a[j][i] -= ak[i] * ak[j];
+        }
+    }*/
+        for ( i = k1; i < ak.size(); ++i )
+        {
+            SortItem<nat, double> & si = ak[i];
+            for ( j = k1; j <= i; ++j )
+            {
+                SortItem<nat, double> & sj = ak[j];
+                Suite<SortItem<nat, double>> & aj = a[sj.head];
+                for ( nat l = 0; l < aj.size(); ++l )
+                {
+                    SortItem<nat, double> & sl = aj[l];
+                    if ( sl.head < si.head ) continue;
+                    if ( sl.head == si.head )
+                    {
+                        sl.tail -= si.tail * sj.tail;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+    for ( nat i = 0; i < 5; ++i )
+    {
+        Suite<SortItem<nat, double>> & ri = a[i];
+        for ( nat j = 0; j < 5; ++j )
+        {
+            display << ri[j].tail;
+        }
+            display << NL;
+    }
+    CmbArray<double, 820> g;
+    g.resize ( n*(n+1)/2 );
+    nat l = 0;
+    for ( i = 0; i < n; ++i )
+    {
+        for ( j = 0; j <= i; ++j )
+        {
+            g[l] = a[j][i].tail;
+            ++l;
+        }
+    }
+// Решение системы Ly = b
+    nat p = 0;
+    for ( i = 0; i < n; ++i )
+    {
+        double t = b[i];
+        for ( k = 0; k < i; ++k )
+        {
+            t -= g[p] * x[k];
+            ++p;
+        }
+        x[i] = t * g[p++];
+    }
+// Решение системы Ux = y;
+    for ( i = n; i-- > 0; )
+    {
+        nat s = --p;
+        double t = x[i];
+        for ( k = n; --k > i; )
+        {
+            t -= g[s] * x[k];
+            s -= k;
+        }
+        x[i] = t * g[s];
+    }
+}
+
+void chol_test1()
+{
+    double c[5];
+    c[0] = 1; c[1] = 1./2; c[2] = 1./3; c[3] = 1./4; c[4] = 1./5;
+    SMatrix<double, 5, 5> mat;
+    double * const * a = mat;
+    a[0][0] =    36; a[0][1] =    -630; a[0][2] =    3360; a[0][3] =    -7560; a[0][4] =    7560;
+    a[1][0] =  -630; a[1][1] =   14700; a[1][2] =  -88200; a[1][3] =   211680; a[1][4] =  -220500;
+    a[2][0] =  3360; a[2][1] =  -88200; a[2][2] =  564480; a[2][3] = -1411200; a[2][4] =  1512000;
+    a[3][0] = -7560; a[3][1] =  211680; a[3][2] =-1411200; a[3][3] =  3628800; a[3][4] = -3969000;
+    a[4][0] =  7560; a[4][1] = -220500; a[4][2] = 1512000; a[4][3] = -3969000; a[4][4] =  4410000;
+    double x[5], b[5];
+    b[0] = 463; b[1] = -13860; b[2] = 97020; b[3] = -258720; b[4] = 291060;
+    chol ( 5, a, b, x );
+    Suite<SortItem<nat, double>> aa[5];
+    for ( nat i = 0; i < 5; ++i )
+    {
+        Suite<SortItem<nat, double>> & ri = aa[i];
+        ri.resize(5);
+        for ( nat j = 0; j < 5; ++j )
+        {
+            ri[j].head = j;
+            ri[j].tail = a[i][j];
+        }
+    }
+    chol2 ( 5, aa, b, x );
+    for ( nat i = 0; i < 5; ++i ) display << x[i] << c[i] << NL;
 }
 
 } // namespace
@@ -2476,5 +2471,6 @@ void math_test ()
 //    minNorm_test3();
 //    log_test ();
 //    slu_gauss_test();
-    sluGaussRow_test1();
+//    sluGaussRow_test1();
+    chol_test1();
 }
