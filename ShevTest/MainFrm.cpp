@@ -229,7 +229,7 @@ void CMainFrame::OnTest()
 {
 //    intersect3d_test();
 //    momentum2d_test();
-    polyhedron_test();
+//    polyhedron_test();
 //    S2D_Model_test();
 //    approx3d_test();
 //    testBlackRing();
@@ -246,7 +246,7 @@ void CMainFrame::OnTest()
 //    array_test();
 //    calc_test();
 //    file_test();
-//    math_test();
+    math_test();
 //    rand_test();
 //    tree_test();
 //    filePYH_test();
