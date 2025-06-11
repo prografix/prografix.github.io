@@ -2254,7 +2254,7 @@ void chol ( nat n, double * const * a, const double * b, double * x )
             ak[i] *= t;
             for ( j = k+1; j <= i; ++j ) a[j][i] -= ak[i] * ak[j];
         }
-    }*/
+    }*
     for ( k = 0; k < n; ++k )
     {
         double t;
@@ -2277,6 +2277,36 @@ void chol ( nat n, double * const * a, const double * b, double * x )
                     double * aj = a[j];
                     aj[i] -= si * sj;
                 }
+            }
+        }
+    }*/
+    for ( k = 0; k < n; ++k )
+    {
+        double t;
+        double * ak = a[k];
+        for ( i = 0; i < n; ++i )
+        {
+            double & si = ak[i];
+            if ( i < k ) continue;
+            if ( i == k )
+            {
+                t = si = 1. / sqrt(si);
+            }
+            else
+            {
+                si *= t;
+            }
+        }
+        for ( j = 0; j < n; ++j )
+        {
+            double & sj = ak[j];
+            if ( j <= k ) continue;
+            double * aj = a[j];
+            for ( i = 0; i < n; ++i )
+            {
+                if ( i < j ) continue;
+                double & si = ak[i];
+                aj[i] -= si * sj;
             }
         }
     }
@@ -2317,13 +2347,12 @@ void chol ( nat n, double * const * a, const double * b, double * x )
     }
 }
 
-void chol2 ( nat n, Suite<SortItem<nat, double>> * a, const double * b, double * x )
+void chol2 ( nat n, Suite<SortItem<nat, double>> * a, double * b, double * x )
 {
     if ( ! n ) return;
     nat i, j, k;
     for ( k = 0; k < n; ++k )
     {
-        nat k1;
         double t;
         Suite<SortItem<nat, double>> & ak = a[k];
         for ( i = 0; i < ak.size(); ++i )
@@ -2332,45 +2361,75 @@ void chol2 ( nat n, Suite<SortItem<nat, double>> * a, const double * b, double *
             if ( si.head < k ) continue;
             if ( si.head == k )
             {
+                if(si.tail<0 )
+                    k=k;
                 t = si.tail = 1. / sqrt(si.tail);
-                k1 = i + 1;
             }
             else
             {
                 si.tail *= t;
             }
         }
-    /*for ( k = 0; k < n; ++k )
-    {
+    /*
+        double t;
         double * ak = a[k];
-        const double t = ak[k] = 1. / sqrt(ak[k]);
-        for ( i = k+1; i < n; ++i )
+        for ( i = 0; i < n; ++i )
         {
-            ak[i] *= t;
-            for ( j = k+1; j <= i; ++j ) a[j][i] -= ak[i] * ak[j];
-        }
-    }*/
-        for ( i = k1; i < ak.size(); ++i )
-        {
-            SortItem<nat, double> & si = ak[i];
-            for ( j = k1; j <= i; ++j )
+            double & si = ak[i];
+            if ( i < k ) continue;
+            if ( i == k )
             {
-                SortItem<nat, double> & sj = ak[j];
-                Suite<SortItem<nat, double>> & aj = a[sj.head];
-                for ( nat l = 0; l < aj.size(); ++l )
+                t = si = 1. / sqrt(si);
+            }
+            else
+            {
+                si *= t;
+            }
+        }
+        for ( j = 0; j < n; ++j )
+        {
+            double & sj = ak[j];
+            if ( j <= k ) continue;
+            double * aj = a[j];
+            for ( i = j; i < n; ++i )
+            {
+                double & si = ak[i];
+                aj[i] -= si * sj;
+            }
+        }
+    */
+        for ( j = 0; j < ak.size(); ++j )
+        {
+            SortItem<nat, double> & sj = ak[j];
+            if ( sj.head <= k ) continue;
+            Suite<SortItem<nat, double>> & aj = a[j];
+            nat l = 0;
+            for ( i = j; i < ak.size(); ++i )
+            {
+                SortItem<nat, double> & si = ak[i];
+                const double p = - si.tail * sj.tail;
+                for (;;)
                 {
-                    SortItem<nat, double> & sl = aj[l];
-                    if ( sl.head < si.head ) continue;
-                    if ( sl.head == si.head )
+                    if ( l == aj.size() )
                     {
-                        sl.tail -= si.tail * sj.tail;
+                        aj.inc() = SortItem<nat, double> ( si.head, p );
                         break;
                     }
+                    SortItem<nat, double> & sl = aj[l];
+                    if ( sl.head >= si.head )
+                    {
+                        if ( sl.head == si.head )
+                            sl.tail += p;
+                        else
+                            aj.incPos(l) = SortItem<nat, double> ( si.head, p );
+                        break;
+                    }
+                    ++l;
                 }
             }
         }
     }
-    for ( nat i = 0; i < 5; ++i )
+    /*for ( nat i = 0; i < 5; ++i )
     {
         Suite<SortItem<nat, double>> & ri = a[i];
         for ( nat j = 0; j < 5; ++j )
@@ -2378,7 +2437,7 @@ void chol2 ( nat n, Suite<SortItem<nat, double>> * a, const double * b, double *
             display << ri[j].tail;
         }
             display << NL;
-    }
+    }*
     CmbArray<double, 820> g;
     g.resize ( n*(n+1)/2 );
     nat l = 0;
@@ -2391,7 +2450,7 @@ void chol2 ( nat n, Suite<SortItem<nat, double>> * a, const double * b, double *
         }
     }
 // Решение системы Ly = b
-    nat p = 0;
+    /*nat p = 0;
     for ( i = 0; i < n; ++i )
     {
         double t = b[i];
@@ -2401,18 +2460,49 @@ void chol2 ( nat n, Suite<SortItem<nat, double>> * a, const double * b, double *
             ++p;
         }
         x[i] = t * g[p++];
+    }*/
+    for ( i = 0; i < n; ++i )
+    {
+        CCArrRef<SortItem<nat, double>> & ai = a[i];
+        for ( k = 0; k < ai.size(); ++k )
+        {
+            const SortItem<nat, double> & si = ai[k];
+            if ( si.head < i ) continue;
+            if ( si.head == i )
+            {
+                x[i] = b[i] * si.tail;
+            }
+            else
+            {
+                b[si.head] -= si.tail * x[i];
+            }
+        }
     }
+    /*for ( i = 0; i < n; ++i )
+    {
+        CCArrRef<SortItem<nat, double>> & ri = a[i];
+        double t = b[i];
+        for ( k = 0; k < i; ++k )
+        {
+            t -= g[p] * x[k];
+        }
+        x[i] = t * g[p++];
+    }*/
 // Решение системы Ux = y;
     for ( i = n; i-- > 0; )
     {
-        nat s = --p;
+        CCArrRef<SortItem<nat, double>> & ai = a[i];
         double t = x[i];
-        for ( k = n; --k > i; )
+        for ( k = ai.size(); k-- > 0; )
         {
-            t -= g[s] * x[k];
-            s -= k;
+            const SortItem<nat, double> & si = ai[k];
+            if ( si.head == i )
+            {
+                x[i] = t * si.tail;
+                break;
+            }
+            t -= si.tail * x[k];
         }
-        x[i] = t * g[s];
     }
 }
 
@@ -2422,23 +2512,24 @@ void chol_test1()
     c[0] = 1; c[1] = 1./2; c[2] = 1./3; c[3] = 1./4; c[4] = 1./5;
     SMatrix<double, 5, 5> mat;
     double * const * a = mat;
-    a[0][0] =    36; a[0][1] =    -630; a[0][2] =    3360; a[0][3] =    -7560; a[0][4] =    7560;
-    a[1][0] =  -630; a[1][1] =   14700; a[1][2] =  -88200; a[1][3] =   211680; a[1][4] =  -220500;
+    a[0][0] =    36; a[0][1] =    0; a[0][2] =    3360; a[0][3] =    -7560; a[0][4] =    0;
+    a[1][0] =  0; a[1][1] =   14700; a[1][2] =  -88200; a[1][3] =   211680; a[1][4] =  -220500;
     a[2][0] =  3360; a[2][1] =  -88200; a[2][2] =  564480; a[2][3] = -1411200; a[2][4] =  1512000;
     a[3][0] = -7560; a[3][1] =  211680; a[3][2] =-1411200; a[3][3] =  3628800; a[3][4] = -3969000;
-    a[4][0] =  7560; a[4][1] = -220500; a[4][2] = 1512000; a[4][3] = -3969000; a[4][4] =  4410000;
+    a[4][0] =  0; a[4][1] = -220500; a[4][2] = 1512000; a[4][3] = -3969000; a[4][4] =  44100000;
     double x[5], b[5];
     b[0] = 463; b[1] = -13860; b[2] = 97020; b[3] = -258720; b[4] = 291060;
-    chol ( 5, a, b, x );
+ //   chol ( 5, a, b, x );
     Suite<SortItem<nat, double>> aa[5];
     for ( nat i = 0; i < 5; ++i )
     {
         Suite<SortItem<nat, double>> & ri = aa[i];
-        ri.resize(5);
+        b[i] = 0;
         for ( nat j = 0; j < 5; ++j )
         {
-            ri[j].head = j;
-            ri[j].tail = a[i][j];
+            if ( ! a[i][j] ) continue;
+            ri.inc() = SortItem<nat, double> ( j, a[i][j] );
+            b[i] += a[i][j] * c[j];
         }
     }
     chol2 ( 5, aa, b, x );

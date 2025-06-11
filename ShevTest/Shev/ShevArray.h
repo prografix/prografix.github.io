@@ -443,6 +443,22 @@ public:
         return *this;
     }
 
+    T & incPos ( nat i )
+    {
+        if ( i < _size )
+        {
+            if ( _size == real_size ) resizeAndCopy ( _size + 1 );
+            else ++_size;
+            for ( nat j = _size; --j > i; ) _data.var[j] = _data.var[j-1];
+        }
+        else
+        {
+            if ( i >= real_size ) resizeAndCopy ( i + 1 );
+            else _size = i + 1;
+        }
+        return _data.var[i];
+    }
+
     SuiteRef & dec ( nat n = 1 )
     {
         _size = _size > n ? _size - n : 0;
