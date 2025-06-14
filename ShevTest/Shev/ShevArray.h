@@ -443,7 +443,7 @@ public:
         return *this;
     }
 
-    T & incPos ( nat i )
+    T & insert ( nat i )
     {
         if ( i < _size )
         {

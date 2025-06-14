@@ -1,15 +1,12 @@
 ﻿<html>
 <head><title>Одномерные массивы</title>
-<link rel="stylesheet" type="text/css" href="stylle.css">
-</head>
+<link rel="stylesheet" type="text/css" href="stylle.css"></head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
-<div align="center">
-<table width="800" cellspacing="0" cellpadding="0">
-<div align=center>
-<br><font color="" style="font-size: 20pt">Одномерные массивы</font>
-</div>
-<div align=left><td>
-<p><br>
+<div align="center"><br>
+<font color="" style="font-size: 20pt">Одномерные массивы</font>
+<table width="1000" cellspacing="0" cellpadding="0">
+<tr><td><br>
+<p>
 При описании массивов используются: тип nat ( натуральное число ), макрос ARRAY_TEST 
 ( для проверки правильности при обращении к массивам ) и макрос CCArrRef ( для сокращения записи ):
 <pre>
@@ -388,6 +385,7 @@ explicit CmbArray ( CCArrRef&lt;T> & r ) : DynArrRef&lt;T> ( r.size() > N ? new 
 <br>Функция-член add добавляет в конец массива указанный элемент.
 <br>Функция-член inc ( increase ) без параметра увеличивает размер набора на 1 и возвращает ссылку на добавленный элемент.
 <br>Функция-член inc ( increase ) с параметром увеличивает размер набора на величину параметра.
+<br>Функция-член insert вставляет один элемент на указанную позицию. Элементы расположенные после него сдвигаются.
 <br>Функция-член dec ( decrease ) уменьшает размер набора на n ( по умолчанию на 1 ).
 <br>Функция-член del удаляет элемент по указанному индексу. Если он не последний в наборе, то его место занимает последний элемент.
 <br>Функция-член delAndShift удаляет группу элементов начиная с указанного индекса, а стоящие после них элементы сдвигаются.
@@ -452,6 +450,22 @@ public:
         if ( _size + n > real_size ) resizeAndCopy ( _size + n );
         else _size += n;
         return *this;
+    }
+
+    T & insert ( nat i )
+    {
+        if ( i < _size )
+        {
+            if ( _size == real_size ) resizeAndCopy ( _size + 1 );
+            else ++_size;
+            for ( nat j = _size; --j > i; ) _data.var[j] = _data.var[j-1];
+        }
+        else
+        {
+            if ( i >= real_size ) resizeAndCopy ( i + 1 );
+            else _size = i + 1;
+        }
+        return _data.var[i];
     }
 
     SuiteRef & dec ( nat n = 1 )
