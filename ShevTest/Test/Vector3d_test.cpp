@@ -243,11 +243,35 @@ void area_test ()
     display << "cone" << getArea ( cone ) << poly.makeModel ( cone, 1000 ).getArea() << NL << NL;
 }
 
+void _test()
+{
+    static PRandVector3d rand;
+    const Vector3d a = rand();
+    const Vector3d b = rand();
+    const Vector3d v = b - a;
+    const Vector3d o = rand();
+    const Vector3d u = rand();
+    const double vv = v * v;
+    const double uv = u * v;
+    const double uu = u * u;
+    const double d = vv * uu - uv * uv;
+    if ( ! d )
+        return;
+    const double bs = ( o - a ) * v / d;
+    const double bt = ( a - o ) * u / d;
+    const double s = bs * uu + bt * uv;
+    const double t = bs * uv + bt * vv;
+    const Vector3d ps = a + v * s;
+    const Vector3d pt = o + u * t;
+    display << qmod ( ps - pt ) << qmod ( ps + v * 0.1 - pt + u * 0.1 ) << qmod ( ps - v * 0.1 - pt - u * 0.1 ) << NL;
+}
+
 } // namespace
 
 void vector3d_test ()
 {
-    plane3d_test ();
+    _test();
+//    plane3d_test ();
 //    ortho3d_test ();
 //    conform3d_test ();
 //    affin3d_test ();
