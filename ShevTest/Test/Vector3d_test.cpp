@@ -243,6 +243,56 @@ void area_test ()
     display << "cone" << getArea ( cone ) << poly.makeModel ( cone, 1000 ).getArea() << NL << NL;
 }
 
+double func ( const Vector3d & a, const Vector3d & b, const Vector3d & o, const Vector3d & u )
+{
+    const Vector3d v = b - a;
+    const double vv = v * v;
+    const double uv = u * v;
+    const double uu = u * u;
+    const double d = vv * uu - uv * uv;
+    if ( ! d )
+        return 0;
+    const Vector3d sv = ( u * uv - v * uu ) / d;
+    const Vector3d tv = ( u * vv - v * uv ) / d;
+    const double s = ( a - o ) * sv;
+    const double t = ( a - o ) * tv;
+    const Vector3d ps = a + v * s;
+    const Vector3d pt = o + u * t;
+    return qmod ( ps - pt );
+}
+
+Vector3d dfda ( const Vector3d & a, const Vector3d & b, const Vector3d & o, const Vector3d & u )
+{
+    double e = 1e-4;
+    Vector3d v = a;
+    double f0 = func ( v, b, o, u );
+    v.x += e;
+    double fx = func ( v, b, o, u );
+    v.x -= e;
+    v.y += e;
+    double fy = func ( v, b, o, u );
+    v.y -= e;
+    v.z += e;
+    double fz = func ( v, b, o, u );
+    return 0.5 * Vector3d ( fx-f0, fy-f0, fz-f0 ) / e;
+}
+
+Vector3d dfdb ( const Vector3d & a, const Vector3d & b, const Vector3d & o, const Vector3d & u )
+{
+    double e = 1e-4;
+    Vector3d v = b;
+    double f0 = func ( a, v, o, u );
+    v.x += e;
+    double fx = func ( a, v, o, u );
+    v.x -= e;
+    v.y += e;
+    double fy = func ( a, v, o, u );
+    v.y -= e;
+    v.z += e;
+    double fz = func ( a, v, o, u );
+    return 0.5 * Vector3d ( fx-f0, fy-f0, fz-f0 ) / e;
+}
+
 void _test()
 {
     static PRandVector3d rand;
@@ -257,20 +307,122 @@ void _test()
     const double d = vv * uu - uv * uv;
     if ( ! d )
         return;
-    const double bs = ( o - a ) * v / d;
-    const double bt = ( a - o ) * u / d;
-    const double s = bs * uu + bt * uv;
-    const double t = bs * uv + bt * vv;
-    const Vector3d ps = a + v * s;
-    const Vector3d pt = o + u * t;
-    display << qmod ( ps - pt ) << qmod ( ps + v * 0.1 - pt + u * 0.1 ) << qmod ( ps - v * 0.1 - pt - u * 0.1 ) << NL;
+    const Vector3d sv = ( u * uv - v * uu ) / d;
+    const Vector3d tv = ( u * vv - v * uv ) / d;
+    const double s = ( a - o ) * sv;
+//    const double t = ( a - o ) * tv;
+    const Vector3d wx = v.x * sv - u.x * tv;
+    const Vector3d wy = v.y * sv - u.y * tv;
+    const Vector3d wz = v.z * sv - u.z * tv;
+    const double _s = 1 - s;
+    const Vector3d r = v * s + o;
+    const double dx = _s * a.x + s * b.x + 
+        _s * a.x * wx.x + _s * a.y * wx.y + _s * a.z * wx.z + 
+         s * b.x * wx.x +  s * b.y * wx.y +  s * b.z * wx.z + 
+         - r * wx - r.x;
+    const double dy = _s * a.y + s * b.y +
+        _s * a.x * wy.x + _s * a.y * wy.y + _s * a.z * wy.z + 
+         s * b.x * wy.x +  s * b.y * wy.y +  s * b.z * wy.z + 
+         - r * wy - r.y;
+    const double dz = _s * a.z + s * b.z + 
+        _s * a.x * wz.x + _s * a.y * wz.y + _s * a.z * wz.z + 
+         s * b.x * wz.x +  s * b.y * wz.y +  s * b.z * wz.z + 
+         - r * wz - r.z;
+//    display << w1.z << NL;
+//    display << w1z << NL;
+    Vector3d va = dfda ( a, b, o, u );
+    Vector3d vb = dfdb ( a, b, o, u );
+    display << vb << NL;
+    display << s*dx << s*dy << s*dz << NL;
+}
+
+void run_test()
+{
+    static PRandVector3d rand;
+    const Vector3d a = rand();
+    const Vector3d b = rand();
+    const Vector3d v = b - a;
+    const Vector3d u = rand();
+    const double vv = v * v;
+    const double uv = u * v;
+    const double uu = u * u;
+    const double d = vv * uu - uv * uv;
+    if ( ! d )
+        return;
+    const Vector3d sv = ( u * uv - v * uu ) / d;
+    const Vector3d tv = ( u * vv - v * uv ) / d;
+    const Vector3d wx = v.x * sv - u.x * tv;
+    const Vector3d wy = v.y * sv - u.y * tv;
+    const Vector3d wz = v.z * sv - u.z * tv;
+    const Vector3d w_ ( wx.x + 1, wy.y + 1, wz.z + 1 );
+    double mat[6][6] = {0,0,0,0,0,0,0,0,0,0,0,0,
+                        0,0,0,0,0,0,0,0,0,0,0,0,
+                        0,0,0,0,0,0,0,0,0,0,0,0};
+    double q[6] = {0,0,0,0,0,0};
+    for ( nat i = 0; i < 1; ++i )
+    {
+        const Vector3d o = rand();
+        const double s = ( a - o ) * sv;
+        const double _s = 1 - s;
+        const double s00 = _s * _s;
+        const double s01 = s * _s;
+        const double s11 = s * s;
+        double * r0 = mat[0];
+        double * r1 = mat[1];
+        double * r2 = mat[2];
+        double * r3 = mat[3];
+        double * r4 = mat[4];
+        double * r5 = mat[5];
+        r0[0] += s00 * w_.x; r0[1] += s00 * wx.y; r0[2] += s00 * wx.z; r0[3] += s01 * w_.x; r0[4] += s01 * wx.y; r0[5] += s01 * wx.z;
+        r1[0] += s00 * wy.x; r1[1] += s00 * w_.y; r1[2] += s00 * wy.z; r1[3] += s01 * wy.x; r1[4] += s01 * w_.y; r1[5] += s01 * wy.z;
+        r2[0] += s00 * wz.x; r2[1] += s00 * wz.y; r2[2] += s00 * w_.z; r2[3] += s01 * wz.x; r2[4] += s01 * wz.y; r2[5] += s01 * w_.z;
+        r3[0] += s01 * w_.x; r3[1] += s01 * wx.y; r3[2] += s01 * wx.z; r3[3] += s11 * w_.x; r3[4] += s11 * wx.y; r3[5] += s11 * wx.z;
+        r4[0] += s01 * wy.x; r4[1] += s01 * w_.y; r4[2] += s01 * wy.z; r4[3] += s11 * wy.x; r4[4] += s11 * w_.y; r4[5] += s11 * wy.z;
+        r5[0] += s01 * wx.z; r5[1] += s01 * wz.y; r5[2] += s01 * w_.z; r5[3] += s11 * wz.x; r5[4] += s11 * wz.y; r5[5] += s11 * w_.z;
+        const Vector3d e = v * s + o;
+        const double ex = e * wx + e.x;
+        const double ey = e * wy + e.y;
+        const double ez = e * wz + e.z;
+        q[0] += ex * _s;
+        q[1] += ey * _s;
+        q[2] += ez * _s;
+        q[3] += ex * s;
+        q[4] += ey * s;
+        q[5] += ez * s;
+
+        const double dx = _s * a.x + s * b.x + 
+            _s * a.x * wx.x + _s * a.y * wx.y + _s * a.z * wx.z + 
+             s * b.x * wx.x +  s * b.y * wx.y +  s * b.z * wx.z + 
+             - e * wx - e.x;
+        const double dy = _s * a.y + s * b.y +
+            _s * a.x * wy.x + _s * a.y * wy.y + _s * a.z * wy.z + 
+             s * b.x * wy.x +  s * b.y * wy.y +  s * b.z * wy.z + 
+             - e * wy - e.y;
+        const double dz = _s * a.z + s * b.z + 
+            _s * a.x * wz.x + _s * a.y * wz.y + _s * a.z * wz.z + 
+             s * b.x * wz.x +  s * b.y * wz.y +  s * b.z * wz.z + 
+             - e * wz - e.z;
+    double fax = r0[0] * a.x + r0[1] * a.y + r0[2] * a.z + r0[3] * b.x + r0[4] * b.y + r0[5] * b.z - q[0];
+    double fay = r1[0] * a.x + r1[1] * a.y + r1[2] * a.z + r1[3] * b.x + r1[4] * b.y + r1[5] * b.z - q[1];
+    double faz = r2[0] * a.x + r2[1] * a.y + r2[2] * a.z + r2[3] * b.x + r2[4] * b.y + r2[5] * b.z - q[2];
+    double fbx = r3[0] * a.x + r3[1] * a.y + r3[2] * a.z + r3[3] * b.x + r3[4] * b.y + r3[5] * b.z - q[3];
+    double fby = r4[0] * a.x + r4[1] * a.y + r4[2] * a.z + r4[3] * b.x + r4[4] * b.y + r4[5] * b.z - q[4];
+    double fbz = r5[0] * a.x + r5[1] * a.y + r5[2] * a.z + r5[3] * b.x + r5[4] * b.y + r5[5] * b.z - q[5];
+    Vector3d va = dfda ( a, b, o, u );
+    Vector3d vb = dfdb ( a, b, o, u );
+    //display << fbx << fby << fbz << NL;
+    display << va << NL;
+    display << _s*dx << _s*dy << _s*dz << NL;
+    //display << vb << NL;
+    //display << s*dx << s*dy << s*dz << NL;
+    }
 }
 
 } // namespace
 
 void vector3d_test ()
 {
-    _test();
+    run_test();
 //    plane3d_test ();
 //    ortho3d_test ();
 //    conform3d_test ();
