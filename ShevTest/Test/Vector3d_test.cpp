@@ -351,10 +351,12 @@ void run_test()
         return;
     const Vector3d sv = ( u * uv - v * uu ) / d;
     const Vector3d tv = ( u * vv - v * uv ) / d;
-    const Vector3d wx = v.x * sv - u.x * tv;
-    const Vector3d wy = v.y * sv - u.y * tv;
-    const Vector3d wz = v.z * sv - u.z * tv;
-    const Vector3d w_ ( wx.x + 1, wy.y + 1, wz.z + 1 );
+    Vector3d wx = v.x * sv - u.x * tv;
+    Vector3d wy = v.y * sv - u.y * tv;
+    Vector3d wz = v.z * sv - u.z * tv;
+    wx.x += 1;
+    wy.y += 1;
+    wz.z += 1;
     double mat[6][6] = {0,0,0,0,0,0,0,0,0,0,0,0,
                         0,0,0,0,0,0,0,0,0,0,0,0,
                         0,0,0,0,0,0,0,0,0,0,0,0};
@@ -373,16 +375,15 @@ void run_test()
         double * r3 = mat[3];
         double * r4 = mat[4];
         double * r5 = mat[5];
-        r0[0] += s00 * w_.x; r0[1] += s00 * wx.y; r0[2] += s00 * wx.z; r0[3] += s01 * w_.x; r0[4] += s01 * wx.y; r0[5] += s01 * wx.z;
-        r1[0] += s00 * wy.x; r1[1] += s00 * w_.y; r1[2] += s00 * wy.z; r1[3] += s01 * wy.x; r1[4] += s01 * w_.y; r1[5] += s01 * wy.z;
-        r2[0] += s00 * wz.x; r2[1] += s00 * wz.y; r2[2] += s00 * w_.z; r2[3] += s01 * wz.x; r2[4] += s01 * wz.y; r2[5] += s01 * w_.z;
-        r3[0] += s01 * w_.x; r3[1] += s01 * wx.y; r3[2] += s01 * wx.z; r3[3] += s11 * w_.x; r3[4] += s11 * wx.y; r3[5] += s11 * wx.z;
-        r4[0] += s01 * wy.x; r4[1] += s01 * w_.y; r4[2] += s01 * wy.z; r4[3] += s11 * wy.x; r4[4] += s11 * w_.y; r4[5] += s11 * wy.z;
-        r5[0] += s01 * wx.z; r5[1] += s01 * wz.y; r5[2] += s01 * w_.z; r5[3] += s11 * wz.x; r5[4] += s11 * wz.y; r5[5] += s11 * w_.z;
-        const Vector3d e = v * s + o;
-        const double ex = e * wx + e.x;
-        const double ey = e * wy + e.y;
-        const double ez = e * wz + e.z;
+        r0[0] += s00 * wx.x; r0[1] += s00 * wx.y; r0[2] += s00 * wx.z; r0[3] += s01 * wx.x; r0[4] += s01 * wx.y; r0[5] += s01 * wx.z;
+        r1[0] += s00 * wy.x; r1[1] += s00 * wy.y; r1[2] += s00 * wy.z; r1[3] += s01 * wy.x; r1[4] += s01 * wy.y; r1[5] += s01 * wy.z;
+        r2[0] += s00 * wz.x; r2[1] += s00 * wz.y; r2[2] += s00 * wz.z; r2[3] += s01 * wz.x; r2[4] += s01 * wz.y; r2[5] += s01 * wz.z;
+        r3[0] += s01 * wx.x; r3[1] += s01 * wx.y; r3[2] += s01 * wx.z; r3[3] += s11 * wx.x; r3[4] += s11 * wx.y; r3[5] += s11 * wx.z;
+        r4[0] += s01 * wy.x; r4[1] += s01 * wy.y; r4[2] += s01 * wy.z; r4[3] += s11 * wy.x; r4[4] += s11 * wy.y; r4[5] += s11 * wy.z;
+        r5[0] += s01 * wx.z; r5[1] += s01 * wz.y; r5[2] += s01 * wz.z; r5[3] += s11 * wz.x; r5[4] += s11 * wz.y; r5[5] += s11 * wz.z;
+        const double ex = wx * o;
+        const double ey = wy * o;
+        const double ez = wz * o;
         q[0] += ex * _s;
         q[1] += ey * _s;
         q[2] += ez * _s;
@@ -390,18 +391,6 @@ void run_test()
         q[4] += ey * s;
         q[5] += ez * s;
 
-        const double dx = _s * a.x + s * b.x + 
-            _s * a.x * wx.x + _s * a.y * wx.y + _s * a.z * wx.z + 
-             s * b.x * wx.x +  s * b.y * wx.y +  s * b.z * wx.z + 
-             - e * wx - e.x;
-        const double dy = _s * a.y + s * b.y +
-            _s * a.x * wy.x + _s * a.y * wy.y + _s * a.z * wy.z + 
-             s * b.x * wy.x +  s * b.y * wy.y +  s * b.z * wy.z + 
-             - e * wy - e.y;
-        const double dz = _s * a.z + s * b.z + 
-            _s * a.x * wz.x + _s * a.y * wz.y + _s * a.z * wz.z + 
-             s * b.x * wz.x +  s * b.y * wz.y +  s * b.z * wz.z + 
-             - e * wz - e.z;
     double fax = r0[0] * a.x + r0[1] * a.y + r0[2] * a.z + r0[3] * b.x + r0[4] * b.y + r0[5] * b.z - q[0];
     double fay = r1[0] * a.x + r1[1] * a.y + r1[2] * a.z + r1[3] * b.x + r1[4] * b.y + r1[5] * b.z - q[1];
     double faz = r2[0] * a.x + r2[1] * a.y + r2[2] * a.z + r2[3] * b.x + r2[4] * b.y + r2[5] * b.z - q[2];
@@ -410,11 +399,10 @@ void run_test()
     double fbz = r5[0] * a.x + r5[1] * a.y + r5[2] * a.z + r5[3] * b.x + r5[4] * b.y + r5[5] * b.z - q[5];
     Vector3d va = dfda ( a, b, o, u );
     Vector3d vb = dfdb ( a, b, o, u );
-    //display << fbx << fby << fbz << NL;
+    display << fax << fay << faz << NL;
     display << va << NL;
-    display << _s*dx << _s*dy << _s*dz << NL;
-    //display << vb << NL;
-    //display << s*dx << s*dy << s*dz << NL;
+    display << fbx << fby << fbz << NL;
+    display << vb << NL;
     }
 }
 
