@@ -2707,6 +2707,76 @@ void chol_test1()
     for ( nat i = 0; i < 5; ++i ) display << x[i] << c[i] << NL;
 }
 
+struct Node
+{
+    double value;
+    Node * cnext, * rnext;
+    nat ir, ic;
+};
+
+struct RowInfo
+{
+    Node * best;
+    nat index;
+    double coef;
+};
+
+struct NodeList
+{
+    Node * node;
+    nat size;
+};
+
+void func ( nat n, NodeList * rowList, NodeList * colList, double * b, double * x )
+{
+    DynArray<RowInfo> rowInfo ( n );
+    DynArray<Node *> row ( n ), col ( n );
+    DynArray<nat> irow ( n ), icol ( n );
+    for ( nat i = 0; i < n; ++i )
+    {
+        irow[i] = icol[i] = i;
+    }
+// Прямой ход
+    for ( nat i = 0; i < n; ++i )
+    {
+        nat ir = 0;
+        RowInfo & ri = rowInfo[ir];
+        Node * node = row[ir];
+        while ( node ) // Нормализация строки
+        {
+            node->value *= ri.coef;
+            node = node->cnext;
+        }
+        b[ir] *= ri.coef;
+        nat ic = 0;
+        node = col[ic];
+        while ( node ) // Вычитание строки
+        {
+            if ( node->ir != ir )
+            {
+                b[node->ir] -= b[ir] * node->value;
+                node->value *= ri.coef;
+                node = node->rnext;
+            }
+            // del node
+        }
+    }
+// Обратная подстановка
+    for ( nat i = 0; i < n; ++i )
+    {
+        const nat k = n - 1 - i;
+        const nat ir = irow[k];
+        const Node * node = row[ir];
+        double & r = x[icol[k]];
+        r = b[ir];
+        while ( node )
+        {
+            r -= x[node->ic] * node->value;
+            node = node->cnext;
+        }
+    }
+}
+
 } // namespace
 
 void math_test ()

@@ -2631,72 +2631,6 @@ static bool maxVolume ( const List< Vertex<9> > & vlist, Double<9> & best )
     return max > 0;
 }
 
-bool maxPolyhedronInConvexPolyhedronNM ( const Polyhedron & inner, const Polyhedron & outer, LinTran3d & res )
-{
-    CCArrRef<Vector3d> & vert = inner.vertex;
-    CCArrRef<Facet> & facet = outer.facet;
-    const double d = 99;
-    WireModel<9> model;
-    List< Vertex<9> > stor;
-    model.simplex ( d*9, stor );
-    model.vlist -= Double<9>().fill(d);
-    Double<10> g;
-time1=0, time2=0, time3=0, time4=0;
-    for ( nat i = 0; i < 120; ++i )
-    {
-double t0 = timeInSec();
-// ѕоиск максимального решени€
-        Double<9> best;
-//        if ( ! maxVolume ( model, best ) ) return false;
-        if ( ! maxVolume ( model.vlist, best ) ) return false;
-// ѕоиск максимального нарушени€ ограничений дл€ выбранного решени€
-double t1 = timeInSec();time1 += t1-t0;
-display << model.vlist.size() << t1-t0 << NL;
-        nat km;
-        Vector3d pm;
-        double max = 0.;
-        for ( nat j = 0; j < vert.size(); ++j )
-        {
-            const Vector3d & v = vert[j];
-            const Vector3d u ( best.d0*v.x + best.d1*v.y + best.d2*v.z,
-                               best.d3*v.x + best.d4*v.y + best.d5*v.z,
-                               best.d6*v.x + best.d7*v.y + best.d8*v.z );
-            for ( nat k = 0; k < facet.size(); ++k )
-            {
-                const double t = facet[k].plane % u;
-                if ( max < t ) max = t, pm = v, km = k;
-            }
-        }
-double t2 = timeInSec();time2 += t2-t1;
-// ≈сли нарушение мало, то завершение программы
-        if ( max < 1e-5 )
-        {
-            res.x = Vector3d ( best.d0, best.d1, best.d2 ), 
-            res.y = Vector3d ( best.d3, best.d4, best.d5 ), 
-            res.z = Vector3d ( best.d6, best.d7, best.d8 );
-//display << time1 << time2 << time3 << time4 << NL;
-            return true;
-        }
-//0.008 0.035 0.115 0 
-//display << i << max << model.vlist.size() << NL;
-// ѕрименение ограничени€ к области допустимых преобразований
-        const Vector3d & n = facet[km].plane.norm;
-        g.d0 = n.x * pm.x;
-        g.d1 = n.x * pm.y;
-        g.d2 = n.x * pm.z;
-        g.d3 = n.y * pm.x;
-        g.d4 = n.y * pm.y;
-        g.d5 = n.y * pm.z;
-        g.d6 = n.z * pm.x;
-        g.d7 = n.z * pm.y;
-        g.d8 = n.z * pm.z;
-        g.d9 = facet[km].plane.dist;
-        model.cut ( g, stor );
-double t3 = timeInSec();time3 += t3-t2;
-    }
-    return false;
-}
-
 typedef Set2<double, Double<9> > VolValue9;
 
 static bool maxVolume ( WireModelEx<9, VertexEx<9, VolValue9> > & model, Double<9> & best )
@@ -3808,12 +3742,20 @@ void maxCuboidInConvexPolyhedron_test()
 
 class D4 {};
 
-inline double operator * ( const D4 &, const Double<10> & b )
+inline double operator * ( const D4 &, const Double<4> & b )
 {
     return b.d0 + b.d1 + b.d2 + b.d3;
 }
 
-bool maxPolyhedronInConvexPolyhedron2 ( const Polyhedron & inner, const Polyhedron & outer, LinTran3d & lt )
+struct CoefAB
+{
+    double xyX, zxX, xtX;
+    double yzY, xyY, ytY;
+    double zxZ, yzZ, ztZ;
+    double xtT, ytT, ztT;
+};
+
+bool maxPolyhedronInConvexPolyhedron2 ( const Polyhedron & inner, const Polyhedron & outer, const CoefAB & c, LinTran3d & lt )
 {
     nat i;
     const nat nv = inner.vertex.size();
@@ -3843,36 +3785,30 @@ bool maxPolyhedronInConvexPolyhedron2 ( const Polyhedron & inner, const Polyhedr
         plane[i] =  ( outer.facet[i].plane );
     }
 // »нициализаци€ области допустимых преобразований
-    const nat N = 10;
+    const nat N = 4;
     Double<N> arr[N+1], cor;
     arr[0].fill ( 1 );
     arr[1].fill ( 0 );
     arr[2].fill ( 0 );
     arr[3].fill ( 0 );
     arr[4].fill ( 0 );
-    arr[5].fill ( 0 );
-    arr[6].fill ( 0 );
-    arr[7].fill ( 0 );
-    arr[8].fill ( 0 );
-    arr[9].fill ( 0 );
-    arr[10].fill ( 0 );
-    arr[1].d0 = arr[2].d1 = arr[3].d2 = arr[4].d3 = arr[5].d4 = arr[6].d5 = arr[7].d6 = arr[8].d7 = arr[9].d8 = arr[10].d9 = -1;
+    arr[1].d0 = arr[2].d1 = arr[3].d2 = arr[4].d3 = -1;
     const double eps = 1e-6;
     for ( i = 0; i < 400; ++i )
     {
 // ѕоиск максимального решени€
-        Double<10> & best = arr[0];
+        Double<N> & best = arr[0];
 // ѕоиск максимального нарушени€ ограничений дл€ выбранного решени€
         const double tt = best.d0;
         const double xx = best.d1;
         const double yy = best.d2;
         const double zz = best.d3;
-        const double xy = best.d4;
-        const double yz = best.d5;
-        const double zx = best.d6;
-        const double xt = best.d7;
-        const double yt = best.d8;
-        const double zt = best.d9;
+        const double xy = c.xyX * xx + c.xyY * yy;
+        const double yz = c.yzY * yy + c.yzZ * zz;
+        const double zx = c.zxZ * zz + c.zxX * xx;
+        const double xt = c.xtX * xx + c.xtT * tt;
+        const double yt = c.ytY * yy + c.ytT * tt;
+        const double zt = c.ztZ * zz + c.ztT * tt;
         lt.x.x = tt + xx - yy - zz; lt.x.y = xy - zt;           lt.x.z = zx + yt;
         lt.y.x = xy + zt;           lt.y.y = tt + yy - zz - xx; lt.y.z = yz - xt;
         lt.z.x = zx - yt;           lt.z.y = yz + xt;           lt.z.z = tt + zz - xx - yy;
@@ -3911,16 +3847,23 @@ bool maxPolyhedronInConvexPolyhedron2 ( const Polyhedron & inner, const Polyhedr
         const double nzx = n.z * v.x;
         const double nzy = n.z * v.y;
         const double nzz = n.z * v.z;
-        cor.d0 = nxx + nyy + nzz;
-        cor.d1 = nxx - nyy - nzz;
+        /*
+             1; -c.ztT;  c.ytT;
+         c.ztT;      1; -c.xtT;
+        -c.ytT;  c.xtT;      1;
+        
+            1; c.xyX;  c.zxX;
+        c.xyX;    -1; -c.xtX;
+        c.zxX; c.xtX;     -1;
+
+        lt.x.x = tt + xx - yy - zz; lt.x.y = xy - zt;           lt.x.z = zx + yt;
+        lt.y.x = xy + zt;           lt.y.y = tt + yy - zz - xx; lt.y.z = yz - xt;
+        lt.z.x = zx - yt;           lt.z.y = yz + xt;           lt.z.z = tt + zz - xx - yy;
+        */
+        cor.d0 = nxx + nyy + nzz + c.xtT * ( nzy - nyz ) + c.ytT * ( nxz - nzx ) + c.ztT * ( nyx - nxy );
+        cor.d1 = nxx - nyy - nzz + c.xyX * ( nxy + nyx ) + c.zxX * ( nxz + nzx ) + c.xtX * ( nzy - nyz );
         cor.d2 = nyy - nzz - nxx;
         cor.d3 = nzz - nxx - nyy;
-        cor.d4 = nxy + nyx;
-        cor.d5 = nyz + nzy;
-        cor.d6 = nzx + nxz;
-        cor.d7 = nzy - nyz;
-        cor.d8 = nxz - nzx;
-        cor.d9 = nyx - nxy;
 //double t = cor * best + plane[km].dist; t -= max;
         if ( ! cutSimplex ( arr, D4(), cor, max ) )
             return false;
@@ -3946,8 +3889,9 @@ void maxPolyhedronInConvexPolyhedron2_test()
 //        display << k << NL;
         draw ( outer, 0, 1, 1, 0, VM_WIRE );
         LinTran3d lt;
+        CoefAB c;
         double t1 = timeInSec();
-        if ( ! maxPolyhedronInConvexPolyhedron2 ( inner, outer, lt ) )
+        if ( ! maxPolyhedronInConvexPolyhedron2 ( inner, outer, c, lt ) )
         {
             display << "error" << NL;
         }

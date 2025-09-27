@@ -143,13 +143,65 @@ void area_test ()
     display << fig.getArea() << NL;
 }
 
+double sfunc ( const Vector2d & a, const Vector2d & b, const Vector2d & o )
+{
+    const Vector2d v = b - a;
+    const double d = v * v;
+    if ( ! d )
+        return 0;
+    return ( o - a ) * v / d;
+}
+
+Vector2d dsda ( const Vector2d & a, const Vector2d & b, const Vector2d & o )
+{
+    double e = 1e-4;
+    Vector2d v = a;
+    double f0 = sfunc ( v, b, o );
+    v.x += e;
+    double fx = sfunc ( v, b, o );
+    v.x -= e;
+    v.y += e;
+    double fy = sfunc ( v, b, o );
+    return Vector2d ( fx-f0, fy-f0 ) / e;
+}
+
+Vector2d dsdb ( const Vector2d & a, const Vector2d & b, const Vector2d & o )
+{
+    double e = 1e-4;
+    Vector2d v = b;
+    double f0 = sfunc ( a, v, o );
+    v.x += e;
+    double fx = sfunc ( a, v, o );
+    v.x -= e;
+    v.y += e;
+    double fy = sfunc ( a, v, o );
+    return Vector2d ( fx-f0, fy-f0 ) / e;
+}
+
+void run_test()
+{
+    static PRandVector2d rand;
+    const Vector2d a = rand();
+    const Vector2d b = rand();
+    const Vector2d o = rand();
+    const Vector2d v = b - a;
+    const Vector2d u = o - a;
+    const Vector2d v1 = v / (v*v);
+    const Vector2d u1 = u / (v*v);
+    double s = sfunc ( a, b, o );
+    display << b * ( u1 - 2 * s * v1 ) - a * ( u1 + v1 - 2 * s * v1 ) + s + o * v1 << sfunc ( a, b, o ) << NL;
+//    display << - ( u + v - 2 * s * v ) / (v*v) << NL << dsda ( a, b, o ) << NL;
+//    display << ( u - 2 * s * v ) / (v*v) << NL << dsdb ( a, b, o ) << NL;
+}
+
 } // namespace
 
 void vector2d_test ()
 {
+    run_test();
 //    spin2d_test2();
 //    conform2d_test();
 //    affin2d_test ();
-    perimeter_test ();
+//    perimeter_test ();
 //    area_test ();
 }

@@ -383,13 +383,34 @@ double funcD ( double x )
     return s;
 }
 
-double func1 ( double x )
+double func1 (  MuFunc & mu, double x )
 {
     double s = 0;
-    for ( nat n = 0; n <= 30; n+=1 )
+    for ( nat n = 1; n <= 40000; n+=1 )
     {
-        double t = funcD ( (1 + 2*n) * x );
-        if ( n % 2 == 1 )
+        s += mu(n) * exp ( -M_2PI * x / n ) / n;
+    }
+    return M_PI * s;
+}
+
+double func2 ( MuFunc & mu, double x )
+{
+    double s = 0;
+    for ( nat n = 1; n <= 40000; n+=1 )
+    {
+        double t = n * x;
+        s += mu(n) * t / ( 1 + t*t );
+    }
+    return s;
+}
+
+double func3 ( double x )
+{
+    double s = 0;
+    for ( nat n = 3; n <= 20; n+=2 )
+    {
+        double t = 1 / ( zeta ( n ) * pow ( x, n ) );
+        if(n%4==1 )
             s += t;
         else
             s -= t;
@@ -397,43 +418,13 @@ double func1 ( double x )
     return s;
 }
 
-double func2 ( MuFunc & mu )
-{
-    double s = 0;
-    for ( nat n = 1; n <= 40000; n+=1 )
-    {
-        double t = _pow2 ( 1./ n );
-        if(n%3==0 ) continue;
-        s += mu(n) * t;
-    }
-display << 27/(4*M_PI*M_PI ) / s << NL;
-//display << -3/(4*M_PI*M_PI ) << s << NL;
-    return s;
-}
-
-double func3 ()
-{
-    double s = 0;
-    for ( nat n = 2; n <= 40000; n+=4 )
-    {
-        //if(n%3==0 ) continue;
-        double t = _pow2 ( 1./ (n) );
-        if(n%3==2 )
-            s += t;
-        else
-            s += t;
-    }
-display << s <<M_PI*M_PI/32 << NL;
-    return s;
-}
-
 void func_test()
 {
     MuFunc mu;
-    for ( int i = 1; i < 100; i+=1 )
+    for ( int i = 5; i < 20; i+=1 )
     {
-        double x = -i;
-        display << x << funcD (x) <<NL;
+        double x = i;
+        display << x << func1 ( mu, x ) << func2 ( mu, x ) << func3 (x) << NL;
         //printf ( display.file, "%d %.4e\n", i, s );
     }
     //display << pow (0.9,50)<<pow (0.9,30)<<NL;

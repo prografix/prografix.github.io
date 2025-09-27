@@ -1449,7 +1449,7 @@ void splitPolygon_test()
 
 void splitPolygon_test2 ()
 {
-    const char * filename = "data/cont 99.txt";
+    const char * filename = "data/cont 99mod.txt";
 //     const char * filename = "data/cont 707.txt";
     RealFile file ( filename, "r" );
     if ( ! file.isValid() )
@@ -1458,10 +1458,12 @@ void splitPolygon_test2 ()
         return;
     }
     nat32 nv;
+    Suite<int32> coor;
     Suite<Vector2d> vert;
     Suite<DynArray<Vector2d> > poly;
     while ( readIntDec ( file, nv ) )
     {
+        coor.resize();
         vert.resize ( nv );
         int32 x, y;
         nat32 i;
@@ -1470,6 +1472,8 @@ void splitPolygon_test2 ()
             if ( ! readIntDec ( file, x ) || ! readIntDec ( file, y ) ) break;
             vert[i].x = x/400.-1;
             vert[i].y = y/400.-0.7;
+            coor.inc() = x;
+            coor.inc() = y;
         }
         if ( i != nv )
         {
@@ -1482,6 +1486,12 @@ void splitPolygon_test2 ()
 //display << area ( vert ) << NL;
             //drawPolygon ( vert, 0, 1, 1 );
             poly.inc() = vert;
+            if ( 0 )
+            {
+                display << nv;
+                for ( i = 0; i < coor.size(); ++i ) display << coor[i];
+                display << NL;
+            }
         }
     }
     poly.reverse();
@@ -1501,9 +1511,9 @@ void splitPolygon_test2 ()
     const Vector2d * p = vert();
     for ( i = 0; i < cntr.size(); ++i )
     {
-        drawPolygon ( CArrRef<Vector2d>(p, cntr[i]), 0, 1, 1 );
+        if ( cntr[i] != 40 ) drawPolygon ( CArrRef<Vector2d>(p, cntr[i]), 0, 1, 1 );
         p += cntr[i];
-    }
+    }return;
     Suite<nat> cntr2;
     Suite<nat> index;
     splitPolygon ( cntr, vert, cntr2, index );
@@ -1526,10 +1536,10 @@ using namespace Test;
 void trian2d_test ()
 {
     drawNewList2d();
-    trian_test4();
+//    trian_test4();
 //    convexParts_test2();
 //    trianSeidel_test2();
 //    trianSweepLine_test();
-//    splitPolygon_test();
+    splitPolygon_test2();
     endNewList();
 }
