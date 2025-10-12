@@ -235,7 +235,7 @@ void CMainFrame::OnTest()
 //    testBlackRing();
 //    compress_test();
 //    shevlist_test();
-    vector2d_test();
+//    vector3d_test();
 //    complex_test();
 //    trian2d_test();
 //    func2d_test();
@@ -246,7 +246,7 @@ void CMainFrame::OnTest()
 //    array_test();
 //    calc_test();
 //    file_test();
-//    math_test();
+    math_test();
 //    rand_test();
 //    tree_test();
 //    filePYH_test();

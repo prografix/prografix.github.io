@@ -2024,7 +2024,7 @@ inline void _swap ( SortItem<nat, Set2<nat> *> & p1, SortItem<nat, Set2<nat> *> 
     const SortItem<nat, Set2<nat> *> p ( p1 );
     p1 = p2;
     p2 = p;
-    ::_swap ( p1.tail->a, p2.tail->a );
+    ::_swap ( p1.tail->b, p2.tail->b );
 }
 
 bool sluGaussRowO ( nat n, Suite<SortItem<nat, double> > * a, double * b, double * x )
@@ -2034,7 +2034,6 @@ bool sluGaussRowO ( nat n, Suite<SortItem<nat, double> > * a, double * b, double
     DynArray<Suite<nat> > col ( n );
     DynArray<nat> icol ( 2*n );
     nat * irow = icol ( n );
-//    nat sum = 0;
 // Запись номеров строк в массив столбцов
     for ( i = 0; i < n; ++i )
     {
@@ -2045,10 +2044,13 @@ bool sluGaussRowO ( nat n, Suite<SortItem<nat, double> > * a, double * b, double
     }
  // Запись строк в очередь
     DynArray<Set2<nat>> hd ( n );
-    for ( i = 0; i < n; ++i )
+    for ( k = 0; k < n; ++k )
     {
-        CCArrRef<SortItem<nat, double> > & row = a[i];
-        // Поиск максимального по модулю члена в строке
+        // Проверка столбцов
+        if ( ! col[k].size() )
+            return false;
+        // Поиск максимального по модулю элемента в строке
+        CCArrRef<SortItem<nat, double> > & row = a[k];
         nat im = 0;
         double max = fabs ( row[0].tail );
         for ( i = 1; i < row.size(); ++i )
@@ -2058,25 +2060,23 @@ bool sluGaussRowO ( nat n, Suite<SortItem<nat, double> > * a, double * b, double
         if ( ! max )
             return false;
         // Запись в очередь
-        nat nc = col[row[im].head].size();
-        if ( ! nc )
-            return false;
-        hd[i].a = i;
-        hd[i].b = im;
-        heap << SortItem<nat, Set2<nat> *> ( row.size() * --nc, hd(i) );
+        hd[k].a = im;
+        hd[k].b = k;
+        const nat nc = col[row[im].head].size();
+        heap << SortItem<nat, Set2<nat> *> ( row.size() * nc, hd(k) );
     }
 // Прямой ход
-    DynArray<bool> flag ( n, false );
-    Suite<SortItem<nat, double> > tmp;
+//    DynArray<bool> flag ( n, false );
+    Suite<SortItem<nat, double> > rtmp;
+//    Suite<nat> itmp;
     for ( k = 0; k < n; ++k )
     {
         SortItem<nat, Set2<nat> *> si;
         heap >> si;
-//sum += si.head;
         const nat ir = irow[k] = si.tail - hd();
-        flag[ir] = true;
+//        flag[ir] = true;
         Suite<SortItem<nat, double> > & rk = a[ir];
-        nat im = si.tail->b; // максимальный по модулю элемент в строке
+        nat im = si.tail->a; // максимальный по модулю элемент в строке
 //display << k << max << NL;
         const nat kk = icol[ir] = rk[im].head;
 // Нормализация строки
@@ -2084,12 +2084,26 @@ bool sluGaussRowO ( nat n, Suite<SortItem<nat, double> > * a, double * b, double
         const double p = 1. / rk[im].tail;
         for ( i = 0; i < nc; ++i ) rk[i].tail *= p;
         b[ir] *= p;
+// Удаление индексов текущей строки
+        for ( i = 0; i < rk.size(); ++i )
+        {
+            Suite<nat> & ci = col[rk[i].head];
+            for ( j = 0; j < ci.size(); ++j )
+            {
+                if ( ci[j] == ir )
+                {
+                    ci.del ( j );
+                    break;
+                }
+            }
+        }
 // Вычитание строк
-        CCArrRef<nat> & ck = col[kk];
+        Suite<nat> & ck = col[kk];
         for ( j = 0; j < ck.size(); ++j )
         {
             const nat jj = ck[j];
-            if ( flag[jj] ) continue;
+//            if ( flag[jj] ) continue;
+//            itmp.inc() = jj;
             Suite<SortItem<nat, double> > & rj = a[jj];
             const nat ii = lasEqu123 ( rj, SortItem<nat, double> ( kk ) );
 if ( ii == rj.size() )
@@ -2102,73 +2116,91 @@ if ( ii == rj.size() )
                     for (; ik < rk.size(); ++ik )
                     {
                         SortItem<nat, double> & ek = rk[ik];
-                        tmp.inc() = SortItem<nat, double> ( ek.head, - t * ek.tail );
+                        rtmp.inc() = SortItem<nat, double> ( ek.head, - t * ek.tail );
                         col[ek.head].inc() = jj;
                     }
                     break;
                 }
                 if ( ik == rk.size() )
                 {
-                    for (; ij < rj.size(); ++ij ) tmp.inc() = rj[ij];
+                    for (; ij < rj.size(); ++ij ) rtmp.inc() = rj[ij];
                     break;
                 }
                 SortItem<nat, double> & ek = rk[ik];
                 SortItem<nat, double> & ej = rj[ij];
                 if ( ek.head < ej.head )
                 {
-                    tmp.inc() = SortItem<nat, double> ( ek.head, - t * ek.tail );
+                    rtmp.inc() = SortItem<nat, double> ( ek.head, - t * ek.tail );
                     col[ek.head].inc() = jj;
                     ++ik;
                 }
                 else
                 if ( ek.head > ej.head )
                 {
-                    tmp.inc() = ej;
+                    rtmp.inc() = ej;
                     ++ij;
                 }
                 else
                 {
                     if ( ek.head != kk )
-                        tmp.inc() = SortItem<nat, double> ( ek.head, ej.tail - t * ek.tail );
+                        rtmp.inc() = SortItem<nat, double> ( ek.head, ej.tail - t * ek.tail );
                     ++ik;
                     ++ij;
                 }
             }
-            rj.swap ( tmp );
-            tmp.resize();
-            nat & head = heap[hd[jj].a]->head;
-            if ( head != rj.size() )
-            {
-                if ( head < rj.size() )
-                {
-                    head = rj.size();
-                    heap.down ( hd[ir].a );
-                }
-                else
-                {
-                    head = rj.size();
-                    heap.raise ( hd[ir].a );
-                }
-            }
+            rj.swap ( rtmp );
+            rtmp.resize();
             b[jj] -= t * b[ir];
         }
         rk.delAndShift ( im );
+// Изменения в очереди
+        for ( j = 0; j < ck.size(); ++j )
+        {
+            const nat jj = ck[j];
+            Suite<SortItem<nat, double> > & rj = a[jj];
+            // Поиск максимального по модулю элемента в строке
+            nat im = 0;
+            double max = fabs ( rj[0].tail );
+            for ( i = 1; i < rj.size(); ++i )
+            {
+                if ( _maxa ( max, fabs ( rj[i].tail ) ) ) im = i;
+            }
+            if ( ! max )
+                return false;
+            Set2<nat> & p = hd[jj];
+            p.a = im;
+            // Передвинем элемент в очереди, если нужно
+            const nat head2 = rj.size() * col[rj[im].head].size();
+            nat & head = heap[p.a]->head;
+            if ( head != head2 )
+            {
+                if ( head < head2 )
+                {
+                    head = head2;
+                    heap.down ( p.b );
+                }
+                else
+                {
+                    head = head2;
+                    heap.raise ( p.b );
+                }
+            }
+        }
+//        itmp.resize();
     }
 // Обратная подстановка
     for ( j = 0; j < n; ++j )
     {
-        const nat kk = irow[n-1-j];
-        CCArrRef<SortItem<nat, double> > & rj = a[kk];
-        double & r = x[icol[kk]];
-        r = b[kk];
-//sum += rj.size();
+        k = irow[n-1-j];
+        CCArrRef<SortItem<nat, double> > & rj = a[k];
+        double & r = x[icol[k]];
+        r = b[k];
         for ( i = 0; i < rj.size(); ++i )
         {
             const SortItem<nat, double> & ei = rj[i];
             r -= x[ei.head] * ei.tail;
         }
     }
-//display << sum << NL;
     return true;
 }
 
@@ -2803,6 +2835,6 @@ void math_test ()
 //    minNorm_test3();
 //    log_test ();
 //    slu_gauss_test();
-//    sluGaussRow_test1();
-    chol_test1();
+    sluGaussRow_test2();
+//    chol_test1();
 }
