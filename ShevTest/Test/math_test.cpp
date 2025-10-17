@@ -2062,13 +2062,14 @@ bool sluGaussRowO ( nat n, Suite<SortItem<nat, double> > * a, double * b, double
         // Запись в очередь
         hd[k].a = im;
         hd[k].b = k;
-        const nat nc = col[row[im].head].size();
-        heap << SortItem<nat, Set2<nat> *> ( row.size() * nc, hd(k) );
+        //const nat nc = col[row[im].head].size();
+        heap << SortItem<nat, Set2<nat> *> ( row.size(), hd(k) );
     }
 // Прямой ход
 //    DynArray<bool> flag ( n, false );
     Suite<SortItem<nat, double> > rtmp;
 //    Suite<nat> itmp;
+    double time1=0, time2=0, time3=0;
     for ( k = 0; k < n; ++k )
     {
         SortItem<nat, Set2<nat> *> si;
@@ -2076,9 +2077,9 @@ bool sluGaussRowO ( nat n, Suite<SortItem<nat, double> > * a, double * b, double
         const nat ir = irow[k] = si.tail - hd();
 //        flag[ir] = true;
         Suite<SortItem<nat, double> > & rk = a[ir];
-        nat im = si.tail->a; // максимальный по модулю элемент в строке
-//display << k << max << NL;
+        const nat im = si.tail->a; // максимальный по модулю элемент в строке
         const nat kk = icol[ir] = rk[im].head;
+display << si.head << rk.size() << NL;
 // Нормализация строки
         const nat nc = rk.size();
         const double p = 1. / rk[im].tail;
@@ -2101,6 +2102,7 @@ bool sluGaussRowO ( nat n, Suite<SortItem<nat, double> > * a, double * b, double
         Suite<nat> & ck = col[kk];
         for ( j = 0; j < ck.size(); ++j )
         {
+double t1 = timeInSec();
             const nat jj = ck[j];
 //            if ( flag[jj] ) continue;
 //            itmp.inc() = jj;
@@ -2109,6 +2111,7 @@ bool sluGaussRowO ( nat n, Suite<SortItem<nat, double> > * a, double * b, double
 if ( ii == rj.size() )
     return false;
             const double t = rj[ii].tail;
+double t2 = timeInSec();
             for ( nat ij = 0, ik = 0;; )
             {
                 if ( ij == rj.size() )
@@ -2151,6 +2154,10 @@ if ( ii == rj.size() )
             rj.swap ( rtmp );
             rtmp.resize();
             b[jj] -= t * b[ir];
+double t3 = timeInSec();
+//time1 += t1-t0;
+time2 += t2-t1;
+time3 += t3-t2;
         }
         rk.delAndShift ( im );
 // Изменения в очереди
@@ -2170,7 +2177,7 @@ if ( ii == rj.size() )
             Set2<nat> & p = hd[jj];
             p.a = im;
             // Передвинем элемент в очереди, если нужно
-            const nat head2 = rj.size() * col[rj[im].head].size();
+            const nat head2 = rj.size();// * col[rj[im].head].size();
             nat & head = heap[p.a]->head;
             if ( head != head2 )
             {
@@ -2186,7 +2193,7 @@ if ( ii == rj.size() )
                 }
             }
         }
-//        itmp.resize();
+        ck.resize(); // ?
     }
 // Обратная подстановка
     for ( j = 0; j < n; ++j )
@@ -2201,6 +2208,7 @@ if ( ii == rj.size() )
             r -= x[ei.head] * ei.tail;
         }
     }
+//display << time1 << time2 << time3 << NL;
     return true;
 }
 
@@ -2208,7 +2216,7 @@ void sluGaussRow_test1()
 {
     static PNormalRand rand;
 //    static PRand rand;
-    const nat n = 400;
+    const nat n = 4;
     double c[n], x[n], b[n];
     for ( nat i = 0; i < n; ++i ) c[i] = rand();
     Suite<SortItem<nat, double>> a[n];
@@ -2217,22 +2225,27 @@ void sluGaussRow_test1()
         Suite<SortItem<nat, double>> & ai = a[i];
         for ( nat j = 0; j < n; ++j )
         {
-            if ( j > i ) continue;
-            double t = rand();
-            if ( i != j && fabs ( t ) < 1.8 )
+            if ( j > i )
             {
-//display << "0";
+display << "0";
                 continue;
             }
- //display << t;
+            double t = rand();
+            if ( i != j && fabs ( t ) < 0.8 )
+            {
+display << "0";
+                continue;
+            }
+ display << t;
             ai.inc() = SortItem<nat, double> ( j, t );
             if ( i == j )
                 ai.las().tail += 1;
-            else
-                a[j].inc() = SortItem<nat, double> ( i, t );
+            //else
+               // a[j].inc() = SortItem<nat, double> ( i, t );
         }
-//display << NL;
+display << NL;
     }
+display << NL;
     nat k = 0;
     for ( nat i = 0; i < n; ++i )
     {
@@ -2245,9 +2258,9 @@ void sluGaussRow_test1()
         }
         k += ai.size();
     }
-display << k << n*n << NL;
+//display << k << n*n << NL;
 double t0 = timeInSec();
-    if ( sluGaussRow ( n, a, b, x ) )
+    if ( sluGaussRowO ( n, a, b, x ) )
 //    if ( slu_LDLt ( n, a, b, x ) )
     {
 double t1 = timeInSec();
@@ -2263,8 +2276,28 @@ double t1 = timeInSec();
         display << "no" << NL;
 }
 
+inline void swap_int ( int & i1, int & i2 )
+{
+    const int i ( i1 );
+    i1 = i2;
+    i2 = i;
+}
+
+template <class T, void (swap_func) ( T & i1, T & i2 ) = ::_swap<T> > class tr
+{
+public:
+    void func ()
+    {
+        T k1 = 1, k2 = 2;
+        swap_func ( k1, k2 );
+        display << k1 << k2 << NL;
+    }
+};
+
 void sluGaussRow_test2()
 {
+//    tr<int> t;
+//    t.func();
     double c[5];
     c[0] = 1; c[1] = 1./2; c[2] = 1./3; c[3] = 1./4; c[4] = 1./5;
     Suite<SortItem<nat, double>> a[5];
@@ -2739,76 +2772,6 @@ void chol_test1()
     for ( nat i = 0; i < 5; ++i ) display << x[i] << c[i] << NL;
 }
 
-struct Node
-{
-    double value;
-    Node * cnext, * rnext;
-    nat ir, ic;
-};
-
-struct RowInfo
-{
-    Node * best;
-    nat index;
-    double coef;
-};
-
-struct NodeList
-{
-    Node * node;
-    nat size;
-};
-
-void func ( nat n, NodeList * rowList, NodeList * colList, double * b, double * x )
-{
-    DynArray<RowInfo> rowInfo ( n );
-    DynArray<Node *> row ( n ), col ( n );
-    DynArray<nat> irow ( n ), icol ( n );
-    for ( nat i = 0; i < n; ++i )
-    {
-        irow[i] = icol[i] = i;
-    }
-// Прямой ход
-    for ( nat i = 0; i < n; ++i )
-    {
-        nat ir = 0;
-        RowInfo & ri = rowInfo[ir];
-        Node * node = row[ir];
-        while ( node ) // Нормализация строки
-        {
-            node->value *= ri.coef;
-            node = node->cnext;
-        }
-        b[ir] *= ri.coef;
-        nat ic = 0;
-        node = col[ic];
-        while ( node ) // Вычитание строки
-        {
-            if ( node->ir != ir )
-            {
-                b[node->ir] -= b[ir] * node->value;
-                node->value *= ri.coef;
-                node = node->rnext;
-            }
-            // del node
-        }
-    }
-// Обратная подстановка
-    for ( nat i = 0; i < n; ++i )
-    {
-        const nat k = n - 1 - i;
-        const nat ir = irow[k];
-        const Node * node = row[ir];
-        double & r = x[icol[k]];
-        r = b[ir];
-        while ( node )
-        {
-            r -= x[node->ic] * node->value;
-            node = node->cnext;
-        }
-    }
-}
-
 } // namespace
 
 void math_test ()
@@ -2835,6 +2798,6 @@ void math_test ()
 //    minNorm_test3();
 //    log_test ();
 //    slu_gauss_test();
-    sluGaussRow_test2();
+    sluGaussRow_test1();
 //    chol_test1();
 }
