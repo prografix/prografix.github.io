@@ -195,6 +195,8 @@ public:
         d0 = p0; d1 = p1; d2 = p2; d3 = p3; d4 = p4; d5 = p5;
         return *this;
     }
+
+    double & las() { return d5; }
 };
 
 inline
@@ -251,9 +253,16 @@ template <> class Double<7>
 {
 public:
     double d0, d1, d2, d3, d4, d5, d6;
+
     Double<7> & fill ( double d )
     {
         d0 = d1 = d2 = d3 = d4 = d5 = d6 = d;
+        return *this;
+    }
+
+    Double<7> & init ( double p0, double p1, double p2, double p3, double p4, double p5, double p6 )
+    {
+        d0 = p0; d1 = p1; d2 = p2; d3 = p3; d4 = p4; d5 = p5; d6 = p6;
         return *this;
     }
 };
@@ -501,6 +510,13 @@ Double<10> & operator *= ( Double<10> & a, const double & b )
 }
 
 inline
+double operator * ( const Double<10> & a, const Double<10> & b )
+{
+    return a.d0 * b.d0 + a.d1 * b.d1 + a.d2 * b.d2 + a.d3 * b.d3 + a.d4 * b.d4 + 
+           a.d5 * b.d5 + a.d6 * b.d6 + a.d7 * b.d7 + a.d8 * b.d8 + a.d9 * b.d9;
+}
+
+inline
 double operator % ( const Double<10> & a, const Double<9> & b )
 {
     return a.d0 * b.d0 + a.d1 * b.d1 + a.d2 * b.d2 + a.d3 * b.d3 + a.d4 * b.d4 + 
@@ -529,4 +545,74 @@ template <unsigned int N> inline
 Double<N> operator * ( const Double<N> & a, const double & b )
 {
     return Double<N>(a) *= b;
+}
+
+template <unsigned int N>
+bool cutSimplex ( Double<N> * simplex, const Double<N> & norm, const double & dist )
+{
+    double sg, min;
+    unsigned int i, ib = 0;
+    for ( i = 1; i <= N; ++i )
+    {
+        const Double<N> & v = simplex[i];
+        double t = norm * v;
+        if ( t > -1e-8 ) continue;
+        t = 1./ t;
+        if ( ib == 0 )
+        {
+            min = v.d0 * t;
+            ib = i;
+            sg = t;
+        }
+        else
+        {
+            const double s = v.d0 * t;
+            if ( s < min ) min = s, ib = i, sg = t;
+        }
+    }
+    if ( ib == 0 )
+        return false;
+    const Double<N> & v = simplex[ib];
+    simplex[0] -= v * ( dist * sg );
+    for ( i = 1; i <= N; ++i )
+    {
+        if ( i == ib ) continue;
+        Double<N> & ai = simplex[i];
+        ai -= v * ( ( norm * ai ) * sg );
+        ai *= ( 1./ sqrt ( ai * ai ) );
+    }
+    return true;
+}
+
+template <unsigned int N, class F>
+bool cutSimplex ( Double<N> * simplex, const F & func, const Double<N> & norm, const double & dist )
+{
+    double sg, min = 0;
+    unsigned int i, ib = 0;
+    for ( i = 1; i <= N; ++i )
+    {
+        const Double<N> & v = simplex[i];
+        double t = norm * v;
+        if ( t > -1e-8 ) continue;
+        t = 1./ t;
+        const double s = ( func * v ) * t;
+        if ( ib == 0 || s < min )
+        {
+            min = s;
+            ib = i;
+            sg = t;
+        }
+    }
+    if ( ib == 0 )
+        return false;
+    const Double<N> & v = simplex[ib];
+    simplex[0] -= v * ( dist * sg );
+    for ( i = 1; i <= N; ++i )
+    {
+        if ( i == ib ) continue;
+        Double<N> & ai = simplex[i];
+        ai -= v * ( ( norm * ai ) * sg );
+        ai *= ( 1./ sqrt ( ai * ai ) );
+    }
+    return true;
 }

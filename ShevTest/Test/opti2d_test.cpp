@@ -2517,14 +2517,14 @@ void opti2d_test ()
 //    maxRectangleInConvexPolygon_test();
 //    maxRectangleInPolygon_test();
 //    minEllipseAroundPointsAP_test3();
-//    maxEllipseInConvexPolygon_test2();
+    maxEllipseInConvexPolygon_test2();
 //    maxFixEllipseInConvexPolygon_test();
 //    maxFixEllipseInPolygon_test();
 //    maxEllipseInPolygon_test();
 //    maxCircle_correct_test();
 //    maxCircle_time_test();
 //    maxCircleInPolygon_test4();
-    maxAffinPolygonInConvexPolygon_test();
+//    maxAffinPolygonInConvexPolygon_test();
 //    maxConvexPolygonInPolygon_test3();
 //    minConvexPolygonDiameter_test2();
 //    minCircleAroundPoints_test();

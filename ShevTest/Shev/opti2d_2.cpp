@@ -1000,11 +1000,9 @@ struct Edge
     nat prev, next, index;
 };
 
-inline void _swap ( SortItem<double, Edge *> & p1, SortItem<double, Edge *> & p2 )
+inline void edg_swap ( SortItem<double, Edge *> & p1, SortItem<double, Edge *> & p2 )
 {
-    const SortItem<double, Edge *> p ( p1 );
-    p1 = p2;
-    p2 = p;
+    _swap ( p1, p2 );
     _swap ( p1.tail->index, p2.tail->index );
 }
 
@@ -1217,7 +1215,7 @@ Def<Ellipse> maxEllipseInConvexPolygon ( ArrRef<Edge> & edge )
     Def<Ellipse> res;
     const nat n = edge.size();
 // Находим простейший замкнутый  трёх- или чётырёхугольник
-    MinHeap< SortItem<double, Edge*> > heap ( n );
+    MinHeap<SortItem<double, Edge*>, edg_swap> heap ( n );
     nat i;
     for ( i = 0; i < n; ++i )
     {

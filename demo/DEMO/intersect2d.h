@@ -1,6 +1,5 @@
 
-#ifndef INTERSECT2D_H
-#define INTERSECT2D_H
+#pragma once
 
 #include "ShevArray.h"
 #include "Vector2d.h"
@@ -197,7 +196,13 @@ intersect1c ( CArrRef<Vector2d> conv, CArrRef<Vector2d> poly, Suite< Suite<Vecto
 //
 //**************************** 23.05.2012 *********************************//
 
-bool intersection ( CArrRef<Vector2d> poly1, CArrRef<Vector2d> poly2, Suite< Suite<Vector2d> > & res );
+bool intersection ( CCArrRef<Vector2d> & poly1, CCArrRef<Vector2d> & poly2, Suite< Suite<Vector2d> > & res );
 
 
-#endif
+//**************************** 24.11.2023 *********************************//
+//
+//           Пересечение полуплоскостей содержащих центр координат
+//
+//**************************** 15.12.2023 *********************************//
+
+bool intersectHalfPlanes ( CCArrRef<Line2d> & line, DynArrRef<Vector2d> & poly );

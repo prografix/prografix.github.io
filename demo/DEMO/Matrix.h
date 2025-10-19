@@ -224,4 +224,149 @@ double normU ( const IMatrix<double> & ); // бесконечная норма
 
 // Cингулярное разложение: A = U * W * V
 
-bool svd ( const IMatrix<double> & A, IMatrix<double> & U, IMatrix<double> & W, IMatrix<double> & V ); 
+bool svd ( const IMatrix<double> & A, IMatrix<double> & U, IMatrix<double> & W, IMatrix<double> & V );
+
+
+//*********************** 10.02.2024 ************************//
+//
+//                   Динамическая матрица
+//
+//*********************** 10.02.2024 ************************//
+
+template <class Type> class DMatrix
+{
+    Type * data;
+    Type ** row;
+    nat nRow; // к-во строк
+    nat nCol; // к-во столбцов
+public:
+    DMatrix () : nRow(0), nCol(0), row(0), data(0) {}
+
+    DMatrix ( nat r, nat c ) : nRow(r), nCol(c)
+    {
+        if ( nRow > 0 )
+        {
+            row = new Type*[nRow];
+            if ( nCol > 0 )
+            {
+                row[0] = data = new Type[nRow*nCol];
+                for ( nat i = 1; i < nRow; ++i ) row[i] = row[i-1] + nCol;
+            }
+            else
+            {
+                data = 0;
+                for ( nat i = 0; i < nRow; ++i ) row[i] = 0;
+            }
+        }
+        else
+        {
+            row = 0;
+            data = 0;
+        }
+    }
+
+    explicit DMatrix ( const DMatrix<Type> & m ) : nRow ( m.nRow ), nCol ( m.nCol )
+    {
+        if ( nRow > 0 )
+        {
+            row = new Type*[nRow];
+            if ( nCol > 0 )
+            {
+                nat i;
+                row[0] = data = new Type[nRow*nCol];
+                for ( i = 1; i < nRow; ++i ) row[i] = row[i-1] + nCol;
+                for ( i = 0; i < nRow; ++i )
+                {
+                    Type * pi = row[i];
+                    const Type * mi = m[i];
+                    for ( nat j = 0; j < nCol; ++j ) pi[j] = mi[j];
+                }
+            }
+            else
+            {
+                data = 0;
+                for ( nat i = 0; i < nRow; ++i ) row[i] = 0;
+            }
+        }
+        else
+        {
+            row = 0;
+            data = 0;
+        }
+    }
+
+    ~DMatrix()
+    {
+        delete[] data;
+        delete[] row;
+    } 
+ 
+    DMatrix & operator = ( const DMatrix & m )
+    {
+        if ( this == & m ) return *this;
+        resize ( m.nRow, m.nCol );
+        for ( nat i = 0; i < nRow; ++i )
+        {
+            Type * pi = row[i];
+            const Type * mi = m[i];
+            for ( nat j = 0; j < nCol; ++j ) pi[j] = mi[j];
+        }
+        return *this;
+    }
+
+    nat rowSize () const { return nRow; } // к-во строк
+    nat colSize () const { return nCol; } // к-во столбцов
+
+    DMatrix & resize ( nat r, nat c )
+    { 
+        if ( nRow == r && nCol == c ) return *this;
+        nRow = r;
+        nCol = c;
+        delete[] data;
+        delete[] row;
+        if ( r > 0 )
+        {
+            row = new Type*[r];
+            if ( c > 0 )
+            {
+                row[0] = data = new Type[r*c];
+                for ( nat i = 1; i < r; ++i ) row[i] = row[i-1] + c;
+            }
+            else
+            {
+                data = 0;
+                for ( nat i = 0; i < r; ++i ) row[i] = 0;
+            }
+        }
+        else
+        {
+            row = 0;
+            data = 0;
+        }
+        return *this;
+    }
+
+          Type * operator [] ( nat i )       { return row[i]; }
+    const Type * operator [] ( nat i ) const { return row[i]; }
+
+    bool swapRows ( nat i1, nat i2 )
+    {
+        if ( i1 >= nRow || i2 >= nRow ) return false;
+        _swap ( row[i1], row[i2] );
+        return true;
+    }
+
+    DMatrix & fill ( const Type & p )
+    {
+        const nat n = nRow * nCol;
+        for ( nat i = 0; i < n; ++i ) data[i] = p;
+        return *this;
+    }
+
+    DMatrix & operator *= ( const Type & p )
+    {
+        const nat n = nRow * nCol;
+        for ( nat i = 0; i < n; ++i ) data[i] *= p;
+        return *this;
+    }
+};

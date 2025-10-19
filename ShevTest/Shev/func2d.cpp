@@ -1607,11 +1607,11 @@ ArrRef<Vector2d> regularPolygon ( ArrRef<Vector2d> poly, double r )
 //**************************** 06.07.2013 *********************************//
 
 inline 
-void _swap ( SortItem<double, Set4<nat>*> & p1, SortItem<double, Set4<nat>*> & p2 )
+void s4n_swap ( SortItem<double, Set4<nat>*> & p1, SortItem<double, Set4<nat>*> & p2 )
 {
-    ::_swap ( p1.tail->d, p2.tail->d );
-    ::_swap ( p1.tail, p2.tail );
-    ::_swap ( p1.head, p2.head );
+    _swap ( p1.tail->d, p2.tail->d );
+    _swap ( p1.tail, p2.tail );
+    _swap ( p1.head, p2.head );
 }
 
 static double recalc ( CCArrRef<Vector2d> & poly, const Set4<nat> & set )
@@ -1628,7 +1628,7 @@ static double recalc ( CCArrRef<Vector2d> & poly, const Set4<nat> & set )
     return max;
 }
 
-static void simplify ( CCArrRef<Vector2d> & poly, double eps, ArrRef< Set4<nat> > & arr, MinHeap< SortItem<double, Set4<nat>*> > & heap, bool closed )
+static void simplify ( CCArrRef<Vector2d> & poly, double eps, ArrRef< Set4<nat> > & arr, MinHeap<SortItem<double, Set4<nat>*>, s4n_swap> & heap, bool closed )
 {
     const nat n = poly.size();
     nat i, j = n - 1;
@@ -1678,7 +1678,7 @@ DynArrRef<nat> & simplify ( CCArrRef<Vector2d> & poly, double eps, bool closed, 
         return res;
     }
     DynArray< Set4<nat> > arr ( n );
-    MinHeap< SortItem<double, Set4<nat>*> > heap ( n );
+    MinHeap<SortItem<double, Set4<nat>*>, s4n_swap> heap ( n );
     simplify ( poly, eps, arr, heap, closed );
     if ( closed )
     {
@@ -1711,7 +1711,7 @@ DynArrRef<Vector2d> & simplify ( CCArrRef<Vector2d> & poly, double eps, bool clo
         return res = poly;
     }
     DynArray< Set4<nat> > arr ( n );
-    MinHeap< SortItem<double, Set4<nat>*> > heap ( n );
+    MinHeap<SortItem<double, Set4<nat>*>, s4n_swap> heap ( n );
     simplify ( poly, eps, arr, heap, closed );
     if ( closed )
     {
@@ -1747,7 +1747,7 @@ inline double area ( CCArrRef<Vector2d> & poly, const Set4<nat> & set )
     return fabs ( ( poly[set.a] - poly[set.b] ) % ( poly[set.c] - poly[set.b] ) );
 }
 
-static void simplifyNV ( CCArrRef<Vector2d> & poly, nat nv, ArrRef< Set4<nat> > & arr, MinHeap< SortItem<double, Set4<nat>*> > & heap, bool closed )
+static void simplifyNV ( CCArrRef<Vector2d> & poly, nat nv, ArrRef< Set4<nat> > & arr, MinHeap<SortItem<double, Set4<nat>*>, s4n_swap> & heap, bool closed )
 {
     const nat n = poly.size();
     nat i, j = n - 1;
@@ -1797,7 +1797,7 @@ DynArrRef<nat> & simplifyNV ( CCArrRef<Vector2d> & poly, nat nv, bool closed, Dy
         return res;
     }
     DynArray< Set4<nat> > arr ( n );
-    MinHeap< SortItem<double, Set4<nat>*> > heap ( n );
+    MinHeap<SortItem<double, Set4<nat>*>, s4n_swap> heap ( n );
     simplifyNV ( poly, nv, arr, heap, closed );
     if ( closed )
     {
@@ -1830,7 +1830,7 @@ DynArrRef<Vector2d> & simplifyNV ( CCArrRef<Vector2d> & poly, nat nv, bool close
         return res = poly;
     }
     DynArray< Set4<nat> > arr ( n );
-    MinHeap< SortItem<double, Set4<nat>*> > heap ( n );
+    MinHeap<SortItem<double, Set4<nat>*>, s4n_swap> heap ( n );
     simplifyNV ( poly, nv, arr, heap, closed );
     if ( closed )
     {
@@ -1924,12 +1924,10 @@ double maxDifc ( CCArrRef<Line2d> & line, const Point2dItem * p, const Point2dIt
 
 } // namespace
 
-inline void _swap ( SortItem<double, Point2dItem*> & p1, SortItem<double, Point2dItem*> & p2 )
+inline void p2d_swap ( SortItem<double, Point2dItem*> & p1, SortItem<double, Point2dItem*> & p2 )
 {
-    const SortItem<double, Point2dItem*> p ( p1 );
-    p1 = p2;
-    p2 = p;
-    ::_swap ( p1.tail->info, p2.tail->info );
+    _swap ( p1, p2 );
+    _swap ( p1.tail->info, p2.tail->info );
 }
 
 DynArrRef<Vector2d> & makePolygon ( CCArrRef<Line2d> & line, const double eps, DynArrRef<Vector2d> & poly )
@@ -1959,7 +1957,7 @@ DynArrRef<Vector2d> & makePolygon ( CCArrRef<Line2d> & line, const double eps, D
         j = i;
     }
     SortItem<double, Point2dItem*> item;
-    MinHeap< SortItem<double, Point2dItem*> > heap ( nl );
+    MinHeap<SortItem<double, Point2dItem*>, p2d_swap> heap ( nl );
     Point2dItem * pi = plist.end();
     plist.top();
     do

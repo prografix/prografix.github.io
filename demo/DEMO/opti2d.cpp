@@ -1444,14 +1444,6 @@ bool minTrapezoidAroundPointsA ( FixArrRef<Vector2d, 4> & outer, CCArrRef<Vector
 typedef ListItem<Set2<Segment2d, Set2<nat> > > SegmItem;
 typedef List<SegmItem> SegmList;
 
-inline void _swap ( _ChainLink<SegmItem> & p1, _ChainLink<SegmItem> & p2 )
-{
-    const _ChainLink<SegmItem> p ( p1 );
-    p1 = p2;
-    p2 = p;
-    ::_swap ( p1.tail->info, p2.tail->info );
-}
-
 Vector2d intersect ( const SegmItem * pp, const SegmItem * np )
 {
     const Segment2d & ps = pp->a;

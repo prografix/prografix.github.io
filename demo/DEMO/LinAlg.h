@@ -29,13 +29,16 @@ public:
 
     Def<Matrix2> operator ~ () const
     {
-        SLU2<T> slu;
-        slu.matrix() = *this;
-        slu.ac = 1; slu.bc = 0;
+        SLU2<T, Set2<T>> slu;
+        slu.base() = *this;
+        slu.ac.a = 1; slu.bc.a = 0;
+        slu.ac.b = 0; slu.bc.b = 1;
         Def<Matrix2> m;
-        if ( ! slu.gauss ( m.aa, m.ba ) ) return m;
-        slu.ac = 0; slu.bc = 1; 
-        m.isDef = slu.gauss ( m.ab, m.bb );
+        Set2<T> sa, sb; 
+        if ( ! slu.gauss ( sa, sb ) ) return m;
+        m.isDef = true;
+        m.aa = sa.a; m.ab = sa.b;
+        m.ba = sb.a; m.bb = sb.b;
         return m;
     }
 
@@ -75,6 +78,23 @@ public:
         return *this;
     }
 
+    Def<Matrix3> operator ~ () const
+    {
+        SLU3<T, Set3<T>> slu;
+        slu.base() = *this;
+        slu.ad.a = 1; slu.ad.b = 0; slu.ad.c = 0;
+        slu.bd.a = 0; slu.bd.b = 1; slu.bd.c = 0;
+        slu.cd.a = 0; slu.cd.b = 0; slu.cd.c = 1;
+        Def<Matrix3> m;
+        Set3<T> sa, sb, sc; 
+        if ( ! slu.gauss ( sa, sb, sc ) ) return m;
+        m.isDef = true;
+        m.aa = sa.a; m.ab = sa.b; m.ac = sa.c;
+        m.ba = sb.a; m.bb = sb.b; m.bc = sb.c;
+        m.ca = sc.a; m.cb = sc.b; m.cc = sc.c;
+        return m;
+    }
+
     T determinant() const
     {
         return  ( ab * bc - ac * bb ) * ca +
@@ -82,6 +102,71 @@ public:
                 ( aa * bb - ab * ba ) * cc;
     }
 };
+
+template <class T> Matrix3<T> operator * ( const Matrix3<T> & l, const Matrix3<T> & r )
+{
+    Matrix3<T> m;
+    m.aa = l.aa * r.aa + l.ab * r.ba + l.ac * r.ca; m.ab = l.aa * r.ab + l.ab * r.bb + l.ac * r.cb; m.ac = l.aa * r.ac + l.ab * r.bc + l.ac * r.cc;
+    m.ba = l.ba * r.aa + l.bb * r.ba + l.bc * r.ca; m.bb = l.ba * r.ab + l.bb * r.bb + l.bc * r.cb; m.bc = l.ba * r.ac + l.bb * r.bc + l.bc * r.cc;
+    m.ca = l.ca * r.aa + l.cb * r.ba + l.cc * r.ca; m.cb = l.ca * r.ab + l.cb * r.bb + l.cc * r.cb; m.cc = l.ca * r.ac + l.cb * r.bc + l.cc * r.cc;
+    return m;
+}
+
+
+//************************ 21.08.2023 *************************//
+//
+//          Симметричная квадратная матрица 3-го порядка 
+//
+//************************ 21.08.2023 *************************//
+
+template <class T> class SymMatrix3
+{
+public:
+    T aa, ab, ac,
+      bb, bc,
+      cc;
+
+    SymMatrix3 & set ( const T & v )
+    {
+        aa = ab = ac = 
+        bb = bc = 
+        cc = v;
+        return *this;
+    }
+
+    Def<SymMatrix3> operator ~ () const
+    {
+        SymSLU3<T, Set3<T>> slu;
+        slu.base() = *this;
+        slu.ad.a = 1; slu.ad.b = 0; slu.ad.c = 0;
+        slu.bd.a = 0; slu.bd.b = 1; slu.bd.c = 0;
+        slu.cd.a = 0; slu.cd.b = 0; slu.cd.c = 1;
+        Def<SymMatrix3> m;
+        Set3<T> sa, sb, sc; 
+        if ( ! slu.gauss ( sa, sb, sc ) ) return m;
+        m.isDef = true;
+        m.aa = sa.a; m.ab = sa.b; m.ac = sa.c;
+        m.bb = sb.b; m.bc = sb.c;
+        m.cc = sc.c;
+        return m;
+    }
+
+    T determinant() const
+    {
+        return  ( ab * bc - ac * bb ) * ac +
+                ( ac * ab - aa * bc ) * bc +
+                ( aa * bb - ab * ab ) * cc;
+    }
+};
+
+template <class T> Matrix3<T> operator * ( const SymMatrix3<T> & l, const SymMatrix3<T> & r )
+{
+    Matrix3<T> m;
+    m.aa = l.aa * r.aa + l.ab * r.ab + l.ac * r.ac; m.ab = l.aa * r.ab + l.ab * r.bb + l.ac * r.bc; m.ac = l.aa * r.ac + l.ab * r.bc + l.ac * r.cc;
+    m.ba = l.ab * r.aa + l.bb * r.ab + l.bc * r.ac; m.bb = l.ab * r.ab + l.bb * r.bb + l.bc * r.bc; m.bc = l.ab * r.ac + l.bb * r.bc + l.bc * r.cc;
+    m.ca = l.ac * r.aa + l.bc * r.ab + l.cc * r.ac; m.cb = l.ac * r.ab + l.bc * r.bb + l.cc * r.bc; m.cc = l.ac * r.ac + l.bc * r.bc + l.cc * r.cc;
+    return m;
+}
 
 
 //*************************************************************//
@@ -166,7 +251,7 @@ public:
 //
 //************************ 10.04.2015 *************************//
 
-template <class T1, class T2 = T1> class SLU2 : public Matrix2<T1>
+template <class T1, class T2 = T1> class SLU2 : public Derived<Matrix2<T1>>
 {
 public:
     T2 ac, bc;
@@ -209,11 +294,6 @@ public:
         return *this;
     }
 
-    Matrix2<T1> & matrix ()
-    {
-        return (Matrix2<T1> &) *this;
-    }
-
     SLU2 & operator += ( const SLU2 & slu )
     {
         aa += slu.aa; ab += slu.ab; ac += slu.ac;
@@ -229,7 +309,7 @@ public:
 //
 //************************ 24.04.2019 *************************//
 
-template <class T1, class T2 = T1> class SLU3 : public Matrix3<T1>
+template <class T1, class T2 = T1> class SLU3 : public Derived<Matrix3<T1>>
 {
 public:
     T2 ad, bd, cd;
@@ -280,6 +360,80 @@ public:
     }
 
     SLU3 & fill ( const T1 & v1, const T2 & v2 )
+    {
+        set ( v1 );
+        ad = bd = cd = v2;
+        return *this;
+    }
+};
+
+//************************ 21.08.2023 *************************//
+//
+// Решение систем линейных уравнений 3-го порядка методом Гаусса
+//         Выбор ведущего элемента по столбцам
+//                Симметричная матрица
+//
+//************************ 21.08.2023 *************************//
+
+template <class T1, class T2 = T1> class SymSLU3 : public Derived<SymMatrix3<T1>>
+{
+public:
+    T2 ad, bd, cd;
+
+    SymSLU3 & operator += ( const SymSLU3 & slu )
+    {
+        aa += slu.aa; ab += slu.ab; ac += slu.ac; ad += slu.ad;
+        bb += slu.bb; bc += slu.bc; bd += slu.bd;
+        cc += slu.cc; cd += slu.cd;
+        return *this;
+    }
+
+// Решение системы линейных уравнений 3-го порядка методом Гаусса
+// aa * x + ab * y + ac * z = ad
+// ab * x + bb * y + bc * z = bd
+// ac * x + bc * y + cc * z = cd
+    bool gauss ( T2 & x, T2 & y, T2 & z ) const
+    {
+        SLU2<T1, T2> slu;
+        T1 a, b;
+        T2 d, e;
+        const double ma = qmod ( ac );
+        const double mb = qmod ( bc );
+        const double mc = qmod ( cc );
+        if ( mc >= mb && mc >= ma )
+        {
+            if ( ! mc ) return false;
+            a = ac / cc;
+            b = bc / cc;
+            ( d = cd ) /= cc;
+            slu.aa = aa - a * ac;   slu.ab = ab - b * ac;   ( e = d ) *= ac;   ( slu.ac = ad ) -= e;
+            slu.ba = ab - a * bc;   slu.bb = bb - b * bc;   ( e = d ) *= bc;   ( slu.bc = bd ) -= e;
+        }
+        else
+        if ( mb >= ma )
+        {
+            a = ab / bc;
+            b = bb / bc;
+            ( d = bd ) /= bc;
+            slu.aa = aa - a * ac;   slu.ab = ab - b * ac;   ( e = d ) *= ac;    ( slu.ac = ad ) -= e;
+            slu.ba = ac - a * cc;   slu.bb = bc - b * cc;   ( e = d ) *= cc;    ( slu.bc = cd ) -= e;
+        }
+        else
+        {
+            a = aa / ac;
+            b = ab / ac;
+            ( d = ad ) /= ac;
+            slu.aa = ab - a * bc;   slu.ab = bb - b * bc;   ( e = d ) *= bc;    ( slu.ac = bd ) -= e;
+            slu.ba = ac - a * cc;   slu.bb = bc - b * cc;   ( e = d ) *= cc;    ( slu.bc = cd ) -= e;
+        }
+        if ( ! slu.gauss ( x, y ) ) return false;
+        z = d;
+        ( e = x ) *= a; z -= e;
+        ( e = y ) *= b; z -= e;
+        return true;
+    }
+
+    SymSLU3 & fill ( const T1 & v1, const T2 & v2 )
     {
         set ( v1 );
         ad = bd = cd = v2;
@@ -399,7 +553,7 @@ bool _sluGaussRow ( Matrix & data, nat nRow, nat nCol, nat index[], nat mRow, na
 {
     if ( mRow > nRow ) mRow = nRow;
     if ( mCol > nCol ) mCol = nCol;
-    if ( mRow < 2 || mRow > mCol ) return false;
+    if ( mRow < 1 || mRow > mCol ) return false;
 // Прямой ход
     nat i, j, k;
     for ( i = 0; i < nCol; ++i ) index[i] = i;
@@ -469,3 +623,62 @@ bool sluGaussRow ( ArrRef2<T> & data, nat nRow, nat nCol, unsigned * index, nat 
 {
     return _sluGaussRow ( data, nRow, nCol, index, mRow, mCol );
 }
+
+//*************************** 10.02.2024 ******************************//
+//
+//    Метод исключений Гаусса. Выбор ведущего элемента по столбцам.
+//    nc - количество первых столбцов для выбора.
+//
+//*************************** 10.02.2024 ******************************//
+
+template <class T> bool sluGaussCol ( T & data, const nat nc )
+{
+    const nat nRow = data.rowSize();
+    const nat nCol = data.colSize();
+    if ( nc > nRow || nc >= nCol ) return false;
+// Прямой ход
+    nat i, j, k;
+    for ( k = 0; k < nc; ++k )
+    {
+        const nat k1 = k + 1;
+// Поиск максимального по модулю члена в k-том столбце
+        nat m = k;
+        double max = fabs ( data[m][k] );
+        for ( i = k1; i < nRow; ++i )
+        {
+            const double t = fabs ( data[i][k] );
+            if ( max < t ) max = t, m = i;
+        }
+        if ( max == 0 )
+            return false;
+        const double p = 1. / data[m][k];
+// Меняем местами k-ую и m-ую строки
+        data.swapRows ( k, m );
+// Нормализуем k-ую строку
+        double * rk = data[k];
+        for ( i = k1; i < nCol; ++i ) rk[i] *= p;
+        rk[k] = 1;
+// Вычитание строк
+        for ( j = k1; j < nRow; ++j )
+        {
+            double * rj = data[j];
+            const double t = rj[k];
+            for ( i = k1; i < nCol; ++i ) rj[i] -= rk[i] * t;
+            rj[k] = 0;
+        }
+    }
+// Обратная подстановка
+    for ( j = nc; --j > 0; )
+    {
+        const double * rj = data[j];
+        for ( i = 0; i < j; ++i )
+        {
+            double * ri = data[i];
+            const double t = ri[j];
+            for ( k = nc; k < nCol; ++k ) ri[k] -= rj[k] * t;
+            ri[j] = 0;
+        }
+    }
+    return true;
+}
+

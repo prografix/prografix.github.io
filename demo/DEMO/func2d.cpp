@@ -3,6 +3,8 @@
 
 #include "rand.h"
 #include "heap.h"
+#include "lists.h"
+#include "LinAlg.h"
 #include "Mathem.h"
 #include "func2d.h"
 #include "func1t.h"
@@ -275,7 +277,7 @@ Def<Vector2d> getFarthestPoint ( CCArrRef<Vector2d> & ar, const Vector2d & dir )
 //
 //**************************** 03.12.2008 *********************************//
 
-double diameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, nat & imin, nat & imax )
+double diameterPnt ( CCArrRef<Vector2d> & point, const Vector2d & dir, nat & imin, nat & imax )
 {
     if ( point.size() == 0 ) return 0.;
     double min = dir * point[0];
@@ -290,86 +292,10 @@ double diameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, nat & imin, 
     return max - min;
 }
 
-double diameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir )
+double diameterPnt ( CCArrRef<Vector2d> & point, const Vector2d & dir )
 {
     nat imin, imax;
     return diameterPnt ( point, dir, imin, imax );
-}
-
-//**************************** 07.02.2009 *********************************//
-//
-//  Минимальный диаметр множества точек вдоль заданного сектора направлений.
-//  Сектор задаётся средним направлением dir и половинным углом в градусах angle.
-//  Ответ получаем в виде возвращаемого диаметра, минимального направления res
-//  и пары индексов исходных точек imin и imax.
-//
-//**************************** 07.02.2009 *********************************//
-
-class Diameter : public MathFunc1
-{
-    CArrRef<Vector2d> point;
-    const Vector2d dir;
-public:
-    Diameter ( CArrRef<Vector2d> p, const Vector2d & d ) : point(p), dir(d) {}
-    double operator () ( double x ) const
-    {
-        return diameterPnt ( point, Spin2d ( x, true ) ( dir ) );
-    }
-};
-
-double minDiameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, double angle,
-                        double eps, Vector2d & res, nat & imin, nat & imax )
-{
-// Вычислим минимум методом золотого сечения
-    res = Spin2d ( goldenRatioMin ( -angle, angle, Diameter ( point, dir ), eps ), true ) ( dir );
-    return diameterPnt ( point, res, imin, imax );
-}
-
-double minDiameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, double angle,
-                        double eps, Vector2d & res )
-{
-    nat imin, imax;
-    return minDiameterPnt ( point, dir, angle, eps, res, imin, imax );
-}
-
-double minDiameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, double angle,
-                        double eps )
-{
-    Vector2d res;
-    nat imin, imax;
-    return minDiameterPnt ( point, dir, angle, eps, res, imin, imax );
-}
-
-//**************************** 03.03.2009 *********************************//
-//
-//  Максимальный диаметр множества точек вдоль заданного сектора направлений.
-//  Сектор задаётся средним направлением dir и половинным углом в градусах angle.
-//  Ответ получаем в виде возвращаемого диаметра, минимального направления res
-//  и пары индексов исходных точек imin и imax.
-//
-//**************************** 03.03.2009 *********************************//
-
-double maxDiameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, double angle,
-                        double eps, Vector2d & res, nat & imin, nat & imax )
-{
-// Вычислим максимум методом золотого сечения
-    res = Spin2d ( goldenRatioMax ( -angle, angle, Diameter ( point, dir ), eps ), true ) ( dir );
-    return diameterPnt ( point, res, imin, imax );
-}
-
-double maxDiameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, double angle,
-                        double eps, Vector2d & res )
-{
-    nat imin, imax;
-    return maxDiameterPnt ( point, dir, angle, eps, res, imin, imax );
-}
-
-double maxDiameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, double angle,
-                        double eps )
-{
-    Vector2d res;
-    nat imin, imax;
-    return maxDiameterPnt ( point, dir, angle, eps, res, imin, imax );
 }
 
 //*************************************************************************//
@@ -403,7 +329,7 @@ double perimeter ( CCArrRef<Vector2d> & vert )
 //
 //**************************** 02.03.2012 *********************************//
 
-double maxConvexPolygonDiameter ( CArrRef<Vector2d> vert, nat & ix1, nat & ix2 )
+double maxConvexPolygonDiameter ( CCArrRef<Vector2d> & vert, nat & ix1, nat & ix2 )
 {
     ix1 = ix2 = 0;
     const nat n = vert.size();
@@ -448,10 +374,75 @@ double maxConvexPolygonDiameter ( CArrRef<Vector2d> vert, nat & ix1, nat & ix2 )
     return sqrt ( result );
 }
 
-double maxConvexPolygonDiameter ( CArrRef<Vector2d> vert )
+double maxConvexPolygonDiameter ( CCArrRef<Vector2d> & vert )
 {
     nat ix1, ix2;
     return maxConvexPolygonDiameter ( vert, ix1, ix2 );
+}
+
+//**************************** 15.02.2025 *********************************//
+//
+//  Максимальный диаметр выпуклого многоугольника вдоль заданного сектора направлений за время O ( n ).
+//  Сектор задаётся средним направлением dir и половинным углом в градусах angle.
+//  Ответ получаем в виде возвращаемого диаметра и минимального направления res.
+//
+//**************************** 15.02.2025 *********************************//
+
+double maxConvexPolygonDiameter ( CCArrRef<Vector2d> & vert, Vector2d dir, double angle, Vector2d & res )
+{
+    dir.setNorm2();
+    const nat n = vert.size();
+    if ( n < 2 )
+    {
+        res = dir;
+        return 0.;
+    }
+    Vector2d va = Spin2d (-angle, true ) ( dir );
+    Vector2d vb = Spin2d ( angle, true ) ( dir );
+    if ( va % vb < 0 ) _swap ( va, vb );
+    const double da = diameterPnt ( vert, va );
+    const double db = diameterPnt ( vert, vb );
+    double result = da > db ? ( res = va, da ) : ( res = vb, db );
+    const Vector2d v = vert[0] - vert[n-1];
+    nat r = 1;
+    double max = v % vert[r];
+    for ( nat j = 2; j < n; ++j )
+    {
+        const double t = v % vert[j];
+        if ( max < t ) max = t, r = j;
+        else break;
+    }
+    for ( nat i = 1; ; ++i )
+    {
+        const nat i1 = i - 1;
+        const Vector2d v = vert[i] - vert[i1];
+        nat l = r;
+        double max = v % vert[r];
+        nat j;
+        for ( j = r+1; j < n; ++j )
+        {
+            const double t = v % vert[j];
+            if ( max <= t ) max = t, l = j;
+            else break;
+        }
+        for ( j = r; j <= l; ++j )
+        {
+            Vector2d u = vert[j] - vert[i1];
+            const double t = norm2 ( u );
+            if ( result < t )
+            {
+                if ( u * dir < 0 ) u = - u;
+                if ( va % u > 0 && u % vb > 0 )
+                {
+                    res = u / t;
+                    result = t;
+                }
+            }
+        }
+        if ( l == n - 1 && max <= v % vert[0] ) break;
+        r = l;
+    }
+    return result;
 }
 
 //**************************** 29.03.2008 *********************************//
@@ -460,7 +451,7 @@ double maxConvexPolygonDiameter ( CArrRef<Vector2d> vert )
 //
 //**************************** 02.03.2012 *********************************//
 
-double minConvexPolygonDiameter ( CArrRef<Vector2d> vert, Vector2d & dir, nat & i1, nat & i2 )
+double minConvexPolygonDiameter ( CCArrRef<Vector2d> & vert, Vector2d & dir, nat & i1, nat & i2 )
 {
     i1 = i2 = 0;
     const nat n = vert.size();
@@ -510,17 +501,59 @@ double minConvexPolygonDiameter ( CArrRef<Vector2d> vert, Vector2d & dir, nat & 
     return min;
 }
 
-double minConvexPolygonDiameter ( CArrRef<Vector2d> vert, Vector2d & dir )
+double minConvexPolygonDiameter ( CCArrRef<Vector2d> & vert, Vector2d & dir )
 {
     nat i1, i2;
     return minConvexPolygonDiameter ( vert, dir, i1, i2 );
 }
 
-double minConvexPolygonDiameter ( CArrRef<Vector2d> vert )
+double minConvexPolygonDiameter ( CCArrRef<Vector2d> & vert )
 {
     nat i1, i2;
     Vector2d dir;
     return minConvexPolygonDiameter ( vert, dir, i1, i2 );
+}
+
+//**************************** 11.02.2025 *********************************//
+//
+//  Минимальный диаметр выпуклого многоугольника вдоль заданного сектора направлений за время O ( n ).
+//  Сектор задаётся средним направлением dir и половинным углом в градусах angle.
+//  Ответ получаем в виде возвращаемого диаметра и минимального направления res.
+//
+//**************************** 11.02.2025 *********************************//
+
+double minConvexPolygonDiameter ( CCArrRef<Vector2d> & vert, Vector2d dir, double angle, Vector2d & res )
+{
+    dir.setNorm2();
+    const nat n = vert.size();
+    if ( n < 2 )
+    {
+        res = dir;
+        return 0.;
+    }
+    Vector2d va = Spin2d (-angle, true ) ( dir );
+    Vector2d vb = Spin2d ( angle, true ) ( dir );
+    if ( va % vb < 0 ) _swap ( va, vb );
+    const double da = diameterPnt ( vert, va );
+    const double db = diameterPnt ( vert, vb );
+    double min = da < db ? ( res = va, da ) : ( res = vb, db );
+    nat k = 1;
+    for ( nat i = 0; i < n; ++i )
+    {
+        const Line2d line ( vert[i], i > 0 ? vert[i-1] : vert[n-1] );
+        double max = line % vert[k];
+        for ( nat j = k+1; ; ++j )
+        {
+            if ( j == n ) j = 0;
+            const double t = line % vert[j];
+            if ( max < t ) max = t, k = j;
+            else break;
+        }
+        Vector2d v = line.norm;
+        if ( v * dir < 0 ) v = - v;
+        if ( va % v > 0 && v % vb > 0 && min > max ) min = max, res = v;
+    }
+    return min;
 }
 
 //**************************** 04.06.2008 *********************************//
@@ -1574,11 +1607,11 @@ ArrRef<Vector2d> regularPolygon ( ArrRef<Vector2d> poly, double r )
 //**************************** 06.07.2013 *********************************//
 
 inline 
-void _swap ( SortItem<double, Set4<nat>*> & p1, SortItem<double, Set4<nat>*> & p2 )
+void s4n_swap ( SortItem<double, Set4<nat>*> & p1, SortItem<double, Set4<nat>*> & p2 )
 {
-    ::_swap ( p1.tail->d, p2.tail->d );
-    ::_swap ( p1.tail, p2.tail );
-    ::_swap ( p1.head, p2.head );
+    _swap ( p1.tail->d, p2.tail->d );
+    _swap ( p1.tail, p2.tail );
+    _swap ( p1.head, p2.head );
 }
 
 static double recalc ( CCArrRef<Vector2d> & poly, const Set4<nat> & set )
@@ -1595,7 +1628,7 @@ static double recalc ( CCArrRef<Vector2d> & poly, const Set4<nat> & set )
     return max;
 }
 
-static void simplify ( CCArrRef<Vector2d> & poly, double eps, ArrRef< Set4<nat> > & arr, MinHeap< SortItem<double, Set4<nat>*> > & heap, bool closed )
+static void simplify ( CCArrRef<Vector2d> & poly, double eps, ArrRef< Set4<nat> > & arr, MinHeap<SortItem<double, Set4<nat>*>, s4n_swap> & heap, bool closed )
 {
     const nat n = poly.size();
     nat i, j = n - 1;
@@ -1645,7 +1678,7 @@ DynArrRef<nat> & simplify ( CCArrRef<Vector2d> & poly, double eps, bool closed, 
         return res;
     }
     DynArray< Set4<nat> > arr ( n );
-    MinHeap< SortItem<double, Set4<nat>*> > heap ( n );
+    MinHeap<SortItem<double, Set4<nat>*>, s4n_swap> heap ( n );
     simplify ( poly, eps, arr, heap, closed );
     if ( closed )
     {
@@ -1678,7 +1711,7 @@ DynArrRef<Vector2d> & simplify ( CCArrRef<Vector2d> & poly, double eps, bool clo
         return res = poly;
     }
     DynArray< Set4<nat> > arr ( n );
-    MinHeap< SortItem<double, Set4<nat>*> > heap ( n );
+    MinHeap<SortItem<double, Set4<nat>*>, s4n_swap> heap ( n );
     simplify ( poly, eps, arr, heap, closed );
     if ( closed )
     {
@@ -1714,7 +1747,7 @@ inline double area ( CCArrRef<Vector2d> & poly, const Set4<nat> & set )
     return fabs ( ( poly[set.a] - poly[set.b] ) % ( poly[set.c] - poly[set.b] ) );
 }
 
-static void simplifyNV ( CCArrRef<Vector2d> & poly, nat nv, ArrRef< Set4<nat> > & arr, MinHeap< SortItem<double, Set4<nat>*> > & heap, bool closed )
+static void simplifyNV ( CCArrRef<Vector2d> & poly, nat nv, ArrRef< Set4<nat> > & arr, MinHeap<SortItem<double, Set4<nat>*>, s4n_swap> & heap, bool closed )
 {
     const nat n = poly.size();
     nat i, j = n - 1;
@@ -1764,7 +1797,7 @@ DynArrRef<nat> & simplifyNV ( CCArrRef<Vector2d> & poly, nat nv, bool closed, Dy
         return res;
     }
     DynArray< Set4<nat> > arr ( n );
-    MinHeap< SortItem<double, Set4<nat>*> > heap ( n );
+    MinHeap<SortItem<double, Set4<nat>*>, s4n_swap> heap ( n );
     simplifyNV ( poly, nv, arr, heap, closed );
     if ( closed )
     {
@@ -1797,7 +1830,7 @@ DynArrRef<Vector2d> & simplifyNV ( CCArrRef<Vector2d> & poly, nat nv, bool close
         return res = poly;
     }
     DynArray< Set4<nat> > arr ( n );
-    MinHeap< SortItem<double, Set4<nat>*> > heap ( n );
+    MinHeap<SortItem<double, Set4<nat>*>, s4n_swap> heap ( n );
     simplifyNV ( poly, nv, arr, heap, closed );
     if ( closed )
     {
@@ -1820,4 +1853,158 @@ DynArrRef<Vector2d> & simplifyNV ( CCArrRef<Vector2d> & poly, nat nv, bool close
         }
     }
     return res;
+}
+
+//**************************** 07.04.2023 *********************************//
+//
+//           Построение многоугольника по набору касательных
+//
+//**************************** 07.04.2023 *********************************//
+
+namespace {
+
+void plus ( SLU2<double> & slu, const Line2d & li )
+{
+    const double aa = li.norm.x * li.norm.x;
+    const double ab = li.norm.x * li.norm.y;
+    const double bb = li.norm.y * li.norm.y;
+    slu.aa += aa;
+    slu.ab += ab;
+    slu.ac -= li.norm.x * li.dist;
+    slu.bb += bb;
+    slu.ba += ab;
+    slu.bc -= li.norm.y * li.dist;
+}
+
+void minus ( SLU2<double> & slu, const Line2d & li )
+{
+    const double aa = li.norm.x * li.norm.x;
+    const double ab = li.norm.x * li.norm.y;
+    const double bb = li.norm.y * li.norm.y;
+    slu.aa -= aa;
+    slu.ab -= ab;
+    slu.ac += li.norm.x * li.dist;
+    slu.bb -= bb;
+    slu.ba -= ab;
+    slu.bc += li.norm.y * li.dist;
+}
+
+class Point2d
+{
+public:
+    Vector2d v;
+    nat i1, i2;
+    SLU2<double> slu;
+};
+
+class Point2dItem : public ListItem<Point2d> {};
+class Point2dList : public List<Point2dItem> {};
+
+double maxDifc ( CCArrRef<Line2d> & line, const Point2dItem * p, const Point2dItem * c )
+{
+    SLU2<double> slu ( p->slu );
+    slu += c->slu;
+    minus ( slu, line[c->i1] );
+    Vector2d v;
+    slu.gauss ( v.x, v.y );
+    nat i, i1 = p->i1, i2 = c->i2;
+    double max = 0;
+    if ( i1 < i2 )
+    {
+        for ( i = i1; i <= i2; ++i ) _maxa ( max, fabs ( line[i] % v ) );
+    }
+    else
+    {
+        const nat nl = line.size();
+        for ( i = i1; i < nl; ++i ) _maxa ( max, fabs ( line[i] % v ) );
+        for ( i = 0; i <= i2; ++i ) _maxa ( max, fabs ( line[i] % v ) );
+    }
+    return max;
+}
+
+} // namespace
+
+inline void p2d_swap ( SortItem<double, Point2dItem*> & p1, SortItem<double, Point2dItem*> & p2 )
+{
+    _swap ( p1, p2 );
+    _swap ( p1.tail->info, p2.tail->info );
+}
+
+DynArrRef<Vector2d> & makePolygon ( CCArrRef<Line2d> & line, const double eps, DynArrRef<Vector2d> & poly )
+{
+    const nat nl = line.size();
+    if ( nl < 3 )
+    {
+        return poly.resize();
+    }
+    nat i, j = nl - 1;
+    Point2dList plist;
+    for ( i = 0; i < nl; ++i )
+    {
+        const Line2d & l1 = line[j];
+        const Line2d & l2 = line[i];
+        Point2dItem * p = new Point2dItem;
+        plist.addAftLas ( p );
+        p->i1 = j;
+        p->i2 = i;
+        p->slu.aa = l1.norm.x * l1.norm.x + l2.norm.x * l2.norm.x;
+        p->slu.ab = l1.norm.x * l1.norm.y + l2.norm.x * l2.norm.y;
+        p->slu.ac = - l1.norm.x * l1.dist - l2.norm.x * l2.dist;
+        p->slu.bb = l1.norm.y * l1.norm.y + l2.norm.y * l2.norm.y;
+        p->slu.ba = p->slu.ab;
+        p->slu.bc = - l1.norm.y * l1.dist - l2.norm.y * l2.dist;
+        p->slu.gauss ( p->v.x, p->v.y );
+        j = i;
+    }
+    SortItem<double, Point2dItem*> item;
+    MinHeap<SortItem<double, Point2dItem*>, p2d_swap> heap ( nl );
+    Point2dItem * pi = plist.end();
+    plist.top();
+    do
+    {
+        pi->info = heap.size();
+        Point2dItem * t = plist.cur();
+        item.head = maxDifc ( line, pi, t );
+        item.tail = pi;
+        heap << item;
+        pi = t;
+    }
+    while ( plist.next() );
+    while ( heap.size() > 3 && heap[0]->head < eps )
+    {
+        heap >> item;
+        Point2dItem * t = plist.jump ( item.tail ).cnext();
+        t->slu += item.tail->slu;
+        minus ( t->slu, line[t->i1] );
+        t->slu.gauss ( t->v.x, t->v.y );
+        t->i1 = item.tail->i1;
+        plist.jump ( item.tail ).delCur();
+
+        Point2dItem * p = plist.jump ( t ).cprev();
+        SortItem<double, Point2dItem*> & ip = *heap[p->info];
+        const double hp = ip.head;
+        ip.head = maxDifc ( line, p, t );
+        if ( hp < ip.head )
+            heap.down ( p->info );
+        else
+            heap.raise ( p->info );
+
+        p = plist.jump ( t ).cnext();
+        SortItem<double, Point2dItem*> & it = *heap[t->info];
+        const double ht = it.head;
+        it.head = maxDifc ( line, t, p );
+        if ( ht < it.head )
+            heap.down ( t->info );
+        else
+            heap.raise ( t->info );
+    }
+    const nat np = plist.size();
+    poly.resize(np);
+    plist.top();
+    for ( i = 0; i < np; ++i )
+    {
+        poly[i] = plist.cur()->v;
+        plist.next();
+    }
+    return poly;
 }

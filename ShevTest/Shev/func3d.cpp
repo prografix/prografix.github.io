@@ -513,11 +513,9 @@ Def<Sphere3d> spherePPPP ( const Plane3d & a, const Plane3d & b, const Plane3d &
 //
 //****************** 23.01.2010 *******************************//
 
-inline void _swap ( SortItem<double, TrianFacet *> & p1, SortItem<double, TrianFacet *> & p2 )
+inline void tf_swap ( SortItem<double, TrianFacet *> & p1, SortItem<double, TrianFacet *> & p2 )
 {
-    const SortItem<double, TrianFacet *> p ( p1 );
-    p1 = p2;
-    p2 = p;
+    _swap ( p1, p2 );
     _swap ( p1.tail->index, p2.tail->index );
 }
 
@@ -536,7 +534,7 @@ static void recalcNorm ( const Vector3d & v1, const Vector3d & v2, double d1, do
     }
 }
 
-static void calcPlane ( TrianFacet & fa, CArrRef<nat> iv, CArrRef<Vector3d> vert,
+static void calcPlane ( TrianFacet & fa, CCArrRef<nat> & iv, CCArrRef<Vector3d> & vert,
                         const Plane3d & p1, const Plane3d & p2, double c1, const Vector3d & v )
 {
     Vector3d & norm = fa.plane.norm;
@@ -573,7 +571,7 @@ inline void outLink ( ArrRef<TrianFacet> & facet, nat i, nat j )
     fj.edge[k] = j;
 }
 
-static void putFacet ( TrianFacet & fa, MaxHeap< SortItem<double, TrianFacet*> > & heap )
+static void putFacet ( TrianFacet & fa, MaxHeap< SortItem<double, TrianFacet*>, tf_swap > & heap )
 {
     if ( fa.list.size() == 0 ) return;
     Item1d * p = fa.list.top();
@@ -586,8 +584,8 @@ static void putFacet ( TrianFacet & fa, MaxHeap< SortItem<double, TrianFacet*> >
     heap << SortItem<double, TrianFacet*> ( p->a, & fa );
 }
 
-static void putFacet ( TrianFacet & fa, MaxHeap< SortItem<double, TrianFacet*> > & heap, 
-                       CArrRef<Vector3d> vert, const Vector3d & o, double eps )
+static void putFacet ( TrianFacet & fa, MaxHeap<SortItem<double, TrianFacet*>, tf_swap> & heap, 
+                       CCArrRef<Vector3d> & vert, const Vector3d & o, double eps )
 {
 // Вычисление приоритета
     if ( fa.list.size() == 0 ) return;
@@ -617,8 +615,8 @@ static void putFacet ( TrianFacet & fa, MaxHeap< SortItem<double, TrianFacet*> >
     heap << SortItem<double, TrianFacet*> ( p->a, & fa );
 }
 
-static void moveVert ( TrianFacet & fa, nat i, ArrRef<TrianFacet> facet, CArrRef<Vector3d> vert,
-                       CArrRef<nat> iv, const Vector3d & o )
+static void moveVert ( TrianFacet & fa, nat i, ArrRef<TrianFacet> & facet, CCArrRef<Vector3d> & vert,
+                       CCArrRef<nat> & iv, const Vector3d & o )
 {
     if ( fa.list.top() == 0 ) return;
     List1d & dest = facet[fa.facet[i]].list;
@@ -746,7 +744,7 @@ bool convexHull ( CCArrRef<Vector3d> & point, nat & nv, ArrRef<nat> & iv, nat & 
         facet[jm].list.addAftLas ( new Item1d ( max, iv[i] ) );
     }
 // Ставим в очередь грани с внешними точками
-    MaxHeap< SortItem<double, TrianFacet*> > heap ( n - 4 );
+    MaxHeap<SortItem<double, TrianFacet*>, tf_swap> heap ( n - 4 );
     for ( i = 0; i < 4; ++i ) putFacet ( facet[i], heap );
 // Добавляем оставшиеся точки по одной
     Suite<nat> buf1;

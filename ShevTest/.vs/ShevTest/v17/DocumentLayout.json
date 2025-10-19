@@ -1,0 +1,330 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Shev\\func3d.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|solutionrelative:Shev\\func3d.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Shev\\heap.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|solutionrelative:Shev\\heap.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Shev\\HeapAndTree.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|solutionrelative:Shev\\HeapAndTree.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Test\\tree_test.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|solutionrelative:Test\\tree_test.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Test\\approx2d_test.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|solutionrelative:Test\\approx2d_test.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Test\\math_test.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|solutionrelative:Test\\math_test.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Test\\opti2d_test.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|solutionrelative:Test\\opti2d_test.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Shev\\opti2d_2.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|solutionrelative:Shev\\opti2d_2.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Shev\\opti2d_4.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|solutionrelative:Shev\\opti2d_4.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Shev\\lists.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|solutionrelative:Shev\\lists.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\MainFrm.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|solutionrelative:MainFrm.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Shev\\opti2d.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|solutionrelative:Shev\\opti2d.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Shev\\func2d.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|solutionrelative:Shev\\func2d.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Shev\\Mathem.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|solutionrelative:Shev\\Mathem.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Test\\func3d_test.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|solutionrelative:Test\\func3d_test.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Test\\Vector2d_test.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|solutionrelative:Test\\Vector2d_test.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Test\\Vector3d_test.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|solutionrelative:Test\\Vector3d_test.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\rus_news.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Shev\\Mathem.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{2C48561F-0108-8726-0138-1641E613EF33}|ShevTest.vcxproj|solutionrelative:Shev\\Mathem.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 11,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "rus_news.html",
+              "DocumentMoniker": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\rus_news.html",
+              "RelativeDocumentMoniker": "..\\rus_news.html",
+              "ToolTip": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\rus_news.html",
+              "RelativeToolTip": "..\\rus_news.html",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABYAAAA0AAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2023-09-17T12:27:00.298Z",
+              "IsPinned": true
+            },
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "HeapAndTree.h",
+              "DocumentMoniker": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Shev\\HeapAndTree.h",
+              "RelativeDocumentMoniker": "Shev\\HeapAndTree.h",
+              "ToolTip": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Shev\\HeapAndTree.h [\u0422\u043E\u043B\u044C\u043A\u043E \u0447\u0442\u0435\u043D\u0438\u0435]",
+              "RelativeToolTip": "Shev\\HeapAndTree.h [\u0422\u043E\u043B\u044C\u043A\u043E \u0447\u0442\u0435\u043D\u0438\u0435]",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAnAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-10-18T14:16:37.33Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 12,
+              "Title": "func2d.cpp",
+              "DocumentMoniker": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Shev\\func2d.cpp",
+              "RelativeDocumentMoniker": "Shev\\func2d.cpp",
+              "ToolTip": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Shev\\func2d.cpp",
+              "RelativeToolTip": "Shev\\func2d.cpp",
+              "ViewState": "AgIAAD0GAAAAAAAAAAAAAE0GAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-10-18T06:55:53.967Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "approx2d_test.cpp",
+              "DocumentMoniker": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Test\\approx2d_test.cpp",
+              "RelativeDocumentMoniker": "Test\\approx2d_test.cpp",
+              "ToolTip": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Test\\approx2d_test.cpp",
+              "RelativeToolTip": "Test\\approx2d_test.cpp",
+              "ViewState": "AgIAAKEAAAAAAAAAAAAAAK0AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-09-19T06:18:54.915Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "Vector3d_test.cpp",
+              "DocumentMoniker": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Test\\Vector3d_test.cpp",
+              "RelativeDocumentMoniker": "Test\\Vector3d_test.cpp",
+              "ToolTip": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Test\\Vector3d_test.cpp",
+              "RelativeToolTip": "Test\\Vector3d_test.cpp",
+              "ViewState": "AgIAAB4BAAAAAAAAAAAiwBUBAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-08-22T05:42:52.108Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "Mathem.h",
+              "DocumentMoniker": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Shev\\Mathem.h",
+              "RelativeDocumentMoniker": "Shev\\Mathem.h",
+              "ToolTip": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Shev\\Mathem.h",
+              "RelativeToolTip": "Shev\\Mathem.h",
+              "ViewState": "AgIAAGMAAAAAAAAAAAAAAHcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-05-31T10:57:36.638Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 10,
+              "Title": "MainFrm.cpp",
+              "DocumentMoniker": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\MainFrm.cpp",
+              "RelativeDocumentMoniker": "MainFrm.cpp",
+              "ToolTip": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\MainFrm.cpp",
+              "RelativeToolTip": "MainFrm.cpp",
+              "ViewState": "AgIAAOEAAAAAAAAAAAAqwPEAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-05-02T14:16:54.414Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "opti2d_test.cpp",
+              "DocumentMoniker": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Test\\opti2d_test.cpp",
+              "RelativeDocumentMoniker": "Test\\opti2d_test.cpp",
+              "ToolTip": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Test\\opti2d_test.cpp",
+              "RelativeToolTip": "Test\\opti2d_test.cpp",
+              "ViewState": "AgIAAHIIAAAAAAAAAAAjwIIIAAAtAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-10-18T05:37:14.555Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "Vector2d_test.cpp",
+              "DocumentMoniker": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Test\\Vector2d_test.cpp",
+              "RelativeDocumentMoniker": "Test\\Vector2d_test.cpp",
+              "ToolTip": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Test\\Vector2d_test.cpp",
+              "RelativeToolTip": "Test\\Vector2d_test.cpp",
+              "ViewState": "AgIAAA0BAAAAAAAAAAAAAAkBAAAhAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-09-24T06:00:13.989Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "heap.h",
+              "DocumentMoniker": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Shev\\heap.h",
+              "RelativeDocumentMoniker": "Shev\\heap.h",
+              "ToolTip": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Shev\\heap.h",
+              "RelativeToolTip": "Shev\\heap.h",
+              "ViewState": "AgIAAEkBAAAAAAAAAAAjwF8BAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-10-11T07:02:36.705Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "func3d.cpp",
+              "DocumentMoniker": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Shev\\func3d.cpp",
+              "RelativeDocumentMoniker": "Shev\\func3d.cpp",
+              "ToolTip": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Shev\\func3d.cpp",
+              "RelativeToolTip": "Shev\\func3d.cpp",
+              "ViewState": "AgIAANECAAAAAAAAAAAjwOoCAAAyAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-10-18T05:13:38.875Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "tree_test.cpp",
+              "DocumentMoniker": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Test\\tree_test.cpp",
+              "RelativeDocumentMoniker": "Test\\tree_test.cpp",
+              "ToolTip": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Test\\tree_test.cpp",
+              "RelativeToolTip": "Test\\tree_test.cpp",
+              "ViewState": "AgIAAGIAAAAAAAAAAADwv6IAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-10-18T14:17:20.717Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "math_test.cpp",
+              "DocumentMoniker": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Test\\math_test.cpp",
+              "RelativeDocumentMoniker": "Test\\math_test.cpp",
+              "ToolTip": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Test\\math_test.cpp",
+              "RelativeToolTip": "Test\\math_test.cpp",
+              "ViewState": "AgIAAN4HAAAAAAAAAADwv+4HAAAwAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-05-01T15:08:53.101Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "opti2d_2.cpp",
+              "DocumentMoniker": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Shev\\opti2d_2.cpp",
+              "RelativeDocumentMoniker": "Shev\\opti2d_2.cpp",
+              "ToolTip": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Shev\\opti2d_2.cpp",
+              "RelativeToolTip": "Shev\\opti2d_2.cpp",
+              "ViewState": "AgIAAFUFAAAAAAAAAAAjwFkFAAApAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-10-18T09:16:37.295Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "lists.h",
+              "DocumentMoniker": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Shev\\lists.h",
+              "RelativeDocumentMoniker": "Shev\\lists.h",
+              "ToolTip": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Shev\\lists.h",
+              "RelativeToolTip": "Shev\\lists.h",
+              "ViewState": "AgIAAE0BAAAAAAAAAAAuwF0BAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2025-10-18T11:38:36.646Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "opti2d_4.cpp",
+              "DocumentMoniker": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Shev\\opti2d_4.cpp",
+              "RelativeDocumentMoniker": "Shev\\opti2d_4.cpp",
+              "ToolTip": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Shev\\opti2d_4.cpp",
+              "RelativeToolTip": "Shev\\opti2d_4.cpp",
+              "ViewState": "AgIAAKoEAAAAAAAAAADwv7kEAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-10-18T12:04:04.602Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 11,
+              "Title": "opti2d.cpp",
+              "DocumentMoniker": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Shev\\opti2d.cpp",
+              "RelativeDocumentMoniker": "Shev\\opti2d.cpp",
+              "ToolTip": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Shev\\opti2d.cpp",
+              "RelativeToolTip": "Shev\\opti2d.cpp",
+              "ViewState": "AgIAAJcGAAAAAAAAAADwv78GAAAEAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-10-18T11:35:40.59Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "Mathem.cpp",
+              "DocumentMoniker": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Shev\\Mathem.cpp",
+              "RelativeDocumentMoniker": "Shev\\Mathem.cpp",
+              "ToolTip": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Shev\\Mathem.cpp",
+              "RelativeToolTip": "Shev\\Mathem.cpp",
+              "ViewState": "AgIAAA0FAAAAAAAAAAAjwBoFAAAVAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-04-14T05:14:48.266Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "func3d_test.cpp",
+              "DocumentMoniker": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Test\\func3d_test.cpp",
+              "RelativeDocumentMoniker": "Test\\func3d_test.cpp",
+              "ToolTip": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\ShevTest\\Test\\func3d_test.cpp",
+              "RelativeToolTip": "Test\\func3d_test.cpp",
+              "ViewState": "AgIAALQEAAAAAAAAAAAAwNIEAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2025-10-18T05:34:50.537Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

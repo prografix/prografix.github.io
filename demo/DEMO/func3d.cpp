@@ -15,6 +15,7 @@
 #include "Lists.h"
 #include "trans.h"
 #include "heap.h"
+#include "TrianFacet.h"
 
 //**************************** 17.11.2012 *********************************//
 //
@@ -512,19 +513,9 @@ Def<Sphere3d> spherePPPP ( const Plane3d & a, const Plane3d & b, const Plane3d &
 //
 //****************** 23.01.2010 *******************************//
 
-class TrianFacet
+inline void tf_swap ( SortItem<double, TrianFacet *> & p1, SortItem<double, TrianFacet *> & p2 )
 {
-public:
-    nat vertex[3], facet[3], edge[3], index;
-    Plane3d plane;
-    List1d list;
-};
-
-inline void _swap ( SortItem<double, TrianFacet *> & p1, SortItem<double, TrianFacet *> & p2 )
-{
-    const SortItem<double, TrianFacet *> p ( p1 );
-    p1 = p2;
-    p2 = p;
+    _swap ( p1, p2 );
     _swap ( p1.tail->index, p2.tail->index );
 }
 
@@ -543,7 +534,7 @@ static void recalcNorm ( const Vector3d & v1, const Vector3d & v2, double d1, do
     }
 }
 
-static void calcPlane ( TrianFacet & fa, CArrRef<nat> iv, CArrRef<Vector3d> vert,
+static void calcPlane ( TrianFacet & fa, CCArrRef<nat> & iv, CCArrRef<Vector3d> & vert,
                         const Plane3d & p1, const Plane3d & p2, double c1, const Vector3d & v )
 {
     Vector3d & norm = fa.plane.norm;
@@ -580,7 +571,7 @@ inline void outLink ( ArrRef<TrianFacet> & facet, nat i, nat j )
     fj.edge[k] = j;
 }
 
-static void putFacet ( TrianFacet & fa, MaxHeap< SortItem<double, TrianFacet*> > & heap )
+static void putFacet ( TrianFacet & fa, MaxHeap< SortItem<double, TrianFacet*>, tf_swap > & heap )
 {
     if ( fa.list.size() == 0 ) return;
     Item1d * p = fa.list.top();
@@ -593,8 +584,8 @@ static void putFacet ( TrianFacet & fa, MaxHeap< SortItem<double, TrianFacet*> >
     heap << SortItem<double, TrianFacet*> ( p->a, & fa );
 }
 
-static void putFacet ( TrianFacet & fa, MaxHeap< SortItem<double, TrianFacet*> > & heap, 
-                       CArrRef<Vector3d> vert, const Vector3d & o, double eps )
+static void putFacet ( TrianFacet & fa, MaxHeap<SortItem<double, TrianFacet*>, tf_swap> & heap, 
+                       CCArrRef<Vector3d> & vert, const Vector3d & o, double eps )
 {
 // Вычисление приоритета
     if ( fa.list.size() == 0 ) return;
@@ -624,8 +615,8 @@ static void putFacet ( TrianFacet & fa, MaxHeap< SortItem<double, TrianFacet*> >
     heap << SortItem<double, TrianFacet*> ( p->a, & fa );
 }
 
-static void moveVert ( TrianFacet & fa, nat i, ArrRef<TrianFacet> facet, CArrRef<Vector3d> vert,
-                       CArrRef<nat> iv, const Vector3d & o )
+static void moveVert ( TrianFacet & fa, nat i, ArrRef<TrianFacet> & facet, CCArrRef<Vector3d> & vert,
+                       CCArrRef<nat> & iv, const Vector3d & o )
 {
     if ( fa.list.top() == 0 ) return;
     List1d & dest = facet[fa.facet[i]].list;
@@ -753,7 +744,7 @@ bool convexHull ( CCArrRef<Vector3d> & point, nat & nv, ArrRef<nat> & iv, nat & 
         facet[jm].list.addAftLas ( new Item1d ( max, iv[i] ) );
     }
 // Ставим в очередь грани с внешними точками
-    MaxHeap< SortItem<double, TrianFacet*> > heap ( n - 4 );
+    MaxHeap<SortItem<double, TrianFacet*>, tf_swap> heap ( n - 4 );
     for ( i = 0; i < 4; ++i ) putFacet ( facet[i], heap );
 // Добавляем оставшиеся точки по одной
     Suite<nat> buf1;
@@ -771,7 +762,6 @@ bool convexHull ( CCArrRef<Vector3d> & point, nat & nv, ArrRef<nat> & iv, nat & 
         const nat n2 = nf + 1;
         nf += 2;
         const nat if0 = f0.facet[0];
-        const nat ie0 = f0.edge[0];
         TrianFacet & f1 = facet[n1];
         f1.vertex[0] = f0.vertex[1];
         f1.vertex[1] = f0.vertex[2];
@@ -1193,14 +1183,13 @@ bool isConvex ( const Polyhedron & poly )
     return true;
 }
 
-
-//****************** 22.04.2018 *******************************//
+//********************** 22.04.2018 ***************************//
 //
 //      Получение поворота совмещающего пары векторов
 //
-//****************** 22.04.2018 *******************************//
+//********************** 22.04.2018 ***************************//
 
-Spin3d makeSpin3d ( CArrRef<Set2<Vector3d> > data )
+Spin3d makeSpin3d ( CCArrRef<Set2<Vector3d> > & data )
 {
     Spin3d spin;
     const nat n = data.size();
@@ -1255,4 +1244,395 @@ Spin3d makeSpin3d ( CArrRef<Set2<Vector3d> > data )
         r.a = 1;
     }
     return spin;
+}
+
+//********************** 04.05.2023 ***************************//
+//
+//           Нормализация многогранника ( версия 1 )
+//         Минимизация суммы квадратов сдвигов вершин
+// Нормали граней с количеством вершин больше трёх не меняются
+//
+//********************** 04.05.2023 ***************************//
+
+namespace {
+
+double maxDif ( CCArrRef<Vector3d> & vert, CCArrRef<Set2<DynArray<nat>, Plane3d> > & facet )
+{
+    double dif = 0;
+    const nat nf = facet.size();
+    for ( nat i = 0; i < nf; ++i )
+    {
+        const Set2<DynArray<nat>, Plane3d> & f = facet[i];
+        if ( f.a.size() < 4 ) continue;
+        double max = f.b.norm * vert[f.a[0]];
+        double min = max;
+        for ( nat j = 1; j < f.a.size(); ++j )
+        {
+            const double t = f.b.norm * vert[f.a[j]];
+            _maxa ( max, t );
+            _mina ( min, t );
+        }
+        _maxa ( dif, max - min );
+    }
+    return dif;
+}
+
+bool calcSLU ( nat k, nat nf, CCArrRef<Set2<DynArray<nat>, Plane3d> > & facet, 
+    CCArrRef<Vector3d> & vertex, CCArrRef<Suite<Set2<nat, Vector3d> > > & vp, double * x )
+{
+    nat i, l;
+    DynArray<Suite<SortItem<nat, double> > > data ( k );
+    DynArray<double> b ( k );
+    for ( i = 0, k = 0; i < nf; ++i )
+    {
+        const Set2<DynArray<nat>, Plane3d> & f = facet[i];
+        if ( f.a.size() < 4 ) continue;
+        const nat i0 = f.a[0];
+        CCArrRef<Set2<nat, Vector3d> > & s0 = vp[i0];
+        for ( nat j = 1; j < f.a.size(); ++j )
+        {
+            Suite<SortItem<nat, double> > & r = data[k];
+            const nat ii = f.a[j];
+            CCArrRef<Set2<nat, Vector3d> > & si = vp[ii];
+            for ( l = 0; l < si.size(); ++l )
+            {
+                const Set2<nat, Vector3d> & sl = si[l];
+                const double p = f.b.norm * sl.b;
+                if ( fabs ( p ) < 1e-12 )
+                    continue;
+                SortItem<nat, double> & si = r.inc();
+                si.head = sl.a;
+                si.tail = p;
+            }
+            for ( l = 0; l < s0.size(); ++l )
+            {
+                const Set2<nat, Vector3d> & sl = s0[l];
+                const double p = f.b.norm * sl.b;
+                if ( fabs ( p ) < 1e-12 )
+                    continue;
+                const nat m = firEqu ( r, SortItem<nat, double> ( sl.a ) );
+                if ( m < r.size() )
+                {
+                    if ( fabs ( r[m].tail -= p ) < 1e-12 )
+                        r.del ( m );
+                }
+                else
+                {
+                    SortItem<nat, double> & si = r.inc();
+                    si.head = sl.a;
+                    si.tail = - p;
+                }
+            }
+            b[k] = f.b.norm * ( vertex[ii] - vertex[i0] );
+            ++k;
+        }
+    }
+    for ( i = 0; i < k; ++i ) insertSort123 ( data[i] );
+    bool ok = k < 200 ? slu_LDLt ( k, data(), b(), x ) : slu_LDLtO ( k, data(), b(), x );
+    return ok;
+}
+
+void vert2 ( Set2<DynArray<nat>, Plane3d> & f, CCArrRef<Vector3d> & vertex )
+{
+    const Vector3d & v0 = vertex[f.a[0]];
+    const Vector3d & v1 = vertex[f.a[1]];
+    const Vector3d v = v1 - v0;
+    if ( !!v )
+    {
+        f.b.norm -= v * ( ( f.b.norm * v ) / ( v * v ) );
+        f.b.norm.setNorm2();
+    }
+    f.b.dist = - ( f.b.norm * v0 );
+}
+
+void vert3 ( Set2<DynArray<nat>, Plane3d> & f, CCArrRef<Vector3d> & vertex )
+{
+    const Vector3d & v0 = vertex[f.a[0]];
+    const Vector3d & v1 = vertex[f.a[1]];
+    const Vector3d & v2 = vertex[f.a[2]];
+    const Vector3d a = v1 - v0;
+    const Vector3d b = v2 - v0;
+    if ( !a )
+    {
+        if ( !!b )
+        {
+            f.b.norm -= b * ( ( f.b.norm * b ) / ( b * b ) );
+            f.b.norm.setNorm2();
+        }
+        f.b.dist = - ( f.b.norm * v0 );
+    }
+    else
+    {
+        if ( !b )
+        {
+            f.b.norm -= a * ( ( f.b.norm * a ) / ( a * a ) );
+            f.b.norm.setNorm2();
+            f.b.dist = - ( f.b.norm * v0 );
+        }
+        else
+        {
+            const double d0 = f.b.norm * v0;
+            const double d1 = f.b.norm * v1;
+            const double d2 = f.b.norm * v2;
+            double dmin = _min ( d0, d1, d2 );
+            double dmax = _max ( d0, d1, d2 );
+            SLU2<double> slu;
+            slu.aa = a * a; slu.ab = a * b; slu.ac = a * f.b.norm;
+            slu.ba = b * a; slu.bb = b * b; slu.bc = b * f.b.norm;
+            double xa, xb;
+            if ( slu.gauss ( xa, xb ) )
+            {
+                const Vector3d n = ( f.b.norm - xa * a - xb * b ).setNorm2();
+                const double t0 = n * v0;
+                const double t1 = n * v1;
+                const double t2 = n * v2;
+                const double tmin = _min ( t0, t1, t2 );
+                const double tmax = _max ( t0, t1, t2 );
+                if ( tmax - tmin < dmax - dmin )
+                {
+                    f.b.norm = n;
+                    dmax = tmax;
+                    dmin = tmin;
+                }
+            }
+            f.b.dist = -0.5 * ( dmin + dmax );
+        }
+    }
+}
+
+void vertN ( Set2<DynArray<nat>, Plane3d> & f, CCArrRef<Vector3d> & vertex )
+{
+    const nat nv = f.a.size();
+    double sum = f.b.norm * vertex[f.a[0]];
+    for ( nat i = 1; i < nv; ++i ) sum += f.b.norm * vertex[f.a[i]];
+    f.b.dist = -sum / nv;
+}
+
+} // namespace
+
+bool normalizePolyhedronV1 ( ArrRef<Set2<DynArray<nat>, Plane3d> > & facet, ArrRef<Vector3d> & vertex )
+{
+    const nat nv = vertex.size();
+    const nat nf = facet.size();
+    DynArray<Suite<Set2<nat, Vector3d> > > vp ( nv );
+    nat i, k = 0;
+    for ( i = 0; i < nf; ++i )
+    {
+        const Set2<DynArray<nat>, Plane3d> & f = facet[i];
+        if ( f.a.size() < 4 ) continue;
+        const nat i0 = f.a[0];
+        for ( nat j = 1; j < f.a.size(); ++j )
+        {
+            const nat ii = f.a[j];
+            vp[ii].inc() = Set2<nat, Vector3d> ( k, f.b.norm );
+            vp[i0].inc() = Set2<nat, Vector3d> ( k, -f.b.norm );
+            ++k;
+        }
+    }
+    if ( k > 0 )
+    {
+        const double dif1 = maxDif ( vertex, facet );
+        DynArray<double> x ( k );
+        if ( ! calcSLU ( k, nf, facet, vertex, vp, x() ) ) return false;
+        for ( i = 0; i < nv; ++i )
+        {
+            Vector3d & v = vertex[i];
+            CCArrRef<Set2<nat, Vector3d> > & si = vp[i];
+            for ( nat l = 0; l < si.size(); ++l )
+            {
+                const Set2<nat, Vector3d> & sl = si[l];
+                v -= sl.b * x[sl.a];
+            }
+        }
+        const double dif2 = maxDif ( vertex, facet );
+        if ( dif1 <= dif2 ) return false;
+    }
+    for ( i = 0; i < nf; ++i )
+    {
+        Set2<DynArray<nat>, Plane3d> & f = facet[i];
+        switch ( f.a.size() )
+        {
+        case 0: break;
+        case 1: f.b.dist = - ( f.b.norm * vertex[f.a[0]] ); break;
+        case 2: vert2 ( f, vertex ); break;
+        case 3: vert3 ( f, vertex ); break;
+        default:vertN ( f, vertex ); break;
+        }
+    }
+    return true;
+}
+
+//********************** 08.04.2024 ***************************//
+//
+//           Нормализация многогранника ( версия 2 )
+//         Минимизация суммы квадратов сдвигов вершин
+//
+//********************** 08.04.2024 ***************************//
+
+bool normalizePlanes ( ArrRef<Set2<DynArray<nat>, Plane3d> > & facet, CCArrRef<Vector3d> & vertex )
+{
+    const nat nf = facet.size();
+    DynArray<DMatrix<double> > matr ( nf );
+    nat i, k = 0;
+    for ( i = 0; i < nf; ++i )
+    {
+        Set2<DynArray<nat>, Plane3d> & f = facet[i];
+        const nat nr = f.a.size();
+        if ( nr < 4 ) continue;
+        insertSort123 ( f.a );
+        DMatrix<double> & mat = matr[i];
+        mat.resize ( nr, nr+4 );
+        const double ax = fabs ( f.b.norm.x );
+        const double ay = fabs ( f.b.norm.y );
+        const double az = fabs ( f.b.norm.z );
+        for ( nat j = 0; j < nr; ++j )
+        {
+            const Vector3d & v = vertex[f.a[j]];
+            double * row = mat[j];
+            if ( ax >= ay && ax >= az )
+            {
+                row[0] = v.y;
+                row[1] = v.z;
+            }
+            else
+            if ( ay >= az )
+            {
+                row[0] = v.x;
+                row[1] = v.z;
+            }
+            else
+            {
+                row[0] = v.x;
+                row[1] = v.y;
+            }
+            for ( nat l = 0; l < nr; ++l ) row[l+4] = 0;
+            row[2] = row[j+4] = 1;
+            row[3] = f.b % v;
+        }
+        if ( ! sluGaussCol ( mat, 3 ) )
+            return false;
+        k += nr - 3;
+    }
+    const nat nv = vertex.size();
+    DynArray<Suite<SortItem<nat, double> > > vp ( 3*nv ), at ( k ), aa ( k );
+    DynArray<double> dv ( 3*nv, 0 ), la ( k, 0 ), b ( k );
+    k = 0;
+    for ( i = 0; i < nf; ++i )
+    {
+        const Set2<DynArray<nat>, Plane3d> & f = facet[i];
+        if ( f.a.size() < 4 ) continue;
+        const DMatrix<double> & mat = matr[i];
+        for ( nat j = 3; j < mat.rowSize(); ++j )
+        {
+            const double * row = mat[j];
+            b[k] = row[3];
+            for ( nat m = 0; m < f.a.size(); ++m )
+            {
+                const double a = row[m+4];
+                if ( ! a ) continue;
+                const nat i0 = 3 * f.a[m];
+                const nat i1 = i0 + 1;
+                const nat i2 = i1 + 1;
+                vp[i0].inc() = SortItem<nat, double> ( k, f.b.norm.x * a );
+                vp[i1].inc() = SortItem<nat, double> ( k, f.b.norm.y * a );
+                vp[i2].inc() = SortItem<nat, double> ( k, f.b.norm.z * a );
+                at[k].inc() = SortItem<nat, double> ( i0, f.b.norm.x * a );
+                at[k].inc() = SortItem<nat, double> ( i1, f.b.norm.y * a );
+                at[k].inc() = SortItem<nat, double> ( i2, f.b.norm.z * a );
+            }
+            ++k;
+        }
+    }
+    // Перемножение матриц aa = at * vp
+    for ( i = 0; i < k; ++i )
+    {
+        CCArrRef<SortItem<nat, double> > & ai = at[i];
+        for ( nat j = 0; j < ai.size(); ++j )
+        {
+            const SortItem<nat, double> & aij = ai[j];
+            CCArrRef<SortItem<nat, double> > & aj = vp[aij.head];
+            for ( nat l = 0; l < aj.size(); ++l )
+            {
+                const SortItem<nat, double> & ajl = aj[l];
+                Suite<SortItem<nat, double> > & row = aa[ajl.head];
+                if ( row.size() > 0 )
+                {
+                    SortItem<nat, double> & si = row.las();
+                    if ( si.head == i )
+                    {
+                        si.tail += aij.tail * ajl.tail;
+                        continue;
+                    }
+                }
+                row.inc() = SortItem<nat, double> ( i, aij.tail * ajl.tail);
+            }
+        }
+    }
+    // Решение СЛАУ aa * la == b
+    bool ok = k < 150 ? slu_LDLt ( k, aa(), b(), la() ) : slu_LDLtO ( k, aa(), b(), la() );
+    // Вычисляем смещения вершин
+    for ( i = 0; i < k; ++i )
+    {
+        CCArrRef<SortItem<nat, double> > & row = at[i];
+        for ( nat j = 0; j < row.size(); ++j )
+        {
+            const SortItem<nat, double> & s = row[j];
+            dv[s.head] -= la[i] * s.tail;
+        }
+    }
+    // Исправляем плоскости
+    for ( i = 0; i < nf; ++i )
+    {
+        Set2<DynArray<nat>, Plane3d> & f = facet[i];
+        const nat nr = f.a.size();
+        if ( nr < 4 ) continue;
+        const DMatrix<double> & mat = matr[i];
+        const nat nc = mat.colSize();
+        const double * r0 = mat[0];
+        const double * r1 = mat[1];
+        const double * r2 = mat[2];
+        double d0 = r0[3];
+        double d1 = r1[3];
+        double d2 = r2[3];
+        for ( nat j = 4; j < nc; ++j )
+        {
+            const nat i0 = 3 * f.a[j-4];
+            const nat i1 = i0 + 1;
+            const nat i2 = i1 + 1;
+            const double t = f.b.norm.x * dv[i0] + f.b.norm.y * dv[i1] + f.b.norm.z * dv[i2];
+            d0 += r0[j] * t;
+            d1 += r1[j] * t;
+            d2 += r2[j] * t;
+        }
+        Plane3d plane = f.b;
+        const double ax = fabs ( f.b.norm.x );
+        const double ay = fabs ( f.b.norm.y );
+        const double az = fabs ( f.b.norm.z );
+        if ( ax >= ay && ax >= az )
+        {
+            plane.norm.y -= d0;
+            plane.norm.z -= d1;
+        }
+        else
+        if ( ay >= az )
+        {
+            plane.norm.x -= d0;
+            plane.norm.z -= d1;
+        }
+        else
+        {
+            plane.norm.x -= d0;
+            plane.norm.y -= d1;
+        }
+        plane.dist -= d2;
+        f.b = plane.setNorm2();
+    }
+    return true;
+}
+
+bool normalizePolyhedronV2 ( ArrRef<Set2<DynArray<nat>, Plane3d> > & facet, ArrRef<Vector3d> & vertex )
+{
+    if ( ! normalizePlanes ( facet, vertex ) ) return false;
+    if ( ! normalizePolyhedronV1 ( facet, vertex ) ) return false;
+    return true;
 }

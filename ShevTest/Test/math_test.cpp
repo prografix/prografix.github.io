@@ -2019,18 +2019,16 @@ void slu_gauss_test()
     display << NL;
 }
 
-inline void _swap ( SortItem<nat, Set2<nat> *> & p1, SortItem<nat, Set2<nat> *> & p2 )
+inline void s2n_swap ( SortItem<nat, Set2<nat> *> & p1, SortItem<nat, Set2<nat> *> & p2 )
 {
-    const SortItem<nat, Set2<nat> *> p ( p1 );
-    p1 = p2;
-    p2 = p;
-    ::_swap ( p1.tail->b, p2.tail->b );
+    _swap ( p1, p2 );
+    _swap ( p1.tail->b, p2.tail->b );
 }
 
 bool sluGaussRowO ( nat n, Suite<SortItem<nat, double> > * a, double * b, double * x )
 {
     nat i, j, k;
-    MinHeap<SortItem<nat, Set2<nat> *> > heap ( n );
+    MinHeap<SortItem<nat, Set2<nat> *>, s2n_swap> heap ( n );
     DynArray<Suite<nat> > col ( n );
     DynArray<nat> icol ( 2*n );
     nat * irow = icol ( n );

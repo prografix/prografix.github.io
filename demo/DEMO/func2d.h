@@ -88,47 +88,9 @@ Def<Vector2d> getFarthestPoint ( CCArrRef<Vector2d> & ar, const Vector2d & dir )
 //
 //**************************** 03.12.2008 *********************************//
 
-double diameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, nat & imin, nat & imax );
+double diameterPnt ( CCArrRef<Vector2d> & point, const Vector2d & dir, nat & imin, nat & imax );
 
-double diameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir );
-
-
-//**************************** 07.02.2009 *********************************//
-//
-//  Минимальный диаметр множества точек вдоль заданного сектора направлений.
-//  Сектор задаётся средним направлением dir и половинным углом в градусах angle.
-//  Ответ получаем в виде возвращаемого диаметра, минимального направления res
-//  и пары индексов исходных точек imin и imax.
-//
-//**************************** 07.02.2009 *********************************//
-
-double minDiameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, double angle,
-                        double eps, Vector2d & res, nat & imin, nat & imax );
-
-double minDiameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, double angle,
-                        double eps, Vector2d & res );
-
-double minDiameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, double angle,
-                        double eps );
-
-
-//**************************** 03.03.2009 *********************************//
-//
-//  Максимальный диаметр множества точек вдоль заданного сектора направлений.
-//  Сектор задаётся средним направлением dir и половинным углом в градусах angle.
-//  Ответ получаем в виде возвращаемого диаметра, минимального направления res
-//  и пары индексов исходных точек imin и imax.
-//
-//**************************** 03.03.2009 *********************************//
-
-double maxDiameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, double angle,
-                        double eps, Vector2d & res, nat & imin, nat & imax );
-
-double maxDiameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, double angle,
-                        double eps, Vector2d & res );
-
-double maxDiameterPnt ( CArrRef<Vector2d> point, const Vector2d & dir, double angle,
-                        double eps );
+double diameterPnt ( CCArrRef<Vector2d> & point, const Vector2d & dir );
 
 
 //*************************************************************************//
@@ -155,9 +117,20 @@ double perimeter ( CCArrRef<Vector2d> & vert );
 //
 //**************************** 02.03.2012 *********************************//
 
-double maxConvexPolygonDiameter ( CArrRef<Vector2d> vert, nat & ix1, nat & ix2 );
+double maxConvexPolygonDiameter ( CCArrRef<Vector2d> & vert, nat & ix1, nat & ix2 );
 
-double maxConvexPolygonDiameter ( CArrRef<Vector2d> vert );
+double maxConvexPolygonDiameter ( CCArrRef<Vector2d> & vert );
+
+
+//**************************** 15.02.2025 *********************************//
+//
+//  Максимальный диаметр выпуклого многоугольника вдоль заданного сектора направлений за время O ( n ).
+//  Сектор задаётся средним направлением dir и половинным углом в градусах angle.
+//  Ответ получаем в виде возвращаемого диаметра и максимального направления res.
+//
+//**************************** 15.02.2025 *********************************//
+
+double maxConvexPolygonDiameter ( CCArrRef<Vector2d> & vert, Vector2d dir, double angle, Vector2d & res );
 
 
 //**************************** 29.03.2008 *********************************//
@@ -166,11 +139,22 @@ double maxConvexPolygonDiameter ( CArrRef<Vector2d> vert );
 //
 //**************************** 02.03.2012 *********************************//
 
-double minConvexPolygonDiameter ( CArrRef<Vector2d> vert, Vector2d & dir, nat & i1, nat & i2 );
+double minConvexPolygonDiameter ( CCArrRef<Vector2d> & vert, Vector2d & dir, nat & i1, nat & i2 );
 
-double minConvexPolygonDiameter ( CArrRef<Vector2d> vert, Vector2d & dir );
+double minConvexPolygonDiameter ( CCArrRef<Vector2d> & vert, Vector2d & dir );
 
-double minConvexPolygonDiameter ( CArrRef<Vector2d> vert );
+double minConvexPolygonDiameter ( CCArrRef<Vector2d> & vert );
+
+
+//**************************** 11.02.2025 *********************************//
+//
+//  Минимальный диаметр выпуклого многоугольника вдоль заданного сектора направлений за время O ( n ).
+//  Сектор задаётся средним направлением dir и половинным углом в градусах angle.
+//  Ответ получаем в виде возвращаемого диаметра и минимального направления res.
+//
+//**************************** 11.02.2025 *********************************//
+
+double minConvexPolygonDiameter ( CCArrRef<Vector2d> & vert, Vector2d dir, double angle, Vector2d & res );
 
 
 //**************************** 04.06.2008 *********************************//
@@ -392,3 +376,12 @@ DynArrRef<Vector2d> & simplify ( CCArrRef<Vector2d> & poly, double eps, bool clo
 
 DynArrRef<  nat   > & simplifyNV ( CCArrRef<Vector2d> & poly, nat nv, bool closed, DynArrRef<  nat   > & res );
 DynArrRef<Vector2d> & simplifyNV ( CCArrRef<Vector2d> & poly, nat nv, bool closed, DynArrRef<Vector2d> & res );
+
+
+//**************************** 07.04.2023 *********************************//
+//
+//           Построение многоугольника по набору касательных
+//
+//**************************** 07.04.2023 *********************************//
+
+DynArrRef<Vector2d> & makePolygon ( CCArrRef<Line2d> & line, const double eps, DynArrRef<Vector2d> & poly );

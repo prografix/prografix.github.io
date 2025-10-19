@@ -11,6 +11,36 @@
 #include "ShevArray.h"
 #include "lists.h"
 
+//**************************** 09.02.2025 *********************************//
+//
+//      Триангуляция многоугольника алгоритмами tempTrianNat1 и OptiL
+//
+//**************************** 09.02.2025 *********************************//
+
+SuiteRef<Set3<nat> > & trianNat1OptiL ( IDiagFunc & change, CCArrRef<Vector2d> & vert, SuiteRef<Set3<nat> > & res )
+{
+    res.resize(0);
+    const nat nv = vert.size();
+    if ( nv <= 2 ) return res;
+    const nat nr = 3 * nv - 6;
+    DynArray<SemiRib> rib ( nr );
+    tempTrianNat1<double, Vector2d> ( vert, rib );
+    optiL ( change, rib );
+    for ( nat i = 0; i < nr; ++i )
+    {
+        SemiRib & a = rib[i];
+        if ( a.vert >= nv ) continue;
+        SemiRib & b = rib[a.next];
+        SemiRib & c = rib[b.next];
+        Set3<nat> & t = res.inc();
+        t.a = a.vert;
+        t.b = b.vert;
+        t.c = c.vert;
+        a.vert = b.vert = c.vert = nv;
+    }
+    return res;
+}
+
 //**************************** 18.07.2007 *********************************//
 //
 //          Триангуляция многоугольников ( локальная оптимизация )
@@ -509,63 +539,96 @@ SuiteRef<Set3<nat> > & trianSweepLine ( CCArrRef<Vector2d> & vert, SuiteRef<Set3
 //
 //      Перестройка триангуляции на триангуляцию Делоне
 //
-//**************************** 24.08.2018 *********************************//
+//**************************** 09.02.2025 *********************************//
 
-bool rebuildDelauney ( CCArrRef<Vector2d> & vert, CCArrRef<Set3<nat> > & trian, DynArray<SemiRib> & rib )
+double minTan ( const Vector2d & ab, const Vector2d & bc, const Vector2d & ca )
 {
-    const nat nt = trian.size();
-    const nat nv = vert.size();
-    if ( nt < 1 || nv < 3 ) return false;
-    const nat nr = 3 * nt;
-    rib.resize ( nr );
-    // Запишем массив полурёбер SemiRib.
-    // Причём рёбра принадлежащие к одному треугольнику должны находится последовательно, 
-    // а поле twin должно быть меньше количества рёбер только у одного ребра из пары.
-    nat i, k;
-    DynArray<SortItem<Set2<nat>, nat> > sar ( nr );
-    for ( k = 0; k < nt; ++k )
+    const double aa = ca * ab;
+    const double bb = ab * bc;
+    const double cc = bc * ca;
+    if ( aa <= bb )
     {
-        const Set3<nat> & t = trian[k];
-        const nat na = 3 * k;
-        const nat nb = na + 1;
-        const nat nc = nb + 1;
-        SemiRib & ra = rib[na];
-        ra.next = nb;
-        ra.twin = nr;
-        ra.vert = t.a;
-        SemiRib & rb = rib[nb];
-        rb.next = nc;
-        rb.twin = nr;
-        rb.vert = t.b;
-        SemiRib & rc = rib[nc];
-        rc.next = na;
-        rc.twin = nr;
-        rc.vert = t.c;
-        SortItem<Set2<nat>, nat> & sa = sar[na];
-        sa.head = t.a < t.b ? Set2<nat> ( t.a, t.b ) : Set2<nat> ( t.b, t.a );
-        sa.tail = na;
-        SortItem<Set2<nat>, nat> & sb = sar[nb];
-        sb.head = t.b < t.c ? Set2<nat> ( t.b, t.c ) : Set2<nat> ( t.c, t.b );
-        sb.tail = nb;
-        SortItem<Set2<nat>, nat> & sc = sar[nc];
-        sc.head = t.c < t.a ? Set2<nat> ( t.c, t.a ) : Set2<nat> ( t.a, t.c );
-        sc.tail = nc;
-    }
-    quickSort123 ( sar );
-    for ( i = 1; i < nr; ++i )
-    {
-        SortItem<Set2<nat>, nat> & sa = sar[i];
-        SortItem<Set2<nat>, nat> & sb = sar[i-1];
-        if ( sa == sb )
+        if ( aa <= cc )
         {
-            rib[sa.tail].twin = sb.tail;
-            ++i;
+            if ( aa < 0 ) return ( ca % bc ) / aa;
+        }
+        else
+        {
+            if ( cc < 0 ) return ( bc % ab ) / cc;
         }
     }
-    const Min2a<double> merge;
-    const TQ_MinTan<double, Vector2d> quality ( vert );
-    maxL1<double> ( quality, merge, rib );
-    return true;
+    else
+    {
+        if ( bb <= cc )
+        {
+            if ( bb < 0 ) return ( ca % bc ) / bb;
+        }
+        else
+        {
+            if ( cc < 0 ) return ( ab % ca ) / cc;
+        }
+    }
+    return 0;
+}
+
+class F_MinTan : public IDiagFunc
+{
+    CArrRef<Vector2d> vert; // Массив вершин
+    MutCArrRef<SemiRib> rib;// Массив полурёбер
+    DynArray<double> value; // Массив качества граней
+public:
+    F_MinTan ( CCArrRef<Vector2d> & v ) : vert(v) {}
+    F_MinTan & link ( CArrRef<SemiRib> & r )
+    {
+        rib.reset ( r );
+        const nat nr = rib.size();
+        const nat nf = nr / 3;
+        value.resize ( nf );
+        for ( nat i = 0; i < nf; ++i )
+        {
+            const SemiRib & a = rib[3 * i];
+            const SemiRib & b = rib[a.next];
+            const SemiRib & c = rib[b.next];
+            const Vector2d ab = vert[b.vert] - vert[a.vert];
+            const Vector2d bc = vert[c.vert] - vert[b.vert];
+            const Vector2d ca = vert[a.vert] - vert[c.vert];
+            value[i] = minTan ( ab, bc, ca );
+        }
+        return *this;
+    }
+    virtual bool operator () ( nat r, nat s1, nat s2 )
+    {
+        const nat b1 = rib[r].next;
+        const nat c1 = rib[b1].next;
+        const nat b2 = rib[rib[r].twin].next;
+        const nat c2 = rib[b2].next;
+        const nat a = rib[b1].vert;
+        const nat b = rib[c1].vert;
+        const nat c = rib[b2].vert;
+        const nat d = rib[c2].vert;
+        const Vector2d ab = vert[b] - vert[a];
+        const Vector2d bc = vert[c] - vert[b];
+        const Vector2d cd = vert[d] - vert[c];
+        const Vector2d da = vert[a] - vert[d];
+        const Vector2d ca = vert[a] - vert[c];
+        const Vector2d db = vert[b] - vert[d];
+        const double t1 = _min ( value[s1], value[s2] );
+        const double q1 = minTan ( ab, -db, da );
+        const double q2 = minTan ( db, bc, cd );
+        const double t2 = _min ( q1, q2 );
+        if ( t2 > t1 )
+        {
+            value[s1] = q1;
+            value[s2] = q2;
+            return true;
+        }
+        return false;
+    }
+};
+
+void rebuildDelauney ( CCArrRef<Vector2d> & vert, CCArrRef<Set3<nat> > & trian, DynArray<SemiRib> & rib )
+{
+    optiL ( F_MinTan ( vert ), trian, rib );
 }
 
 ArrRef<Set3<nat> > & rebuildDelauney ( CCArrRef<Vector2d> & vert, ArrRef<Set3<nat> > & res )
@@ -618,7 +681,7 @@ bool trianTestNat1L1MinTan ( CCArrRef<Vector2d> & vert )
 //
 //**************************** 04.02.2023 *********************************//
 
-bool convexParts ( CCArrRef<nat> & cntr, CCArrRef<Vector2d> & vert, Suite<nat> & cntr2, Suite<nat> & index )
+void convexParts ( CCArrRef<nat> & cntr, CCArrRef<Vector2d> & vert, Suite<nat> & cntr2, Suite<nat> & index )
 {
     cntr2.resize();
     index.resize();
@@ -626,7 +689,7 @@ bool convexParts ( CCArrRef<nat> & cntr, CCArrRef<Vector2d> & vert, Suite<nat> &
     Suite<Set3<nat> > trian;
 // Делаем триангуляцию
     trianSweepLine ( cntr, vert, trian );
-    if ( ! rebuildDelauney ( vert, trian, rib ) ) return false;
+    rebuildDelauney ( vert, trian, rib );
 // Находим диагонали
     nat i;
     const nat nv = vert.size();
@@ -681,14 +744,13 @@ bool convexParts ( CCArrRef<nat> & cntr, CCArrRef<Vector2d> & vert, Suite<nat> &
         }
         while ( j != i );
     }
-    return true;
 }
 
-bool convexParts ( CCArrRef<Vector2d> & vert, Suite<nat> & cntr, Suite<nat> & index )
+void convexParts ( CCArrRef<Vector2d> & vert, Suite<nat> & cntr, Suite<nat> & index )
 {
     FixArray<nat, 1> temp;
     temp[0] = vert.size();
-    return convexParts ( temp, vert, cntr, index );
+    convexParts ( temp, vert, cntr, index );
 }
 
 //**************************** 16.01.2023 *********************************//
@@ -705,7 +767,7 @@ bool splitPolygon ( CCArrRef<nat> & cntr, CCArrRef<Vector2d> & vert, Suite<nat> 
     Suite<Set3<nat> > trian;
 // Делаем триангуляцию
     trianSweepLine ( cntr, vert, trian );
-    if ( ! rebuildDelauney ( vert, trian, rib ) ) return false;
+    rebuildDelauney ( vert, trian, rib );
 // Находим диагонали
     nat i;
     const nat nv = vert.size();

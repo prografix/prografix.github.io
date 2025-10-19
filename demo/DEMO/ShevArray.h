@@ -63,6 +63,11 @@ template <class T> class MutCArrRef : public CArrRef<T>
 {
     void operator= ( const MutCArrRef & );
 public:
+    void reset ( const T * d, nat n )
+    {
+        _data.con = d;
+        _size = n;
+    }
     void reset ( CCArrRef<T> & a )
     {
         _data.con = a();
@@ -436,6 +441,22 @@ public:
         if ( _size + n > real_size ) resizeAndCopy ( _size + n );
         else _size += n;
         return *this;
+    }
+
+    T & insert ( nat i )
+    {
+        if ( i < _size )
+        {
+            if ( _size == real_size ) resizeAndCopy ( _size + 1 );
+            else ++_size;
+            for ( nat j = _size; --j > i; ) _data.var[j] = _data.var[j-1];
+        }
+        else
+        {
+            if ( i >= real_size ) resizeAndCopy ( i + 1 );
+            else _size = i + 1;
+        }
+        return _data.var[i];
     }
 
     SuiteRef & dec ( nat n = 1 )

@@ -338,7 +338,14 @@ public:
         return s;
     }
 
+    Spin3d & reverse ()
+    {
+        t = - t;
+        return *this;
+    }
+
     friend Spin3d operator * ( const Spin3d & l, const Spin3d & r );
+    friend Def<Spin3d> getSpin3d ( const Vector3d & vx, const Vector3d & vy, const Vector3d & vz );
 };
 
 //////////////////////// Ортогональное преобразование /////////////////////////
@@ -357,6 +364,17 @@ public:
     }
 
     Ortho3d ( Vector3d a, double b );
+
+    Def<Spin3d> getSpin3d () const
+    {
+        Def<Spin3d> res = ::getSpin3d ( x, y, z );
+        res.reverse();
+        return res;
+    }
+
+    const Vector3d & getVX () const { return x; }
+    const Vector3d & getVY () const { return y; }
+    const Vector3d & getVZ () const { return z; }
 
     double getX ( const Vector3d & p ) const { return x * p; }
     double getY ( const Vector3d & p ) const { return y * p; }

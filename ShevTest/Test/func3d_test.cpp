@@ -104,7 +104,7 @@ public:
 
 }
 
-inline void _swap ( SortItem<double, TrianFacet *> & p1, SortItem<double, TrianFacet *> & p2 )
+inline void tf_swap ( SortItem<double, TrianFacet *> & p1, SortItem<double, TrianFacet *> & p2 )
 {
     const SortItem<double, TrianFacet *> p ( p1 );
     p1 = p2;
@@ -394,7 +394,7 @@ inline void outLink ( ArrRef<TrianFacet> & facet, nat i, nat j )
     fj.edge[k] = j;
 }
 
-static void putFacet ( TrianFacet & fa, MaxHeap< SortItem<double, TrianFacet*> > & heap )
+static void putFacet ( TrianFacet & fa, MaxHeap< SortItem<double, TrianFacet*>, tf_swap > & heap )
 {
     if ( fa.list.size() == 0 ) return;
     Item1d * p = fa.list.top();
@@ -407,7 +407,7 @@ static void putFacet ( TrianFacet & fa, MaxHeap< SortItem<double, TrianFacet*> >
     heap << SortItem<double, TrianFacet*> ( p->a, & fa );
 }
 
-static void putFacet ( TrianFacet & fa, MaxHeap< SortItem<double, TrianFacet*> > & heap, 
+static void putFacet ( TrianFacet & fa, MaxHeap< SortItem<double, TrianFacet*>, tf_swap > & heap, 
                        CArrRef<Vector3d> vert, const Vector3d & o, double eps )
 {
 // Вычисление приоритета
@@ -567,7 +567,7 @@ bool convex ( CArrRef<Vector3d> point, nat & nv, ArrRef<nat> & iv, nat & nf, Arr
         facet[jm].list.addAftLas ( new Item1d ( max, iv[i] ) );
     }
 // Ставим в очередь грани с внешними точками
-    MaxHeap< SortItem<double, TrianFacet*> > heap ( n - 4 );
+    MaxHeap< SortItem<double, TrianFacet*>, tf_swap > heap ( n - 4 );
     for ( i = 0; i < 4; ++i ) putFacet ( facet[i], heap );
 // Добавляем оставшиеся точки по одной
     Suite<nat> buf1;
@@ -1232,8 +1232,8 @@ void func3d_test ()
 //    minConvexPolyhedronDiameter_test2();
 //    spherePPPP_test();
 //    isConvex_test();
-//    convexHull_test();
-    linkFacets_test();
+    convexHull_test();
+//    linkFacets_test();
 //    getDistance2test();
 //    makeSpin_test();
 //    overlap_test();

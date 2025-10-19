@@ -43,14 +43,6 @@
     }
 */
 
-inline 
-void _swap ( SortItem<double, SortItemPtr<nat> > & p1, SortItem<double, SortItemPtr<nat> > & p2 )
-{
-    _swap ( p1.head, p2.head );
-    _swap ( p1.tail, p2.tail );
-    _swap ( p1.tail.ptr->tail, p2.tail.ptr->tail );
-}
-
 namespace
 {
 

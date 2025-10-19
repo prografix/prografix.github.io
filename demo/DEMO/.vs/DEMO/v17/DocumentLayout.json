@@ -1,0 +1,164 @@
+{
+  "Version": 1,
+  "WorkspaceRootPath": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\demo\\DEMO\\",
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\rus_news.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\maxsphere.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\demo\\demo.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5397DF90-5C3D-46C5-99F2-138FAD1ABEF9}|DEMO.vcxproj|C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\demo\\DEMO\\DEMO.rc||{177559E0-D141-11D0-92DF-00A0C9138C45}|,   b e g i n       0 ! )$  \u0022     ",
+      "RelativeMoniker": "D:0:0:{5397DF90-5C3D-46C5-99F2-138FAD1ABEF9}|DEMO.vcxproj|solutionrelative:DEMO.rc||{177559E0-D141-11D0-92DF-00A0C9138C45}|,   b e g i n       0 ! )$  \u0022     "
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5397DF90-5C3D-46C5-99F2-138FAD1ABEF9}|DEMO.vcxproj|C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\demo\\DEMO\\MaxSphere.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{5397DF90-5C3D-46C5-99F2-138FAD1ABEF9}|DEMO.vcxproj|solutionrelative:MaxSphere.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5397DF90-5C3D-46C5-99F2-138FAD1ABEF9}|DEMO.vcxproj|C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\demo\\DEMO\\draw.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{5397DF90-5C3D-46C5-99F2-138FAD1ABEF9}|DEMO.vcxproj|solutionrelative:draw.h||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5397DF90-5C3D-46C5-99F2-138FAD1ABEF9}|DEMO.vcxproj|C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\demo\\DEMO\\draw.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{5397DF90-5C3D-46C5-99F2-138FAD1ABEF9}|DEMO.vcxproj|solutionrelative:draw.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\demo\\demo61.html||{40D31677-CBC0-4297-A9EF-89D907823A98}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{5397DF90-5C3D-46C5-99F2-138FAD1ABEF9}|DEMO.vcxproj|C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\demo\\DEMO\\CTrian2d.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}",
+      "RelativeMoniker": "D:0:0:{5397DF90-5C3D-46C5-99F2-138FAD1ABEF9}|DEMO.vcxproj|solutionrelative:CTrian2d.cpp||{D0E1A5C6-B359-4E41-9B60-3365922C2A22}"
+    }
+  ],
+  "DocumentGroupContainers": [
+    {
+      "Orientation": 0,
+      "VerticalTabListWidth": 256,
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 6,
+          "Children": [
+            {
+              "$type": "Bookmark",
+              "Name": "ST:128:0:{116d2292-e37d-41cd-a077-ebacac4c8cc4}"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "maxsphere.html",
+              "DocumentMoniker": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\maxsphere.html",
+              "RelativeDocumentMoniker": "..\\..\\maxsphere.html",
+              "ToolTip": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\maxsphere.html",
+              "RelativeToolTip": "..\\..\\maxsphere.html",
+              "ViewState": "AQIAADYAAAAAAAAAAAAAAEQAAAAEAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2023-02-18T12:54:44.554Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 3,
+              "Title": "DEMO.rc - VS_VERSION_INFO [\u0410\u043D\u0433\u043B\u0438\u0439\u0441\u043A\u0438\u0439 (\u0421\u0428\u0410)] - Version",
+              "DocumentMoniker": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\demo\\DEMO\\DEMO.rc",
+              "RelativeDocumentMoniker": "DEMO.rc",
+              "ToolTip": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\demo\\DEMO\\DEMO.rc - VS_VERSION_INFO [\u0410\u043D\u0433\u043B\u0438\u0439\u0441\u043A\u0438\u0439 (\u0421\u0428\u0410)] - Version",
+              "RelativeToolTip": "DEMO.rc - VS_VERSION_INFO [\u0410\u043D\u0433\u043B\u0438\u0439\u0441\u043A\u0438\u0439 (\u0421\u0428\u0410)] - Version",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.002870|",
+              "WhenOpened": "2023-02-18T12:50:55.741Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 4,
+              "Title": "MaxSphere.cpp",
+              "DocumentMoniker": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\demo\\DEMO\\MaxSphere.cpp",
+              "RelativeDocumentMoniker": "MaxSphere.cpp",
+              "ToolTip": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\demo\\DEMO\\MaxSphere.cpp",
+              "RelativeToolTip": "MaxSphere.cpp",
+              "ViewState": "AQIAAD8AAAAAAAAAAAAAAFIAAAA1AAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2023-02-18T12:44:21.806Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 5,
+              "Title": "draw.h",
+              "DocumentMoniker": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\demo\\DEMO\\draw.h",
+              "RelativeDocumentMoniker": "draw.h",
+              "ToolTip": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\demo\\DEMO\\draw.h",
+              "RelativeToolTip": "draw.h",
+              "ViewState": "AQIAABsAAAAAAAAAAAAAAC8AAABhAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000680|",
+              "WhenOpened": "2023-02-18T12:41:54.598Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 6,
+              "Title": "draw.cpp",
+              "DocumentMoniker": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\demo\\DEMO\\draw.cpp",
+              "RelativeDocumentMoniker": "draw.cpp",
+              "ToolTip": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\demo\\DEMO\\draw.cpp",
+              "RelativeToolTip": "draw.cpp",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAYAAAANAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2023-02-18T12:39:40.703Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "rus_news.html",
+              "DocumentMoniker": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\rus_news.html",
+              "RelativeDocumentMoniker": "..\\..\\rus_news.html",
+              "ToolTip": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\rus_news.html",
+              "RelativeToolTip": "..\\..\\rus_news.html",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAABNAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2023-02-04T09:06:39.67Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 7,
+              "Title": "demo61.html",
+              "DocumentMoniker": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\demo\\demo61.html",
+              "RelativeDocumentMoniker": "..\\demo61.html",
+              "ToolTip": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\demo\\demo61.html",
+              "RelativeToolTip": "..\\demo61.html",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAwAAAABAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2023-02-04T08:02:49.848Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "demo.html",
+              "DocumentMoniker": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\demo\\demo.html",
+              "RelativeDocumentMoniker": "..\\demo.html",
+              "ToolTip": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\demo\\demo.html",
+              "RelativeToolTip": "..\\demo.html",
+              "ViewState": "AQIAAAAAAAAAAAAAAAAAAAQAAAASAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001512|",
+              "WhenOpened": "2023-01-29T09:15:02.479Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "CTrian2d.cpp",
+              "DocumentMoniker": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\demo\\DEMO\\CTrian2d.cpp",
+              "RelativeDocumentMoniker": "CTrian2d.cpp",
+              "ToolTip": "C:\\Users\\Lenovo\\Documents\\GitHub\\prografix.github.io\\demo\\DEMO\\CTrian2d.cpp",
+              "RelativeToolTip": "CTrian2d.cpp",
+              "ViewState": "AQIAAFcAAAAAAAAAAADwv1YAAAAYAAAA",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000677|",
+              "WhenOpened": "2023-01-28T07:25:21.001Z"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

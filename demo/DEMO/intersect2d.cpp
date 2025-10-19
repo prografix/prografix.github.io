@@ -567,7 +567,7 @@ inline void put ( Suite<Vector2d> & p, const Vector2d & v )
     if ( p.size() == 0 || p.las() != v ) p.inc() = v;
 }
 
-bool intersection ( CArrRef<Vector2d> poly1, CArrRef<Vector2d> poly2, Suite< Suite<Vector2d> > & res )
+bool intersection ( CCArrRef<Vector2d> & poly1, CCArrRef<Vector2d> & poly2, Suite< Suite<Vector2d> > & res )
 {
     res.resize();
     if ( poly1.size() < 3 || poly2.size() < 3 ) return true;
@@ -908,6 +908,51 @@ bool intersection ( CArrRef<Vector2d> poly1, CArrRef<Vector2d> poly2, Suite< Sui
             if ( p3.size() < 3 ) res.dec();
         }
         while ( itog.next() );
+    }
+    return true;
+}
+
+//**************************** 24.11.2023 *********************************//
+//
+//           ѕересечение полуплоскостей содержащих центр координат
+//
+//**************************** 15.12.2023 *********************************//
+
+bool intersectHalfPlanes ( CCArrRef<Line2d> & line, DynArrRef<Vector2d> & poly )
+{
+    const nat n = line.size();
+    if ( n < 3 )
+        return false;
+    nat i;
+// ƒвойственное преобразование
+    DynArray<Vector2d> point ( n );
+    for ( i = 0; i < n; ++i )
+    {
+        const Line2d & p = line[i];
+        if ( p.dist >= 0 )
+            return false;
+        Vector2d & v = point[i];
+        v.x = p.norm.x / p.dist;
+        v.y = p.norm.y / p.dist;
+    }
+// ѕостроение выпуклой оболочки
+    Suite<nat> index;
+    convexNlogN ( point, index );
+    const nat nv = index.size();
+    if ( nv < 3 )
+        return false;
+// «аполнение многоугольника с двойственным преобразованием
+    poly.resize ( nv );
+    nat ip = index.las();
+    for ( i = 0; i < nv; ++i )
+    {
+        const nat ic = index[i];
+        const Vector2d & a = point[ip];
+        const Vector2d & b = point[ic];
+        const Vector2d norm ( a.y - b.y, b.x - a.x );
+        const double dist = - ( norm * b );
+        poly[i] = Vector2d (norm.x / dist, norm.y / dist);
+        ip = ic;
     }
     return true;
 }

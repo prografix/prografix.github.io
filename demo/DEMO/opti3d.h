@@ -238,7 +238,7 @@ Def<Conform3d> maxPolyhedronInConvexPolyhedronNR ( const Polyhedron & inner, con
 //     Максимальный многогранник вписанный в выпуклый многогранник 
 //               с вращением вокруг заданной оси
 //
-//**************************** 30.03.2015 *********************************//
+//**************************** 24.02.2023 *********************************//
 
 Def<Conform3d> maxPolyhedronInConvexPolyhedron1R ( const Polyhedron & inner, 
                                                    const Vector3d & az, nat sym,

@@ -1302,11 +1302,9 @@ bool slu_LDLt ( nat n, const Suite<SortItem<nat, double> > * data, const double 
 //
 //*********************** 11.11.2023 **************************//
 
-inline void _swap ( SortItem<nat, Set2<nat> *> & p1, SortItem<nat, Set2<nat> *> & p2 )
+inline void s2n_swap ( SortItem<nat, Set2<nat> *> & p1, SortItem<nat, Set2<nat> *> & p2 )
 {
-    const SortItem<nat, Set2<nat> *> p ( p1 );
-    p1 = p2;
-    p2 = p;
+    _swap ( p1, p2 );
     _swap ( p1.tail->b, p2.tail->b );
 }
 
@@ -1319,7 +1317,7 @@ bool slu_LDLtO ( nat n, const Suite<SortItem<nat, double> > * data, const double
     nat * m = fi + n;
     // Переставим столбцы и строки для увеличения лидирующих нулей
     {
-        MinHeap< SortItem<nat, Set2<nat> *> > heap ( n );
+        MinHeap<SortItem<nat, Set2<nat> *>, s2n_swap> heap ( n );
         DynArray<Set2<nat> > elem ( n );
         for ( i = 0; i < n; ++i )
         {

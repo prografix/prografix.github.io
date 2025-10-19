@@ -18,6 +18,8 @@ public:
     ArrRef2 ( ArrRef<T> & a, nat i, nat n0, nat n1 ) : ArrRef<T>( a, i, n0*n1 ), _size0(n0), _size1(n1) {}
     ArrRef <T> operator[] ( nat i )       { return  ArrRef<T> ( *this, i * _size1, _size1 ); }
     CArrRef<T> operator[] ( nat i ) const { return CArrRef<T> ( *this, i * _size1, _size1 ); }
+          T * operator() ( nat i )       { return ArrRef<T>::operator() ( i * _size1 ); }
+    const T * operator() ( nat i ) const { return ArrRef<T>::operator() ( i * _size1 ); }
     nat size0 () const { return _size0; }
     nat size1 () const { return _size1; }
     ArrRef2 & fill ( const T & p )
@@ -51,6 +53,8 @@ template <class T> class DynArray2 : public ArrRef2<T>
 {
     DynArray2 ( const DynArray2 & );
 public:
+    DynArray2 () : ArrRef2<T> ( 0, 0, 0 ) {}
+
     DynArray2 ( nat n0, nat n1 ) : ArrRef2<T> ( new T[n0*n1], n0, n1 ) {}
 
     ~DynArray2 () { delete[] _data.var; }

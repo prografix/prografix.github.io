@@ -79,8 +79,8 @@ bool trianTestNat1L1MinTan ( CCArrRef<Vector2d> & vert );
 //
 //**************************** 04.02.2023 *********************************//
 
-bool convexParts ( CCArrRef<nat> & cntr, CCArrRef<Vector2d> & vert, Suite<nat> & cntr2, Suite<nat> & index );
-bool convexParts ( CCArrRef<Vector2d> & vert, Suite<nat> & cntr, Suite<nat> & index );
+void convexParts ( CCArrRef<nat> & cntr, CCArrRef<Vector2d> & vert, Suite<nat> & cntr2, Suite<nat> & index );
+void convexParts ( CCArrRef<Vector2d> & vert, Suite<nat> & cntr, Suite<nat> & index );
 
 
 //**************************** 16.01.2023 *********************************//

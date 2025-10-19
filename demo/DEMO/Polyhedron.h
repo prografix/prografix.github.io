@@ -1,6 +1,5 @@
 
-#ifndef POLYHEDRON_H
-#define POLYHEDRON_H
+#pragma once
 
 #include "ShevArray.h"
 #include "Vector3d.h"
@@ -129,6 +128,8 @@ namespace Shev
         }
         // Тетраэдр ( r - макс. значение координат вершин )
         Polyhedron & makeTetrahedron ( double r ); 
+        // Пирамида ( r - макс. значение координат вершин )
+        Polyhedron & makePyramid ( double r );
         // Октаэдр  ( r - макс. значение координат вершин ) 
         Polyhedron & makeOctahedron  ( double r ); 
         // Прямоугольный параллелепипед ( x, y, z - половины сторон )
@@ -222,8 +223,7 @@ void check ( const Polyhedron & poly, IPolyhedronErrorRecipient & rec );
 //
 //**************************** 29.04.2011 ****************************
 
-bool distance ( const Polyhedron & poly, const Vector3d & point, double & dist, 
-                nat & vi, nat & ei, nat & fi );
+bool distance ( const Polyhedron & poly, const Vector3d & point, double & dist, nat & vi, nat & ei, nat & fi );
 
 inline bool distance ( const Polyhedron & poly, const Vector3d & point, double & dist )
 {
@@ -231,4 +231,23 @@ inline bool distance ( const Polyhedron & poly, const Vector3d & point, double &
     return distance ( poly, point, dist, vi, ei, fi );
 }
 
-#endif
+
+//********************** 04.05.2023 ***************************//
+//
+//           Нормализация многогранника ( версия 1 )
+//         Минимизация суммы квадратов сдвигов вершин
+// Нормали граней с количеством вершин больше трёх не меняются
+//
+//********************** 04.05.2023 ***************************//
+
+bool normalizeV1 ( Polyhedron & poly );
+
+
+//********************** 08.04.2024 ***************************//
+//
+//           Нормализация многогранника ( версия 2 )
+//         Минимизация суммы квадратов сдвигов вершин
+//
+//********************** 08.04.2024 ***************************//
+
+bool normalizeV2 ( Polyhedron & poly );

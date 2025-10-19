@@ -24,7 +24,8 @@ public:
     void clear() { _size = 0; }
 };
 
-template <class T> // ќчередь с максимальным приоритетом
+// ќчередь с максимальным приоритетом
+template <class T, void (swap_func) ( T & i1, T & i2 ) = _swap<T>> 
 class MaxHeap : public BaseHeap<T>
 {
 // «апрет конструктора копии и оператора присваивани€
@@ -40,7 +41,7 @@ public:
         {
             const nat j = i >> 1;
             if ( heap[j] >= heap[i] ) break;
-            _swap ( heap[i], heap[j] );
+            swap_func ( heap[i], heap[j] );
             i = j;
         }
     }
@@ -54,7 +55,7 @@ public:
             const nat i2 = i1 + 1;
             const nat j = i2 > _size ? i1 : heap[i1] >= heap[i2] ? i1 : i2;
             if ( heap[i] >= heap[j] ) break;
-            _swap ( heap[i], heap[j] );
+            swap_func ( heap[i], heap[j] );
             i = j;
         }
     }
@@ -64,7 +65,7 @@ public:
         if ( i >= _size ) return false;
         const nat i1 = i + 1;
         if ( i1 == _size ) { _size--; return true; }
-        _swap ( heap[i1], heap[_size] );
+        swap_func ( heap[i1], heap[_size] );
         if ( heap[i1] < heap[_size--] )
             down ( i );
         else
@@ -84,7 +85,7 @@ public:
     {
         if ( _size == 0 ) return false;
         o = heap[1];
-        _swap ( heap[1], heap[_size--] );
+        swap_func ( heap[1], heap[_size--] );
         down ( 0 );
         return true;
     }
@@ -106,7 +107,8 @@ template<class T> bool testMaxHeap ( const MaxHeap<T> & heap )
     return true;
 }
 
-template <class T> // ќчередь с минимальным приоритетом
+// ќчередь с минимальным приоритетом
+template <class T, void (swap_func) ( T & i1, T & i2 ) = _swap<T>> 
 class MinHeap : public BaseHeap<T>
 {
 // «апрет конструктора копии и оператора присваивани€
@@ -122,7 +124,7 @@ public:
         {
             const nat j = i >> 1;
             if ( heap[j] <= heap[i] ) break;
-            _swap ( heap[i], heap[j] );
+            swap_func ( heap[i], heap[j] );
             i = j;
         }
     }
@@ -136,7 +138,7 @@ public:
             const nat i2 = i1 + 1;
             const nat j = i2 > _size ? i1 : heap[i1] <= heap[i2] ? i1 : i2;
             if ( heap[i] <= heap[j] ) break;
-            _swap ( heap[i], heap[j] );
+            swap_func ( heap[i], heap[j] );
             i = j;
         }
     }
@@ -146,7 +148,7 @@ public:
         if ( i >= _size ) return false;
         const nat i1 = i + 1;
         if ( i1 == _size ) { _size--; return true; }
-        _swap ( heap[i1], heap[_size] );
+        swap_func ( heap[i1], heap[_size] );
         if ( heap[i1] > heap[_size--] )
             down ( i );
         else
@@ -166,7 +168,7 @@ public:
     {
         if ( _size == 0 ) return false;
         o = heap[1];
-        _swap ( heap[1], heap[_size--] );
+        swap_func ( heap[1], heap[_size--] );
         down ( 0 );
         return true;
     }
@@ -190,8 +192,9 @@ template<class T> bool testMinHeap ( const MinHeap<T> & heap )
 
 #include "ShevArray.h"
 
-template <class T>
-class MaxDynHeap // ќчередь с максимальным приоритетом
+// ќчередь с максимальным приоритетом
+template <class T, void (swap_func) ( T & i1, T & i2 ) = _swap<T>>
+class MaxDynHeap
 {
     Suite<T> heap;
 // «апрет конструктора копии и оператора присваивани€
@@ -214,7 +217,7 @@ public:
         {
             const nat j = i >> 1;
             if ( heap[j] >= heap[i] ) break;
-            _swap ( heap[i], heap[j] );
+            swap_func ( heap[i], heap[j] );
             i = j;
         }
     }
@@ -228,7 +231,7 @@ public:
             const nat i2 = i1 + 1;
             const nat j = i2 >= heap.size() ? i1 : heap[i1] >= heap[i2] ? i1 : i2;
             if ( heap[i] >= heap[j] ) break;
-            _swap ( heap[i], heap[j] );
+            swap_func ( heap[i], heap[j] );
             i = j;
         }
     }
@@ -244,7 +247,7 @@ public:
         else
         {
             T & t = heap.las();
-            _swap ( heap[i1], t );
+            swap_func ( heap[i1], t );
             heap.dec();
             if ( heap[i1] < t )
                 down ( i );
@@ -264,15 +267,16 @@ public:
     {
         if ( heap.size() == 1 ) return false;
         t = heap[1];
-        _swap ( heap[1], heap.las() );
+        swap_func ( heap[1], heap.las() );
         heap.dec();
         down ( 0 );
         return true;
     }
 };
 
-template <class T>
-class MinDynHeap // ќчередь с минимальным приоритетом
+// ќчередь с минимальным приоритетом
+template <class T, void (swap_func) ( T & i1, T & i2 ) = _swap<T>>
+class MinDynHeap
 {
     Suite<T> heap;
 // «апрет конструктора копии и оператора присваивани€
@@ -295,7 +299,7 @@ public:
         {
             const nat j = i >> 1;
             if ( heap[j] <= heap[i] ) break;
-            _swap ( heap[i], heap[j] );
+            swap_func ( heap[i], heap[j] );
             i = j;
         }
     }
@@ -309,7 +313,7 @@ public:
             const nat i2 = i1 + 1;
             const nat j = i2 >= heap.size() ? i1 : heap[i1] <= heap[i2] ? i1 : i2;
             if ( heap[i] <= heap[j] ) break;
-            _swap ( heap[i], heap[j] );
+            swap_func ( heap[i], heap[j] );
             i = j;
         }
     }
@@ -325,7 +329,7 @@ public:
         else
         {
             T & t = heap.las();
-            _swap ( heap[i1], t );
+            swap_func ( heap[i1], t );
             heap.dec();
             if ( heap[i1] > t )
                 down ( i );
@@ -345,7 +349,7 @@ public:
     {
         if ( heap.size() == 1 ) return false;
         t = heap[1];
-        _swap ( heap[1], heap.las() );
+        swap_func ( heap[1], heap.las() );
         heap.dec();
         down ( 0 );
         return true;

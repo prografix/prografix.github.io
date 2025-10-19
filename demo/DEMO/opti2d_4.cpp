@@ -1208,14 +1208,6 @@ bool maxQuadInConvexPolygonA ( FixArrRef<Vector2d, 4> & quad, CCArrRef<Vector2d>
 //
 //**************************** 04.12.2015 *********************************//
 
-inline void _swap ( _ChainLink<Item1n> & p1, _ChainLink<Item1n> & p2 )
-{
-    const _ChainLink<Item1n> p ( p1 );
-    p1 = p2;
-    p2 = p;
-    ::_swap ( p1.tail->info, p2.tail->info );
-}
-
 class NListMaxArea
 {
     List1n & list;

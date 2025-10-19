@@ -304,11 +304,18 @@ inline bool operator <= ( const _ChainLink<T> & p1, const _ChainLink<T> & p2 )
     return p1.head <= p2.head;
 }
 
+template <class T>
+inline void chl_swap ( _ChainLink<T> & p1, _ChainLink<T> & p2 )
+{
+    _swap ( p1, p2 );
+    _swap ( p1.tail->info, p2.tail->info );
+}
+
 template <class T, class Func, class Remove>
 void simplifyChain ( List<T> & list, Func & func, Remove & remove, nat n, double eps = 1e300 )
 {
     if ( list.size() <= n ) return;
-    MinHeap< _ChainLink<T> > heap ( list.size() );
+    MinHeap<_ChainLink<T>, chl_swap> heap ( list.size() );
     _ChainLink<T> pd;
     list.top();
     nat i = 0;

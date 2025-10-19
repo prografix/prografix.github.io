@@ -268,22 +268,6 @@ Spin3d::Spin3d ( const double & a, const double & b, const double & c, const dou
     }
 }
 
-Spin3d operator * ( const Spin3d & l, const Spin3d & r )
-{
-    Spin3d p;
-    p.t = l.t * r.t - l.x * r.x - l.y * r.y - l.z * r.z;
-    p.x = l.t * r.x + l.x * r.t + l.y * r.z - l.z * r.y;
-    p.y = l.t * r.y + l.y * r.t + l.z * r.x - l.x * r.z;
-    p.z = l.t * r.z + l.z * r.t + l.x * r.y - l.y * r.x;
-    double d = p.t * p.t + p.x * p.x + p.y * p.y + p.z * p.z;
-    if ( fabs ( d - 1.) > 1e-14 )
-    {
-        d = 1./ sqrt ( d );
-        p.t *= d; p.x *= d; p.y *= d; p.z *= d;
-    }
-    return p;
-}
-
 Vector3d Spin3d::getAxis () const
 {
     return ( !x && !y && !z ) ? Vector3d ( 1., 0., 0. ) : Vector3d ( x, y, z ).setNorm2();
@@ -324,6 +308,50 @@ void Spin3d::getReper ( Vector3d & ax, Vector3d & ay, Vector3d & az ) const
     ax.x = tt + xx - yy - zz; ax.y = 2. * ( xy - zt );  ax.z = 2. * ( zx + yt );
     ay.x = 2. * ( xy + zt );  ay.y = tt + yy - zz - xx; ay.z = 2. * ( yz - xt );
     az.x = 2. * ( zx - yt );  az.y = 2. * ( yz + xt );  az.z = tt + zz - xx - yy;
+}
+
+Spin3d operator * ( const Spin3d & l, const Spin3d & r )
+{
+    Spin3d p;
+    p.t = l.t * r.t - l.x * r.x - l.y * r.y - l.z * r.z;
+    p.x = l.t * r.x + l.x * r.t + l.y * r.z - l.z * r.y;
+    p.y = l.t * r.y + l.y * r.t + l.z * r.x - l.x * r.z;
+    p.z = l.t * r.z + l.z * r.t + l.x * r.y - l.y * r.x;
+    double d = p.t * p.t + p.x * p.x + p.y * p.y + p.z * p.z;
+    if ( fabs ( d - 1.) > 1e-14 )
+    {
+        d = 1./ sqrt ( d );
+        p.t *= d; p.x *= d; p.y *= d; p.z *= d;
+    }
+    return p;
+}
+
+Def<Spin3d> getSpin3d ( const Vector3d & vx, const Vector3d & vy, const Vector3d & vz )
+{
+    SMatrix<double, 4, 4> a, v;
+    a[0][0] = vx.x - vy.y - vz.z;
+    a[0][1] = vx.y + vy.x;
+    a[0][2] = vx.z + vz.x;
+    a[0][3] = vy.z - vz.y;
+    a[1][1] = vy.y - vz.z - vx.x;
+    a[1][2] = vy.z + vz.y;
+    a[1][3] = vz.x - vx.z;
+    a[2][2] = vz.z - vy.y - vx.x;
+    a[2][3] = vx.y - vy.x;
+    a[3][3] = vx.x + vy.y + vz.z;
+    double d[4];
+    jacobi ( 4, a, d, v );
+    nat im = 0;
+    double max = fabs ( d[0] );
+    for ( nat i = 1; i < 4; ++i ) if ( _maxa ( max, fabs ( d[i] ) ) ) im = i;
+    Def<Spin3d> res;
+    if ( d[im] <= 0 ) return res;
+    res.x = v[0][im];
+    res.y = v[1][im];
+    res.z = v[2][im];
+    res.t = v[3][im];
+    res.isDef = true;
+    return res;
 }
 
 //////////////////////// Ортогональное преобразование /////////////////////////

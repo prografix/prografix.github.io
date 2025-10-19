@@ -7,6 +7,14 @@
 #include "ShevArray.h"
 #include "DoubleN.h"
 
+
+//*******************************************************************//
+//
+//         Проволочная модель N-мерного многогранника
+//
+//*******************************************************************//
+
+
 template <nat16 N> 
 class Vertex : public ShevItem
 {
@@ -112,7 +120,6 @@ void WireModel<N>::newVert ( List< Vertex<N> > & temp1, List< Vertex<N> > & temp
             {
                 Vertex<N> * vert2 = p1[i];
                 if ( vert2->data < 0 ) continue;
-                nat16 * num2 = vert2->nfacet;
                 Vertex<N> * vert3 = temp2.addNewBefFir ( stor );
 				vert3->coor = vert2->coor;
 				vert3->coor -= vert1->coor;
@@ -144,7 +151,6 @@ void WireModel<N>::newVert ( List< Vertex<N> > & temp1, List< Vertex<N> > & temp
             {
                 Vertex<N> * vert2 = p1[i];
                 if ( vert2->data >= 0 ) continue;
-                nat16 * num2 = vert2->nfacet;
                 Vertex<N> * vert3 = temp2.addNewBefFir ( stor );
 				vert3->coor = vert2->coor;
 				vert3->coor -= vert1->coor;
@@ -175,14 +181,12 @@ void WireModel<N>::newVert ( List< Vertex<N> > & temp1, List< Vertex<N> > & temp
 }
 
 template <nat16 N> 
-class SegmentId;
+struct SegmentId;
 
 template <> 
-class SegmentId<3>
+struct SegmentId<3>
 {
-    nat16 id0;
-public:
-    nat16 summa;
+    nat16 id0, summa;
 
     SegmentId () {}
     SegmentId ( nat16 i, const nat16 * num )
@@ -201,11 +205,9 @@ public:
 };
 
 template <> 
-class SegmentId<4>
+struct SegmentId<4>
 {
-    nat16 id0, id1;
-public:
-    nat16 summa;
+    nat16 id0, id1, summa;
 
     SegmentId () {}
     SegmentId ( nat16 i, const nat16 * num )
@@ -225,11 +227,9 @@ public:
 };
 
 template <> 
-class SegmentId<5>
+struct SegmentId<5>
 {
-    nat16 id0, id1, id2;
-public:
-    nat16 summa;
+    nat16 id0, id1, id2, summa;
 
     SegmentId () {}
     SegmentId ( nat16 i, const nat16 * num )
@@ -250,11 +250,9 @@ public:
 };
 
 template <> 
-class SegmentId<6>
+struct SegmentId<6>
 {
-    nat16 id0, id1, id2, id3;
-public:
-    nat16 summa;
+    nat16 id0, id1, id2, id3, summa;
 
     SegmentId () {}
     SegmentId ( nat16 i, const nat16 * num )
@@ -276,11 +274,9 @@ public:
 };
 
 template <> 
-class SegmentId<7>
+struct SegmentId<7>
 {
-    nat16 id0, id1, id2, id3, id4;
-public:
-    nat16 summa;
+    nat16 id0, id1, id2, id3, id4, summa;
 
     SegmentId () {}
     SegmentId ( nat16 i, const nat16 * num )
@@ -303,11 +299,9 @@ public:
 };
 
 template <> 
-class SegmentId<8>
+struct SegmentId<8>
 {
-    nat16 id0, id1, id2, id3, id4, id5;
-public:
-    nat16 summa;
+    nat16 id0, id1, id2, id3, id4, id5, summa;
 
     SegmentId () {}
     SegmentId ( nat16 i, const nat16 * num )
@@ -331,11 +325,9 @@ public:
 };
 
 template <> 
-class SegmentId<9>
+struct SegmentId<9>
 {
-    nat16 id0, id1, id2, id3, id4, id5, id6;
-public:
-    nat16 summa;
+    nat16 id0, id1, id2, id3, id4, id5, id6, summa;
 
     SegmentId () {}
     SegmentId ( nat16 i, const nat16 * num )
@@ -361,11 +353,9 @@ public:
 };
 
 template <> 
-class SegmentId<10>
+struct SegmentId<10>
 {
-    nat16 id0, id1, id2, id3, id4, id5, id6, id7;
-public:
-    nat16 summa;
+    nat16 id0, id1, id2, id3, id4, id5, id6, id7, summa;
 
     SegmentId () {}
     SegmentId ( nat16 i, const nat16 * num )
@@ -391,21 +381,21 @@ public:
     }
 };
 
-template <nat16 N> 
-class SegmentEnd
+template <nat16 N, typename T> 
+struct SegmentEnd
 {
-public:
     SegmentId<N> id;
-    Vertex<N> * parent;
-    Vertex<N> ** link;
+    T * parent;
+    T ** link;
     SegmentEnd * next;
 };
 
 template <nat16 N> 
 void WireModel<N>::newLink ( List< Vertex<N> > & list )
 {
-    DynArray<SegmentEnd<N> > table ( ( N - 1 ) * list.size() / 2 );
-    FixArray<SegmentEnd<N> *, 64> entry;
+    typedef SegmentEnd<N, Vertex<N> > SegmEnd;
+    DynArray<SegmEnd> table ( ( N - 1 ) * list.size() / 2 );
+    FixArray<SegmEnd *, 64> entry;
     entry.fill ( 0 );
     nat n = 0;
     list.top();
@@ -416,8 +406,8 @@ void WireModel<N>::newLink ( List< Vertex<N> > & list )
         {
             const SegmentId<N> id ( i, vert->nfacet );
             const nat16 k = id.summa & 63;
-            SegmentEnd<N> ** pre = & entry[k];
-            SegmentEnd<N> * sb = *pre;
+            SegmEnd ** pre = & entry[k];
+            SegmEnd * sb = *pre;
             while ( sb != 0 )
             {
                 if ( sb->id == id )
@@ -478,7 +468,6 @@ WireModel<N> & WireModel<N>::cut ( const Double<N+1> & g, List< Vertex<N> > & st
         {
             Vertex<N> * vert2 = p1[i];
             if ( vert2->data < 0 ) continue;
-            nat16 * num2 = vert2->nfacet;
             Vertex<N> * vert3 = temp.addNewBefFir ( stor );
 			vert3->coor = vert2->coor;
 			vert3->coor -= vert1->coor;
@@ -584,3 +573,253 @@ bool copy ( const WireModel<N> & a, WireModel<N> & b, List< Vertex<N> > & stor,
     while ( vlist.next() && b.vlist.next() );
     return true;
 }
+
+
+//************************* 02.05.2013 ******************************//
+//
+//         Расширенная проволочная модель многогранника
+//
+//************************* 14.01.2018 ******************************//
+
+
+template <nat16 N, typename T, nat16 M = N> 
+struct VertexEx : public ShevItem
+{
+    VertexEx *  vertex[N];  // указатели на соседние вершины 
+    nat16       nfacet[N];  // номера образующих граней
+    Double<M>   coor;       // координаты данной вершины
+    double      data;       // служебная переменная
+    VertexEx * tmp1, * tmp2;// служебные переменные
+    T           extra;      // дополнительная переменная
+
+    VertexEx & operator += ( const Double<M> & p )
+    {
+        coor += p;  return *this;
+    }
+
+    VertexEx & operator -= ( const Double<M> & p )
+    {
+        coor -= p;  return *this;
+    }
+
+    VertexEx & operator *= ( const Double<M> & p )
+    {
+        coor *= p;  return *this;
+    }
+};
+
+template <nat16 N, typename T> 
+class WireModelEx // N-мерный многограник
+{
+protected:
+    void separat ( const Double<N+1> & g, List<T> & temp );
+    void newVert ( List<T> & temp1, List<T> & temp2, List<T> & stor );
+    void newLink ( List<T> & list );
+public:
+    nat16 count;
+    List<T> vlist;
+    void ( * newVertFunc ) ( List<T> & vlist );
+    void ( * newLinkFunc ) ( List<T> & vlist );
+
+    WireModelEx() : newVertFunc ( 0 ), newLinkFunc ( 0 ) {}
+    WireModelEx & cut ( const Double<N+1> & g, List<T> & stor );
+    WireModelEx & cut ( const Double<N+1> & g, List<T> & stor, WireModelEx & part );
+    WireModelEx & simplex ( double d, List<T> & stor );
+};
+
+template <nat16 N, typename T> 
+WireModelEx<N, T> & WireModelEx<N, T>::simplex ( double d, List<T> & stor )
+{
+    Double<N> dn;
+    dn.fill ( 0 );
+    double * q = &dn.d0;
+    T * varr[N+1];
+    nat16 i;
+    vlist.resize ( N+1, stor ).top();
+    for ( i = 0; i < N; ++i )
+    {
+        q[i] = d;
+        ( varr[i] = vlist.cur() )->coor = dn;
+        vlist.next();
+        q[i] = 0.;
+    }
+    ( varr[N] = vlist.cur() )->coor = dn;
+    for ( i = 0; i <= N; ++i )
+    {
+        nat16 k = 0;
+        T * vert = varr[i];
+        for ( nat16 l = 0; l <= N; ++l )
+        {
+            if ( l == i ) continue;
+            vert->vertex[k] = varr[l];
+            vert->nfacet[k++] = l;
+        }
+    }
+    count = N + 1;
+    return *this;
+}
+
+template <nat16 N, typename T> 
+void WireModelEx<N, T>::separat ( const Double<N+1> & g, List<T> & temp )
+{
+    for(;;)
+    {
+        T * vert = vlist.cur();
+        double d = g % vert->coor;
+        if ( fabs ( d ) < 1e-10 ) d = 0.;
+        if ( ( vert->data = d ) >= 0 )
+        {
+            if ( vlist.movCurAftLas_ ( temp ) ) break;
+            continue;
+        }
+        if ( ! vlist.next() ) break;
+    }
+}
+
+template <nat16 N, typename T> 
+void WireModelEx<N, T>::newVert ( List<T> & temp1, List<T> & temp2, List<T> & stor )
+{
+	if ( temp1.size() >= vlist.size() )
+	{
+        vlist.top();
+        do
+        {
+            T * vert1 = vlist.cur();
+            T ** p1 = vert1->vertex;
+            nat16 * num1 = vert1->nfacet;
+            for ( nat16 i = 0; i < N; ++i )
+            {
+                T * vert2 = p1[i];
+                if ( vert2->data < 0 ) continue;
+                T * vert3 = temp2.addNewBefFir ( stor );
+				vert3->coor = vert2->coor;
+				vert3->coor -= vert1->coor;
+				vert3->coor *= vert2->data / ( vert1->data - vert2->data );
+				vert3->coor += vert2->coor;
+                nat16 * num3 = vert3->nfacet;
+                nat16 j, k = 0;
+                for ( j = 0; j < N; ++j )
+                {
+                    if ( j == i ) continue;
+                    num3[k++] = num1[j];
+                }
+                num3[N-1] = count;
+                vert3->vertex[N-1] = vert1;
+                p1[i] = vert3;
+            }
+        }
+        while ( vlist.next() );
+	}
+	else
+	{
+        temp1.top();
+        do
+        {
+            T * vert1 = temp1.cur();
+            T ** p1 = vert1->vertex;
+            nat16 * num1 = vert1->nfacet;
+            for ( nat16 i = 0; i < N; ++i )
+            {
+                T * vert2 = p1[i];
+                if ( vert2->data >= 0 ) continue;
+                T * vert3 = temp2.addNewBefFir ( stor );
+				vert3->coor = vert2->coor;
+				vert3->coor -= vert1->coor;
+				vert3->coor *= vert2->data / ( vert1->data - vert2->data );
+				vert3->coor += vert2->coor;
+                nat16 * num3 = vert3->nfacet;
+                nat16 j, k = 0;
+                for ( j = 0; j < N; ++j )
+                {
+                    if ( j == i ) continue;
+                    num3[k++] = num1[j];
+                }
+                num3[N-1] = count;
+                vert3->vertex[N-1] = vert2;
+				T ** p2 = vert2->vertex;
+                for ( j = 0; j < N; ++j )
+                {
+					if ( p2[j] == vert1 )
+					{
+						p2[j] = vert3;
+						break;
+					}
+				}
+            }
+        }
+        while ( temp1.next() );
+	}
+}
+
+template <nat16 N, typename T> 
+void WireModelEx<N, T>::newLink ( List<T> & list )
+{
+    typedef SegmentEnd<N, T> SegmEnd;
+    DynArray<SegmEnd> table ( ( N - 1 ) * list.size() / 2 );
+    FixArray<SegmEnd *, 128> entry;
+    entry.fill ( 0 );
+    nat n = 0;
+    list.top();
+    do
+    {
+        T * vert = list.cur();
+        for ( nat16 i = 0; i < N-1; ++i )
+        {
+            const SegmentId<N> id ( i, vert->nfacet );
+            const nat16 k = id.summa & 127;
+            SegmEnd ** pre = & entry[k];
+            SegmEnd * sb = *pre;
+            while ( sb != 0 )
+            {
+                if ( sb->id == id )
+                {
+                    *sb->link = vert;
+                    vert->vertex[i] = sb->parent;
+                    *pre = sb->next;
+                    goto m1;
+                }
+                pre = &sb->next;
+                sb = sb->next;
+            }
+            sb = & table[n++];
+            sb->id = id;
+            sb->parent = vert;
+            sb->link = vert->vertex + i;
+            sb->next = entry[k];
+            entry[k] = sb;
+m1:;    }
+    }
+    while ( list.next() );
+}
+
+template <nat16 N, typename T> 
+WireModelEx<N, T> & WireModelEx<N, T>::cut ( const Double<N+1> & g, List<T> & stor )
+{
+    if ( vlist.top() == 0 ) return *this;
+    List<T> temp1;
+	separat ( g, temp1 );
+    if ( temp1.size() == 0 ) return *this;
+    if ( vlist.size() == 0 )
+    {
+        temp1.movAllAftLas ( stor );
+        return *this;
+    }
+    List<T> temp2;
+	newVert ( temp1, temp2, stor );
+    if ( newLinkFunc )
+        newLinkFunc ( temp2 );
+    else
+    	newLink ( temp2 );
+    if ( newVertFunc ) newVertFunc ( temp2 );
+    temp2.movAllAftLas ( vlist );
+    temp1.movAllAftLas ( stor );
+    ++count;
+    return *this;
+}
+
+template <nat16 N, typename T, nat16 M> 
+void intersect ( const WireModelEx<N, VertexEx<N, T, M> > & model, const Double<N+1> & g, 
+                 WireModelEx<N-1, VertexEx<N-1, T, M> > & res, List< VertexEx<N-1, T, M> > & stor )
+{
+}
+

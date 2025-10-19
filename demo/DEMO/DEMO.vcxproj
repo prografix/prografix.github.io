@@ -145,6 +145,7 @@
     <ClCompile Include="approx2d.cpp" />
     <ClCompile Include="approx3d.cpp" />
     <ClCompile Include="ApproxCircle.cpp" />
+    <ClCompile Include="atrian.cpp" />
     <ClCompile Include="CTrian2d.cpp" />
     <ClCompile Include="CTrian3d.cpp" />
     <ClCompile Include="DEMO.cpp" />
