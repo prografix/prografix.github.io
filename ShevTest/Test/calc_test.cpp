@@ -386,11 +386,11 @@ double funcD ( double x )
 double func1 (  MuFunc & mu, double x )
 {
     double s = 0;
-    for ( nat n = 1; n <= 40000; n+=1 )
+    for ( nat n = 1; n <= 28000; n+=1 )
     {
-        s += mu(n) * exp ( -M_2PI * x / n ) / n;
+        s += mu(n) * cos ( M_PI * x * n ) / n;
     }
-    return M_PI * s;
+    return s;
 }
 
 double func2 ( MuFunc & mu, double x )
@@ -421,10 +421,10 @@ double func3 ( double x )
 void func_test()
 {
     MuFunc mu;
-    for ( int i = 5; i < 20; i+=1 )
+    for ( int i = 0; i <= 1000; i+=1 )
     {
-        double x = i;
-        display << x << func1 ( mu, x ) << func2 ( mu, x ) << func3 (x) << NL;
+        double x = i * 0.001;
+        display << x << func1 ( mu, x ) << NL;
         //printf ( display.file, "%d %.4e\n", i, s );
     }
     //display << pow (0.9,50)<<pow (0.9,30)<<NL;
