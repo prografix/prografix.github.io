@@ -308,26 +308,21 @@ void run_test()
 //    display << by * ( ax * pa.x + ay * pa.y + az * a.y + bx * pb.x + by * pb.y + bz * b.y + wo ) << 0.5 * f.y * dqdbx ( a, b, o ) << NL;
 //    display << bz * ( ax * pa.x + ay * pa.y + az * a.y + bx * pb.x + by * pb.y + bz * b.y + wo ) << 0.5 * dqdby ( a, b, o ) << NL;
 #else
-    const Vector2d av = vn * ( vn * a ) - a;
-    const Vector2d a2v = ( vn * ( vn * a ) + av ) / d;
-    const Vector2d b2v = ( vn * ( vn * b ) + av ) / d;
     Matrix2<double> mw;
     mw.aa = vn.x * vn.x - 1;
     mw.ab = mw.ba = vn.x * vn.y;
     mw.bb = vn.y * vn.y - 1;
-    //const Vector2d aox ( );
-    const Vector2d boy ( 2 * vn.x * vn.y / d, ( 2 * vn.y * vn.y - 1 ) / d );
-    const Vector2d bpx ( 2*vn.x*vn.y*vn.y / d, vn.y*(vn.y*vn.y-vn.x*vn.x) / d );
-    const Vector2d un = ( o - a ) / d;
-    const double s = un * vn;
-    const Vector2d wa = ( mw * o + ( o * vn ) * vn ) / d - b2v; // const Vector2d wa = ( rn - ( 1 - s ) * vn );
-    const Vector2d ap ( 1-s + vn.x * wa.x, vn.y * wa.x );
-    const Vector2d az ( vn.x * wa.y, 1-s + vn.y * wa.y );
-    const Vector2d bp ( bpx * ( o - a ), bpx % ( a - o ) );
-    const Vector2d bz ( vn.x * boy * ( a - o ), s + vn.y * ( a2v.y - boy * o ) );
+    const Vector2d m ( 2 * vn.x * vn.y, 2 * vn.y * vn.y - 1 );
+    const Vector2d bpx = m * ( vn.y / d );
+    const Vector2d bpy = m * (-vn.x / d );
+    const Vector2d u = o - a;
+    const Vector2d bp ( bpx * u, u % bpx );
+    const Vector2d bz ( bpy * u, u % bpy );
+    const Vector2d ap ( -bp.x - vn.x * vn.x + 1, -bp.y - vn.x * vn.y );
+    const Vector2d az ( -bz.x - vn.x * vn.y, -bz.y - vn.y * vn.y + 1 );
     const Vector2d wo = mw * o; // const Vector2d wo = vn * ( o * vn ) - o;
-    const Vector2d r = mw * ( o - a ); // const Vector2d rn = vn * s - un;
-    display << ap * a.x + az * a.y + bp * b.x + bz * b.y + wo << NL << r << NL;
+    const Vector2d r = mw * u; // const Vector2d rn = vn * s - un;
+//    display << ap * a.x + az * a.y + bp * b.x + bz * b.y + wo << NL << r << NL;
 //    display << ap << NL << drdax ( a, b, o ) << NL;
 //    display << az << NL << drday ( a, b, o ) << NL;
 //    display << bp << NL << drdbx ( a, b, o ) << NL;
@@ -345,7 +340,7 @@ void run_test()
 //    display << ax * pa.x + ay * pa.y + az * a.y + bx * pb.x + by * pb.y + bz * b.y + wo << NL << r << NL;
 //    display << _pow2 ( ax.x * pa.x + ay.x * pa.y + az.x * a.y + bx.x * pb.x + by.x * pb.y + bz.x * b.y + wo.x ) +
 //               _pow2 ( ax.y * pa.x + ay.y * pa.y + az.y * a.y + bx.y * pb.x + by.y * pb.y + bz.y * b.y + wo.y ) << qfunc ( a, b, o ) << NL;
-//    display << ax * ( ax * pa.x + ay * pa.y + az * a.y + bx * pb.x + by * pb.y + bz * b.y + wo ) << 0.5 * f.x * dqdax ( a, b, o ) << NL;
+    display << ax * ( ax * pa.x + ay * pa.y + az * a.y + bx * pb.x + by * pb.y + bz * b.y + wo ) << 0.5 * f.x * dqdax ( a, b, o ) << NL;
 //    display << ay * ( ax * pa.x + ay * pa.y + az * a.y + bx * pb.x + by * pb.y + bz * b.y + wo ) << 0.5 * f.y * dqdax ( a, b, o ) << NL;
 //    display << az * ( ax * pa.x + ay * pa.y + az * a.y + bx * pb.x + by * pb.y + bz * b.y + wo ) << 0.5 * dqday ( a, b, o ) << NL;
 //    display << bx * ( ax * pa.x + ay * pa.y + az * a.y + bx * pb.x + by * pb.y + bz * b.y + wo ) << 0.5 * f.x * dqdbx ( a, b, o ) << NL;
