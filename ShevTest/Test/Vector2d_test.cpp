@@ -302,43 +302,21 @@ void run_test()
 //    display << by * ( ax * pa.x + ay * pa.y + az * a.y + bx * pb.x + by * pb.y + bz * b.y + wo ) << 0.5 * f.y * dqdbx ( a, b, o ) << NL;
 //    display << bz * ( ax * pa.x + ay * pa.y + az * a.y + bx * pb.x + by * pb.y + bz * b.y + wo ) << 0.5 * dqdby ( a, b, o ) << NL;
 #else
-    const double xx = vn.x * vn.x - 1;
-    const double xy = vn.x * vn.y;
-    const double yy = vn.y * vn.y - 1;
-    const Vector2d g ( 2 * vn.x * vn.y, vn.y * vn.y - vn.x * vn.x );
-    const Vector2d gx = g * ( vn.y / d );
-    const Vector2d gy = g * (-vn.x / d );
-    const double d2 = 1 / (d*d);
-    const double yyd = vn.y * vn.y * d2;
-    const double xyd = vn.x * vn.y * d2;
-    const double xxd = vn.x * vn.x * d2;
+    const Vector2d vd = vn / d;
     //
-    const double cxx = yyd * f.x * f.x;
-    const double cxy = yyd * f.x * f.y;
-    const double cxz = xyd * -f.x;
-    const double cyy = yyd * f.y * f.y;
-    const double cyz = xyd * -f.y;
-    const double czz = xxd;
+    const double cx = vd.y * -f.x;
+    const double cy = vd.y * -f.y;
+    const double cz = vd.x;
+    const double cxx = cx * cx;
+    const double cxy = cx * cy;
+    const double cxz = cx * cz;
+    const double cyy = cy * cy;
+    const double cyz = cy * cz;
+    const double czz = cz * cz;
     //
+#if 0
     const Vector2d oa = o - a;
     const Vector2d bo = b - o;
-    const Vector2d bp ( gx * oa, oa % gx );
-    const Vector2d bz ( gy * oa, oa % gy );
-    const Vector2d ap ( -bp.x - xx, -bp.y - xy );
-    const Vector2d az ( -bz.x - xy, -bz.y - yy );
-    const Vector2d wo ( xx * o.x + xy * o.y, xy * o.x + yy * o.y );
-    const Vector2d r  ( xx * oa.x + xy * oa.y, xy * oa.x + yy * oa.y );
-//    display << ap * a.x + az * a.y + bp * b.x + bz * b.y + wo << NL << r << NL;
-//    display << ap << NL << drdax ( a, b, o ) << NL;
-//    display << az << NL << drday ( a, b, o ) << NL;
-//    display << bp << NL << drdbx ( a, b, o ) << NL;
-//    display << bz << NL << drdby ( a, b, o ) << NL;
-//    display << _pow2 ( ax.x * a.x + ay.x * a.y + bx.x * b.x + by.x * b.y + wo.x ) +
-//               _pow2 ( ax.y * a.x + ay.y * a.y + bx.y * b.x + by.y * b.y + wo.y ) << qfunc ( a, b, o ) << NL;
-    const Vector2d ax = ap * f.x;
-    const Vector2d ay = ap * f.y;
-    const Vector2d bx = bp * f.x;
-    const Vector2d by = bp * f.y;
     const double bb = bo * bo;
     const double aaxx = bb * cxx;
     const double aaxy = bb * cxy;
@@ -360,17 +338,64 @@ void run_test()
     const double bbyy = aa * cyy;
     const double bbyz = aa * cyz;
     const double bbzz = aa * czz;
-//    display << aaxx * pa.x + aaxy * pa.y + aaxz * a.y + abxx * pb.x + abxy * pb.y + abxz * b.y + ax * wo << 0.5 * f.x * dqdax ( a, b, o ) << NL;
-//    display << aaxy * pa.x + aayy * pa.y + aayz * a.y + abxy * pb.x + abyy * pb.y + abyz * b.y + ay * wo << 0.5 * f.y * dqdax ( a, b, o ) << NL;
-//    display << aaxz * pa.x + aayz * pa.y + aazz * a.y + abxz * pb.x + abyz * pb.y + abzz * b.y + az * wo << 0.5 * dqday ( a, b, o ) << NL;
-//    display << abxx * pa.x + abxy * pa.y + abxz * a.y + bbxx * pb.x + bbxy * pb.y + bbxz * b.y + bx * wo << 0.5 * f.x * dqdbx ( a, b, o ) << NL;
-//    display << abxy * pa.x + abyy * pa.y + abyz * a.y + bbxy * pb.x + bbyy * pb.y + bbyz * b.y + by * wo << 0.5 * f.y * dqdbx ( a, b, o ) << NL;
-//    display << abxz * pa.x + abyz * pa.y + abzz * a.y + bbxz * pb.x + bbyz * pb.y + bbzz * b.y + bz * wo << 0.5 * dqdby ( a, b, o ) << NL;
-    display << (-vn.x / d ) * ( ( g * o ) * ( xx * o.x + xy * o.y ) + ( o % g ) * ( xy * o.x + yy * o.y ) +
-                        //        ( g * a ) * ( xx * o.x + xy * o.y ) - ( a % g ) * ( xy * o.x + yy * o.y ) ) << bz * wo << NL;
-                                ( vn * a ) * ( o % vn ) ) << bz * wo << NL;
-//    display << vn.x * vn.x << g.x * xy + g.y * yy << NL;
-//    display << ( g * a ) * xy + ( a % g ) * yy << vn.x * vn.x * a.x + ( g.y * xy - g.x * yy ) * a.y << NL;
+    const double boo = ( vn * bo ) * ( o % vn );
+    const double axo = cx * boo;
+    const double ayo = cy * boo;
+    const double azo = cz * boo;
+    const double oao = ( vn * oa ) * ( o % vn );
+    const double bxo = cx * oao;
+    const double byo = cy * oao;
+    const double bzo = cz * oao;
+    display << aaxx * pa.x + aaxy * pa.y + aaxz * a.y + abxx * pb.x + abxy * pb.y + abxz * b.y + axo << 0.5 * f.x * dqdax ( a, b, o ) << NL;
+    display << aaxy * pa.x + aayy * pa.y + aayz * a.y + abxy * pb.x + abyy * pb.y + abyz * b.y + ayo << 0.5 * f.y * dqdax ( a, b, o ) << NL;
+    display << aaxz * pa.x + aayz * pa.y + aazz * a.y + abxz * pb.x + abyz * pb.y + abzz * b.y + azo << 0.5 * dqday ( a, b, o ) << NL;
+    display << abxx * pa.x + abxy * pa.y + abxz * a.y + bbxx * pb.x + bbxy * pb.y + bbxz * b.y + bxo << 0.5 * f.x * dqdbx ( a, b, o ) << NL;
+    display << abxy * pa.x + abyy * pa.y + abyz * a.y + bbxy * pb.x + bbyy * pb.y + bbyz * b.y + byo << 0.5 * f.y * dqdbx ( a, b, o ) << NL;
+    display << abxz * pa.x + abyz * pa.y + abzz * a.y + bbxz * pb.x + bbyz * pb.y + bbzz * b.y + bzo << 0.5 * dqdby ( a, b, o ) << NL;
+#else
+    const double ox = o.x;
+    const double oy = o.y;
+    const double oxx = ox * ox;
+    const double oxy = ox * oy;
+    const double oyy = oy * oy;
+    const double bb = b * b - ( b.x + b.x ) * ox - ( b.y + b.y ) * oy + oxx + oyy;
+    const double aaxx = bb * cxx;
+    const double aaxy = bb * cxy;
+    const double aaxz = bb * cxz;
+    const double aayy = bb * cyy;
+    const double aayz = bb * cyz;
+    const double aazz = bb * czz;
+    const double ab = - ( a * b - ( a.x + b.x ) * ox - ( a.y + b.y ) * oy + oxx + oyy );
+    const double abxx = ab * cxx;
+    const double abxy = ab * cxy;
+    const double abxz = ab * cxz;
+    const double abyy = ab * cyy;
+    const double abyz = ab * cyz;
+    const double abzz = ab * czz;
+    const double aa = a * a - ( a.x + a.x ) * ox - ( a.y + a.y ) * oy + oxx + oyy;
+    const double bbxx = aa * cxx;
+    const double bbxy = aa * cxy;
+    const double bbxz = aa * cxz;
+    const double bbyy = aa * cyy;
+    const double bbyz = aa * cyz;
+    const double bbzz = aa * czz;
+    const double boo = ( ox * vn.y - oy * vn.x ) * ( vn * b ) + ( oyy - oxx ) * vn.x * vn.y + oxy * ( vn.x * vn.x - vn.y * vn.y );
+    const double axo = cx * boo;
+    const double ayo = cy * boo;
+    const double azo = cz * boo;
+    const double oao = ox * v.y - oy * v.x - boo;
+    const double bxo = cx * oao;
+    const double byo = cy * oao;
+    const double bzo = cz * oao;
+//    display << ( ox * vn.y - oy * vn.x ) * ( vn * b ) + ( oyy - oxx ) * vn.x * vn.y + oxy * ( vn.x * vn.x - vn.y * vn.y ) << boo << NL;
+//    display << ( oy * vn.x - ox * vn.y ) * ( vn * a ) - ( oyy - oxx ) * vn.x * vn.y - oxy * ( vn.x * vn.x - vn.y * vn.y ) << oao << NL;
+    display << aaxx * pa.x + aaxy * pa.y + aaxz * a.y + abxx * pb.x + abxy * pb.y + abxz * b.y + axo << 0.5 * f.x * dqdax ( a, b, o ) << NL;
+    display << aaxy * pa.x + aayy * pa.y + aayz * a.y + abxy * pb.x + abyy * pb.y + abyz * b.y + ayo << 0.5 * f.y * dqdax ( a, b, o ) << NL;
+    display << aaxz * pa.x + aayz * pa.y + aazz * a.y + abxz * pb.x + abyz * pb.y + abzz * b.y + azo << 0.5 * dqday ( a, b, o ) << NL;
+    display << abxx * pa.x + abxy * pa.y + abxz * a.y + bbxx * pb.x + bbxy * pb.y + bbxz * b.y + bxo << 0.5 * f.x * dqdbx ( a, b, o ) << NL;
+    display << abxy * pa.x + abyy * pa.y + abyz * a.y + bbxy * pb.x + bbyy * pb.y + bbyz * b.y + byo << 0.5 * f.y * dqdbx ( a, b, o ) << NL;
+    display << abxz * pa.x + abyz * pa.y + abzz * a.y + bbxz * pb.x + bbyz * pb.y + bbzz * b.y + bzo << 0.5 * dqdby ( a, b, o ) << NL;
+#endif
 #endif
 }
 
