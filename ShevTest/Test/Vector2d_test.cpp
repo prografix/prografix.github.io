@@ -261,12 +261,13 @@ void run_test()
     Vector2d a = rand();
     Vector2d b = rand();
     a.x = f * pa; 
-    b.x = f * pb; 
+    b.x = f * pb;
     const Vector2d v = b - a;
-    const double d = norm2 ( v );
-    const Vector2d vn = v / d;
+    const Vector2d vd = v / ( v*v );
     const Vector2d o = rand();
 #if 0
+    const double d = norm2 ( v );
+    const Vector2d vn = v / d;
     const Vector2d un = ( o - a ) / d;
     const double s = un * vn;
     const Vector2d rn = vn * s - un;
@@ -302,7 +303,6 @@ void run_test()
 //    display << by * ( ax * pa.x + ay * pa.y + az * a.y + bx * pb.x + by * pb.y + bz * b.y + wo ) << 0.5 * f.y * dqdbx ( a, b, o ) << NL;
 //    display << bz * ( ax * pa.x + ay * pa.y + az * a.y + bx * pb.x + by * pb.y + bz * b.y + wo ) << 0.5 * dqdby ( a, b, o ) << NL;
 #else
-    const Vector2d vd = vn / d;
     //
     const double cx = vd.y * -f.x;
     const double cy = vd.y * -f.y;
@@ -379,7 +379,7 @@ void run_test()
     const double bbyy = aa * cyy;
     const double bbyz = aa * cyz;
     const double bbzz = aa * czz;
-    const double boo = ( ox * vn.y - oy * vn.x ) * ( vn * b ) + ( oyy - oxx ) * vn.x * vn.y + oxy * ( vn.x * vn.x - vn.y * vn.y );
+    const double boo = ( ox * v.y - oy * v.x ) * ( vd * b ) + ( oyy - oxx ) * v.x * vd.y + oxy * ( v.x * vd.x - v.y * vd.y );
     const double axo = cx * boo;
     const double ayo = cy * boo;
     const double azo = cz * boo;
@@ -387,8 +387,6 @@ void run_test()
     const double bxo = cx * oao;
     const double byo = cy * oao;
     const double bzo = cz * oao;
-//    display << ( ox * vn.y - oy * vn.x ) * ( vn * b ) + ( oyy - oxx ) * vn.x * vn.y + oxy * ( vn.x * vn.x - vn.y * vn.y ) << boo << NL;
-//    display << ( oy * vn.x - ox * vn.y ) * ( vn * a ) - ( oyy - oxx ) * vn.x * vn.y - oxy * ( vn.x * vn.x - vn.y * vn.y ) << oao << NL;
     display << aaxx * pa.x + aaxy * pa.y + aaxz * a.y + abxx * pb.x + abxy * pb.y + abxz * b.y + axo << 0.5 * f.x * dqdax ( a, b, o ) << NL;
     display << aaxy * pa.x + aayy * pa.y + aayz * a.y + abxy * pb.x + abyy * pb.y + abyz * b.y + ayo << 0.5 * f.y * dqdax ( a, b, o ) << NL;
     display << aaxz * pa.x + aayz * pa.y + aazz * a.y + abxz * pb.x + abyz * pb.y + abzz * b.y + azo << 0.5 * dqday ( a, b, o ) << NL;
