@@ -239,12 +239,12 @@ void CMainFrame::OnTest()
 //    complex_test();
 //    trian2d_test();
 //    func3d_test();
-    opti2d_test();
+//    opti2d_test();
 //    matrix_test();
 //    linalg_test();
 //    recon_test();
 //    array_test();
-//    calc_test();
+    calc_test();
 //    file_test();
 //    math_test();
 //    rand_test();
