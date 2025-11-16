@@ -404,16 +404,21 @@ double func2 ( MuFunc & mu, double x )
     return s;
 }
 
-double func3 ( double x )
+inline int pow1 ( int i )
+{
+    if ( i < 0 ) i = -i;
+    return i & 1 ? -1 : 1;
+}
+
+double func3 ( double x, double a )
 {
     double s = 0;
-    for ( nat n = 3; n <= 20; n+=2 )
+    int n = 1001;
+    for ( int i = -n; i <= n; i+=1 )
     {
-        double t = 1 / ( zeta ( n ) * pow ( x, n ) );
-        if(n%4==1 )
-            s += t;
-        else
-            s -= t;
+        double y = M_PI * ( x - i );
+        double t = ( !y ? 1 : sin ( y ) / y ) * i / ( i*i + a*a );// * pow1 ( i );
+        s += t;
     }
     return s;
 }
@@ -421,10 +426,11 @@ double func3 ( double x )
 void func_test()
 {
     MuFunc mu;
-    for ( int i = 0; i <= 1000; i+=1 )
+    double a = 2;
+    for ( int i = 1; i < 10; i+=1 )
     {
-        double x = i * 0.001;
-        display << x << func1 ( mu, x ) << NL;
+        double x = i * 0.1;
+        display << x << func3 ( x, a ) << x / ( x*x + a*a ) * ( 1 + a / x * sin ( M_PI * x ) /  sinh ( M_PI * a ) ) << NL;
         //printf ( display.file, "%d %.4e\n", i, s );
     }
     //display << pow (0.9,50)<<pow (0.9,30)<<NL;
