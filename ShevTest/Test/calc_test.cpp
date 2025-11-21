@@ -423,6 +423,28 @@ double func3 ( double x, double a )
     return s;
 }
 
+double func4 ( double x )
+{
+    double s = 0;
+    int n = 1001;
+    for ( int i = 1; i <= n; i+=1 )
+    {
+        s += x*x*i/(i*i-x*x) * pow1 ( i+1 );
+    }
+    return s;
+}
+
+double func5 ( double x )
+{
+    double s = log(2);
+    int n = 20;
+    for ( int i = 1; i <= n; i+=1 )
+    {
+        s += pow(x, 2*i) * ( 1 - 2*pow(0.5, 2*i+1) )*zeta ( 2*i+1 );// * pow1 ( i+1 );
+    }
+    return s;
+}
+
 void func_test()
 {
     MuFunc mu;
@@ -430,7 +452,7 @@ void func_test()
     for ( int i = 1; i < 10; i+=1 )
     {
         double x = i * 0.1;
-        display << x << func3 ( x, a ) << x / ( x*x + a*a ) * ( 1 + a / x * sin ( M_PI * x ) /  sinh ( M_PI * a ) ) << NL;
+        display << x << func4 ( x ) << func5 ( x ) << NL;
         //printf ( display.file, "%d %.4e\n", i, s );
     }
     //display << pow (0.9,50)<<pow (0.9,30)<<NL;
