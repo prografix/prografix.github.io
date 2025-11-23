@@ -417,7 +417,8 @@ double func3 ( double x, double a )
     for ( int i = -n; i <= n; i+=1 )
     {
         double y = M_PI * ( x - i );
-        double t = ( !y ? 1 : sin ( y ) / y ) * i / ( i*i + a*a );// * pow1 ( i );
+        //double t = ( !y ? 1 : sin ( y ) / y ) * 1 / ( i*i - a*a );// * pow1 ( i );
+        double t = ( !y ? 1 : sin ( y ) / y ) * sin(M_PI2*i) * i / ( i*i - a*a );// * pow1 ( i );
         s += t;
     }
     return s;
@@ -429,7 +430,7 @@ double func4 ( double x )
     int n = 1001;
     for ( int i = 1; i <= n; i+=1 )
     {
-        s += x*x*i/(i*i-x*x) * pow1 ( i+1 );
+        s += sin(M_PI2*i) * i / ( i*i - x*x );
     }
     return s;
 }
@@ -448,11 +449,11 @@ double func5 ( double x )
 void func_test()
 {
     MuFunc mu;
-    double a = 2;
+    double a = 1.3;
     for ( int i = 1; i < 10; i+=1 )
     {
         double x = i * 0.1;
-        display << x << func4 ( x ) << func5 ( x ) << NL;
+        display << x << func3 ( x, a ) << sin(M_PI2*x) * x / (x*x - a*a) * ( 1 - cos(M_PI2*x)/cos(M_PI2*a) ) << NL;
         //printf ( display.file, "%d %.4e\n", i, s );
     }
     //display << pow (0.9,50)<<pow (0.9,30)<<NL;
