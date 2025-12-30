@@ -220,12 +220,27 @@ double qfunc ( const Vector2d & a, const Vector2d & b, const Vector2d & o )
     return qmod ( a + ( b - a ) * sfunc ( a, b, o ) - o );
 }
 
+double qfunc ( const Vector2d & a, const Vector2d & b, CArrRef<Vector2d> & vert )
+{
+    double sum = 0;
+    for ( nat i = 0; i < vert.size(); ++i ) sum += qfunc ( a, b, vert[i] );
+    return sum;
+}
+
 double dqdax ( const Vector2d & a, const Vector2d & b, const Vector2d & o )
 {
     double e = 1e-4;
     Vector2d v = a;
     v.x += e;
     return ( qfunc ( v, b, o ) - qfunc ( a, b, o ) ) / e;
+}
+
+double dqdax ( const Vector2d & a, const Vector2d & b, CArrRef<Vector2d> & vert )
+{
+    double e = 1e-4;
+    Vector2d v = a;
+    v.x += e;
+    return ( qfunc ( v, b, vert ) - qfunc ( a, b, vert ) ) / e;
 }
 
 double dqday ( const Vector2d & a, const Vector2d & b, const Vector2d & o )
@@ -236,12 +251,28 @@ double dqday ( const Vector2d & a, const Vector2d & b, const Vector2d & o )
     return ( qfunc ( v, b, o ) - qfunc ( a, b, o ) ) / e;
 }
 
+double dqday ( const Vector2d & a, const Vector2d & b, CArrRef<Vector2d> & vert )
+{
+    double e = 1e-4;
+    Vector2d v = a;
+    v.y += e;
+    return ( qfunc ( v, b, vert ) - qfunc ( a, b, vert ) ) / e;
+}
+
 double dqdbx ( const Vector2d & a, const Vector2d & b, const Vector2d & o )
 {
     double e = 1e-4;
     Vector2d v = b;
     v.x += e;
     return ( qfunc ( a, v, o ) - qfunc ( a, b, o ) ) / e;
+}
+
+double dqdbx ( const Vector2d & a, const Vector2d & b, CArrRef<Vector2d> & vert )
+{
+    double e = 1e-4;
+    Vector2d v = b;
+    v.x += e;
+    return ( qfunc ( a, v, vert ) - qfunc ( a, b, vert ) ) / e;
 }
 
 double dqdby ( const Vector2d & a, const Vector2d & b, const Vector2d & o )
@@ -252,7 +283,15 @@ double dqdby ( const Vector2d & a, const Vector2d & b, const Vector2d & o )
     return ( qfunc ( a, v, o ) - qfunc ( a, b, o ) ) / e;
 }
 
-void run_test()
+double dqdby ( const Vector2d & a, const Vector2d & b, CArrRef<Vector2d> & vert )
+{
+    double e = 1e-4;
+    Vector2d v = b;
+    v.y += e;
+    return ( qfunc ( a, v, vert ) - qfunc ( a, b, vert ) ) / e;
+}
+
+void run_test1()
 {
     static PRandVector2d rand;
     const Vector2d f = rand();
@@ -395,6 +434,217 @@ void run_test()
     display << abxz * pa.x + abyz * pa.y + abzz * a.y + bbxz * pb.x + bbyz * pb.y + bbzz * b.y + bzo << 0.5 * dqdby ( a, b, o ) << NL;
 #endif
 #endif
+}
+
+void run_test2()
+{
+    static PRandVector2d rand;
+    const Vector2d f = rand();
+    const Vector2d pa = rand();
+    const Vector2d pb = rand();
+    Vector2d a = rand();
+    Vector2d b = rand();
+    a.x = f * pa; 
+    b.x = f * pb;
+    const Vector2d v = b - a;
+    const Vector2d vd = v / ( v*v );
+    //
+    const double cx = vd.y * -f.x;
+    const double cy = vd.y * -f.y;
+    const double cz = vd.x;
+    const double cxx = cx * cx;
+    const double cxy = cx * cy;
+    const double cxz = cx * cz;
+    const double cyy = cy * cy;
+    const double cyz = cy * cz;
+    const double czz = cz * cz;
+    //
+    FixArray<Vector2d, 3> vert;
+    vert[0] = rand();
+    vert[1] = rand();
+    vert[2] = rand();
+#if 0
+    double aaxx = 0;
+    double aaxy = 0;
+    double aaxz = 0;
+    double aayy = 0;
+    double aayz = 0;
+    double aazz = 0;
+    double abxx = 0;
+    double abxy = 0;
+    double abxz = 0;
+    double abyy = 0;
+    double abyz = 0;
+    double abzz = 0;
+    double bbxx = 0;
+    double bbxy = 0;
+    double bbxz = 0;
+    double bbyy = 0;
+    double bbyz = 0;
+    double bbzz = 0;
+    double axo = 0;
+    double ayo = 0;
+    double azo = 0;
+    double bxo = 0;
+    double byo = 0;
+    double bzo = 0;
+    for ( nat i = 0; i < vert.size(); ++i )
+    {
+        const Vector2d o = vert[i];
+        const double ox = o.x;
+        const double oy = o.y;
+        const double oxx = ox * ox;
+        const double oxy = ox * oy;
+        const double oyy = oy * oy;
+        const double bb = b * b - ( b.x + b.x ) * ox - ( b.y + b.y ) * oy + oxx + oyy;
+        aaxx += bb * cxx;
+        aaxy += bb * cxy;
+        aaxz += bb * cxz;
+        aayy += bb * cyy;
+        aayz += bb * cyz;
+        aazz += bb * czz;
+        const double ab = - ( a * b - ( a.x + b.x ) * ox - ( a.y + b.y ) * oy + oxx + oyy );
+        abxx += ab * cxx;
+        abxy += ab * cxy;
+        abxz += ab * cxz;
+        abyy += ab * cyy;
+        abyz += ab * cyz;
+        abzz += ab * czz;
+        const double aa = a * a - ( a.x + a.x ) * ox - ( a.y + a.y ) * oy + oxx + oyy;
+        bbxx += aa * cxx;
+        bbxy += aa * cxy;
+        bbxz += aa * cxz;
+        bbyy += aa * cyy;
+        bbyz += aa * cyz;
+        bbzz += aa * czz;
+        const double boo = ( ox * v.y - oy * v.x ) * ( vd * b ) + ( oyy - oxx ) * v.x * vd.y + oxy * ( v.x * vd.x - v.y * vd.y );
+        axo += cx * boo;
+        ayo += cy * boo;
+        azo += cz * boo;
+        const double oao = ox * v.y - oy * v.x - boo;
+        bxo += cx * oao;
+        byo += cy * oao;
+        bzo += cz * oao;
+    }
+#else
+    double ox = 0, oy = 0, oxx = 0, oxy = 0, oyy = 0;
+    const nat n = vert.size();
+    for ( nat i = 0; i < n; ++i )
+    {
+        const Vector2d o = vert[i];
+        ox += o.x;
+        oy += o.y;
+        oxx += o.x * o.x;
+        oxy += o.x * o.y;
+        oyy += o.y * o.y;
+    }
+    const double bb = b * b * n - ( b.x + b.x ) * ox - ( b.y + b.y ) * oy + oxx + oyy;
+    const double aaxx = bb * cxx;
+    const double aaxy = bb * cxy;
+    const double aaxz = bb * cxz;
+    const double aayy = bb * cyy;
+    const double aayz = bb * cyz;
+    const double aazz = bb * czz;
+    const double ab = - ( a * b * n - ( a.x + b.x ) * ox - ( a.y + b.y ) * oy + oxx + oyy );
+    const double abxx = ab * cxx;
+    const double abxy = ab * cxy;
+    const double abxz = ab * cxz;
+    const double abyy = ab * cyy;
+    const double abyz = ab * cyz;
+    const double abzz = ab * czz;
+    const double aa = a * a * n - ( a.x + a.x ) * ox - ( a.y + a.y ) * oy + oxx + oyy;
+    const double bbxx = aa * cxx;
+    const double bbxy = aa * cxy;
+    const double bbxz = aa * cxz;
+    const double bbyy = aa * cyy;
+    const double bbyz = aa * cyz;
+    const double bbzz = aa * czz;
+    const double boo = ( ox * v.y - oy * v.x ) * ( vd * b ) + ( oyy - oxx ) * v.x * vd.y + oxy * ( v.x * vd.x - v.y * vd.y );
+    const double axo = cx * boo;
+    const double ayo = cy * boo;
+    const double azo = cz * boo;
+    const double oao = ox * v.y - oy * v.x - boo;
+    const double bxo = cx * oao;
+    const double byo = cy * oao;
+    const double bzo = cz * oao;
+#endif
+    display << aaxx * pa.x + aaxy * pa.y + aaxz * a.y + abxx * pb.x + abxy * pb.y + abxz * b.y + axo;
+    display << aaxy * pa.x + aayy * pa.y + aayz * a.y + abxy * pb.x + abyy * pb.y + abyz * b.y + ayo;
+    display << aaxz * pa.x + aayz * pa.y + aazz * a.y + abxz * pb.x + abyz * pb.y + abzz * b.y + azo;
+    display << abxx * pa.x + abxy * pa.y + abxz * a.y + bbxx * pb.x + bbxy * pb.y + bbxz * b.y + bxo;
+    display << abxy * pa.x + abyy * pa.y + abyz * a.y + bbxy * pb.x + bbyy * pb.y + bbyz * b.y + byo;
+    display << abxz * pa.x + abyz * pa.y + abzz * a.y + bbxz * pb.x + bbyz * pb.y + bbzz * b.y + bzo << NL;
+    display << 0.5 * f.x * dqdax ( a, b, vert );
+    display << 0.5 * f.y * dqdax ( a, b, vert );
+    display << 0.5 * dqday ( a, b, vert );
+    display << 0.5 * f.x * dqdbx ( a, b, vert );
+    display << 0.5 * f.y * dqdbx ( a, b, vert );
+    display << 0.5 * dqdby ( a, b, vert ) << NL;
+}
+
+void run_test()
+{
+    static PRandVector2d rand;
+    const Vector2d f = rand();
+    const Vector2d pa = rand();
+    const Vector2d pb = rand();
+    Vector2d a = rand();
+    Vector2d b = rand();
+    a.x = f * pa;
+    b.x = f * pb;
+    const double L = norm2 ( b - a );
+    //
+    FixArray<Vector2d, 3> vert;
+    vert[0] = rand();
+    vert[1] = rand();
+    vert[2] = rand();
+    double aaxx = 0;
+    double aaxy = 0;
+    double aaxz = 0;
+    double aayy = 0;
+    double aayz = 0;
+    double aazz = 0;
+    double abxx = 0;
+    double abxy = 0;
+    double abxz = 0;
+    double abyy = 0;
+    double abyz = 0;
+    double abzz = 0;
+    double bbxx = 0;
+    double bbxy = 0;
+    double bbxz = 0;
+    double bbyy = 0;
+    double bbyz = 0;
+    double bbzz = 0;
+    double axo = 0;
+    double ayo = 0;
+    double azo = 0;
+    double bxo = 0;
+    double byo = 0;
+    double bzo = 0;
+    double q = 0;
+    const double d = ( a % b ) / L;
+    for ( nat i = 0; i < vert.size(); ++i )
+    {
+        const Vector2d & p = vert[i];
+        const Vector2d ap = ( a - p ) / L;
+        const Vector2d bp = ( b - p ) / L;
+        const double t = a.x * bp.y - a.y * bp.x - b.x * ap.y + b.y * ap.x - d;
+        q += t * t;
+    }
+    display << q << qfunc ( a, b, vert ) << NL;
+    /*display << aaxx * pa.x + aaxy * pa.y + aaxz * a.y + abxx * pb.x + abxy * pb.y + abxz * b.y + axo;
+    display << aaxy * pa.x + aayy * pa.y + aayz * a.y + abxy * pb.x + abyy * pb.y + abyz * b.y + ayo;
+    display << aaxz * pa.x + aayz * pa.y + aazz * a.y + abxz * pb.x + abyz * pb.y + abzz * b.y + azo;
+    display << abxx * pa.x + abxy * pa.y + abxz * a.y + bbxx * pb.x + bbxy * pb.y + bbxz * b.y + bxo;
+    display << abxy * pa.x + abyy * pa.y + abyz * a.y + bbxy * pb.x + bbyy * pb.y + bbyz * b.y + byo;*/
+    display << abxz * pa.x + abyz * pa.y + abzz * a.y + bbxz * pb.x + bbyz * pb.y + bbzz * b.y + bzo << NL;
+   /* display << 0.5 * f.x * dqdax ( a, b, vert );
+    display << 0.5 * f.y * dqdax ( a, b, vert );
+    display << 0.5 * dqday ( a, b, vert );
+    display << 0.5 * f.x * dqdbx ( a, b, vert );
+    display << 0.5 * f.y * dqdbx ( a, b, vert );*/
+    display << 0.5 * dqdby ( a, b, vert ) << NL;
 }
 
 } // namespace

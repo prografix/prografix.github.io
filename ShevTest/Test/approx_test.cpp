@@ -253,6 +253,216 @@ void spline_test()
     }
 }
 
+struct Coef
+{
+    double ax, ay, az, bx, by, bz, c;
+};
+
+double qfunc ( const Vector2d & a, const Vector2d & b, const double L, const Vector2d & o )
+{
+    return qmod ( ( b - o ) % ( a - o ) / L );
+}
+
+double qfunc ( const Vector2d & a, const Vector2d & b, const double L, CArrRef<Vector2d> & vert )
+{
+    double sum = 0;
+    for ( nat i = 0; i < vert.size(); ++i ) sum += qfunc ( a, b, L, vert[i] );
+    return sum;
+}
+
+double qfunc ( const Vector3d & va, const Vector3d & vb, const Vector2d & f, const double L, CArrRef<Vector2d> & vert )
+{
+    Vector2d a ( f.x * va.x + f.y * va.y, va.z );
+    Vector2d b ( f.x * vb.x + f.y * vb.y, vb.z );
+    double sum = 0;
+    for ( nat i = 0; i < vert.size(); ++i ) sum += qfunc ( a, b, L, vert[i] );
+    return sum;
+}
+
+double qfunc ( const Vector3d & va, const Vector3d & vb, nat n, const Coef * coef )
+{
+    double q = 0;
+    for ( nat i = 0; i < n; ++i )
+    {
+        const Coef & r = coef[i];
+        const double t = va.x * r.ax + va.y * r.ay + va.z * r.az + vb.x * r.bx + vb.y * r.by + vb.z * r.bz + r.c;
+        q += t * t;
+    }
+    return q;
+}
+
+double dqdax ( const Vector3d & va, const Vector3d & vb, nat n, const Coef * coef )
+{
+    double e = 1e-5;
+    Vector3d v = va;
+    v.x += e;
+    return ( qfunc ( v, vb, n, coef ) - qfunc ( va, vb, n, coef ) ) / e;
+}
+
+double dqday ( const Vector3d & va, const Vector3d & vb, nat n, const Coef * coef )
+{
+    double e = 1e-5;
+    Vector3d v = va;
+    v.y += e;
+    return ( qfunc ( v, vb, n, coef ) - qfunc ( va, vb, n, coef ) ) / e;
+}
+
+double dqdaz ( const Vector3d & va, const Vector3d & vb, nat n, const Coef * coef )
+{
+    double e = 1e-5;
+    Vector3d v = va;
+    v.z += e;
+    return ( qfunc ( v, vb, n, coef ) - qfunc ( va, vb, n, coef ) ) / e;
+}
+
+double dqdbx ( const Vector3d & va, const Vector3d & vb, nat n, const Coef * coef )
+{
+    double e = 1e-5;
+    Vector3d v = vb;
+    v.x += e;
+    return ( qfunc ( va, v, n, coef ) - qfunc ( va, vb, n, coef ) ) / e;
+}
+
+double dqdby ( const Vector3d & va, const Vector3d & vb, nat n, const Coef * coef )
+{
+    double e = 1e-5;
+    Vector3d v = vb;
+    v.y += e;
+    return ( qfunc ( va, v, n, coef ) - qfunc ( va, vb, n, coef ) ) / e;
+}
+
+double dqdbz ( const Vector3d & va, const Vector3d & vb, nat n, const Coef * coef )
+{
+    double e = 1e-5;
+    Vector3d v = vb;
+    v.z += e;
+    return ( qfunc ( va, v, n, coef ) - qfunc ( va, vb, n, coef ) ) / e;
+}
+
+double dqdax ( const Vector3d & va, const Vector3d & vb, const Vector2d & f, const double L, CArrRef<Vector2d> & vert )
+{
+    double e = 1e-4;
+    Vector3d v = va;
+    v.x += e;
+    return ( qfunc ( v, vb, f, L, vert ) - qfunc ( va, vb, f, L, vert ) ) / e;
+}
+
+double dqdby ( const Vector2d & a, const Vector2d & b, const double L, CArrRef<Vector2d> & vert )
+{
+    double e = 1e-4;
+    Vector2d v = b;
+    v.y += e;
+    return ( qfunc ( a, v, L, vert ) - qfunc ( a, b, L, vert ) ) / e;
+}
+
+void run_test()
+{
+    const nat n = 3;
+    static PRandVector2d rand;
+    static PRandVector3d rand3;
+    const Vector2d f = rand();
+    const Vector3d va = rand3();
+    const Vector3d vb = rand3();
+    const Vector2d a ( f.x * va.x + f.y * va.y, va.z );
+    const Vector2d b ( f.x * vb.x + f.y * vb.y, vb.z );
+    const Vector2d an = a * n;
+    const Vector2d bn = b * n;
+    const double L2 = qmod ( b - a );
+    const double L = sqrt ( L2 );
+    const double d = ( a % b ) / L;
+    const double s = ( a % b ) / L2;
+    const double fxx = f.x * f.x;
+    const double fxy = f.x * f.y;
+    const double fyy = f.y * f.y;
+    //
+    FixArray<Vector2d, n> vert;
+    vert[0] = rand();
+    vert[1] = rand();
+    vert[2] = rand();
+    double q = 0;
+    double px = 0, py = 0, pxx = 0, pxy = 0, pyy = 0;
+    Coef coef[n];
+    for ( nat i = 0; i < vert.size(); ++i )
+    {
+        const Vector2d & p = vert[i];
+        px += p.x;
+        py += p.y;
+        pxx += p.x * p.x;
+        pxy += p.x * p.y;
+        pyy += p.y * p.y;
+
+        const Vector2d pa = ( p - a ) / L;
+        const Vector2d bp = ( b - p ) / L;
+        const double ax = f.x * bp.y;
+        const double ay = f.y * bp.y;
+        const double az = - bp.x;
+        const double bx = f.x * pa.y;
+        const double by = f.y * pa.y;
+        const double bz = - pa.x;
+        coef[i].ax = ax;
+        coef[i].ay = ay;
+        coef[i].az = az;
+        coef[i].bx = bx;
+        coef[i].by = by;
+        coef[i].bz = bz;
+        coef[i].c = - d;
+        const double t = va.x * ax + va.y * ay + va.z * az + vb.x * bx + vb.y * by + vb.z * bz - d;
+        q += t * t;
+    }
+    const double azaz = ( bn.x * b.x - 2 * b.x * px + pxx ) / L2;
+    const double azbz = ( b.x * px - bn.x * a.x - pxx + px * a.x ) / L2;
+    const double bzbz = ( an.x * a.x - 2 * a.x * px + pxx ) / L2;
+
+    const double aaxy = ( a.x * py - an.x * a.y - pxy + px * a.y ) / L2;
+    const double aayy = ( an.y * a.y - 2 * a.y * py + pyy ) / L2;
+    const double abxy = ( bn.y * a.x - b.y * px - py * a.x + pxy ) / L2;
+    const double abyx = ( bn.x * a.y - b.x * py - px * a.y + pxy ) / L2;
+    const double abyy = ( b.y * py - bn.y * a.y - pyy + py * a.y ) / L2;
+    const double bbxy = ( b.x * py - bn.x * b.y - pxy + px * b.y ) / L2;
+    const double bbyy = ( bn.y * b.y - 2 * b.y * py + pyy ) / L2;
+    const double as = ( an.y - py ) * s;
+    const double bs = ( py - bn.y ) * s;
+
+    const double axax = bbyy * fxx;
+    const double axay = bbyy * fxy;
+    const double axaz = bbxy * f.x;
+    const double axbx = abyy * fxx;
+    const double axby = abyy * fxy;
+    const double axbz = abxy * f.x;
+    const double axd = bs * f.x;
+    const double ayay = bbyy * fyy;
+    const double ayaz = bbxy * f.y;
+    const double aybx = abyy * fxy;
+    const double ayby = abyy * fyy;
+    const double aybz = abxy * f.y;
+    const double ayd = bs * f.y;
+    const double azbx = abyx * f.x;
+    const double azby = abyx * f.y;
+    const double azd = ( bn.x - px ) * s;
+    const double bxbx = aayy * fxx;
+    const double bxby = aayy * fxy;
+    const double bxbz = aaxy * f.x;
+    const double bxd = as * f.x;
+    const double byby = aayy * fyy;
+    const double bybz = aaxy * f.y;
+    const double byd = as * f.y;
+    const double bzd = ( px - an.x ) * s;
+
+   // display << q << qfunc ( a, b, L, vert ) << qfunc ( va , vb, n, coef ) << NL;
+    display << axax * va.x + axay * va.y + axaz * va.z + axbx * vb.x + axby * vb.y + axbz * vb.z + axd;
+    display << axay * va.x + ayay * va.y + ayaz * va.z + aybx * vb.x + ayby * vb.y + aybz * vb.z + ayd;
+    display << axaz * va.x + ayaz * va.y + azaz * va.z + azbx * vb.x + azby * vb.y + azbz * vb.z + azd;
+    display << axbx * va.x + aybx * va.y + azbx * va.z + bxbx * vb.x + bxby * vb.y + bxbz * vb.z + bxd;
+    display << axby * va.x + ayby * va.y + azby * va.z + bxby * vb.x + byby * vb.y + bybz * vb.z + byd;
+    display << axbz * va.x + aybz * va.y + azbz * va.z + bxbz * vb.x + bybz * vb.y + bzbz * vb.z + bzd << NL;
+    display << 0.5 * dqdax ( va, vb, n, coef );
+    display << 0.5 * dqday ( va, vb, n, coef );
+    display << 0.5 * dqdaz ( va, vb, n, coef );
+    display << 0.5 * dqdbx ( va, vb, n, coef );
+    display << 0.5 * dqdby ( va, vb, n, coef );
+    display << 0.5 * dqdbz ( va, vb, n, coef ) << NL;
+}
+
 } // end of namespace
 
 void approx_test ()
@@ -260,6 +470,7 @@ void approx_test ()
     drawNewList2d();
 //    harmAppr_test();
 //    breakthrough_test();
-    spline_test();
+//    spline_test();
+    run_test();
     endNewList();
 }
