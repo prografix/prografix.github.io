@@ -263,7 +263,7 @@ double qfunc ( const Vector2d & a, const Vector2d & b, const double L, const Vec
     return qmod ( ( b - o ) % ( a - o ) / L );
 }
 
-double qfunc ( const Vector2d & a, const Vector2d & b, const double L, CArrRef<Vector2d> & vert )
+double qfunc ( const Vector2d & a, const Vector2d & b, const double L, CCArrRef<Vector2d> & vert )
 {
     double sum = 0;
     for ( nat i = 0; i < vert.size(); ++i ) sum += qfunc ( a, b, L, vert[i] );
@@ -355,7 +355,7 @@ double dqdby ( const Vector2d & a, const Vector2d & b, const double L, CArrRef<V
     return ( qfunc ( a, v, L, vert ) - qfunc ( a, b, L, vert ) ) / e;
 }
 
-void run_test()
+void run_test1()
 {
     const nat n = 3;
     static PRandVector2d rand;
@@ -461,6 +461,218 @@ void run_test()
     display << 0.5 * dqdbx ( va, vb, n, coef );
     display << 0.5 * dqdby ( va, vb, n, coef );
     display << 0.5 * dqdbz ( va, vb, n, coef ) << NL;
+}
+
+struct ContFrag2
+{
+    Suite<Vector2d> vert;
+    double length, sina, cosa;
+};
+
+struct Dist4
+{
+    nat id, n;
+    Vector2d a, b, v;
+    Line2d lna;
+    double ox, oy, oxx, oxy, oyy;
+};
+
+double qfunc ( const Vector3d & va, const Vector3d & vb, CCArrRef<ContFrag2> & cont )
+{
+    double q = 0;
+    for ( nat i = 0; i < cont.size(); ++i )
+    {
+        const ContFrag2 & ci = cont[i];
+        const Vector2d f ( ci.sina, ci.cosa );
+        const Vector2d a ( f.x * va.x + f.y * va.y, va.z );
+        const Vector2d b ( f.x * vb.x + f.y * vb.y, vb.z );
+        for ( nat j = 0; j < ci.vert.size(); ++j )
+        {
+            const Vector2d & o = ci.vert[j];
+            q += qmod ( ( b - o ) % ( a - o ) / ci.length );
+        }
+    }
+    return q;
+}
+
+double dqdax ( const Vector3d & va, const Vector3d & vb, CCArrRef<ContFrag2> & cont )
+{
+    double e = 1e-5;
+    Vector3d v = va;
+    v.x += e;
+    return ( qfunc ( v, vb, cont ) - qfunc ( va, vb, cont ) ) / e;
+}
+
+double dqday ( const Vector3d & va, const Vector3d & vb, CCArrRef<ContFrag2> & cont )
+{
+    double e = 1e-5;
+    Vector3d v = va;
+    v.y += e;
+    return ( qfunc ( v, vb, cont ) - qfunc ( va, vb, cont ) ) / e;
+}
+
+double dqdaz ( const Vector3d & va, const Vector3d & vb, CCArrRef<ContFrag2> & cont )
+{
+    double e = 1e-5;
+    Vector3d v = va;
+    v.z += e;
+    return ( qfunc ( v, vb, cont ) - qfunc ( va, vb, cont ) ) / e;
+}
+
+double dqdbx ( const Vector3d & va, const Vector3d & vb, CCArrRef<ContFrag2> & cont )
+{
+    double e = 1e-5;
+    Vector3d v = vb;
+    v.x += e;
+    return ( qfunc ( va, v, cont ) - qfunc ( va, vb, cont ) ) / e;
+}
+
+double dqdby ( const Vector3d & va, const Vector3d & vb, CCArrRef<ContFrag2> & cont )
+{
+    double e = 1e-5;
+    Vector3d v = vb;
+    v.y += e;
+    return ( qfunc ( va, v, cont ) - qfunc ( va, vb, cont ) ) / e;
+}
+
+double dqdbz ( const Vector3d & va, const Vector3d & vb, CCArrRef<ContFrag2> & cont )
+{
+    double e = 1e-5;
+    Vector3d v = vb;
+    v.z += e;
+    return ( qfunc ( va, v, cont ) - qfunc ( va, vb, cont ) ) / e;
+}
+
+void run_test ( CCArrRef<ContFrag2> & cont, const Vector3d & va, const Vector3d & vb )
+{
+    double axax = 0, axay = 0, axaz = 0, axbx = 0, axby = 0, axbz = 0, axd = 0;
+    double           ayay = 0, ayaz = 0, aybx = 0, ayby = 0, aybz = 0, ayd = 0;
+    double                               azbx = 0, azby = 0,           azd = 0;
+    double                               bxbx = 0, bxby = 0, bxbz = 0, bxd = 0;
+    double                                         byby = 0, bybz = 0, byd = 0;
+    double                                                             bzd = 0;
+    //nat nn = 0;
+    double fxfx = 0, fxfy = 0, fyfy = 0;
+    double fxpx = 0, fypx = 0, spxx = 0;
+    for ( nat k = 0; k < cont.size(); ++k )
+    {
+        const ContFrag2 & ci = cont[k];
+        const nat n = ci.vert.size();
+        const Vector2d f ( ci.sina, ci.cosa );
+        const Vector2d a ( f.x * va.x + f.y * va.y, va.z );
+        const Vector2d b ( f.x * vb.x + f.y * vb.y, vb.z );
+        const double L2 = ci.length * ci.length;
+        const double fxx = f.x * f.x;
+        const double fxy = f.x * f.y;
+        const double fyy = f.y * f.y;
+        //
+        double px = 0, py = 0, pxx = 0, pxy = 0, pyy = 0;
+        for ( nat i = 0; i < ci.vert.size(); ++i )
+        {
+            const Vector2d & p = ci.vert[i];
+            px += p.x;
+            py += p.y;
+            pxx += p.x * p.x;
+            pxy += p.x * p.y;
+            pyy += p.y * p.y;
+        }
+        //sn += s * n;
+        //spx += s * px;
+        const double aaxy = ( a.x * py - n *a.x * a.y - pxy + px * a.y ) / L2;
+        const double aayy = ( n * a.y * a.y - 2 * a.y * py + pyy ) / L2;
+        const double abxy = ( n * b.y * a.x - b.y * px - py * a.x + pxy ) / L2;
+        const double abyx = ( n * b.x * a.y - b.x * py - px * a.y + pxy ) / L2;
+        const double abyy = ( b.y * py - n * b.y * a.y - pyy + py * a.y ) / L2;
+        const double bbxy = ( b.x * py - n * b.x * b.y - pxy + px * b.y ) / L2;
+        const double bbyy = ( n * b.y * b.y - 2 * b.y * py + pyy ) / L2;
+        const double as = ( n * a.y - py ) * ( a.x * vb.z - va.z * b.x ) / L2;
+        const double bs = ( py - n * b.y ) * ( a.x * vb.z - va.z * b.x ) / L2;
+
+        axax += bbyy * fxx;
+        axay += bbyy * fxy;
+        axaz += bbxy * f.x;
+        axbx += abyy * fxx;
+        axby += abyy * fxy;
+        axbz += abxy * f.x;
+        axd += bs * f.x;
+        ayay += bbyy * fyy;
+        ayaz += bbxy * f.y;
+        aybx += abyy * fxy;
+        ayby += abyy * fyy;
+        aybz += abxy * f.y;
+        ayd += bs * f.y;
+        //azaz += ( n * ( f.x * vb.x * f.x * vb.x + 2 * f.x * vb.x * f.y * vb.y + f.y * vb.y * f.y * vb.y ) - 2 * ( f.x * vb.x + f.y * vb.y ) * px + pxx ) / L2;
+        azbx += abyx * f.x;
+        azby += abyx * f.y;
+        //azbz += ( ( f.x * vb.x + f.y * vb.y ) * px - n * ( f.x * vb.x + f.y * vb.y ) * ( f.x * va.x + f.y * va.y ) - pxx + px * ( f.x * va.x + f.y * va.y ) ) / L2;
+        azd += ( n * b.x - px ) * ( a.x * vb.z - va.z * b.x ) / L2;
+        bxbx += aayy * fxx;
+        bxby += aayy * fxy;
+        bxbz += aaxy * f.x;
+        bxd += as * f.x;
+        byby += aayy * fyy;
+        bybz += aaxy * f.y;
+        byd += as * f.y;
+        //bzbz += ( n * ( f.x * va.x * f.x * va.x + 2 * f.x * va.x * f.y * va.y + f.y * va.y * f.y * va.y ) - 2 * ( f.x * va.x + f.y * va.y ) * px + pxx ) / L2;
+        //bzd += ( px - n * a.x ) * ( a.x * vb.z - va.z * b.x ) / L2;
+        bzd += ( n * a.x * ( f.x * vb.x + f.y * vb.y ) ) * va.z / L2;
+
+        fxfx += n * fxx / L2;
+        fxfy += n * fxy / L2;
+        fyfy += n * fyy / L2;
+        fxpx += f.x * px / L2;
+        fypx += f.y * px / L2;
+        spxx += pxx / L2;
+    }
+    const double aa = fxfx * va.x * va.x + 2 * fxfy * va.x * va.y + fyfy * va.y * va.y;
+    const double bb = fxfx * vb.x * vb.x + 2 * fxfy * vb.x * vb.y + fyfy * vb.y * vb.y;
+    const double ap = fxpx * va.x + fypx * va.y;
+    const double bp = fxpx * vb.x + fypx * vb.y;
+
+    const double azaz = bb - 2 * bp + spxx;
+    const double azbz = bp - fxfx * vb.x * va.x - fxfy * vb.x * va.y - fxfy * vb.y * va.x - fyfy * vb.y * va.y + ap - spxx;
+    const double bzbz = aa - 2 * ap + spxx;
+    bzd -= ( aa - ap ) * vb.z + bp * va.z;
+
+    //display << qfunc ( va, vb, n, coef ) << qfunc ( va, vb, cont ) << NL;
+    display << axax * va.x + axay * va.y + axaz * va.z + axbx * vb.x + axby * vb.y + axbz * vb.z + axd;
+    display << axay * va.x + ayay * va.y + ayaz * va.z + aybx * vb.x + ayby * vb.y + aybz * vb.z + ayd;
+    display << axaz * va.x + ayaz * va.y + azaz * va.z + azbx * vb.x + azby * vb.y + azbz * vb.z + azd;
+    display << axbx * va.x + aybx * va.y + azbx * va.z + bxbx * vb.x + bxby * vb.y + bxbz * vb.z + bxd;
+    display << axby * va.x + ayby * va.y + azby * va.z + bxby * vb.x + byby * vb.y + bybz * vb.z + byd;
+    display << axbz * va.x + aybz * va.y + azbz * va.z + bxbz * vb.x + bybz * vb.y + bzbz * vb.z + bzd << NL;
+    display << 0.5 * dqdax ( va, vb, cont );
+    display << 0.5 * dqday ( va, vb, cont );
+    display << 0.5 * dqdaz ( va, vb, cont );
+    display << 0.5 * dqdbx ( va, vb, cont );
+    display << 0.5 * dqdby ( va, vb, cont );
+    display << 0.5 * dqdbz ( va, vb, cont ) << NL;
+}
+
+void run_test()
+{
+    const nat n = 3;
+    static PRandVector2d rand;
+    static PRandVector3d rand3;
+    const Vector3d va = rand3();
+    const Vector3d vb = rand3();
+    FixArray<ContFrag2, 3> cont;
+    for ( nat i = 0; i < cont.size(); ++i )
+    {
+        ContFrag2 & ci = cont[i];
+        const Vector2d f = rand();
+        ci.sina = f.x;
+        ci.cosa = f.y;
+        ci.vert.resize(n);
+        for ( nat j = 0; j < n; ++j )
+        {
+            ci.vert[j] = rand();
+        }
+        const Vector2d a ( f.x * va.x + f.y * va.y, va.z );
+        const Vector2d b ( f.x * vb.x + f.y * vb.y, vb.z );
+        ci.length = norm2 ( b - a );
+    }
+    run_test ( cont, va, vb );
 }
 
 } // end of namespace
