@@ -548,12 +548,11 @@ void run_test ( CCArrRef<ContFrag2> & cont, const Vector3d & va, const Vector3d 
     double axax = 0, axay = 0, axaz = 0, axbx = 0, axby = 0, axbz = 0, axd = 0;
     double           ayay = 0, ayaz = 0, aybx = 0, ayby = 0, aybz = 0, ayd = 0;
     double                               azbx = 0, azby = 0,           azd = 0;
-    double                               bxbx = 0, bxby = 0, bxbz = 0, bxd = 0;
-    double                                         byby = 0, bybz = 0, byd = 0;
-    double                                                             bzd = 0;
-    //nat nn = 0;
+    double                               bxbx = 0, bxby = 0, bxbz = 0;
     double fxfx = 0, fxfy = 0, fyfy = 0;
     double fxpx = 0, fypx = 0, spxx = 0;
+    double fxpy = 0, fypy = 0, spyy = 0;
+    double fxxpy = 0, fxypy = 0, fyypy = 0, fyypyy = 0, fypxy = 0;
     for ( nat k = 0; k < cont.size(); ++k )
     {
         const ContFrag2 & ci = cont[k];
@@ -578,15 +577,15 @@ void run_test ( CCArrRef<ContFrag2> & cont, const Vector3d & va, const Vector3d 
         }
         //sn += s * n;
         //spx += s * px;
-        const double aaxy = ( a.x * py - n *a.x * a.y - pxy + px * a.y ) / L2;
-        const double aayy = ( n * a.y * a.y - 2 * a.y * py + pyy ) / L2;
+        //const double aaxy = ( a.x * py - n *a.x * va.z - pxy + px * va.z ) / L2;
+        const double aayy = ( n * va.z * va.z - 2 * va.z * py + pyy ) / L2;
         const double abxy = ( n * b.y * a.x - b.y * px - py * a.x + pxy ) / L2;
-        const double abyx = ( n * b.x * a.y - b.x * py - px * a.y + pxy ) / L2;
-        const double abyy = ( b.y * py - n * b.y * a.y - pyy + py * a.y ) / L2;
+        const double abyx = ( n * b.x * va.z - b.x * py - px * va.z + pxy ) / L2;
+        const double abyy = ( b.y * py - n * b.y * va.z - pyy + py * va.z ) / L2;
         const double bbxy = ( b.x * py - n * b.x * b.y - pxy + px * b.y ) / L2;
         const double bbyy = ( n * b.y * b.y - 2 * b.y * py + pyy ) / L2;
-        const double as = ( n * a.y - py ) * ( a.x * vb.z - va.z * b.x ) / L2;
-        const double bs = ( py - n * b.y ) * ( a.x * vb.z - va.z * b.x ) / L2;
+        const double as = ( n * va.z - py ) * ( a.x * vb.z - va.z * b.x ) / L2;
+        const double bs = ( py - n * vb.z ) * ( a.x * vb.z - va.z * b.x ) / L2;
 
         axax += bbyy * fxx;
         axay += bbyy * fxy;
@@ -608,31 +607,58 @@ void run_test ( CCArrRef<ContFrag2> & cont, const Vector3d & va, const Vector3d 
         azd += ( n * b.x - px ) * ( a.x * vb.z - va.z * b.x ) / L2;
         bxbx += aayy * fxx;
         bxby += aayy * fxy;
-        bxbz += aaxy * f.x;
-        bxd += as * f.x;
-        byby += aayy * fyy;
-        bybz += aaxy * f.y;
-        byd += as * f.y;
+        bxbz += ( f.x * va.x * py + f.y * va.y * py - f.x * va.x * n * va.z - f.y * va.y * n * va.z - pxy ) / L2 * f.x;
+        //bxbz += ( a.x * py - n *a.x * va.z - pxy + px * va.z ) / L2 * f.x;
+        //bxd += as * f.x;
+        //byby += aayy * fyy;
+        //bybz += ( ( f.x * va.x + f.y * va.y ) * py - n * ( f.x * va.x + f.y * va.y ) * va.z - pxy + px * va.z ) / L2 * f.y;
+        //byd += ( n * va.z - py ) * ( ( f.x * va.x + f.y * va.y ) * vb.z - va.z * b.x ) / L2 * f.y;
         //bzbz += ( n * ( f.x * va.x * f.x * va.x + 2 * f.x * va.x * f.y * va.y + f.y * va.y * f.y * va.y ) - 2 * ( f.x * va.x + f.y * va.y ) * px + pxx ) / L2;
         //bzd += ( px - n * a.x ) * ( a.x * vb.z - va.z * b.x ) / L2;
-        bzd += ( n * a.x * ( f.x * vb.x + f.y * vb.y ) ) * va.z / L2;
 
-        fxfx += n * fxx / L2;
-        fxfy += n * fxy / L2;
-        fyfy += n * fyy / L2;
-        fxpx += f.x * px / L2;
-        fypx += f.y * px / L2;
-        spxx += pxx / L2;
+        const double pn = n / L2;
+        px /= L2;
+        py /= L2;
+        pxx /= L2;
+        pxy /= L2;
+        pyy /= L2;
+
+        fxfx += fxx * pn;
+        fxfy += fxy * pn;
+        fyfy += fyy * pn;
+        fxpx += f.x * px;
+        fypx += f.y * px;
+        spxx += pxx;
+        fxpy += f.x * py;
+        fypy += f.y * py;
+        spyy += pyy;
+        fxxpy += fxx * py;
+        fxypy += fxy * py;
+        fyypy += fyy * py;
+        fypxy += f.y * pxy;
+        fyypyy+= fyy * pyy;
     }
+    const double vx = va.y * vb.z - va.z * vb.y;
+    const double vy = va.z * vb.x - va.x * vb.z;
+    const double azxx = va.z * fxfx - fxxpy;
+    const double azxy = va.z * fxfy - fxypy;
+    const double azyy = va.z * fyfy - fyypy;
+
     const double aa = fxfx * va.x * va.x + 2 * fxfy * va.x * va.y + fyfy * va.y * va.y;
+    const double ab = fxfx * va.x * vb.x + fxfy * ( va.x * vb.y + va.y * vb.x ) + fyfy * va.y * vb.y;
     const double bb = fxfx * vb.x * vb.x + 2 * fxfy * vb.x * vb.y + fyfy * vb.y * vb.y;
     const double ap = fxpx * va.x + fypx * va.y;
     const double bp = fxpx * vb.x + fypx * vb.y;
 
-    const double azaz = bb - 2 * bp + spxx;
-    const double azbz = bp - fxfx * vb.x * va.x - fxfy * vb.x * va.y - fxfy * vb.y * va.x - fyfy * vb.y * va.y + ap - spxx;
-    const double bzbz = aa - 2 * ap + spxx;
-    bzd -= ( aa - ap ) * vb.z + bp * va.z;
+    const double azaz = bb - bp - bp + spxx;
+    const double azbz = bp - ab + ap - spxx;
+    bxbz += fxpx * va.z;
+    const double bxd = azxy * vx - azxx * vy;
+    const double byby = azyy * va.z - va.z * fyypy + fyypyy;
+    const double bybz = fypx * va.z - fypxy - azxy * va.x - azyy * va.y;
+    const double byd = azyy * vx - azxy * vy;
+    const double bzbz = aa - ap - ap + spxx;
+    const double bzd = ( ap - aa ) * vb.z + ( ab - bp ) * va.z;
 
     //display << qfunc ( va, vb, n, coef ) << qfunc ( va, vb, cont ) << NL;
     display << axax * va.x + axay * va.y + axaz * va.z + axbx * vb.x + axby * vb.y + axbz * vb.z + axd;
