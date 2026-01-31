@@ -5,9 +5,9 @@
 #include "trans.h"
 #include "Vector2d.h"
 #include "Polyhedron.h"
+#include "TrianFacet.h"
 #include "intersect2d.h"
 #include "intersect3d.h"
-#include "TrianFacet.h"
 
 //**************************** 01.02.2007 *********************************//
 //
@@ -1214,7 +1214,99 @@ bool intersect1c ( const Polyhedron & conv, const Polyhedron & poly, Polyhedron 
 //
 //           ѕересечение полупространств содержащих центр координат
 //
-//**************************** 16.12.2023 *********************************//
+//**************************** 26.11.2023 *********************************//
+
+bool intersectHalfSpaces ( CCArrRef<const Plane3d *> & plane, Polyhedron & poly )
+{
+    const nat n = plane.size();
+    if ( n < 4 )
+    {
+        poly.makeVoid();
+        return false;
+    }
+    nat i, nf, nv;
+// ƒвойственное преобразование
+    DynArray<Vector3d> point ( n );
+    for ( i = 0; i < n; ++i )
+    {
+        const Plane3d * p = plane[i];
+        if ( p->dist >= 0 )
+        {
+            poly.makeVoid();
+            return false;
+        }
+        Vector3d & v = point[i];
+        v.x = p->norm.x / p->dist;
+        v.y = p->norm.y / p->dist;
+        v.z = p->norm.z / p->dist;
+    }
+// ѕостроение выпуклой оболочки
+    DynArray<nat> iv ( n );
+    DynArray<TrianFacet> facet ( 2*n - 4 );
+    if ( ! convexHull ( point, nv, iv, nf, facet ) )
+    {
+        poly.makeVoid();
+        return false;
+    }
+// «аполнение вершин многогранника
+    DynArray<nat> start ( nv );
+    poly.vertex.resize ( nf );
+    for ( i = 0; i < nf; ++i )
+    {
+        const TrianFacet & f = facet[i];
+        const Plane3d & p = f.plane;
+        if ( p.dist >= 0 )
+        {
+            poly.makeVoid();
+            return false;
+        }
+        Vector3d & v = poly.vertex[i];
+        v.x = p.norm.x / p.dist;
+        v.y = p.norm.y / p.dist;
+        v.z = p.norm.z / p.dist;
+        start[f.vertex[0]] = i;
+        start[f.vertex[1]] = i;
+        start[f.vertex[2]] = i;
+    }
+// «аполнение граней многогранника
+    Suite<nat> temp;
+    poly.facet.resize ( nv );
+    for ( i = 0; i < nv; ++i )
+    {
+        Facet & fi = poly.facet[i];
+        fi.plane = *plane[iv[i]];
+        temp.resize();
+        const nat s = start[i];
+        for ( nat ii = s;; )
+        {
+            temp.inc() = ii;
+            const TrianFacet & f = facet[ii];
+            if ( i == f.vertex[0] )
+            {
+                ii = f.facet[0];
+                goto m1;
+            }
+            if ( i == f.vertex[1] )
+            {
+                ii = f.facet[1];
+                goto m1;
+            }
+            if ( i == f.vertex[2] )
+            {
+                ii = f.facet[2];
+                goto m1;
+            }
+            poly.makeVoid(); // Ётого не должно быть
+            return false;
+m1:;        if ( ii == s ) break;
+        }
+        const nat ni = temp.size();
+        fi.resize ( ni );
+        for ( nat j = 0; j < ni; ++j ) fi.index[j] = temp[j];
+    }
+    poly.linkFacets();
+    return true;
+}
 
 bool intersectHalfSpaces ( CCArrRef<Plane3d> & plane, Polyhedron & poly )
 {
@@ -1307,4 +1399,5 @@ m1:;        if ( ii == s ) break;
     poly.linkFacets();
     return true;
 }
+
 

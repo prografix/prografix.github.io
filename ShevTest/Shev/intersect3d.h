@@ -197,6 +197,7 @@ bool intersect1c ( const Polyhedron & conv, const Polyhedron & poly, Polyhedron 
 //
 //           Пересечение полупространств содержащих центр координат
 //
-//**************************** 16.12.2023 *********************************//
+//**************************** 26.11.2023 *********************************//
 
+bool intersectHalfSpaces ( CCArrRef<const Plane3d *> & plane, Polyhedron & poly );
 bool intersectHalfSpaces ( CCArrRef<Plane3d> & plane, Polyhedron & poly );

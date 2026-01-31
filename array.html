@@ -576,6 +576,14 @@ public:
         return *this;
     }
 
+    Suite & swap ( DynArray&lt;T> & a )
+    {
+        _swap ( _size, a._size );
+        _swap ( _data, a._data );
+        real_size = _size;
+        return *this;
+    }
+
     friend inline void _swap ( Suite & a1, Suite & a2 )
     {
         a1.swap ( a2 );

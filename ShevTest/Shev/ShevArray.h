@@ -82,7 +82,7 @@ template <class T> class ArrRef : public CArrRef<T>
 {
 public:
     ArrRef () {}
-    ArrRef ( T * d, nat n ) : CArrRef<T>( d, n ) {}
+    ArrRef ( T * d, nat n ) : CArrRef<T> ( d, n ) {}
     CCArrRef<T> & operator * () const { return *this; }
 // ”казатель на i-ый элемент:
     T * operator() ( nat i = 0 ) { return _size > i ? _data.var + i : 0; }
@@ -276,6 +276,8 @@ public:
 /********************** DynArray ***********************/
 /**************** ƒинамический массив ******************/
 
+template <class T> class Suite;
+
 template <class T> class DynArray : public DynArrRef<T>
 {
     DynArray ( const DynArray & );
@@ -324,6 +326,8 @@ explicit DynArray ( CCArrRef<T> & r ) : DynArrRef<T> ( new T[r.size()], r.size()
     {
         a1.swap ( a2 );
     }
+
+    friend class Suite<T>;
 };
 
 /********************** CmbArray ***********************/
@@ -565,6 +569,14 @@ public:
         _swap ( real_size, a.real_size );
         _swap ( _size, a._size );
         _swap ( _data, a._data );
+        return *this;
+    }
+
+    Suite & swap ( DynArray<T> & a )
+    {
+        _swap ( _size, a._size );
+        _swap ( _data, a._data );
+        real_size = _size;
         return *this;
     }
 
