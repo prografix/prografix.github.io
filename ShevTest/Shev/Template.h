@@ -275,7 +275,27 @@ template < class A, class B = A, class C = B, class D = C > struct Set4
     D d;
 
     Set4 () {}
-    Set4 ( const A & x, const B & y, const C & z, const D & w ) : a(x), b(y), c(z), d(w) {} 
+    Set4 ( const A & x, const B & y, const C & z, const D & w ) : a(x), b(y), c(z), d(w) {}
+ 
+    Set4 & operator += ( const Set4 & u )
+    {
+        a += u.a; b += u.b; c += u.c; d += u.d; return * this;
+    }
+
+    Set4 & operator -= ( const Set4 & u )
+    {
+        a -= u.a; b -= u.b; c -= u.c; d -= u.d; return * this;
+    }
+
+    template < class T > Set4 & operator *= ( const T & u )
+    {
+        a *= u; b *= u; c *= u; d *= u; return * this;
+    }
+
+    template < class T > Set4 & operator /= ( const T & u )
+    {
+        a /= u; b /= u; c /= u; d /= u; return * this;
+    }
 };
 
 template<class A, class B, class C, class D> inline

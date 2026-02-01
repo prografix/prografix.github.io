@@ -192,6 +192,25 @@ public:
         return *this;
     }
 
+    Def<Matrix4> operator ~ () const
+    {
+        SLU4<T, Set4<T>> slu;
+        slu.base() = *this;
+        slu.ae.a = 1; slu.ae.b = 0; slu.ae.c = 0; slu.ae.d = 0;
+        slu.be.a = 0; slu.be.b = 1; slu.be.c = 0; slu.be.d = 0;
+        slu.ce.a = 0; slu.ce.b = 0; slu.ce.c = 1; slu.ce.d = 0;
+        slu.de.a = 0; slu.de.b = 0; slu.de.c = 0; slu.de.d = 1;
+        Def<Matrix4> m;
+        Set4<T> sa, sb, sc, sd; 
+        if ( ! slu.gauss ( sa, sb, sc, sd ) ) return m;
+        m.isDef = true;
+        m.aa = sa.a; m.ab = sa.b; m.ac = sa.c; m.ad = sa.d;
+        m.ba = sb.a; m.bb = sb.b; m.bc = sb.c; m.bd = sb.d;
+        m.ca = sc.a; m.cb = sc.b; m.cc = sc.c; m.cd = sc.d;
+        m.da = sd.a; m.db = sd.b; m.dc = sd.c; m.dd = sd.d;
+        return m;
+    }
+
     T determinant() const
     {
         Matrix3<T> m;
@@ -448,7 +467,7 @@ public:
 //
 //************************ 24.04.2019 *************************//
 
-template <class T1, class T2 = T1> class SLU4 : public Matrix4<T1>
+template <class T1, class T2 = T1> class SLU4 : public Derived<Matrix4<T1>>
 {
 public:
     T2 ae, be, ce, de;

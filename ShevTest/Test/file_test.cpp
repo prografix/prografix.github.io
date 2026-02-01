@@ -729,6 +729,12 @@ display << f2.angle1;
 //display << min << max << NL;
 }
 
+void test2 ()
+{
+    Matrix4<double> m;
+    Matrix4<double> o = ~m;
+}
+
 } // namespace
 
 void file_test ()
