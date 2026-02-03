@@ -263,6 +263,20 @@ public:
     }
 };
 
+template <class T> Matrix4<T> operator * ( const Matrix4<T> & l, const Matrix4<T> & r )
+{
+    Matrix4<T> m;
+    m.aa = l.aa * r.aa + l.ab * r.ba + l.ac * r.ca + l.ad * r.da; m.ab = l.aa * r.ab + l.ab * r.bb + l.ac * r.cb + l.ad * r.db; 
+    m.ac = l.aa * r.ac + l.ab * r.bc + l.ac * r.cc + l.ad * r.dc; m.ad = l.aa * r.ad + l.ab * r.bd + l.ac * r.cd + l.ad * r.dd;
+    m.ba = l.ba * r.aa + l.bb * r.ba + l.bc * r.ca + l.bd * r.da; m.bb = l.ba * r.ab + l.bb * r.bb + l.bc * r.cb + l.bd * r.db;
+    m.bc = l.ba * r.ac + l.bb * r.bc + l.bc * r.cc + l.bd * r.dc; m.bd = l.ba * r.ad + l.bb * r.bd + l.bc * r.cd + l.bd * r.dd;
+    m.ca = l.ca * r.aa + l.cb * r.ba + l.cc * r.ca + l.cd * r.da; m.cb = l.ca * r.ab + l.cb * r.bb + l.cc * r.cb + l.cd * r.db;
+    m.cc = l.ca * r.ac + l.cb * r.bc + l.cc * r.cc + l.cd * r.dc; m.cd = l.ca * r.ad + l.cb * r.bd + l.cc * r.cd + l.cd * r.dd;
+    m.da = l.da * r.aa + l.db * r.ba + l.dc * r.ca + l.dd * r.da; m.db = l.da * r.ab + l.db * r.bb + l.dc * r.cb + l.dd * r.db;
+    m.dc = l.da * r.ac + l.db * r.bc + l.dc * r.cc + l.dd * r.dc; m.dd = l.da * r.ad + l.db * r.bd + l.dc * r.cd + l.dd * r.dd;
+    return m;
+}
+
 //************************ 20.11.2002 *************************//
 //
 // Решение систем линейных уравнений 2-го порядка методом Гаусса
