@@ -1636,3 +1636,84 @@ bool normalizePolyhedronV2 ( ArrRef<Set2<DynArray<nat>, Plane3d> > & facet, ArrR
     if ( ! normalizePolyhedronV1 ( facet, vertex ) ) return false;
     return true;
 }
+
+double getMaxDif ( const Set2<DynArray<nat>, Plane3d> & f, CCArrRef<Vector3d> & vertex )
+{
+    double max = 0;
+    for ( nat j = 0; j < f.a.size(); ++j )
+    {
+        const double t = f.b.norm * vertex[f.a[j]];
+        _maxa ( max, fabs ( t ) );
+    }
+   return max;
+}
+
+double getMaxDif ( CCArrRef<Set2<DynArray<nat>, Plane3d> > & facet, CCArrRef<Vector3d> & vertex )
+{
+    double max = 0;
+    const nat nf = facet.size();
+    for ( nat i = 0; i < nf; ++i )
+    {
+        const Set2<DynArray<nat>, Plane3d> & f = facet[i];
+        for ( nat j = 0; j < f.a.size(); ++j )
+        {
+            const double t = f.b.norm * vertex[f.a[j]];
+            _maxa ( max, fabs ( t ) );
+        }
+    }
+    return max;
+}
+
+double normalizePolyhedronLocV1 ( ArrRef<Set2<DynArray<nat>, Plane3d> > & facet, ArrRef<Vector3d> & vertex, double lvl )
+{
+    const double dif1 = getMaxDif ( facet, vertex );
+    if ( lvl >= dif1 )
+        return dif1;
+    const nat nv = vertex.size();
+    const nat nf = facet.size();
+    Suite<nat> index;
+    nat i;
+    for ( i = 0; i < nf; ++i )
+    {
+        const Set2<DynArray<nat>, Plane3d> & f = facet[i];
+        if ( f.a.size() > 3 ) index.inc() = i;
+    }
+    if ( index.size() > 0 )
+    {
+        /*DynArray<double> x ( k );
+        if ( ! calcSLU ( k, nf, facet, vertex, vp, x() ) ) return false;
+        for ( i = 0; i < nv; ++i )
+        {
+            Vector3d & v = vertex[i];
+            CCArrRef<Set2<nat, Vector3d> > & si = vp[i];
+            for ( nat l = 0; l < si.size(); ++l )
+            {
+                const Set2<nat, Vector3d> & sl = si[l];
+                v -= sl.b * x[sl.a];
+            }
+        }
+        const double dif2 = maxDif ( vertex, facet );
+        if ( dif1 <= dif2 ) return false;*/
+        Set2<DynArray<nat>, Plane3d> ft;
+        for ( i = 0; i < index.size(); ++i )
+        {
+            ft = facet[index[i]];
+            const double d = getMaxDif ( ft, vertex );
+            if ( d >= dif1 )
+                return dif1;
+        }
+    }
+    for ( i = 0; i < nf; ++i )
+    {
+        Set2<DynArray<nat>, Plane3d> & f = facet[i];
+        switch ( f.a.size() )
+        {
+        case 0: break;
+        case 1: f.b.dist = - ( f.b.norm * vertex[f.a[0]] ); break;
+        case 2: vert2 ( f, vertex ); break;
+        case 3: vert3 ( f, vertex ); break;
+        //default:vertN ( f, vertex ); break;
+        }
+    }
+    return true;
+}
