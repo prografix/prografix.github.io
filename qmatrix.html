@@ -23,7 +23,7 @@ public:
 
     Def&lt;Matrix2> operator ~ () const
     {
-        SLU2&lt;T, Set2&lt;T>> slu;
+        SLU2&lt;T, Set2&lt;T> > slu;
         slu.base() = *this;
         slu.ac.a = 1; slu.bc.a = 0;
         slu.ac.b = 0; slu.bc.b = 1;
@@ -69,7 +69,7 @@ public:
 
     Def&lt;Matrix3> operator ~ () const
     {
-        SLU3&lt;T, Set3&lt;T>> slu;
+        SLU3&lt;T, Set3&lt;T> > slu;
         slu.base() = *this;
         slu.ad.a = 1; slu.ad.b = 0; slu.ad.c = 0;
         slu.bd.a = 0; slu.bd.b = 1; slu.bd.c = 0;
@@ -120,7 +120,7 @@ public:
 
     Def&lt;SymMatrix3> operator ~ () const
     {
-        SymSLU3&lt;T, Set3&lt;T>> slu;
+        SymSLU3&lt;T, Set3&lt;T> > slu;
         slu.base() = *this;
         slu.ad.a = 1; slu.ad.b = 0; slu.ad.c = 0;
         slu.bd.a = 0; slu.bd.b = 1; slu.bd.c = 0;
@@ -152,7 +152,7 @@ template &lt;class T> Matrix3&lt;T> operator * ( const SymMatrix3&lt;T> & l, con
     return m;
 }
 </pre>
-Для квадратной матрицы 4-го порядка определены: заполнение матрицы указанным значением и вычисление детерминанта.
+Для квадратной матрицы 4-го порядка определены: заполнение матрицы указанным значением, получение обратной матрицы, вычисление детерминанта и оператор умножения.
 <pre>
 template &lt;class T> class Matrix4
 {
@@ -169,6 +169,25 @@ public:
         ca = cb = cc = cd =
         da = db = dc = dd = v;
         return *this;
+    }
+
+    Def&lt;Matrix4> operator ~ () const
+    {
+        SLU4&lt;T, Set4&lt;T> > slu;
+        slu.base() = *this;
+        slu.ae.a = 1; slu.ae.b = 0; slu.ae.c = 0; slu.ae.d = 0;
+        slu.be.a = 0; slu.be.b = 1; slu.be.c = 0; slu.be.d = 0;
+        slu.ce.a = 0; slu.ce.b = 0; slu.ce.c = 1; slu.ce.d = 0;
+        slu.de.a = 0; slu.de.b = 0; slu.de.c = 0; slu.de.d = 1;
+        Def&lt;Matrix4> m;
+        Set4&lt;T> sa, sb, sc, sd; 
+        if ( ! slu.gauss ( sa, sb, sc, sd ) ) return m;
+        m.isDef = true;
+        m.aa = sa.a; m.ab = sa.b; m.ac = sa.c; m.ad = sa.d;
+        m.ba = sb.a; m.bb = sb.b; m.bc = sb.c; m.bd = sb.d;
+        m.ca = sc.a; m.cb = sc.b; m.cc = sc.c; m.cd = sc.d;
+        m.da = sd.a; m.db = sd.b; m.dc = sd.c; m.dd = sd.d;
+        return m;
     }
 
     T determinant() const
@@ -222,6 +241,20 @@ public:
         }
     }
 };
+
+template &lt;class T> Matrix4&lt;T> operator * ( const Matrix4&lt;T> & l, const Matrix4&lt;T> & r )
+{
+    Matrix4&lt;T> m;
+    m.aa = l.aa * r.aa + l.ab * r.ba + l.ac * r.ca + l.ad * r.da; m.ab = l.aa * r.ab + l.ab * r.bb + l.ac * r.cb + l.ad * r.db; 
+    m.ac = l.aa * r.ac + l.ab * r.bc + l.ac * r.cc + l.ad * r.dc; m.ad = l.aa * r.ad + l.ab * r.bd + l.ac * r.cd + l.ad * r.dd;
+    m.ba = l.ba * r.aa + l.bb * r.ba + l.bc * r.ca + l.bd * r.da; m.bb = l.ba * r.ab + l.bb * r.bb + l.bc * r.cb + l.bd * r.db;
+    m.bc = l.ba * r.ac + l.bb * r.bc + l.bc * r.cc + l.bd * r.dc; m.bd = l.ba * r.ad + l.bb * r.bd + l.bc * r.cd + l.bd * r.dd;
+    m.ca = l.ca * r.aa + l.cb * r.ba + l.cc * r.ca + l.cd * r.da; m.cb = l.ca * r.ab + l.cb * r.bb + l.cc * r.cb + l.cd * r.db;
+    m.cc = l.ca * r.ac + l.cb * r.bc + l.cc * r.cc + l.cd * r.dc; m.cd = l.ca * r.ad + l.cb * r.bd + l.cc * r.cd + l.cd * r.dd;
+    m.da = l.da * r.aa + l.db * r.ba + l.dc * r.ca + l.dd * r.da; m.db = l.da * r.ab + l.db * r.bb + l.dc * r.cb + l.dd * r.db;
+    m.dc = l.da * r.ac + l.db * r.bc + l.dc * r.cc + l.dd * r.dc; m.dd = l.da * r.ad + l.db * r.bd + l.dc * r.cd + l.dd * r.dd;
+    return m;
+}
 </pre>
 <p>Исходники находятся в файле <a href="source/source.zip">LinAlg.h</a>.</p>
 <a href="template.html">Наверх</a>

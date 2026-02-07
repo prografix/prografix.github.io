@@ -7,21 +7,22 @@
 <table width="900" cellspacing="0" cellpadding="0">
 <tr><td><br>
 <p>Здесь представлены шаблоны классов SLU2, SLU3, SymSLU3 и SLU4, предназначенные для решения систем линейных уравнений 
-второго, третьего и четвёртого порядка:
+второго, третьего и четвёртого порядка.
 <pre>
 inline float qmod ( const float & x ) { return x * x; }
 inline double qmod ( const double & x ) { return x * x; }
 
-// Решение систем линейных уравнений 2-го порядка методом Гаусса
-// Выбор ведущего элемента по столбцам
-// aa * x + ab * y = ac
-// ba * x + bb * y = bc
-
-template &lt;class T1, class T2 = T1> class SLU2 : public Derived&ltMatrix2&lt;T1>>
+</pre>
+Решение систем линейных уравнений 2-го порядка методом Гаусса
+<br>Выбор ведущего элемента по столбцам
+<pre>
+template &lt;class T1, class T2 = T1> class SLU2 : public Derived&ltMatrix2&lt;T1> >
 {
 public:
     T2 ac, bc;
-// Решение системы линейных уравнений 2-го порядка методом Гаусса
+
+// aa * x + ab * y = ac
+// ba * x + bb * y = bc
     bool gauss ( T2 & x, T2 & y ) const
     {
         T2 v1, v2;
@@ -67,18 +68,18 @@ public:
     }
 };
 
-// Решение систем линейных уравнений 3-го порядка методом Гаусса
-// Выбор ведущего элемента по столбцам
-// aa * x + ab * y + ac * z = ad
-// ba * x + bb * y + bc * z = bd
-// ca * x + cb * y + cc * z = cd
-
-template &lt;class T1, class T2 = T1> class SLU3 : public Derived&ltMatrix3&lt;T1>>
+</pre>
+Решение систем линейных уравнений 3-го порядка методом Гаусса
+<br>Выбор ведущего элемента по столбцам
+<pre>
+template &lt;class T1, class T2 = T1> class SLU3 : public Derived&ltMatrix3&lt;T1> >
 {
 public:
     T2 ad, bd, cd;
 
-// Решение системы линейных уравнений 3-го порядка методом Гаусса
+// aa * x + ab * y + ac * z = ad
+// ba * x + bb * y + bc * z = bd
+// ca * x + cb * y + cc * z = cd
     bool gauss ( T2 & x, T2 & y, T2 & z ) const
     {
         SLU2&lt;T1, T2> slu;
@@ -128,25 +129,18 @@ public:
     }
 };
 
-
-// Решение симметричной системы линейных уравнений 3-го порядка методом Гаусса
-// aa * x + ab * y + ac * z = ad
-// ab * x + bb * y + bc * z = bd
-// ac * x + bc * y + cc * z = cd
-
-template &lt;class T1, class T2=T1> class SymSLU3 : public Derived&ltSymMatrix3&lt;T1>>
+</pre>
+Решение симметричной системы линейных уравнений 3-го порядка методом Гаусса
+<br>Выбор ведущего элемента по столбцам
+<pre>
+template &lt;class T1, class T2=T1> class SymSLU3 : public Derived&ltSymMatrix3&lt;T1> >
 {
 public:
     T2 ad, bd, cd;
 
-    SymSLU3 & operator += ( const SymSLU3 & slu )
-    {
-        aa += slu.aa; ab += slu.ab; ac += slu.ac; ad += slu.ad;
-        bb += slu.bb; bc += slu.bc; bd += slu.bd;
-        cc += slu.cc; cd += slu.cd;
-        return *this;
-    }
-
+// aa * x + ab * y + ac * z = ad
+// ab * x + bb * y + bc * z = bd
+// ac * x + bc * y + cc * z = cd
     bool gauss ( T2 & x, T2 & y, T2 & z ) const
     {
         SLU2&lt;T1, T2> slu;
@@ -194,21 +188,29 @@ public:
         ad = bd = cd = v2;
         return *this;
     }
+
+    SymSLU3 & operator += ( const SymSLU3 & slu )
+    {
+        aa += slu.aa; ab += slu.ab; ac += slu.ac; ad += slu.ad;
+        bb += slu.bb; bc += slu.bc; bd += slu.bd;
+        cc += slu.cc; cd += slu.cd;
+        return *this;
+    }
 };
 
-// Решение систем линейных уравнений 4-го порядка методом Гаусса
-// Выбор ведущего элемента по столбцам
-// aa * xa + ab * xb + ac * xc + ad * xd = ae
-// ba * xa + bb * xb + bc * xc + bd * xd = be
-// ca * xa + cb * xb + cc * xc + cd * xd = ce
-// da * xa + db * xb + dc * xc + dd * xd = de
-
-template &lt;class T1, class T2 = T1> class SLU4 : public Matrix4&lt;T1>
+</pre>
+Решение систем линейных уравнений 4-го порядка методом Гаусса
+<br>Выбор ведущего элемента по столбцам
+<pre>
+template &lt;class T1, class T2 = T1> class SLU4 : public  Derived&lt;Matrix4&lt;T1> >
 {
 public:
     T2 ae, be, ce, de;
 
-// Решение системы линейных уравнений 4-го порядка методом Гаусса
+// aa * xa + ab * xb + ac * xc + ad * xd = ae
+// ba * xa + bb * xb + bc * xc + bd * xd = be
+// ca * xa + cb * xb + cc * xc + cd * xd = ce
+// da * xa + db * xb + dc * xc + dd * xd = de
     bool gauss ( T2 & xa, T2 & xb, T2 & xc, T2 & xd ) const
     {
         SLU3&lt;T1, T2> slu;
