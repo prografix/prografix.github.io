@@ -2,13 +2,10 @@
 <head><title>Уравнения n-ой степени</title>
 <link rel="stylesheet" type="text/css" href="stylle.css"></head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
-<div align="center"><center>
-<table width="680" cellspacing="0" cellpadding="0">
-<div align=center>
-<font color="" style="font-size: 20pt">
-<br>Уравнения n-ой степени</font>
-</div>
-<br><div align=left><td>
+<div align="center"><br>
+<font color="" style="font-size: 20pt">Уравнения n-ой степени</font>
+<table width="800" cellspacing="0" cellpadding="0">
+<tr><td><br>
 Для того, чтобы найти все корни уравнения n-ой степени можно построить матрицу, собственные значения которой
 будут равны корням исходного уравнения, а затем найти собственные значения этой матрицы. 
 Для уравнения x<sup>n</sup> + p<sub>1</sub>x<sup>n-1</sup> +  ... + p<sub>n-1</sub>x + p<sub>n</sub> = 0
@@ -32,7 +29,7 @@ bool rootN ( unsigned int n, const double * p, double * r, double * i )
         i[0] = 0.;
         return true;
     }
-    Matrix a ( n, n );
+    HMatrix&lt;double> a ( n, n );
     a.fill ( 0. );
     a[0][0] = - p[0];
     for ( unsigned int k = 1; k < n; ++k )
@@ -45,24 +42,12 @@ bool rootN ( unsigned int n, const double * p, double * r, double * i )
 </pre>
 Входные данные - степень и параметры многочлена. Выходные - действительная и мнимая части корней уравнения.
 Опыт показал, что в случае кратных корней точность заметно ухудшается.
-<p>Описание класса Matrix находится <a href="rus_matrix.html">здесь</a>.</p>
+<p>Описание шаблона классов HMatrix находится <a href="rus_matrix.html">здесь</a>.</p>
 <p>Исходники находятся в файле <a href="source/source.zip">mathem.cpp</a>.</p>
 <a href="rus_alg_ur.html">Наверх</a>
+</td></tr></table></div>
 <pre>
 
 </pre>
-</td></div>
-</table>
-<script type="text/javascript">
-var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-</script>
-
-<script type="text/javascript">
-try {
-var pageTracker = _gat._getTracker("UA-10825496-1");
-pageTracker._trackPageview();
-} catch(err) {}
-</script>
 </body>
 </html>
