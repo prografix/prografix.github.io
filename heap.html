@@ -2,14 +2,10 @@
 <head><title>Очередь с приоритетом</title>
 <link rel="stylesheet" type="text/css" href="stylle.css"></head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
-<div align="center"><center>
-<table width="800" cellspacing="0" cellpadding="0">
-<div align=center>
-<br>
+<div align="center"><br>
 <font color="" style="font-size: 20pt">Очередь с приоритетом</font>
-</div>
-<br>
-<div align=left><td>
+<table width="800" cellspacing="0" cellpadding="0">
+<tr><td><br>
 <p>
 Очередь с приоритетом может быть реализована на основе конструкции под названием "пирамида" или "heap".
 Ниже мы будем рассматривать два варианта очередей - с максимальным и минимальным приоритетом.
@@ -37,7 +33,7 @@ public:
 };
 
 template &lt;class T> // Очередь с максимальным приоритетом
-class MaxHeap : public BaseHeap&lt;T>
+class MaxHeap : public BaseHeap&lt;T, void (swap_func) ( T & i1, T & i2 ) = _swap&lt;T>>
 {
 // Запрет конструктора копии и оператора присваивания
     MaxHeap ( const MaxHeap & );
@@ -99,27 +95,11 @@ public:
         down ( 0 );
         return true;
     }
+    typedef T Item;
 };
-
-template&lt;class T> bool testMaxHeap ( const MaxHeap&lt;T> & heap )
-{
-    const nat n = heap.size() / 2;
-    for ( nat j = 0; j < n; ++j )
-    {
-        const T * t1 = heap[j];
-        const T * t2 = heap[j+j+1];
-        if ( t2 && *t2 > *t1 )
-            return false;
-        const T * t3 = heap[j+j+2];
-        if ( t3 && *t3 > *t1 )
-            return false;
-    }
-    return true;
-}
 </pre>
 <p>
-Для объектов типа-параметра Т должен быть определён оператор >= и 
-функция _swap, если не подходит стандартная из файла "template.h".
+Для объектов типа-параметра Т должен быть определён оператор >=.
 У конструктора имеется единственный параметр - максимальный размер очереди.
 Оператор [] возвращает указатель на i-тый элемент ( нумерация начинается с нуля ) или 0, если i выходит за пределы очереди.
 Для каждого i-того элемента выполняются 2 неравенства: heap[i] &ge; heap[2 * i + 1] и heap[i] &ge; heap[2 * i + 2].
@@ -137,9 +117,9 @@ template&lt;class T> bool testMaxHeap ( const MaxHeap&lt;T> & heap )
 Исходные тексты находятся в файле <a href="source/source.zip">heap.h</a>.
 </p>
 <a href="template.html">Наверх</a>
+</td></tr></table></div>
 <pre>
 
-</pre></td></div>
-</table>
+</pre>
 </body>
 </html>
