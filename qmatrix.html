@@ -6,7 +6,8 @@
 <font color="" style="font-size: 20pt">Квадратные матрицы</font>
 <table width="800" cellspacing="0" cellpadding="0">
 <tr><td><br>
-Для квадратной матрицы 2-го порядка определены: заполнение матрицы указанным значением, получение обратной матрицы, вычисление детерминанта и оператор умножения.
+Для всех матриц определены: заполнение матрицы указанным значением, получение обратной матрицы, вычисление детерминанта и оператор умножения.
+<br><br>Матрицы 2-го порядка:
 <pre>
 template &lt;class T> class Matrix2
 {
@@ -50,7 +51,7 @@ template &lt;class T> Matrix2&lt;T> operator * ( const Matrix2&lt;T> & l, const 
     return m;
 }
 </pre>
-Для симметричной квадратной матрицы 2-го порядка определены: заполнение матрицы указанным значением, получение обратной матрицы, вычисление детерминанта и оператор умножения.
+Симметричные матрицы 2-го порядка:
 <pre>
 template &lt;class T> class SymMatrix2
 {
@@ -65,7 +66,7 @@ public:
 
     Def&lt;SymMatrix2> operator ~ () const
     {
-        SymSLU&lt;T, Set2<T> > slu;
+        SymSLU2&lt;T, Set2<T> > slu;
         slu.base() = *this;
         slu.ac.a = 1; slu.bc.a = 0;
         slu.ac.b = 0; slu.bc.b = 1;
@@ -92,7 +93,7 @@ template &lt;class T> Matrix2&lt;T> operator * ( const SymMatrix2&lt;T> & l, con
     return m;
 }
 </pre>
-Для квадратной матрицы 3-го порядка определены: заполнение матрицы указанным значением, получение обратной матрицы, вычисление детерминанта и оператор умножения.
+Матрицы 3-го порядка:
 <pre>
 template &lt;class T> class Matrix3
 {
@@ -143,7 +144,7 @@ template &lt;class T> Matrix3&lt;T> operator * ( const Matrix3&lt;T> & l, const 
     return m;
 }
 </pre>
-Для симметричной квадратной матрицы 3-го порядка определены: заполнение матрицы указанным значением, получение обратной матрицы, вычисление детерминанта и оператор умножения.
+Симметричные матрицы 3-го порядка:
 <pre>
 template &lt;class T> class SymMatrix3
 {
@@ -194,7 +195,7 @@ template &lt;class T> Matrix3&lt;T> operator * ( const SymMatrix3&lt;T> & l, con
     return m;
 }
 </pre>
-Для квадратной матрицы 4-го порядка определены: заполнение матрицы указанным значением, получение обратной матрицы, вычисление детерминанта и оператор умножения.
+Матрицы 4-го порядка:
 <pre>
 template &lt;class T> class Matrix4
 {
@@ -299,7 +300,7 @@ template &lt;class T> Matrix4&lt;T> operator * ( const Matrix4&lt;T> & l, const 
 }
 </pre>
 <p>Исходники находятся в файле <a href="source/source.zip">LinAlg.h</a>.
-<br>Описание шаблонов классов SLU2, SLU3, SymSLU3 и SLU4 находится <a href="rus_lin2_3.html">здесь</a></p>
+<br>Описание шаблонов классов SLU2, SymSLU2, SLU3, SymSLU3 и SLU4 находится <a href="rus_lin2_3.html">здесь</a></p>
 <a href="template.html">Наверх</a>
 </td></tr></table></div>
 <pre>
