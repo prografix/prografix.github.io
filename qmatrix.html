@@ -50,6 +50,48 @@ template &lt;class T> Matrix2&lt;T> operator * ( const Matrix2&lt;T> & l, const 
     return m;
 }
 </pre>
+Для симметричной квадратной матрицы 2-го порядка определены: заполнение матрицы указанным значением, получение обратной матрицы, вычисление детерминанта и оператор умножения.
+<pre>
+template &lt;class T> class SymMatrix2
+{
+public:
+    T aa, ab, bb;
+
+    SymMatrix2 & set ( const T & v )
+    {
+        aa = ab = bb = v;
+        return *this;
+    }
+
+    Def&lt;SymMatrix2> operator ~ () const
+    {
+        SymSLU&lt;T, Set2<T> > slu;
+        slu.base() = *this;
+        slu.ac.a = 1; slu.bc.a = 0;
+        slu.ac.b = 0; slu.bc.b = 1;
+        Def&lt;SymMatrix2> m;
+        Set2&lt;T> sa, sb; 
+        if ( ! slu.gauss ( sa, sb ) ) return m;
+        m.isDef = true;
+        m.aa = sa.a; m.ab = sa.b;
+        m.bb = sb.b;
+        return m;
+    }
+
+    T determinant() const
+    {
+        return aa * bb - ab * ab;
+    }
+};
+
+template &lt;class T> Matrix2&lt;T> operator * ( const SymMatrix2&lt;T> & l, const SymMatrix2&lt;T> & r )
+{
+    Matrix2&lt;T> m;
+    m.aa = l.aa * r.aa + l.ab * r.ab; m.ab = l.aa * r.ab + l.ab * r.bb;
+    m.ba = l.ab * r.aa + l.bb * r.ab; m.bb = l.ab * r.ab + l.bb * r.bb;
+    return m;
+}
+</pre>
 Для квадратной матрицы 3-го порядка определены: заполнение матрицы указанным значением, получение обратной матрицы, вычисление детерминанта и оператор умножения.
 <pre>
 template &lt;class T> class Matrix3
