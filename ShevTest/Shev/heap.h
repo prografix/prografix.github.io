@@ -89,23 +89,8 @@ public:
         down ( 0 );
         return true;
     }
+    typedef T Item;
 };
-
-template<class T> bool testMaxHeap ( const MaxHeap<T> & heap )
-{
-    const nat n = heap.size() / 2;
-    for ( nat j = 0; j < n; ++j )
-    {
-        const T * t1 = heap[j];
-        const T * t2 = heap[j+j+1];
-        if ( t2 && *t2 > *t1 )
-            return false;
-        const T * t3 = heap[j+j+2];
-        if ( t3 && *t3 > *t1 )
-            return false;
-    }
-    return true;
-}
 
 // Очередь с минимальным приоритетом
 template <class T, void (swap_func) ( T & i1, T & i2 ) = _swap<T>> 
@@ -172,23 +157,8 @@ public:
         down ( 0 );
         return true;
     }
+    typedef T Item;
 };
-
-template<class T> bool testMinHeap ( const MinHeap<T> & heap )
-{
-    const nat n = heap.size() / 2;
-    for ( nat j = 0; j < n; ++j )
-    {
-        const T * t1 = heap[j];
-        const T * t2 = heap[j+j+1];
-        if ( t2 && *t2 < *t1 )
-            return false;
-        const T * t3 = heap[j+j+2];
-        if ( t3 && *t3 < *t1 )
-            return false;
-    }
-    return true;
-}
 
 #include "ShevArray.h"
 
@@ -272,6 +242,7 @@ public:
         down ( 0 );
         return true;
     }
+    typedef T Item;
 };
 
 // Очередь с минимальным приоритетом
@@ -354,4 +325,37 @@ public:
         down ( 0 );
         return true;
     }
+    typedef T Item;
 };
+
+template<class T> bool testMaxHeap ( const T & heap )
+{
+    const nat n = heap.size() / 2;
+    for ( nat j = 0; j < n; ++j )
+    {
+        const T::Item * t1 = heap[j];
+        const T::Item * t2 = heap[j+j+1];
+        if ( t2 && *t2 > *t1 )
+            return false;
+        const T::Item * t3 = heap[j+j+2];
+        if ( t3 && *t3 > *t1 )
+            return false;
+    }
+    return true;
+}
+
+template<class T> bool testMinHeap ( const T & heap )
+{
+    const nat n = heap.size() / 2;
+    for ( nat j = 0; j < n; ++j )
+    {
+        const T::Item * t1 = heap[j];
+        const T::Item * t2 = heap[j+j+1];
+        if ( t2 && *t2 < *t1 )
+            return false;
+        const T::Item * t3 = heap[j+j+2];
+        if ( t3 && *t3 < *t1 )
+            return false;
+    }
+    return true;
+}
