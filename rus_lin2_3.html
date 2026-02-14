@@ -6,17 +6,18 @@
 <font color="" style="font-size: 20pt">Небольшие системы линейных уравнений</font>
 <table width="900" cellspacing="0" cellpadding="0">
 <tr><td><br>
-<p>Здесь представлены шаблоны классов SLU2, SLU3, SymSLU3 и SLU4, предназначенные для решения систем линейных уравнений 
-второго, третьего и четвёртого порядка.
+<p>Здесь представлены шаблоны классов SLU2, SymSLU2, SLU3, SymSLU3 и SLU4, предназначенные для решения систем линейных уравнений 
+второго, третьего и четвёртого порядка. Все системы решаются методом Гаусса с выбором ведущего элемента по столбцам.
+<br><br>Ниже определены две функции qmod, которые вычисляют квадрат модуля числа. Для типов float и double можно было бы обойтись
+простым умножением, но для комплесных чисел это уже не подойдёт, поэтому сделаны специальные функции:
 <pre>
 inline float qmod ( const float & x ) { return x * x; }
 inline double qmod ( const double & x ) { return x * x; }
 
 </pre>
-Решение систем линейных уравнений 2-го порядка методом Гаусса
-<br>Выбор ведущего элемента по столбцам
+&bull; Система 2-го порядка
 <pre>
-template &lt;class T1, class T2 = T1> class SLU2 : public Derived&ltMatrix2&lt;T1> >
+template &lt;class T1, class T2 = T1> class SLU2 : public Derived&lt;Matrix2&lt;T1> >
 {
 public:
     T2 ac, bc;
@@ -67,12 +68,65 @@ public:
         return *this;
     }
 };
+</pre>
+&bull; Симметричная система 2-го порядка
+<pre>
+template &lt;class T1, class T2 = T1> class SymSLU2 : public Derived&lt;SymMatrix2&lt;T1> >
+{
+public:
+    T2 ac, bc;
+    
+// aa * x + ab * y = ac
+// ab * x + bb * y = bc
+    bool gauss ( T2 & x, T2 & y ) const
+    {
+        T2 v1, v2;
+        const double ma = qmod ( aa );
+        const double mb = qmod ( ab );
+        if ( ma >= mb )
+        {
+            if ( ! ma ) return false;
+            const T1 c = ab / aa;
+            const T1 b = bb - c * ab;
+            if ( ! b ) return false;
+            ( v1 = ac ) /= aa;
+            ( v2 = v1 ) *= ab;
+            ( ( y = bc ) -= v2 ) /= b;
+            ( v2 = y ) *= c;
+        }
+        else
+        {
+            const T1 c = bb / ab;
+            const T1 a = ab - c * aa;
+            if ( ! a ) return false;
+            ( v1 = bc ) /= ab;
+            ( v2 = v1 ) *= aa;
+            ( ( y = ac ) -= v2 ) /= a;
+            ( v2 = y ) *= c;
+        }
+        ( x = v1 ) -= v2;
+        return true;
+    }
+
+    SymSLU2 & fill ( const T1 & v1, const T2 & v2 )
+    {
+        set ( v1 );
+        ac = bc = v2;
+        return *this;
+    }
+
+    SymSLU2 & operator += ( const SymSLU2 & slu )
+    {
+        aa += slu.aa; ab += slu.ab; ac += slu.ac;
+                      bb += slu.bb; bc += slu.bc;
+        return *this;
+    }
+};
 
 </pre>
-Решение систем линейных уравнений 3-го порядка методом Гаусса
-<br>Выбор ведущего элемента по столбцам
+&bull; Система 3-го порядка
 <pre>
-template &lt;class T1, class T2 = T1> class SLU3 : public Derived&ltMatrix3&lt;T1> >
+template &lt;class T1, class T2 = T1> class SLU3 : public Derived&lt;Matrix3&lt;T1> >
 {
 public:
     T2 ad, bd, cd;
@@ -130,10 +184,9 @@ public:
 };
 
 </pre>
-Решение симметричной системы линейных уравнений 3-го порядка методом Гаусса
-<br>Выбор ведущего элемента по столбцам
+&bull; Симметричная система 3-го порядка
 <pre>
-template &lt;class T1, class T2=T1> class SymSLU3 : public Derived&ltSymMatrix3&lt;T1> >
+template &lt;class T1, class T2=T1> class SymSLU3 : public Derived&lt;SymMatrix3&lt;T1> >
 {
 public:
     T2 ad, bd, cd;
@@ -199,10 +252,9 @@ public:
 };
 
 </pre>
-Решение систем линейных уравнений 4-го порядка методом Гаусса
-<br>Выбор ведущего элемента по столбцам
+&bull; Система 4-го порядка
 <pre>
-template &lt;class T1, class T2 = T1> class SLU4 : public  Derived&lt;Matrix4&lt;T1> >
+template &lt;class T1, class T2 = T1> class SLU4 : public Derived&lt;Matrix4&lt;T1> >
 {
 public:
     T2 ae, be, ce, de;
@@ -297,7 +349,7 @@ public:
 </p>
 <p>Исходники находятся в файле <a href="source/source.zip">LinAlg.h</a>.
 <br>Описание шаблона классов Derived находится <a href="derived.html">здесь</a>
-<br>Описание шаблонов классов Matrix2, Matrix3 и Matrix4 находится <a href="qmatrix.html">здесь</a></p>
+<br>Описание шаблонов классов Matrix2, SymMatrix2, Matrix3, SymMatrix3 и Matrix4 находится <a href="qmatrix.html">здесь</a></p>
 <a href="rus_lin_alg.html">Наверх</a>
 </td></tr></table></div>
 <pre>
