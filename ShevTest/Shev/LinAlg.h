@@ -57,6 +57,53 @@ template <class T> Matrix2<T> operator * ( const Matrix2<T> & l, const Matrix2<T
 }
 
 
+//************************ 13.02.2026 *************************//
+//
+//          Симметричная квадратная матрица 2-го порядка 
+//
+//************************ 13.02.2026 *************************//
+
+template <class T> class SymMatrix2
+{
+public:
+    T aa, ab, bb;
+
+    SymMatrix2 & set ( const T & v )
+    {
+        aa = ab = bb = v;
+        return *this;
+    }
+
+    Def<SymMatrix2> operator ~ () const
+    {
+        SymSLU2<T, Set2<T> > slu;
+        slu.base() = *this;
+        slu.ac.a = 1; slu.bc.a = 0;
+        slu.ac.b = 0; slu.bc.b = 1;
+        Def<SymMatrix2> m;
+        Set2<T> sa, sb; 
+        if ( ! slu.gauss ( sa, sb ) ) return m;
+        m.isDef = true;
+        m.aa = sa.a; m.ab = sa.b;
+        m.bb = sb.b;
+        return m;
+    }
+
+    T determinant() const
+    {
+        return aa * bb - ab * ab;
+    }
+};
+
+template <class T> Matrix2<T> operator * ( const SymMatrix2<T> & l, const SymMatrix2<T> & r )
+{
+    Matrix2<T> m;
+    m.aa = l.aa * r.aa + l.ab * r.ab; m.ab = l.aa * r.ab + l.ab * r.bb;
+    m.ba = l.ab * r.aa + l.bb * r.ab; m.bb = l.ab * r.ab + l.bb * r.bb;
+    return m;
+}
+
+
 //*************************************************************//
 //
 //              Квадратная матрица 3-го порядка 
@@ -332,6 +379,66 @@ public:
     {
         aa += slu.aa; ab += slu.ab; ac += slu.ac;
         ba += slu.ba; bb += slu.bb; bc += slu.bc;
+        return *this;
+    }
+};
+
+//************************ 13.02.2026 *************************//
+//
+// Решение систем линейных уравнений 2-го порядка методом Гаусса
+//         Выбор ведущего элемента по столбцам
+//                Симметричная матрица
+//
+//************************ 13.02.2026 *************************//
+
+template <class T1, class T2 = T1> class SymSLU2 : public Derived<SymMatrix2<T1> >
+{
+public:
+    T2 ac, bc;
+    
+// aa * x + ab * y = ac
+// ab * x + bb * y = bc
+    bool gauss ( T2 & x, T2 & y ) const
+    {
+        T2 v1, v2;
+        const double ma = qmod ( aa );
+        const double mb = qmod ( ab );
+        if ( ma >= mb )
+        {
+            if ( ! ma ) return false;
+            const T1 c = ab / aa;
+            const T1 b = bb - c * ab;
+            if ( ! b ) return false;
+            ( v1 = ac ) /= aa;
+            ( v2 = v1 ) *= ab;
+            ( ( y = bc ) -= v2 ) /= b;
+            ( v2 = y ) *= c;
+        }
+        else
+        {
+            const T1 c = bb / ab;
+            const T1 a = ab - c * aa;
+            if ( ! a ) return false;
+            ( v1 = bc ) /= ab;
+            ( v2 = v1 ) *= aa;
+            ( ( y = ac ) -= v2 ) /= a;
+            ( v2 = y ) *= c;
+        }
+        ( x = v1 ) -= v2;
+        return true;
+    }
+
+    SymSLU2 & fill ( const T1 & v1, const T2 & v2 )
+    {
+        set ( v1 );
+        ac = bc = v2;
+        return *this;
+    }
+
+    SymSLU2 & operator += ( const SymSLU2 & slu )
+    {
+        aa += slu.aa; ab += slu.ab; ac += slu.ac;
+                      bb += slu.bb; bc += slu.bc;
         return *this;
     }
 };
