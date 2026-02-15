@@ -88,7 +88,7 @@ void initPolyhedron ( Polyhedron & poly, nat n )
     }
     poly *= getRandOrtho3d ( rand(), rand(), rand() );
     poly += Vector3d ( 0.2*rand(), 0.2*rand(), 0.2*rand() );
-    for ( nat i = 0; i < poly.vertex.size(); ++i ) poly.vertex[i] += 1e-2 * vrand();
+    for ( nat i = 0; i < poly.vertex.size(); ++i ) poly.vertex[i] += 1e-4 * vrand();
 }
 
 double maxDif ( const Polyhedron & poly )
@@ -123,15 +123,17 @@ double stdDif ( CCArrRef<Vector3d> & vert1, CCArrRef<Vector3d> & vert2 )
 void normalizePolyhedron_test()
 {
     Polyhedron poly;
-    initPolyhedron ( poly, 40 ); //poly.makeOctahedron(1);
+    initPolyhedron ( poly, 80 ); //poly.makeOctahedron(1);
     double d1 = maxDif ( poly );
     DynArray<Vector3d> vert1 ( *poly.vertex );
     draw ( poly, 0, 1, 1, 1, VM_WIRE );
-    normalizeV2 ( poly );
+double t1 = timeInSec();
+    normalizeLocV1 ( poly );
+double t2 = timeInSec();
     draw ( poly, 1, 1, 0, 1, VM_WIRE );
     double s = stdDif ( vert1, poly.vertex );
     double d2 = maxDif ( poly );
-    display << d1 << d2 << s << NL;
+    display << d1 << d2 << t2-t1 << NL;
 }
 
 void normalizePolyhedron_test2()
@@ -447,7 +449,7 @@ void polyhedron_test()
 //    makeOctahedron_test();
 //    centerOfMass_test();
 //    makeModel_test();
-//    normalizePolyhedron_test();
-    changePolyhedron_test ();
+    normalizePolyhedron_test();
+//    changePolyhedron_test ();
     endNewList ();
 }
