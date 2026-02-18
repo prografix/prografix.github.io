@@ -1703,6 +1703,7 @@ bool recalc ( nat k, ArrRef<Set2<DynArray<nat>, Plane3d> > & facet, ArrRef<Vecto
     c.setNorm2();
     reper ( c, a, b );
     fk.b.dist = - ( c * o );
+    const double e = 1e-6;
     for ( i = 0; i < nv; ++i )
     {
         // Отображаем вершину на плоскость грани
@@ -1725,86 +1726,13 @@ bool recalc ( nat k, ArrRef<Set2<DynArray<nat>, Plane3d> > & facet, ArrRef<Vecto
             slu.aa += av * av; slu.ab += av * bv; slu.ac -= av * cv;
                                slu.bb += bv * bv; slu.bc -= bv * cv;
         }
+        slu.aa += e;
+        slu.bb += e;
         if ( slu.gauss ( s, t ) )
         {
             v += s * a + t * b;
         }
     }
-    return true;
-}
-
-bool recalc2 ( nat k, ArrRef<Set2<DynArray<nat>, Plane3d> > & facet, ArrRef<Vector3d> & vertex, 
-               CCArrRef<Set2<nat> > & index, CCArrRef<Suite<nat> > & varr )
-{
-    nat i;
-    // Изменяем вершины и плоскость грани для лучшего совпадения
-    Set2<DynArray<nat>, Plane3d> & fk = facet[k];
-    Vector3d & c = fk.b.norm;
-    Vector3d a, b;
-    reper ( c, a, b );
-    Vector3d o = null3d;
-    const nat nv = fk.a.size();
-    for ( i = 0; i < nv; ++i ) o += vertex[fk.a[i]];
-    o /= nv;
-    SymSLU2<double> slu2;
-    slu2.fill ( 0, 0 );
-    for ( i = 0; i < nv; ++i )
-    {
-        const Vector3d v = vertex[fk.a[i]] - o;
-        const double av = a * v;
-        const double bv = b * v;
-        const double cv = c * v;
-        slu2.aa += av * av; slu2.ab += av * bv; slu2.ac -= av * cv;
-                            slu2.bb += bv * bv; slu2.bc -= bv * cv;
-    }
-    double s, t;
-    if ( ! slu2.gauss ( s, t ) )
-        return false;
-    c += s * a + t * b;
-    c.setNorm2();
-    DynArray<Vector3d> va ( nv + nv );
-    for ( i = 0; i < nv; ++i )
-    {
-        // Двигаем вершину для лучшего совпадения с соседними гранями
-        const Suite<nat> & fs = varr[fk.a[i]];
-        if ( fs.size() < 3 )
-            return false;
-        SymSLU3<double, Set2<double> > slu;
-        slu.fill ( 0, Set2<double> ( 0, 0 ) );
-        for ( nat j = 0; j < fs.size(); ++j )
-        {
-            const nat ii = index[fs[j]].a;
-            const Plane3d & pl = facet[ii].b;
-            const Vector3d & n = pl.norm;
-            slu.aa += n.x * n.x; slu.ab += n.x * n.y; slu.ac += n.x * n.z;
-                                 slu.bb += n.y * n.y; slu.bc += n.y * n.z;
-                                                      slu.cc += n.z * n.z;
-            if ( ii == k )
-            {
-                slu.ad.a += n.x;
-                slu.bd.a += n.y;
-                slu.cd.a += n.z;
-            }
-            else
-            {
-                slu.ad.a -= n.x * pl.dist;
-                slu.bd.a -= n.y * pl.dist;
-                slu.cd.a -= n.z * pl.dist;
-            }
-        }
-        Set2<double> x, y, z;
-        if ( ! slu.gauss ( x, y, z ) )
-            return false;
-        Vector3d & a = va[i];
-        a.x = x.a;
-        a.y = y.a;
-        a.z = z.a;
-        Vector3d & b = va[i+nv];
-        b.x = x.b;
-        b.y = y.b;
-        b.z = z.b;
-    }
-    fk.b.dist = - ( c * o );
     return true;
 }
 
