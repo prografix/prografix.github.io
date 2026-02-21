@@ -206,6 +206,12 @@ inline bool distance ( const Polyhedron & poly, const Vector3d & point, double &
 bool normalizeV1 ( Polyhedron & poly );
 bool normalizeV2 ( Polyhedron & poly );
 </pre>
+Предыдущие функции normalize.. делали глобальную нормализацию многогранника, то есть изменения делались одновременно на всём многограннике.
+Следующая функция normalizeLocV1 делает изменения локально, начиная от самых больших отклонений к маленьким. 
+В результате она требует меньше памяти и работает быстрее:
+<pre>
+bool normalizeLocV1 ( Polyhedron & poly );
+</pre>
 <p>
 Описание класса Vector3d находится <a href="rus_vector.html">здесь</a>.
 <br>Описание классов Plane3d, Sphere3d, Ellipsoid3d, Cylinder3d, Cone3d, Tetrahedron и Cuboid3d находится <a href="figure3d.html">здесь</a>.
