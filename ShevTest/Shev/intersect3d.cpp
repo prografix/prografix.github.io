@@ -248,7 +248,7 @@ Def<Segment3d> intersection ( const Line3d & line, const Sphere3d & sphere )
 //
 //                  Пересечение отрезка и шара
 //
-//**************************** 04.12.2010 *********************************//
+//**************************** 21.02.2026 *********************************//
 
 Def<Segment3d> intersection ( const Segment3d & seg, const Sphere3d & sphere )
 {
@@ -260,7 +260,7 @@ Def<Segment3d> intersection ( const Segment3d & seg, const Sphere3d & sphere )
     const double c = u * u - sphere.r * sphere.r;
     if ( a == 0 )
     {
-        return c > 0 ? res : seg;
+        return c > 0 ? res : ( res = seg );
     }
     double d = b * b - a * c;
     if ( d < 0 ) return res;

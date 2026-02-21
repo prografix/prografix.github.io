@@ -181,7 +181,7 @@ Def<Segment2d> intersection ( const Line2d & line, const Circle2d & cir )
 //
 //                  Пересечение отрезка и круга
 //
-//**************************** 11.12.2010 *********************************//
+//**************************** 21.02.2026 *********************************//
 
 Def<Segment2d> intersection ( const Segment2d & seg, const Circle2d & cir )
 {
@@ -193,7 +193,7 @@ Def<Segment2d> intersection ( const Segment2d & seg, const Circle2d & cir )
     const double c = u * u - cir.r * cir.r;
     if ( a == 0 )
     {
-        return c > 0 ? res : seg;
+        return c > 0 ? res : ( res = seg );
     }
     double d = b * b - a * c;
     if ( d < 0 ) return res;
