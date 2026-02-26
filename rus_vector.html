@@ -2,11 +2,9 @@
 <head><title>Вектора в пространстве</title>
 <link rel="stylesheet" type="text/css" href="stylle.css"></head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
-<div align="center">
-<table width="800" cellspacing="0" cellpadding="0">
-<div align=center>
-<br><font color="" style="font-size: 20pt">Вектора в пространстве</font></div>
-<br><div align=left><td>
+<div align="center"><br>
+<font color="" style="font-size: 20pt">Вектора в пространстве</font>
+<table width="820" cellspacing="0" cellpadding="0"><tr><td><br>
 <pre>
 class Vector3d
 {
@@ -129,8 +127,12 @@ const Vector3d v3 = ( v1 - v2 ).getNorm2();
 </p>
 <pre>
 const Vector3d null3d ( 0, 0, 0 );
+const Vector3d    x3d ( 1, 0, 0 );
+const Vector3d    y3d ( 0, 1, 0 );
+const Vector3d    z3d ( 0, 0, 1 );
 </pre>
 Я давно хотел придумать более короткую запись, чем Vector3d ( 0, 0, 0 ). Наконец 15 апреля 2016 года появился null3d.
+А затем 25 февраля 2026 года добавились x3d, y3d и z3d.
 <pre>
 inline Vector3d operator + ( const Vector3d& a, const Vector3d& b )
 {
@@ -231,11 +233,10 @@ double normU ( const Vector3d & v ); // бесконечная норма
 <p>
 Исходники находятся в файлах <a href="source/source.zip">vector3d.h, vector3d.cpp</a>. 
 </p>
-<a href="rus_geom.html">Наверх</a>
-<p>
-<br>
-</p>
-</td></div>
-</table>
+</td></tr></table></div>
+<div align="center"><br><a href="rus_geom.html">Наверх</a></div>
+<pre>
+
+</pre>
 </body>
 </html>
