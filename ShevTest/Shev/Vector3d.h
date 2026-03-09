@@ -95,6 +95,12 @@ public :
 };
 
 const Vector3d null3d ( 0, 0, 0 );
+const Vector3d    x3d ( 1, 0, 0 );
+const Vector3d    y3d ( 0, 1, 0 );
+const Vector3d    z3d ( 0, 0, 1 );
+const Vector3d   mx3d (-1, 0, 0 );
+const Vector3d   my3d ( 0,-1, 0 );
+const Vector3d   mz3d ( 0, 0,-1 );
 
 inline Vector3d operator + ( const Vector3d& a, const Vector3d& b )
 {

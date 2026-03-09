@@ -84,6 +84,10 @@ public :
 };
 
 const Vector2d null2d ( 0, 0 );
+const Vector2d    x2d ( 1, 0 );
+const Vector2d    y2d ( 0, 1 );
+const Vector2d   mx2d (-1, 0 );
+const Vector2d   my2d ( 0,-1 );
 
 inline Vector2d operator + ( const Vector2d & a, const Vector2d & b )
 {
