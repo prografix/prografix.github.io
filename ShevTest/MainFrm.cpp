@@ -223,7 +223,6 @@ void file_test();
 void math_test();
 void rand_test();
 void tree_test();
-void test();
 
 void CMainFrame::OnTest() 
 {
@@ -231,20 +230,20 @@ void CMainFrame::OnTest()
 //    momentum2d_test();
 //    polyhedron_test();
 //    S2D_Model_test();
-//    approx3d_test();
+//    approx_test();
 //    testBlackRing();
 //    compress_test();
 //    shevlist_test();
-//    vector3d_test();
+//    vector2d_test();
 //    complex_test();
 //    trian2d_test();
 //    func3d_test();
-//    opti2d_test();
+    opti2d_test();
 //    matrix_test();
 //    linalg_test();
 //    recon_test();
 //    array_test();
-    calc_test();
+//    calc_test();
 //    file_test();
 //    math_test();
 //    rand_test();

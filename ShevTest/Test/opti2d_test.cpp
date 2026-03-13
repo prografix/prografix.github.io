@@ -2499,11 +2499,57 @@ void maxRectangleInConvexPolygonANR_test()
     display << "end" << NL;
 }
 
+void check ()
+{
+    static PRand rand;
+    const double f = rand();
+    const double dx = cos(f);
+    const double dy = sin(f);
+    //const double x = rand();
+    //const double y = rand();
+    const double y1 = rand() + 0.5;
+    const double a = rand();
+    //const double b = rand();
+    //const double c = 2*dy/y1;
+    //const double q1 = _pow2 ( a*x + dx ) + _pow2 ( b*x + 2*dy/y1*y + dy ) - 1;
+    //const double q2 = _pow2 ( a*x ) + 2*a*x*dx + _pow2 ( b*x ) + 2 * b*c * x*y + _pow2 ( c*y ) + 2*( b*x + c*y ) * dy;
+    //const double q2 = _pow2 ( a*x ) + 2*a*x*dx + _pow2 ( b*x ) + 2*x * b*dy* ( 2*y/y1 + 1 ) + 4*y/y1 * ( y/y1 + 1 ) * dy * dy;
+    //const double A = ( 2*y/y1 + 1 );
+    //const double B = 4*y/y1 * ( y/y1 + 1 );
+    //const double q2 = ( a*a + b*b ) * x*x + 2*a*x*dx + 2*x * b*dy* A + B * dy * dy;
+    const double x2 = rand();
+    const double y2 = rand();
+    const double x3 = rand();
+    const double y3 = rand();
+    const double A2 = ( 2*y2/y1 + 1 );
+    const double B2 = 4*y2/y1 * ( y2/y1 + 1 );
+    const double A3 = ( 2*y3/y1 + 1 );
+    const double B3 = 4*y3/y1 * ( y3/y1 + 1 );
+    const double k1 = ( x3 - x2 ) / ( A2*x3 - x2*A3 );
+    const double k2 = ( B2*x3*x3 - x2*x2*B3 ) / ( 2*x2*( A2*x3 - x2*A3 ) );
+    const double b = - ( k1*a*dx/dy + k2/x3 * dy );
+    //const double g2 = ( a*a + b*b ) * x2*x2 + 2*a*x2*dx + 2*x2 * b*dy* A2 + B2 * dy * dy;
+    //const double g3 = ( a*a + b*b ) * x3*x3 + 2*a*x3*dx + 2*x3 * b*dy* A3 + B3 * dy * dy;
+    //const double qq = 2*( x2*x3*x3 - x2*x2*x3 )*a*dx + 2*( A2*x2*x3*x3 - x2*x2*x3*A3 ) * b*dy + ( B2*x3*x3 - x2*x2*B3 ) * dy * dy;
+    const double q3 = _pow2 ( a*x3 + dx ) + _pow2 ( b*x3 + 2*dy/y1*y3 + dy ) - 1;
+    const double q2 = _pow2 ( a*x2 + dx ) + _pow2 ( b*x2 + 2*dy/y1*y2 + dy ) - 1;
+    display << q2 * x3*x3 - q3 * x2*x2 << NL;
+    const double qq = 2*( x2*x3*x3 - x2*x2*x3 )*a*dx + 2*( A2*x2*x3*x3 - x2*x2*x3*A3 ) * b*dy + ( B2*x3*x3 - x2*x2*B3 ) * dy * dy;
+    const double gg = a*a*( 1 + k1*dx/dy*k1*dx/dy ) * x3*x3 + 2*a* (k1*k2 + 1 - k1*A3 )*x3*dx + ( B3 - 2 *k2 * A3 + k2*k2) * dy * dy;
+    const double d1 = (k1*k2 + 1 - k1*A3 )*x3*dx*(k1*k2 + 1 - k1*A3 )*x3*dx - ( 1 + k1*dx/dy*k1*dx/dy ) * x3*x3 * ( B3 - 2 *k2 * A3 + k2*k2) * dy * dy;
+    const double k3 = 2*k1*k2 + (1 - k1*A3 )*(1 - k1*A3 ) - k1*k1 * B3;
+    const double k4 = B3 - 2 *k2 * A3 + k2*k2;
+    const double d2 = ( k3*dx*dx - dy * dy * k4 ) * x3*x3;
+    display << qq << NL;
+    //display << q2 << NL;
+}
+
 } // end of namespace
 
 void opti2d_test ()
 {
     drawNewList2d ();
+    check ();
 //    minRectangleAroundPoints_test1();
 //    minRectangleAroundPolygon_test1();
 //    minParallelogramAroundPolygon_test1();
@@ -2517,7 +2563,7 @@ void opti2d_test ()
 //    maxRectangleInConvexPolygon_test();
 //    maxRectangleInPolygon_test();
 //    minEllipseAroundPointsAP_test3();
-    maxEllipseInConvexPolygon_test2();
+//    maxEllipseInConvexPolygon_test2();
 //    maxFixEllipseInConvexPolygon_test();
 //    maxFixEllipseInPolygon_test();
 //    maxEllipseInPolygon_test();
