@@ -2499,49 +2499,97 @@ void maxRectangleInConvexPolygonANR_test()
     display << "end" << NL;
 }
 
+double func ( double f, double G, double H, double k1 )
+{
+    double dx = cos(f);
+    double dy = sin(f);
+    double d = (G*G - 4*k1*k1*H)*dx*dx - 4*H*dy*dy;
+    const double a = (sqrt(d)-dx*G)/(dy*dy+k1*k1*dx*dx);
+    return a;
+}
+
+double func1 ( double f, double G, double H, double k1 )
+{
+    double dy = sin(f);
+    const double a = (dy*dy*dy)*func(f,G,H,k1);
+    const double e = 1e-6;
+    f += e;
+    dy = sin(f);
+    const double a2 = (dy*dy*dy)*func(f,G,H,k1);
+    return (a2-a)/e;
+}
+
+double func2 ( double f, double G, double H, double k1 )
+{
+    double dx = cos(f);
+    double dy = sin(f);
+    const double a = func(f,G,H,k1);
+    const double e = 1e-6;
+    f += e;
+    const double a2 = func(f,G,H,k1);
+    return dy*dy*(3*dx*a + dy*(a2-a)/e);
+}
+
+double func3 ( double f, double G, double H, double k1 )
+{
+    double dx = cos(f);
+    double dy = sin(f);
+    const double a = func(f,G,H,k1);
+    const double q = dy*dy + k1*k1*dx*dx;
+    double p = 0;
+    p += dy*G;
+    p /= q;
+    double d = (G*G - 4*k1*k1*H)*dx*dx - 4*H*dy*dy;
+    p -= 2*(sqrt(d)-dx*G)*dx*dy*(1-k1*k1)/(q*q);
+    const double e = 1e-6;
+    f += e;
+    const double a2 = func(f,G,H,k1);
+    return p;
+}
+
 void check ()
 {
     static PRand rand;
-    const double f = rand();
+    const double f = rand() + 0.1;
     const double dx = cos(f);
     const double dy = sin(f);
-    //const double x = rand();
-    //const double y = rand();
     const double y1 = rand() + 0.5;
-    const double a = rand();
-    //const double b = rand();
-    //const double c = 2*dy/y1;
-    //const double q1 = _pow2 ( a*x + dx ) + _pow2 ( b*x + 2*dy/y1*y + dy ) - 1;
-    //const double q2 = _pow2 ( a*x ) + 2*a*x*dx + _pow2 ( b*x ) + 2 * b*c * x*y + _pow2 ( c*y ) + 2*( b*x + c*y ) * dy;
-    //const double q2 = _pow2 ( a*x ) + 2*a*x*dx + _pow2 ( b*x ) + 2*x * b*dy* ( 2*y/y1 + 1 ) + 4*y/y1 * ( y/y1 + 1 ) * dy * dy;
-    //const double A = ( 2*y/y1 + 1 );
-    //const double B = 4*y/y1 * ( y/y1 + 1 );
-    //const double q2 = ( a*a + b*b ) * x*x + 2*a*x*dx + 2*x * b*dy* A + B * dy * dy;
-    const double x2 = rand();
+    const double x2 = rand() + 0.1;
     const double y2 = rand();
-    const double x3 = rand();
+    const double x3 = rand() + 0.1;
     const double y3 = rand();
-    const double A2 = ( 2*y2/y1 + 1 );
-    const double B2 = 4*y2/y1 * ( y2/y1 + 1 );
-    const double A3 = ( 2*y3/y1 + 1 );
-    const double B3 = 4*y3/y1 * ( y3/y1 + 1 );
-    const double k1 = ( x3 - x2 ) / ( A2*x3 - x2*A3 );
-    const double k2 = ( B2*x3*x3 - x2*x2*B3 ) / ( 2*x2*( A2*x3 - x2*A3 ) );
-    const double b = - ( k1*a*dx/dy + k2/x3 * dy );
-    //const double g2 = ( a*a + b*b ) * x2*x2 + 2*a*x2*dx + 2*x2 * b*dy* A2 + B2 * dy * dy;
-    //const double g3 = ( a*a + b*b ) * x3*x3 + 2*a*x3*dx + 2*x3 * b*dy* A3 + B3 * dy * dy;
-    //const double qq = 2*( x2*x3*x3 - x2*x2*x3 )*a*dx + 2*( A2*x2*x3*x3 - x2*x2*x3*A3 ) * b*dy + ( B2*x3*x3 - x2*x2*B3 ) * dy * dy;
-    const double q3 = _pow2 ( a*x3 + dx ) + _pow2 ( b*x3 + 2*dy/y1*y3 + dy ) - 1;
-    const double q2 = _pow2 ( a*x2 + dx ) + _pow2 ( b*x2 + 2*dy/y1*y2 + dy ) - 1;
-    display << q2 * x3*x3 - q3 * x2*x2 << NL;
-    const double qq = 2*( x2*x3*x3 - x2*x2*x3 )*a*dx + 2*( A2*x2*x3*x3 - x2*x2*x3*A3 ) * b*dy + ( B2*x3*x3 - x2*x2*B3 ) * dy * dy;
-    const double gg = a*a*( 1 + k1*dx/dy*k1*dx/dy ) * x3*x3 + 2*a* (k1*k2 + 1 - k1*A3 )*x3*dx + ( B3 - 2 *k2 * A3 + k2*k2) * dy * dy;
-    const double d1 = (k1*k2 + 1 - k1*A3 )*x3*dx*(k1*k2 + 1 - k1*A3 )*x3*dx - ( 1 + k1*dx/dy*k1*dx/dy ) * x3*x3 * ( B3 - 2 *k2 * A3 + k2*k2) * dy * dy;
-    const double k3 = 2*k1*k2 + (1 - k1*A3 )*(1 - k1*A3 ) - k1*k1 * B3;
-    const double k4 = B3 - 2 *k2 * A3 + k2*k2;
-    const double d2 = ( k3*dx*dx - dy * dy * k4 ) * x3*x3;
-    display << qq << NL;
-    //display << q2 << NL;
+    const double A2 = ( 1 - 2*y2/y1 )/x2;
+    const double A3 = ( 1 - 2*y3/y1 )/x3;
+    const double B2 = y2/y1 * ( y2/y1 - 1 )/(x2*x2);
+    const double B3 = y3/y1 * ( y3/y1 - 1 )/(x3*x3);
+    const double k1 = (1/x3 - 1/x2)/(A3 - A2);
+    const double k2 = (B3 - B2)/(A3 - A2);
+    const double c = -2*dy/y1;
+    //const double qq = ( a*a + b*b ) + 2*a*dx/x + 2*b*dy* ( 1 - 2*y/y1 )/x + 4*y/y1 * ( y/y1 - 1 ) * dy * dy/(x*x);
+    //const double qq = a*dx*(1/x3 - 1/x2) + b*dy* (A3 - A2) + 2 * dy * dy * (B3 - B2);
+    //const double qq = a*a + b*b + a*dx*(1/x3 + 1/x2) + b*dy* (A3 + A2) + 2 * dy * dy * (B3 + B2);
+    //const double qq = a*a*(1+k1*k1*dx*dx/(dy*dy)) + a*dx*( 4*k1*k2 + 1/x3 + 1/x2) + b*dy* (A3 + A2) + 4*k2*k2*dy*dy + 2 * dy * dy * (B3 + B2);
+    //const double qq = a*a*(1+k1*k1*dx*dx/(dy*dy)) + a*dx*( 4*k1*k2 + 1/x3 + 1/x2 - k1* ( A3 + A2 )) + ( 4*k2*k2 + 2*( B3 + B2 ) -2*k2* ( A3 + A2 ) ) * dy * dy;
+    const double G = ( 4*k1*k2 + 1/x3 + 1/x2 - k1*( A3 + A2 ) );
+    const double H = ( 4*k2*k2 + 2*( B3 + B2 ) - 2*k2* ( A3 + A2 ) );
+    const double d = (G*G - 4*k1*k1*H)*dx*dx - 4*H*dy*dy;
+    if( d<0 )
+    {
+        display << "d<0" << NL;
+        return;
+    }
+    const double a = (dy*dy)*(sqrt(d)-dx*G)/((dy*dy)+k1*k1*dx*dx)/2;
+    const double b = -( a*dx*k1/dy + 2*k2*dy );
+    const double q2 = _pow2 ( a*x2 + dx ) + _pow2 ( b*x2 + c*y2 + dy ) - 1;
+    const double q3 = _pow2 ( a*x3 + dx ) + _pow2 ( b*x3 + c*y3 + dy ) - 1;
+    const double qq = a*a*(1+k1*k1*dx*dx/(dy*dy)) + a*dx*G + H * dy * dy;
+    //display << 0.5*(q3/(x3*x3) + q2/(x2*x2)) << NL;
+    //display << qq << NL;
+    //display << q2 << q3 << NL;
+    double p1 = func1 ( f, G, H, k1 );
+    display << p1 << NL;
+    double p2 = func2 ( f, G, H, k1 );
+    display << p2 << NL;
 }
 
 } // end of namespace
