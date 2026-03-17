@@ -2060,11 +2060,10 @@ bool sluGaussRowO ( nat n, Suite<SortItem<nat, double> > * a, double * b, double
         // Запись в очередь
         hd[k].a = im;
         hd[k].b = k;
-        //const nat nc = col[row[im].head].size();
+        const nat nc = col[row[im].head].size();
         heap << SortItem<nat, Set2<nat> *> ( row.size(), hd(k) );
     }
 // Прямой ход
-//    DynArray<bool> flag ( n, false );
     Suite<SortItem<nat, double> > rtmp;
 //    Suite<nat> itmp;
     double time1=0, time2=0, time3=0;
@@ -2073,18 +2072,17 @@ bool sluGaussRowO ( nat n, Suite<SortItem<nat, double> > * a, double * b, double
         SortItem<nat, Set2<nat> *> si;
         heap >> si;
         const nat ir = irow[k] = si.tail - hd();
-//        flag[ir] = true;
         Suite<SortItem<nat, double> > & rk = a[ir];
         const nat im = si.tail->a; // максимальный по модулю элемент в строке
         const nat kk = icol[ir] = rk[im].head;
-display << si.head << rk.size() << NL;
+//if ( si.head << rk.size() ) display << si.head << rk.size() << NL;
 // Нормализация строки
         const nat nc = rk.size();
         const double p = 1. / rk[im].tail;
         for ( i = 0; i < nc; ++i ) rk[i].tail *= p;
         b[ir] *= p;
 // Удаление индексов текущей строки
-        for ( i = 0; i < rk.size(); ++i )
+        for ( i = 0; i < nc; ++i )
         {
             Suite<nat> & ci = col[rk[i].head];
             for ( j = 0; j < ci.size(); ++j )
@@ -2102,7 +2100,6 @@ display << si.head << rk.size() << NL;
         {
 double t1 = timeInSec();
             const nat jj = ck[j];
-//            if ( flag[jj] ) continue;
 //            itmp.inc() = jj;
             Suite<SortItem<nat, double> > & rj = a[jj];
             const nat ii = lasEqu123 ( rj, SortItem<nat, double> ( kk ) );
@@ -2114,7 +2111,7 @@ double t2 = timeInSec();
             {
                 if ( ij == rj.size() )
                 {
-                    for (; ik < rk.size(); ++ik )
+                    for (; ik < nc; ++ik )
                     {
                         SortItem<nat, double> & ek = rk[ik];
                         rtmp.inc() = SortItem<nat, double> ( ek.head, - t * ek.tail );
@@ -2122,7 +2119,7 @@ double t2 = timeInSec();
                     }
                     break;
                 }
-                if ( ik == rk.size() )
+                if ( ik == nc )
                 {
                     for (; ij < rj.size(); ++ij ) rtmp.inc() = rj[ij];
                     break;
@@ -2176,7 +2173,7 @@ time3 += t3-t2;
             p.a = im;
             // Передвинем элемент в очереди, если нужно
             const nat head2 = rj.size();// * col[rj[im].head].size();
-            nat & head = heap[p.a]->head;
+            nat & head = heap[p.b]->head;
             if ( head != head2 )
             {
                 if ( head < head2 )
@@ -2214,7 +2211,7 @@ void sluGaussRow_test1()
 {
     static PNormalRand rand;
 //    static PRand rand;
-    const nat n = 4;
+    const nat n = 490;
     double c[n], x[n], b[n];
     for ( nat i = 0; i < n; ++i ) c[i] = rand();
     Suite<SortItem<nat, double>> a[n];
@@ -2225,25 +2222,25 @@ void sluGaussRow_test1()
         {
             if ( j > i )
             {
-display << "0";
+//display << "0";
                 continue;
             }
             double t = rand();
-            if ( i != j && fabs ( t ) < 0.8 )
+            if ( i != j && fabs ( t ) < 1.8 )
             {
-display << "0";
+//display << "0";
                 continue;
             }
- display << t;
+ //display << t;
             ai.inc() = SortItem<nat, double> ( j, t );
             if ( i == j )
                 ai.las().tail += 1;
-            //else
-               // a[j].inc() = SortItem<nat, double> ( i, t );
+            else
+                a[j].inc() = SortItem<nat, double> ( i, t );
         }
-display << NL;
+//display << NL;
     }
-display << NL;
+//display << NL;
     nat k = 0;
     for ( nat i = 0; i < n; ++i )
     {
@@ -2274,23 +2271,303 @@ double t1 = timeInSec();
         display << "no" << NL;
 }
 
-inline void swap_int ( int & i1, int & i2 )
+struct MatrNode
 {
-    const int i ( i1 );
-    i1 = i2;
-    i2 = i;
-}
+    nat row, col;
+    double value;
+    MatrNode * next;
+};
 
-template <class T, void (swap_func) ( T & i1, T & i2 ) = ::_swap<T> > class tr
+class TableNodeStor
 {
+    nat nb;
+    MatrNode * free;
+    Suite<MatrNode *> node;
 public:
-    void func ()
+    TableNodeStor ( nat n ) : nb(n), free(0) {}
+    MatrNode * get ()
     {
-        T k1 = 1, k2 = 2;
-        swap_func ( k1, k2 );
-        display << k1 << k2 << NL;
+        if ( ! free )
+        {
+            free = new MatrNode[nb];
+            node.inc() = free;
+            for ( nat i = 1; i < nb; ++i )
+            {
+                free[i-1].next = free + i;
+            }
+            free[nb-1].next = 0;
+        }
+        MatrNode * n = free;
+        free = free->next;
+        return n;
+    }
+    void put ( MatrNode * n )
+    {
+        n->next = free;
+        free = n;
+    }
+    ~TableNodeStor()
+    {
+        for ( nat i = 0; i < node.size(); ++i ) delete[] node[i];
     }
 };
+
+typedef SortItem<nat, Set2<const MatrNode *, nat> *> HeapNode;
+
+inline void tnn_swap ( HeapNode & p1, HeapNode & p2 )
+{
+    _swap ( p1, p2 );
+    _swap ( p1.tail->b, p2.tail->b );
+}
+
+bool sluGaussRowO ( ArrRef<MatrNode*> & a, double * b, double * x, TableNodeStor & stor )
+{
+    nat i, j, k;
+    nat n = a.size();
+    MinHeap<HeapNode, tnn_swap> heap ( n );
+    DynArray<Suite<const MatrNode *> > col ( n );
+    DynArray<nat> icol ( 2*n );
+    nat * irow = icol ( n );
+// Запись номеров строк в массив столбцов
+    for ( i = 0; i < n; ++i )
+    {
+        const MatrNode * row = a[i];
+        if ( ! row )
+            return false;
+        while ( row )
+        {
+            col[row->col].inc() = row;
+            row = row->next;
+        }
+    }
+ // Запись строк в очередь
+    DynArray<Set2<const MatrNode *, nat>> hd ( n );
+    for ( k = 0; k < n; ++k )
+    {
+        // Проверка столбцов
+        if ( ! col[k].size() )
+            return false;
+        // Поиск максимального по модулю элемента в строке
+        nat nr = 0;
+        const MatrNode * row = a[k];
+        const MatrNode * im = row;
+        double max = fabs ( row->value );
+        row = row->next;
+        while ( row )
+        {
+            if ( _maxa ( max, fabs ( row->value ) ) ) im = row;
+            row = row->next;
+        }
+        if ( ! max )
+            return false;
+        // Запись в очередь
+        hd[k].a = im;
+        hd[k].b = k;
+        const nat nc = col[im->col].size();
+        heap << HeapNode ( nr, hd(k) );
+    }
+// Прямой ход
+    double time1=0, time2=0, time3=0;
+    for ( k = 0; k < n; ++k )
+    {
+        HeapNode si;
+        heap >> si;
+        const nat ir = irow[k] = si.tail - hd();
+        MatrNode * rk = a[ir];
+        const MatrNode * im = si.tail->a; // максимальный по модулю элемент в строке
+        const nat kk = icol[ir] = rk->col;
+//if ( si.head << rk.size() ) display << si.head << rk.size() << NL;
+// Нормализация строки
+        const double p = 1. / im->value;
+        while ( rk )
+        {
+            rk->value *= p;
+            Suite<const MatrNode *> & ci = col[rk->col];
+            for ( j = 0; j < ci.size(); ++j ) // Удаление индексов текущей строки
+            {
+                if ( ci[j]->row == ir )
+                {
+                    ci.del ( j );
+                    break;
+                }
+            }
+            rk = rk->next;
+        }
+        b[ir] *= p;
+// Вычитание строк
+        Suite<const MatrNode *> & ck = col[kk];
+        for ( j = 0; j < ck.size(); ++j )
+        {
+            const nat jj = ck[j]->row;
+            MatrNode ** pre = & a[jj]->next;
+            MatrNode * rj = *pre;
+            const double v = rj->value;
+            for ( rk = a[ir];; )
+            {
+                if ( ! rk )
+                    break;
+                if ( ! rj )
+                {
+                    while ( rk )
+                    {
+                        MatrNode * t = stor.get();
+                        t->row = jj;
+                        t->col = rk->col;
+                        t->value = - v * rk->value;
+                        t->next = 0;
+                        col[t->col].inc() = t;
+                        *pre = t;
+                        pre = & t->next;
+                        rk = rk->next;
+                    }
+                    break;
+                }
+                /*
+                SortItem<nat, double> & ek = rk[ik];
+                SortItem<nat, double> & ej = rj[ij];
+                if ( ek.head < ej.head )
+                {
+                    rtmp.inc() = SortItem<nat, double> ( ek.head, - t * ek.tail );
+                    col[ek.head].inc() = jj;
+                    ++ik;
+                }
+                else
+                if ( ek.head > ej.head )
+                {
+                    rtmp.inc() = ej;
+                    ++ij;
+                }
+                else
+                {
+                    if ( ek.head != kk )
+                        rtmp.inc() = SortItem<nat, double> ( ek.head, ej.tail - t * ek.tail );
+                    ++ik;
+                    ++ij;
+                }*/
+            }/*
+            rj.swap ( rtmp );
+            rtmp.resize();
+            b[jj] -= t * b[ir];
+double t3 = timeInSec();
+//time1 += t1-t0;
+time2 += t2-t1;
+time3 += t3-t2;*/
+        }
+/*        rk.delAndShift ( im );
+// Изменения в очереди
+        for ( j = 0; j < ck.size(); ++j )
+        {
+            const nat jj = ck[j];
+            Suite<SortItem<nat, double> > & rj = a[jj];
+            // Поиск максимального по модулю элемента в строке
+            nat im = 0;
+            double max = fabs ( rj[0].tail );
+            for ( i = 1; i < rj.size(); ++i )
+            {
+                if ( _maxa ( max, fabs ( rj[i].tail ) ) ) im = i;
+            }
+            if ( ! max )
+                return false;
+            Set2<nat> & p = hd[jj];
+            p.a = im;
+            // Передвинем элемент в очереди, если нужно
+            const nat head2 = rj.size();// * col[rj[im].head].size();
+            nat & head = heap[p.b]->head;
+            if ( head != head2 )
+            {
+                if ( head < head2 )
+                {
+                    head = head2;
+                    heap.down ( p.b );
+                }
+                else
+                {
+                    head = head2;
+                    heap.raise ( p.b );
+                }
+            }
+        }
+*/
+    }
+// Обратная подстановка
+    for ( j = 0; j < n; ++j )
+    {
+        k = irow[n-1-j];
+        double & r = x[icol[k]];
+        r = b[k];
+        const MatrNode * row = a[k];
+        while ( row )
+        {
+            r -= x[row->col] * row->value;
+            row = row->next;
+        }
+    }
+    return true;
+}
+
+void sluGaussRowO_test1()
+{
+    static PNormalRand rand;
+//    static PRand rand;
+    const nat n = 490;
+    double c[n], x[n], b[n];
+    for ( nat i = 0; i < n; ++i ) c[i] = rand();
+    Suite<SortItem<nat, double>> a[n];
+    for ( nat i = 0; i < n; ++i )
+    {
+        Suite<SortItem<nat, double>> & ai = a[i];
+        for ( nat j = 0; j < n; ++j )
+        {
+            if ( j > i )
+            {
+//display << "0";
+                continue;
+            }
+            double t = rand();
+            if ( i != j && fabs ( t ) < 1.8 )
+            {
+//display << "0";
+                continue;
+            }
+ //display << t;
+            ai.inc() = SortItem<nat, double> ( j, t );
+            if ( i == j )
+                ai.las().tail += 1;
+            else
+                a[j].inc() = SortItem<nat, double> ( i, t );
+        }
+//display << NL;
+    }
+//display << NL;
+    nat k = 0;
+    for ( nat i = 0; i < n; ++i )
+    {
+        b[i] = 0;
+        Suite<SortItem<nat, double>> & ai = a[i];
+        for ( nat j = 0; j < ai.size(); ++j )
+        {
+            SortItem<nat, double> & s = ai[j];
+            b[i] += s.tail * c[s.head];
+        }
+        k += ai.size();
+    }
+//display << k << n*n << NL;
+double t0 = timeInSec();
+    if ( sluGaussRowO ( n, a, b, x ) )
+//    if ( slu_LDLt ( n, a, b, x ) )
+    {
+double t1 = timeInSec();
+        double max = 0;
+        for ( nat i = 0; i < n; ++i )
+        {
+            _maxa ( max, fabs ( x[i] - c[i] ) );
+            //display << x[i] << c[i] << NL;
+        }
+        display << max << t1-t0 << NL;
+    }
+    else
+        display << "no" << NL;
+}
 
 void sluGaussRow_test2()
 {
