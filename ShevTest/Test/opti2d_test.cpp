@@ -2503,7 +2503,9 @@ double func ( double f, double G, double H, double k1 )
 {
     double dx = cos(f);
     double dy = sin(f);
-    double d = (G*G - 4*k1*k1*H)*dx*dx - 4*H*dy*dy;
+    double k3 = G*G - 4*k1*k1*H;
+    double k4 = 4*H;
+    double d = k3*dx*dx - k4*dy*dy;
     const double a = (sqrt(d)-dx*G)/(dy*dy+k1*k1*dx*dx);
     return a;
 }
@@ -2534,17 +2536,20 @@ double func3 ( double f, double G, double H, double k1 )
 {
     double dx = cos(f);
     double dy = sin(f);
-    const double a = func(f,G,H,k1);
-    const double q = dy*dy + k1*k1*dx*dx;
-    double p = 0;
-    p += dy*G;
-    p /= q;
-    double d = (G*G - 4*k1*k1*H)*dx*dx - 4*H*dy*dy;
-    p -= 2*(sqrt(d)-dx*G)*dx*dy*(1-k1*k1)/(q*q);
-    const double e = 1e-6;
-    f += e;
-    const double a2 = func(f,G,H,k1);
-    return p;
+    double q = dy*dy + k1*k1*dx*dx;
+    double k3 = G*G - 4*k1*k1*H;
+    double d = k3*dx*dx - 4*H*dy*dy;
+    //double p1 = G - ( k3+4*H )*dx / sqrt(d);
+    //double p2 = ( sqrt(d) - G*dx )*(1-k1*k1 ) / q;
+    //return dy*dy* (3*dx*(sqrt(d)-dx*G) + dy*dy*(p1-2*p2*dx)) /q;
+    double A = dy*dy + k1*k1*dx*dx + 2*k1*k1;
+    double p = dx*sqrt(d)*A / q - dy*dy*( k3+4*H )*dx / sqrt(d) + G * ( dy*dy - A*dx*dx / q );
+    double t1 = dx*( 3*k3*k1*k1 
+                   + ( k3 - (16*H + 5*k3)*k1*k1 ) * dy*dy 
+                   - 2*( k3 + 4*H - k1*k1*(4*H+k3)) * dy*dy*dy*dy ) 
+        + G * ( dy*dy*q - A*dx*dx )*sqrt(d);
+    display << p*sqrt(d)*q << t1 << NL;
+    return dy*dy* p /q;
 }
 
 void check ()
@@ -2555,9 +2560,15 @@ void check ()
     const double dy = sin(f);
     const double y1 = rand() + 0.5;
     const double x2 = rand() + 0.1;
-    const double y2 = rand();
+    double y2 = rand();
     const double x3 = rand() + 0.1;
-    const double y3 = rand();
+    double y3 = rand();
+    {
+        double k = ( x2*x2 * ( y3 - y1 ) * y3 - x3*x3 * ( y2 - y1 ) * y2 ) / ( x2*x3 * ( x3*(2*y2-y1) - x2*(2*y3-y1) ) );
+        //display << k << NL;
+        y2 += k * x2;
+        y3 += k * x3;
+    }
     const double A2 = ( 1 - 2*y2/y1 )/x2;
     const double A3 = ( 1 - 2*y3/y1 )/x3;
     const double B2 = y2/y1 * ( y2/y1 - 1 )/(x2*x2);
@@ -2573,6 +2584,14 @@ void check ()
     const double G = ( 4*k1*k2 + 1/x3 + 1/x2 - k1*( A3 + A2 ) );
     const double H = ( 4*k2*k2 + 2*( B3 + B2 ) - 2*k2* ( A3 + A2 ) );
     const double d = (G*G - 4*k1*k1*H)*dx*dx - 4*H*dy*dy;
+        FixArray<Vector2d,4> point;
+        point[0] = null2d;
+        point[1] = Vector2d ( 0, y1 );
+        point[2] = Vector2d ( x2, y2 );
+        point[3] = Vector2d ( x3, y3 );
+        drawPoints ( point, 0, 1, 1 );
+        Def<Ellipse2d> e1 = minEllipseAroundPointsA ( point );
+        draw ( e1, 1, 0, 1 );
     if( d<0 )
     {
         display << "d<0" << NL;
@@ -2587,9 +2606,11 @@ void check ()
     //display << qq << NL;
     //display << q2 << q3 << NL;
     double p1 = func1 ( f, G, H, k1 );
-    display << p1 << NL;
+    //display << p1 << NL;
     double p2 = func2 ( f, G, H, k1 );
-    display << p2 << NL;
+    //display << p2 << NL;
+    double p3 = func3 ( f, G, H, k1 );
+    //display << p3 << NL;
 }
 
 } // end of namespace
