@@ -2273,9 +2273,9 @@ double t1 = timeInSec();
 
 struct MatrNode
 {
-    nat row, col;
+    nat row, col; 
     double value;
-    MatrNode * next;
+    MatrNode * next, * prevRow, * nextRow;
 };
 
 class TableNodeStor
@@ -2312,24 +2312,25 @@ public:
     }
 };
 
-typedef SortItem<nat, Set2<const MatrNode *, nat> *> HeapNode;
+typedef SortItem<nat, nat> HeapNode;
 
 inline void tnn_swap ( HeapNode & p1, HeapNode & p2 )
 {
     _swap ( p1, p2 );
-    _swap ( p1.tail->b, p2.tail->b );
+    _swap ( p1.tail, p2.tail );
 }
 
-bool sluGaussRowO ( ArrRef<MatrNode*> & a, double * b, double * x, TableNodeStor & stor )
+bool sluGaussRowO ( const nat n, Set2<nat, MatrNode*> row[], Set2<nat, MatrNode*> col[], double * b, double * x, TableNodeStor & stor )
 {
     nat i, j, k;
-    nat n = a.size();
     MinHeap<HeapNode, tnn_swap> heap ( n );
-    DynArray<Suite<const MatrNode *> > col ( n );
-    DynArray<nat> icol ( 2*n );
-    nat * irow = icol ( n );
+    DynArray<Set2<nat, MatrNode*>> row2 ( n + n, Set2<nat, MatrNode*> ( 0, 0 ) );
+    Set2<nat, MatrNode*> * col2 = row2(n);
+   // DynArray<Suite<const MatrNode *> > col ( n );
+    //DynArray<nat> icol ( 2*n );
+    //nat * irow = icol ( n );
 // Запись номеров строк в массив столбцов
-    for ( i = 0; i < n; ++i )
+    /*for ( i = 0; i < n; ++i )
     {
         const MatrNode * row = a[i];
         if ( ! row )
@@ -2339,16 +2340,15 @@ bool sluGaussRowO ( ArrRef<MatrNode*> & a, double * b, double * x, TableNodeStor
             col[row->col].inc() = row;
             row = row->next;
         }
-    }
+    }*/
  // Запись строк в очередь
-    DynArray<Set2<const MatrNode *, nat>> hd ( n );
+    DynArray<nat> hd ( n );
     for ( k = 0; k < n; ++k )
     {
         // Проверка столбцов
-        if ( ! col[k].size() )
+        /*if ( ! col[k].size() )
             return false;
         // Поиск максимального по модулю элемента в строке
-        nat nr = 0;
         const MatrNode * row = a[k];
         const MatrNode * im = row;
         double max = fabs ( row->value );
@@ -2359,12 +2359,11 @@ bool sluGaussRowO ( ArrRef<MatrNode*> & a, double * b, double * x, TableNodeStor
             row = row->next;
         }
         if ( ! max )
-            return false;
+            return false;*/
         // Запись в очередь
-        hd[k].a = im;
-        hd[k].b = k;
-        const nat nc = col[im->col].size();
-        heap << HeapNode ( nr, hd(k) );
+        hd[k] = k;
+        //const nat nc = col[im->col].size();
+        heap << HeapNode ( row[k].a, k );
     }
 // Прямой ход
     double time1=0, time2=0, time3=0;
@@ -2372,55 +2371,68 @@ bool sluGaussRowO ( ArrRef<MatrNode*> & a, double * b, double * x, TableNodeStor
     {
         HeapNode si;
         heap >> si;
-        const nat ir = irow[k] = si.tail - hd();
-        MatrNode * rk = a[ir];
-        const MatrNode * im = si.tail->a; // максимальный по модулю элемент в строке
-        const nat kk = icol[ir] = rk->col;
+        const nat ir = si.tail; // номер строки матрицы
+        row2[k] = row[ir];
+// Поиск максимального по модулю элемента в строке
+        MatrNode * r = row[ir].b;
+        const MatrNode * nm = r;
+        double max = 0;
+        while ( row )
+        {
+            if ( _maxa ( max, fabs ( r->value ) ) ) nm = r;
+            r = r->next;
+        }
+        if ( ! max )
+            return false;
 //if ( si.head << rk.size() ) display << si.head << rk.size() << NL;
 // Нормализация строки
-        const double p = 1. / im->value;
-        while ( rk )
+        const double p = 1. / max;
+        r = row[ir].b;
+        while ( r )
         {
-            rk->value *= p;
-            Suite<const MatrNode *> & ci = col[rk->col];
-            for ( j = 0; j < ci.size(); ++j ) // Удаление индексов текущей строки
-            {
-                if ( ci[j]->row == ir )
-                {
-                    ci.del ( j );
-                    break;
-                }
-            }
-            rk = rk->next;
+            r->value *= p;
+// Убираем элемент из списка столбцов исходной матрицы
+            if (  r->prevRow )
+                 r->prevRow->nextRow = r->nextRow;
+            if (  r->nextRow )
+                 r->nextRow->prevRow = r->prevRow;
+// Добавляем элемент в список столбцов второй матрицы
+            Set2<nat, MatrNode*> & c = col2[r->col];
+            r->prevRow = 0;
+            if ( r->nextRow = c.b )
+                 c.b->prevRow = r;
+            ++c.a;
+            c.b = r;
+            r = r->next;
         }
         b[ir] *= p;
 // Вычитание строк
-        Suite<const MatrNode *> & ck = col[kk];
-        for ( j = 0; j < ck.size(); ++j )
+        Set2<nat, MatrNode*> & cm = col[nm->col];
+        MatrNode * c = cm.b;
+        while ( c )
         {
-            const nat jj = ck[j]->row;
-            MatrNode ** pre = & a[jj]->next;
-            MatrNode * rj = *pre;
-            const double v = rj->value;
-            for ( rk = a[ir];; )
+            const MatrNode * rk = row[ir].b;
+            MatrNode * rc = row[c->row].b;
+            const double v = c->value;
+            for ( rk = row[ir].b; rk; )
             {
-                if ( ! rk )
-                    break;
-                if ( ! rj )
+                if ( rc->col < rk->col && ! rc->next )
                 {
                     while ( rk )
                     {
                         MatrNode * t = stor.get();
-                        t->row = jj;
+                        t->row = c->row;
                         t->col = rk->col;
                         t->value = - v * rk->value;
                         t->next = 0;
-                        col[t->col].inc() = t;
-                        *pre = t;
-                        pre = & t->next;
+                        rc->next = t;
+                        rc = t;
                         rk = rk->next;
                     }
                     break;
+                }
+                if ( rk->col < rc->col )
+                {
                 }
                 /*
                 SortItem<nat, double> & ek = rk[ik];
