@@ -2552,65 +2552,174 @@ double func3 ( double f, double G, double H, double k1 )
     return dy*dy* p /q;
 }
 
+double get ( double x2, double y2, double x3, double y3 )
+{
+    const double A2 = ( 1 - 2*y2 )/x2;
+    const double A3 = ( 1 - 2*y3 )/x3;
+    const double B2 = y2 * ( y2 - 1 )/(x2*x2);
+    const double B3 = y3 * ( y3 - 1 )/(x3*x3);
+    const double k1 = (1/x3 - 1/x2)/(A3 - A2);
+    const double k2 = (B3 - B2)/(A3 - A2);
+    //return 4*k2*k2 + 2*(B3 + B2) - 2*k2* (A3 + A2);
+    return 4*k1*k2 + 1/x3 + 1/x2 - k1* (A3 + A2);
+}
+
 void check ()
 {
     static PRand rand;
     const double f = rand() + 0.1;
     const double dx = cos(f);
     const double dy = sin(f);
-    const double y1 = rand() + 0.5;
     const double x2 = rand() + 0.1;
     double y2 = rand();
     const double x3 = rand() + 0.1;
     double y3 = rand();
+double h1 = get ( x2, y2, x3, y3 );
+    if(0)
     {
-        double k = ( x2*x2 * ( y3 - y1 ) * y3 - x3*x3 * ( y2 - y1 ) * y2 ) / ( x2*x3 * ( x3*(2*y2-y1) - x2*(2*y3-y1) ) );
-        //display << k << NL;
+        double k = ( x2*x2 * ( y3 - 1 ) * y3 - x3*x3 * ( y2 - 1 ) * y2 ) / ( x2*x3 * ( x3*(2*y2-1) - x2*(2*y3-1) ) );
         y2 += k * x2;
         y3 += k * x3;
     }
-    const double A2 = ( 1 - 2*y2/y1 )/x2;
-    const double A3 = ( 1 - 2*y3/y1 )/x3;
-    const double B2 = y2/y1 * ( y2/y1 - 1 )/(x2*x2);
-    const double B3 = y3/y1 * ( y3/y1 - 1 )/(x3*x3);
-    const double k1 = (1/x3 - 1/x2)/(A3 - A2);
-    const double k2 = (B3 - B2)/(A3 - A2);
-    const double c = -2*dy/y1;
-    //const double qq = ( a*a + b*b ) + 2*a*dx/x + 2*b*dy* ( 1 - 2*y/y1 )/x + 4*y/y1 * ( y/y1 - 1 ) * dy * dy/(x*x);
+double h2 = get ( x2, y2, x3, y3 );
+//display << h1 << h2 << NL;
+    // A*A = 4*B + 1/(x*x)
+    const double xx = 1/x3 - 1/x2;
+    const double z2 = y2/x2;
+    const double z3 = y3/x3;
+    const double zz = z3 - z2;
+    const double A2 = 1/x2 - 2*z2;
+    const double A3 = 1/x3 - 2*z3;
+    const double B2 = z2 * ( z2 - 1/x2);
+    const double B3 = z3 * ( z3 - 1/x3);
+    const double B = fabs(x2) > fabs(x3) ? y2 * ( y2 - 1 )/(x2*x2) : y3 * ( y3 - 1 )/(x3*x3);
+    const double k1 = xx/(xx - 2*zz);//xx/(A3 - A2)
+    const double k2 = (zz*(z3+z2)-(z3/x3-z2/x2))/(xx - 2*zz);//(B3 - B2)/(A3 - A2)
+    const double c = -2*dy;
+    double a = rand() + 0.1;
+    double b = rand();
+    //const double qq = ( a*a + b*b ) + 2*a*dx/x + 2*b*dy* ( 1 - 2*y )/x + 4*y * ( y - 1 ) * dy * dy/(x*x);
     //const double qq = a*dx*(1/x3 - 1/x2) + b*dy* (A3 - A2) + 2 * dy * dy * (B3 - B2);
     //const double qq = a*a + b*b + a*dx*(1/x3 + 1/x2) + b*dy* (A3 + A2) + 2 * dy * dy * (B3 + B2);
-    //const double qq = a*a*(1+k1*k1*dx*dx/(dy*dy)) + a*dx*( 4*k1*k2 + 1/x3 + 1/x2) + b*dy* (A3 + A2) + 4*k2*k2*dy*dy + 2 * dy * dy * (B3 + B2);
-    //const double qq = a*a*(1+k1*k1*dx*dx/(dy*dy)) + a*dx*( 4*k1*k2 + 1/x3 + 1/x2 - k1* ( A3 + A2 )) + ( 4*k2*k2 + 2*( B3 + B2 ) -2*k2* ( A3 + A2 ) ) * dy * dy;
-    const double G = ( 4*k1*k2 + 1/x3 + 1/x2 - k1*( A3 + A2 ) );
-    const double H = ( 4*k2*k2 + 2*( B3 + B2 ) - 2*k2* ( A3 + A2 ) );
-    const double d = (G*G - 4*k1*k1*H)*dx*dx - 4*H*dy*dy;
+     b = - ( a*dx*(1/x3-1/x2) + 2*(B3-B2)*dy*dy ) / ( (A3-A2)*dy );
+    // b = - ( a*dx*k1/dy + 2*k2*dy )
+    //const double qq = a*a*(1+k1*k1*dx*dx/(dy*dy)) + a*dx*(4*k1*k2 + 1/x3 + 1/x2 - k1* (A3 + A2) ) + (4*k2*k2 + 2*(B3 + B2) - 2*k2* (A3 + A2) ) * dy * dy;
+  //const double qq = a*a*(1+k1*k1*dx*dx/(dy*dy)) + a*dx*(1/x3 + 1/x2 )*( 1 - k1*k1 ) + ( 4*k2*k2 + 2*( B3 + B2 ) - 2*k2* ( A3 + A2 ) ) * dy * dy;
+  //const double qq = a*a*(1+k1*k1*dx*dx/(dy*dy)) + a*dx*(1/x3 + 1/x2 )*( 1 - k1*k1 ) + ( 2*( B3 + B2 ) - k2* ( A3 + A2 ) - k1*k2* ( 1/x2 + 1/x3 ) ) * dy * dy;
+    const double qq = a*a*(1+k1*k1*dx*dx/(dy*dy)) + a*dx*(1/x3 + 1/x2 )*( 1 - k1*k1 ) + 
+ //       ( 0.25*( xx*xx )/( k1*k1 ) - 0.5*( 1/(x3*x3) + 1/(x2*x2) ) + 0.25*k1*k1*( 1/x3 + 1/x2 )*( 1/x3 + 1/x2 ) ) * dy * dy;
+          ( 0.25*_pow2 ( xx / k1 - k1*( 1/x3 + 1/x2 ) ) - 1/(x2*x2) ) * dy * dy;
+    //const double qq = a*a*(1+k1*k1*dx*dx/(dy*dy)) + a*dx*( 1/x3 + 1/x2 - k1* (A3 + A2) ) + 2*(B3 + B2) * dy * dy; // если B3 = B2
+    double q2 = _pow2 ( a*x2 + dx ) + _pow2 ( b*x2 + c*y2 + dy ) - 1;
+    double q3 = _pow2 ( a*x3 + dx ) + _pow2 ( b*x3 + c*y3 + dy ) - 1;
+    display << 0.5*(q3/(x3*x3) + q2/(x2*x2)) << NL;
+    display << qq << NL;
+    //const double qq = a*a*(1+k1*k1*dx*dx/(dy*dy)) + a*dx*( 1/x3 + 1/x2 - k1*( A3 + A2 ) ) + 2*(B3 + B2) * dy * dy;
+    const double G = ( 1/x3 + 1/x2 - k1*( A3 + A2 ) );
+    //const double d = (G*G - 16*B*k1*k1)*dx*dx - 16*B*dy*dy;
+    const double d = (G*G - 16*B*(k1*k1-1))*dx*dx - 16*B;
         FixArray<Vector2d,4> point;
         point[0] = null2d;
-        point[1] = Vector2d ( 0, y1 );
+        point[1] = Vector2d ( 0, 1 );
         point[2] = Vector2d ( x2, y2 );
         point[3] = Vector2d ( x3, y3 );
         drawPoints ( point, 0, 1, 1 );
         Def<Ellipse2d> e1 = minEllipseAroundPointsA ( point );
-        draw ( e1, 1, 0, 1 );
+        draw ( e1, 1, 1, 0 );
     if( d<0 )
     {
         display << "d<0" << NL;
         return;
     }
-    const double a = (dy*dy)*(sqrt(d)-dx*G)/((dy*dy)+k1*k1*dx*dx)/2;
-    const double b = -( a*dx*k1/dy + 2*k2*dy );
-    const double q2 = _pow2 ( a*x2 + dx ) + _pow2 ( b*x2 + c*y2 + dy ) - 1;
-    const double q3 = _pow2 ( a*x3 + dx ) + _pow2 ( b*x3 + c*y3 + dy ) - 1;
-    const double qq = a*a*(1+k1*k1*dx*dx/(dy*dy)) + a*dx*G + H * dy * dy;
+    a = (dy*dy)*(sqrt(d)-dx*G)/((dy*dy)+k1*k1*dx*dx)/2;
+    b = - a*dx*k1/dy;
+    q2 = _pow2 ( a*x2 + dx ) + _pow2 ( b*x2 + c*y2 + dy ) - 1;
+    q3 = _pow2 ( a*x3 + dx ) + _pow2 ( b*x3 + c*y3 + dy ) - 1;
+    //const double qq = a*a*(1+k1*k1*dx*dx/(dy*dy)) + a*dx*G + 4*B * dy * dy;
     //display << 0.5*(q3/(x3*x3) + q2/(x2*x2)) << NL;
     //display << qq << NL;
     //display << q2 << q3 << NL;
-    double p1 = func1 ( f, G, H, k1 );
+    double p1 = func1 ( f, G, 4*B, k1 );
     //display << p1 << NL;
-    double p2 = func2 ( f, G, H, k1 );
+    double p2 = func2 ( f, G, 4*B, k1 );
     //display << p2 << NL;
-    double p3 = func3 ( f, G, H, k1 );
+    //double p3 = func3 ( f, G, 4*B, k1 );
     //display << p3 << NL;
+}
+/*
+    ( a*x + dx )^2 + ( b*x + c*y + dy )^2 = 1 
+    ( 0, 0 ) -> dx^2 + dy^2 = 1 
+    ( 0, 1 ) -> c = -2*dy;
+    ( a*x + dx )^2 + ( b*x + ( 1 - 2*y ) * dy )^2 = 1 
+    (a*x)^2 + 2*a*x*dx + dx^2 + (b*x)^2 + 2*b*x*( 1 - 2*y ) * dy + ( 1 - 2*y )^2*dy^2 = 1 
+    (a*x)^2 + 2*a*x*dx + (b*x)^2 + 2*b*x*( 1 - 2*y )*dy + 4*y*( y - 1 ) * dy^2 = 0 
+    (a^2+b^2)*x^2 + 2*(a*dx + b*( 1 - 2*y )*dy )*x + 4*y*( y - 1 ) * dy^2 = 0 
+    a*a + b*b + 2*a*dx/x + 2*b*( 1 - 2*y )*dy )/x + 4*y*( y - 1 ) * dy*dy /x*x = 0 
+    const double A2 = ( 1 - 2*y2 )/x2;
+    const double A3 = ( 1 - 2*y3 )/x3;
+    const double B2 = y2 * ( y2 - 1 )/(x2*x2);
+    const double B3 = y3 * ( y3 - 1 )/(x3*x3);
+    Разность уравнений:
+    a*dx*(1/x3-1/x2) + b*(A3-A2)*dy + 2*(B3-B2)*dy*dy = 0
+    b = - ( a*dx*(1/x3-1/x2) + 2*(B3-B2)*dy*dy ) / ( (A3-A2)*dy )
+    Сумма уравнений:
+    a*a + b*b + a*dx*(1/x3 + 1/x2) + b*dy* (A3 + A2) + 2 * dy * dy * (B3 + B2) = 0
+    *****************************************************************
+    Для того, чтобы B3 = B2, нужно применить следующее преобразование:
+        double k = ( x2*x2 * ( y3 - 1 ) * y3 - x3*x3 * ( y2 - 1 ) * y2 ) / ( x2*x3 * ( x3*(2*y2-1) - x2*(2*y3-1) ) );
+        y2 += k * x2;
+        y3 += k * x3;
+    Тогда:
+    a*dx*(1/x3-1/x2) + b*(A3-A2)*dy = 0
+    b = - a*dx*(1/x3-1/x2) / ( (A3-A2)*dy )
+    a^2 + b^2 + 2*a*dx/x + 2*b*A*dy + 4*B * dy^2 = 0 
+*/
+
+void check2 ()
+{
+    static PRand rand;
+    const double f = rand() + 0.1;
+    const double dx = cos(f);
+    const double dy = sin(f);
+    const double x = rand() + 0.5;
+    const double y = rand() + 0.5;
+    FixArray<Vector2d,4> point;
+    point[0] = null2d;
+    point[1] = Vector2d ( 0, 1 );
+    point[2] = Vector2d ( 1, 0 );
+    point[3] = Vector2d ( x, y );
+    Def<Ellipse2d> e1 = minEllipseAroundPointsA ( point );
+    draw ( e1, 1, 1, 0 );
+    drawPoints ( point, 0, 1, 1 );
+/*
+    ( a*x + dx )^2 + ( b*x + c*y + dy )^2 = 1
+    ( 0, 0 ) -> dx^2 + dy^2 = 1
+    ( 0, 1 ) -> c = -2*dy;
+    ( 1, 0 ) -> a*a + 2*a*dx + b*b + 2*b*dy = 0;
+    ( a*x + dx )^2 + ( b*x + ( 1 - 2*y ) * dy )^2 = 1
+    (a*x)^2 + 2*a*x*dx + dx^2 + (b*x)^2 + 2*b*x*( 1 - 2*y ) * dy + ( 1 - 2*y )^2*dy^2 = 1
+    a*x*(1-x)*dx + b*x*( 1 - 2*y - x ) * dy + 2 * ( y*y - y )*dy*dy = 0
+    b = a*(1-x)*dx / ( ( 2*y + x - 1 ) * dy ) + 2 * ( y - y*y )*dy / ( x*( 1 - 2*y - x ) );
+*/
+    double a = rand() + 0.1;
+    double k1 = (1-x) / ( 2*y + x - 1 );
+    double k2 = y * ( y - 1 ) / (x*( 2*y + x - 1 ) );
+    double b = a*k1* dx/dy + 2*k2 * dy;
+    //double b = a*(1-x)*dx / ( ( 2*y + x - 1 ) * dy) + ( 2*y - 2*y*y )*dy / (x*( 1 - 2*y - x ) );
+    double c = -2*dy;
+    double q3 = _pow2 ( a*x + dx ) + _pow2 ( b*x + c*y + dy ) - 1;
+    double q2 = _pow2 ( a + dx ) + _pow2 ( b + dy ) - 1;
+    //double q = 2*a*x*(1-x)*dx + 2*b*x*( 1 - 2*y - x ) * dy + ( - 4*y + 4*y*y )*dy*dy;
+    //display << q3 - x*x*q2 << NL;
+    //double q = a*a + 2*a*dx + b*b + 2*b*dy;
+    //double q = a*a + 2*a*dx + b*b + 2*(a*k1* dx/dy + 2*k2 * dy)*dy;
+    //double q = a*a + 2*a*dx*( 1 + k1 ) + b*b + 4*( k2 ) * dy*dy;
+    double A = 1+k1*k1*dx*dx/(dy*dy);
+    double B = 2*dx*( 1 + 2*k1*k2 + k1 );
+    double C = 4*dy*dy * ( k2*k2 + k2 );
+    double q = a*a*(1+k1*k1*dx*dx/(dy*dy)) + 2*a*dx*( 1 + 2*k1*k2 + k1 ) + 4*dy*dy * ( k2*k2 + k2 );
+    display << q2 << NL;
+    display << q << NL;
 }
 
 } // end of namespace
@@ -2618,7 +2727,7 @@ void check ()
 void opti2d_test ()
 {
     drawNewList2d ();
-    check ();
+    check2 ();
 //    minRectangleAroundPoints_test1();
 //    minRectangleAroundPolygon_test1();
 //    minParallelogramAroundPolygon_test1();
