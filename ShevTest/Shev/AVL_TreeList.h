@@ -35,7 +35,7 @@ private:
             ++count;
             p->key = x;
             p->data = d;
-            p->left = p->right = p->prev = p->next =0;
+            p->left = p->right = p->prev = p->next = 0;
             p->bal = 0;
             h = true;
             return p->data;

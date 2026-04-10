@@ -20,28 +20,29 @@ public:
         virtual Node * get() = 0;
         virtual void put ( Node * ) = 0;
     };
+
+    NodeStor * stor;
 private:
     Node * root;
-    NodeStor & stor;
     unsigned count;
     bool isDel;
 
-    D & add ( const K & x, const D & d, Node * & p, bool & h )
+    Node * add ( const K & x, const D & d, Node * & p, bool & h )
     {
         if ( ! p )
         {
-            p = stor.get();
+            p = stor ? stor->get() : new Node;
             ++count;
             p->key = x;
             p->data = d;
             p->left = p->right = 0;
             p->bal = 0;
             h = true;
-            return p->data;
+            return p;
         }
         if ( p->key > x )
         {
-            D & res = add ( x, d, p->left, h );
+            Node * res = add ( x, d, p->left, h );
             if ( h )
             {
                 switch ( p->bal )
@@ -78,7 +79,7 @@ private:
         }
         if ( p->key < x )
         {
-            D & res = add ( x, d, p->right, h );
+            Node * res = add ( x, d, p->right, h );
             if ( h )
             {
                 switch ( p->bal )
@@ -115,7 +116,7 @@ private:
         }
         h = false;
         p->data = d;
-        return p->data;
+        return p;
     }
 
     static bool balanceL ( Node * & p ) // Левая ветвь стала короче
@@ -283,7 +284,10 @@ private:
                 p->right = q->right;
                 if ( h ) h = balanceL ( p );
             }
-            stor.put ( q );
+            if ( stor )
+                stor->put ( q );
+            else
+                delete q;
             --count;
             isDel = true;
         }
@@ -295,7 +299,10 @@ private:
         if ( ! p ) return;
         delAll ( p->left );
         delAll ( p->right );
-        stor.put ( p );
+        if ( stor )
+            stor->put ( p );
+        else
+            delete p;
     }
 
     static int height ( const Node * p )
@@ -327,23 +334,30 @@ private:
         return test ( p->left ) && test ( p->right );
     }
 public:
-    explicit AVL_Tree ( NodeStor & s ) : root ( 0 ), stor ( s ), count ( 0 ) {}
+    explicit AVL_Tree ( NodeStor & s ) : root ( 0 ), stor ( &s ), count ( 0 ) {}
+    AVL_Tree () : root ( 0 ), stor ( 0 ), count ( 0 ) {}
 
     ~AVL_Tree ()
     {
         delAll ( root );
     }
 
-    D & add ( const K & x, const D & d )
+    Node * addRec ( const K & x, const D & d )
     {
         bool h;
         return add ( x, d, root, h );
     }
 
+    D & add ( const K & x, const D & d )
+    {
+        bool h;
+        return add ( x, d, root, h )->data;
+    }
+
     D & add ( const K & x )
     {
         bool h;
-        return add ( x, D(), root, h );
+        return add ( x, D(), root, h )->data;
     }
 
     bool del ( const K & x )
