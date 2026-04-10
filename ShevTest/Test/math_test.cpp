@@ -15,6 +15,7 @@
 #include "../Shev/approx3d.h"
 #include "../Shev/Vector2d.h"
 #include "../Shev/Vector3d.h"
+#include "../Shev/AVL_Tree.h"
 
 #include "display.h"
 
@@ -2322,7 +2323,7 @@ inline void tnn_swap ( HeapNode & p1, HeapNode & p2 )
 
 bool sluGaussRowO ( const nat n, Set2<nat, MatrNode*> row[], Set2<nat, MatrNode*> col[], double * b, double * x, TableNodeStor & stor )
 {
-    nat i, j, k;
+    nat k;
     MinHeap<HeapNode, tnn_swap> heap ( n );
     DynArray<Set2<nat, MatrNode*>> row2 ( n + n, Set2<nat, MatrNode*> ( 0, 0 ) );
     Set2<nat, MatrNode*> * col2 = row2(n);
@@ -2434,87 +2435,109 @@ bool sluGaussRowO ( const nat n, Set2<nat, MatrNode*> row[], Set2<nat, MatrNode*
                 if ( rk->col < rc->col )
                 {
                 }
-                /*
-                SortItem<nat, double> & ek = rk[ik];
-                SortItem<nat, double> & ej = rj[ij];
-                if ( ek.head < ej.head )
-                {
-                    rtmp.inc() = SortItem<nat, double> ( ek.head, - t * ek.tail );
-                    col[ek.head].inc() = jj;
-                    ++ik;
-                }
-                else
-                if ( ek.head > ej.head )
-                {
-                    rtmp.inc() = ej;
-                    ++ij;
-                }
-                else
-                {
-                    if ( ek.head != kk )
-                        rtmp.inc() = SortItem<nat, double> ( ek.head, ej.tail - t * ek.tail );
-                    ++ik;
-                    ++ij;
-                }*/
-            }/*
-            rj.swap ( rtmp );
-            rtmp.resize();
-            b[jj] -= t * b[ir];
-double t3 = timeInSec();
-//time1 += t1-t0;
-time2 += t2-t1;
-time3 += t3-t2;*/
-        }
-/*        rk.delAndShift ( im );
-// Изменения в очереди
-        for ( j = 0; j < ck.size(); ++j )
-        {
-            const nat jj = ck[j];
-            Suite<SortItem<nat, double> > & rj = a[jj];
-            // Поиск максимального по модулю элемента в строке
-            nat im = 0;
-            double max = fabs ( rj[0].tail );
-            for ( i = 1; i < rj.size(); ++i )
-            {
-                if ( _maxa ( max, fabs ( rj[i].tail ) ) ) im = i;
             }
-            if ( ! max )
-                return false;
-            Set2<nat> & p = hd[jj];
-            p.a = im;
-            // Передвинем элемент в очереди, если нужно
-            const nat head2 = rj.size();// * col[rj[im].head].size();
-            nat & head = heap[p.b]->head;
-            if ( head != head2 )
-            {
-                if ( head < head2 )
-                {
-                    head = head2;
-                    heap.down ( p.b );
-                }
-                else
-                {
-                    head = head2;
-                    heap.raise ( p.b );
-                }
-            }
-        }
-*/
-    }
-// Обратная подстановка
-    for ( j = 0; j < n; ++j )
-    {
-        k = irow[n-1-j];
-        double & r = x[icol[k]];
-        r = b[k];
-        const MatrNode * row = a[k];
-        while ( row )
-        {
-            r -= x[row->col] * row->value;
-            row = row->next;
         }
     }
     return true;
+}
+
+struct MatrElem;
+
+typedef AVL_Tree<nat, MatrElem>::Node TreeElem;
+
+struct MatrElem
+{
+    nat row; 
+    double value;
+    TreeElem * next, * prevRow, * nextRow;
+};
+
+bool sluGaussRowT ( const nat n, Set2<nat, TreeElem*> row[], Set2<nat, TreeElem*> col[], double * b, double * x, AVL_TreeNodeStor<nat, MatrElem> & stor )
+{
+    DynArray<AVL_Tree<nat, MatrElem>> tree ( n );
+    nat i, k;
+    for ( i = 0; i < n; ++i ) tree[i].stor = & stor;
+    MinHeap<HeapNode, tnn_swap> heap ( n );
+    DynArray<Set2<nat, TreeElem*>> row2 ( n + n, Set2<nat, TreeElem*> ( 0, 0 ) );
+    Set2<nat, TreeElem*> * col2 = row2(n);
+    for ( k = 0; k < n; ++k )
+    {
+        heap << HeapNode ( row[k].a, k );
+    }
+// Прямой ход
+    double time1=0, time2=0, time3=0;
+    for ( k = 0; k < n; ++k )
+    {
+        HeapNode si;
+        heap >> si;
+        const nat ir = si.tail; // номер строки матрицы
+        row2[k] = row[ir];
+// Поиск максимального по модулю элемента в строке
+        TreeElem * rk = row[ir].b;
+        TreeElem * e = rk;
+        const TreeElem * nm = e;
+        double max = 0;
+        while ( e )
+        {
+            if ( _maxa ( max, fabs ( e->data.value ) ) ) nm = e;
+            e = e->data.next;
+        }
+        if ( ! max )
+            return false;
+// Нормализация строки
+        const double p = 1. / max;
+        e = rk;
+        while ( e )
+        {
+            MatrElem & me = e->data;
+            me.value *= p;
+// Убираем элемент из списка столбцов исходной матрицы
+            if (  me.prevRow )
+                 me.prevRow->data.nextRow = me.nextRow;
+            if (  me.nextRow )
+                 me.nextRow->data.prevRow = me.prevRow;
+// Добавляем элемент в список столбцов второй матрицы
+            TreeElem * c = col2[e->key].b;
+            me.prevRow = 0;
+            if ( me.nextRow = c )
+                 c->data.prevRow = e;
+            //++c.a;
+            c = e;
+            e = e->data.next;
+        }
+        b[ir] *= p;
+// Вычитание строк
+        Set2<nat, TreeElem*> & cm = col[nm->data.row];
+        TreeElem * c = cm.b;
+        while ( c )
+        {
+            const nat jr = c->data.row;
+            TreeElem * rj = row[jr].b;
+            const double v = c->data.value;
+            e = rk;
+            while ( e )
+            {
+               
+                MatrElem * ej = tree[jr].find ( e->key );
+                if ( ej )
+                {
+                    ej->value -= v * e->data.value;
+                }
+                else
+                {
+                    TreeElem * t = stor.get();
+                    t->data.row = c->data.row;
+                    t->key = e->key;
+                    t->data.value = - v * e->data.value;
+                    t->data.next = 0;
+                    /*rc->next = t;
+                    rc = t;
+                    rk = rk->next;*/
+                }
+                e = e->data.next;
+            }
+        }
+    }
 }
 
 void sluGaussRowO_test1()
