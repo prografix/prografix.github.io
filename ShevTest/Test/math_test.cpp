@@ -2272,173 +2272,12 @@ double t1 = timeInSec();
         display << "no" << NL;
 }
 
-struct MatrNode
-{
-    nat row, col; 
-    double value;
-    MatrNode * next, * prevRow, * nextRow;
-};
-
-class TableNodeStor
-{
-    nat nb;
-    MatrNode * free;
-    Suite<MatrNode *> node;
-public:
-    TableNodeStor ( nat n ) : nb(n), free(0) {}
-    MatrNode * get ()
-    {
-        if ( ! free )
-        {
-            free = new MatrNode[nb];
-            node.inc() = free;
-            for ( nat i = 1; i < nb; ++i )
-            {
-                free[i-1].next = free + i;
-            }
-            free[nb-1].next = 0;
-        }
-        MatrNode * n = free;
-        free = free->next;
-        return n;
-    }
-    void put ( MatrNode * n )
-    {
-        n->next = free;
-        free = n;
-    }
-    ~TableNodeStor()
-    {
-        for ( nat i = 0; i < node.size(); ++i ) delete[] node[i];
-    }
-};
-
 typedef SortItem<nat, nat> HeapNode;
 
 inline void tnn_swap ( HeapNode & p1, HeapNode & p2 )
 {
     _swap ( p1, p2 );
     _swap ( p1.tail, p2.tail );
-}
-
-bool sluGaussRowO ( const nat n, Set2<nat, MatrNode*> row[], Set2<nat, MatrNode*> col[], double * b, double * x, TableNodeStor & stor )
-{
-    nat k;
-    MinHeap<HeapNode, tnn_swap> heap ( n );
-    DynArray<Set2<nat, MatrNode*>> row2 ( n + n, Set2<nat, MatrNode*> ( 0, 0 ) );
-    Set2<nat, MatrNode*> * col2 = row2(n);
-   // DynArray<Suite<const MatrNode *> > col ( n );
-    //DynArray<nat> icol ( 2*n );
-    //nat * irow = icol ( n );
-// Запись номеров строк в массив столбцов
-    /*for ( i = 0; i < n; ++i )
-    {
-        const MatrNode * row = a[i];
-        if ( ! row )
-            return false;
-        while ( row )
-        {
-            col[row->col].inc() = row;
-            row = row->next;
-        }
-    }*/
- // Запись строк в очередь
-    DynArray<nat> hd ( n );
-    for ( k = 0; k < n; ++k )
-    {
-        // Проверка столбцов
-        /*if ( ! col[k].size() )
-            return false;
-        // Поиск максимального по модулю элемента в строке
-        const MatrNode * row = a[k];
-        const MatrNode * im = row;
-        double max = fabs ( row->value );
-        row = row->next;
-        while ( row )
-        {
-            if ( _maxa ( max, fabs ( row->value ) ) ) im = row;
-            row = row->next;
-        }
-        if ( ! max )
-            return false;*/
-        // Запись в очередь
-        hd[k] = k;
-        //const nat nc = col[im->col].size();
-        heap << HeapNode ( row[k].a, k );
-    }
-// Прямой ход
-    double time1=0, time2=0, time3=0;
-    for ( k = 0; k < n; ++k )
-    {
-        HeapNode si;
-        heap >> si;
-        const nat ir = si.tail; // номер строки матрицы
-        row2[k] = row[ir];
-// Поиск максимального по модулю элемента в строке
-        MatrNode * r = row[ir].b;
-        const MatrNode * nm = r;
-        double max = 0;
-        while ( row )
-        {
-            if ( _maxa ( max, fabs ( r->value ) ) ) nm = r;
-            r = r->next;
-        }
-        if ( ! max )
-            return false;
-//if ( si.head << rk.size() ) display << si.head << rk.size() << NL;
-// Нормализация строки
-        const double p = 1. / max;
-        r = row[ir].b;
-        while ( r )
-        {
-            r->value *= p;
-// Убираем элемент из списка столбцов исходной матрицы
-            if (  r->prevRow )
-                 r->prevRow->nextRow = r->nextRow;
-            if (  r->nextRow )
-                 r->nextRow->prevRow = r->prevRow;
-// Добавляем элемент в список столбцов второй матрицы
-            Set2<nat, MatrNode*> & c = col2[r->col];
-            r->prevRow = 0;
-            if ( r->nextRow = c.b )
-                 c.b->prevRow = r;
-            ++c.a;
-            c.b = r;
-            r = r->next;
-        }
-        b[ir] *= p;
-// Вычитание строк
-        Set2<nat, MatrNode*> & cm = col[nm->col];
-        MatrNode * c = cm.b;
-        while ( c )
-        {
-            const MatrNode * rk = row[ir].b;
-            MatrNode * rc = row[c->row].b;
-            const double v = c->value;
-            for ( rk = row[ir].b; rk; )
-            {
-                if ( rc->col < rk->col && ! rc->next )
-                {
-                    while ( rk )
-                    {
-                        MatrNode * t = stor.get();
-                        t->row = c->row;
-                        t->col = rk->col;
-                        t->value = - v * rk->value;
-                        t->next = 0;
-                        rc->next = t;
-                        rc = t;
-                        rk = rk->next;
-                    }
-                    break;
-                }
-                if ( rk->col < rc->col )
-                {
-                }
-            }
-        }
-    }
-    return true;
 }
 
 struct MatrElem;
@@ -2452,20 +2291,53 @@ struct MatrElem
     TreeElem * next, * prevRow, * nextRow;
 };
 
-bool sluGaussRowT ( const nat n, Set2<nat, TreeElem*> row[], Set2<nat, TreeElem*> col[], double * b, double * x, AVL_TreeNodeStor<nat, MatrElem> & stor )
+struct SparseMatrix
 {
-    DynArray<AVL_Tree<nat, MatrElem>> tree ( n );
-    nat i, k;
-    for ( i = 0; i < n; ++i ) tree[i].stor = & stor;
+    DynArray<AVL_Tree<nat, MatrElem>> tree;
+    DynArray<TreeElem *> buf;
+    DynArray<nat> num;
+    TreeElem ** row, ** col;
+    nat n;
+
+    SparseMatrix ( nat nn, AVL_TreeNodeStor<nat, MatrElem> & stor ) : n(nn), buf(nn+nn, 0), tree(nn), num(nn, 0)
+    {
+        row = buf();
+        col = buf(n);
+        for ( nat i = 0; i < n; ++i ) tree[i].stor = & stor;
+    }
+
+    void del ( MatrElem * e )
+    {
+        if ( e->prevRow )
+            e->prevRow->data.nextRow = e->nextRow;
+        /*
+ShevItem * v = cPtr;
+if ( v -> nextPtr ) ( cPtr = v -> nextPtr ) -> prevPtr = v -> prevPtr;
+else lPtr = cPtr = v -> prevPtr;
+if ( v -> prevPtr ) v -> prevPtr -> nextPtr = v -> nextPtr;
+else fPtr = cPtr;*/
+        --num[e->row];
+    }
+};
+
+bool sluGaussRowT ( SparseMatrix & matr, double * b, double * x )
+{
+    const nat n = matr.n;
+    nat * num = matr.num();
+    TreeElem ** row = matr.row;
+    TreeElem ** col = matr.col;
+    AVL_Tree<nat, MatrElem> * tree = matr.tree();
+    nat k;
     MinHeap<HeapNode, tnn_swap> heap ( n );
-    DynArray<Set2<nat, TreeElem*>> row2 ( n + n, Set2<nat, TreeElem*> ( 0, 0 ) );
-    Set2<nat, TreeElem*> * col2 = row2(n);
     for ( k = 0; k < n; ++k )
     {
-        heap << HeapNode ( row[k].a, k );
+        heap << HeapNode ( num[k], k );
     }
 // Прямой ход
     double time1=0, time2=0, time3=0;
+    DynArray<TreeElem *> buf ( n+n, 0 );
+    TreeElem ** row2 = buf();
+    TreeElem ** col2 = buf(n);
     for ( k = 0; k < n; ++k )
     {
         HeapNode si;
@@ -2473,13 +2345,13 @@ bool sluGaussRowT ( const nat n, Set2<nat, TreeElem*> row[], Set2<nat, TreeElem*
         const nat ir = si.tail; // номер строки матрицы
         row2[k] = row[ir];
 // Поиск максимального по модулю элемента в строке
-        TreeElem * rk = row[ir].b;
+        TreeElem * rk = row[ir];
         TreeElem * e = rk;
-        const TreeElem * nm = e;
+        const TreeElem * em = e;
         double max = 0;
         while ( e )
         {
-            if ( _maxa ( max, fabs ( e->data.value ) ) ) nm = e;
+            if ( _maxa ( max, fabs ( e->data.value ) ) ) em = e;
             e = e->data.next;
         }
         if ( ! max )
@@ -2497,7 +2369,7 @@ bool sluGaussRowT ( const nat n, Set2<nat, TreeElem*> row[], Set2<nat, TreeElem*
             if (  me.nextRow )
                  me.nextRow->data.prevRow = me.prevRow;
 // Добавляем элемент в список столбцов второй матрицы
-            TreeElem * c = col2[e->key].b;
+            TreeElem * c = col2[e->key];
             me.prevRow = 0;
             if ( me.nextRow = c )
                  c->data.prevRow = e;
@@ -2507,35 +2379,39 @@ bool sluGaussRowT ( const nat n, Set2<nat, TreeElem*> row[], Set2<nat, TreeElem*
         }
         b[ir] *= p;
 // Вычитание строк
-        Set2<nat, TreeElem*> & cm = col[nm->data.row];
-        TreeElem * c = cm.b;
+        TreeElem * c = col[em->key]; // столбец, где находится ведущий элемент
         while ( c )
         {
-            const nat jr = c->data.row;
-            TreeElem * rj = row[jr].b;
-            const double v = c->data.value;
-            e = rk;
+            const nat jr = c->data.row; // номер строки, из которой вычитается ведущая строка
+            const double v = c->data.value; // значение элемента jr строки и em->key столбца
+            e = rk; // элемент ведущей строки
             while ( e )
             {
-               
                 MatrElem * ej = tree[jr].find ( e->key );
                 if ( ej )
                 {
-                    ej->value -= v * e->data.value;
+                    if ( e == em ) // если элемент ej находится на ведущем столбце, то его удаляем
+                        matr.del ( ej );
+                    else
+                        ej->value -= v * e->data.value;
                 }
                 else
                 {
-                    TreeElem * t = stor.get();
-                    t->data.row = c->data.row;
-                    t->key = e->key;
-                    t->data.value = - v * e->data.value;
-                    t->data.next = 0;
-                    /*rc->next = t;
-                    rc = t;
-                    rk = rk->next;*/
+                    MatrElem me;
+                    me.row = jr;
+                    me.value = - v * e->data.value;
+                    me.next = row[jr];
+                    me.nextRow = col[em->key];
+                    me.prevRow = 0;
+                    TreeElem * t = tree[jr].addRec ( e->key, me );
+                    row[jr] = t; // запишем новый элемент в начало строки
+                    col[em->key] = t; // запишем новый элемент в начало столбца
+                    t->data.nextRow->data.prevRow = t;
+                    ++num[jr];
                 }
                 e = e->data.next;
             }
+            c = c->data.nextRow;
         }
     }
 }
