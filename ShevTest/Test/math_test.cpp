@@ -2288,7 +2288,8 @@ struct MatrElem
 {
     nat row; 
     double value;
-    TreeElem * next, * prevRow, * nextRow;
+    TreeElem * prevCol, * nextCol;
+    TreeElem * prevRow, * nextRow;
 };
 
 struct SparseMatrix
@@ -2306,17 +2307,43 @@ struct SparseMatrix
         for ( nat i = 0; i < n; ++i ) tree[i].stor = & stor;
     }
 
-    void del ( MatrElem * e )
+    void add ( nat ir, nat ic, double value )
     {
-        if ( e->prevRow )
-            e->prevRow->data.nextRow = e->nextRow;
-        /*
-ShevItem * v = cPtr;
-if ( v -> nextPtr ) ( cPtr = v -> nextPtr ) -> prevPtr = v -> prevPtr;
-else lPtr = cPtr = v -> prevPtr;
-if ( v -> prevPtr ) v -> prevPtr -> nextPtr = v -> nextPtr;
-else fPtr = cPtr;*/
-        --num[e->row];
+        MatrElem e;
+        e.row = ir;
+        e.value = value;
+        e.prevCol = 0;
+        e.nextCol = row[ir];
+        e.prevRow = 0;
+        e.nextRow = col[ic];
+        TreeElem * t = tree[ir].addRec ( ic, e );
+        row[ir] = col[ic] = t;
+        ++num[ir];
+    }
+
+    void delCol ( nat i )
+    {
+        TreeElem * t = col[i];
+        while ( t )
+        {
+            MatrElem * e = & t->data;
+            t = e->nextRow;
+            if ( e->nextCol )
+                e->nextCol->data.prevCol = e->prevCol;
+            if ( e->prevCol )
+                e->prevCol->data.nextCol = e->nextCol;
+            else
+                row[e->row] = e->nextCol;
+        
+            if ( e->nextRow )
+                e->nextRow->data.prevRow = e->prevRow;
+            if ( e->prevRow )
+                e->prevRow->data.nextRow = e->nextRow;
+
+            --num[e->row];
+            tree[e->row].del ( i );
+        }
+        col[i] = 0;
     }
 };
 
@@ -2334,7 +2361,7 @@ bool sluGaussRowT ( SparseMatrix & matr, double * b, double * x )
         heap << HeapNode ( num[k], k );
     }
 // Прямой ход
-    double time1=0, time2=0, time3=0;
+//    double time1=0, time2=0, time3=0;
     DynArray<TreeElem *> buf ( n+n, 0 );
     TreeElem ** row2 = buf();
     TreeElem ** col2 = buf(n);
@@ -2343,21 +2370,21 @@ bool sluGaussRowT ( SparseMatrix & matr, double * b, double * x )
         HeapNode si;
         heap >> si;
         const nat ir = si.tail; // номер строки матрицы
-        row2[k] = row[ir];
 // Поиск максимального по модулю элемента в строке
         TreeElem * rk = row[ir];
         TreeElem * e = rk;
-        const TreeElem * em = e;
+        TreeElem * em = e;
         double max = 0;
         while ( e )
         {
             if ( _maxa ( max, fabs ( e->data.value ) ) ) em = e;
-            e = e->data.next;
+            e = e->data.nextCol;
         }
         if ( ! max )
             return false;
+        row2[k] = em;
 // Нормализация строки
-        const double p = 1. / max;
+        const double p = 1. / em->data.value;
         e = rk;
         while ( e )
         {
@@ -2366,6 +2393,8 @@ bool sluGaussRowT ( SparseMatrix & matr, double * b, double * x )
 // Убираем элемент из списка столбцов исходной матрицы
             if (  me.prevRow )
                  me.prevRow->data.nextRow = me.nextRow;
+            else
+                col[e->key] = me.nextRow;
             if (  me.nextRow )
                  me.nextRow->data.prevRow = me.prevRow;
 // Добавляем элемент в список столбцов второй матрицы
@@ -2373,9 +2402,8 @@ bool sluGaussRowT ( SparseMatrix & matr, double * b, double * x )
             me.prevRow = 0;
             if ( me.nextRow = c )
                  c->data.prevRow = e;
-            //++c.a;
-            c = e;
-            e = e->data.next;
+            col2[e->key] = e;
+            e = e->data.nextCol;
         }
         b[ir] *= p;
 // Вычитание строк
@@ -2384,15 +2412,14 @@ bool sluGaussRowT ( SparseMatrix & matr, double * b, double * x )
         {
             const nat jr = c->data.row; // номер строки, из которой вычитается ведущая строка
             const double v = c->data.value; // значение элемента jr строки и em->key столбца
+            b[jr] -= v * b[ir]; // изменение свободных членов
             e = rk; // элемент ведущей строки
             while ( e )
             {
                 MatrElem * ej = tree[jr].find ( e->key );
                 if ( ej )
                 {
-                    if ( e == em ) // если элемент ej находится на ведущем столбце, то его удаляем
-                        matr.del ( ej );
-                    else
+                   // if ( e != em ) // если элемент ej не находится на ведущем столбце
                         ej->value -= v * e->data.value;
                 }
                 else
@@ -2400,7 +2427,7 @@ bool sluGaussRowT ( SparseMatrix & matr, double * b, double * x )
                     MatrElem me;
                     me.row = jr;
                     me.value = - v * e->data.value;
-                    me.next = row[jr];
+                    me.nextCol = row[jr];
                     me.nextRow = col[em->key];
                     me.prevRow = 0;
                     TreeElem * t = tree[jr].addRec ( e->key, me );
@@ -2409,11 +2436,67 @@ bool sluGaussRowT ( SparseMatrix & matr, double * b, double * x )
                     t->data.nextRow->data.prevRow = t;
                     ++num[jr];
                 }
-                e = e->data.next;
+                e = e->data.nextCol;
+            }
+            //if ( matr.num[jr] != heap[] )
+            {
+
             }
             c = c->data.nextRow;
         }
+        matr.delCol ( em->key );
     }
+// Обратная подстановка
+    for ( nat j = n; --j > 0; )
+    {
+        const nat ic = row2[j]->key;
+        const double t = x[ic] = b[j];
+        TreeElem * c = col2[ic];
+        do
+        {
+            b[c->data.row] -= t * c->data.value;
+            // Переходим к следующему элементу столбца
+            c = c->data.nextRow;
+        }
+        while ( c );
+    }
+    x[row2[0]->key] = b[0];
+    return true;
+}
+
+void sluGaussRowT_test1()
+{
+    static PNormalRand rand;
+//    static PRand rand;
+    const nat n = 2;
+    double c[n], x[n], b[n];
+    for ( nat i = 0; i < n; ++i ) c[i] = rand();
+    AVL_TreeNodeStor<nat, MatrElem> stor;
+    SparseMatrix matr ( n, stor );
+    for ( nat i = 0; i < n; ++i )
+    {
+        b[i] = 0;
+        for ( nat j = 0; j < n; ++j )
+        {
+            double t = rand();
+            matr.add ( i, j, t );
+            b[i] += t * c[j];
+        }
+    }
+double t0 = timeInSec();
+    if ( sluGaussRowT ( matr, b, x ) )
+    {
+double t1 = timeInSec();
+        double max = 0;
+        for ( nat i = 0; i < n; ++i )
+        {
+            _maxa ( max, fabs ( x[i] - c[i] ) );
+            //display << x[i] << c[i] << NL;
+        }
+        display << max << t1-t0 << NL;
+    }
+    else
+        display << "no" << NL;
 }
 
 void sluGaussRowO_test1()
@@ -2984,6 +3067,6 @@ void math_test ()
 //    minNorm_test3();
 //    log_test ();
 //    slu_gauss_test();
-    sluGaussRow_test1();
+    sluGaussRowT_test1();
 //    chol_test1();
 }
