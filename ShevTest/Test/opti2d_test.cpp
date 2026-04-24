@@ -2722,12 +2722,63 @@ void check2 ()
     display << q << NL;
 }
 
+void check3 ()
+{
+    static PRand rand;
+    const double f1 = 6*rand();
+    const double dx = cos(f1);
+    const double dy = sin(f1);
+    const double c = -2*dy;
+    const double f2 = 6*rand();
+    const double a = cos(f2) - dx;
+    const double b = sin(f2) - dy;
+    const double f3 = 6*rand();
+    const double x = ( cos(f3) - dx ) / a;
+    const double y = ( sin(f3) - dy - b*x ) / c;
+   // display << _pow2 ( a*x + dx ) + _pow2 ( b*x + c*y + dy ) << NL;
+   // display << _pow2 ( cos(f2)*x + (1-x)*dx ) + _pow2 ( sin(f2)*x + (1-x-2*y) * dy ) << NL;
+    const double k1 = x*x-x;
+    const double k2 = y*y-y;
+    const double k3 = 2*x*y;
+    //display << -k1*dx*cos(f2) - (k1+k3)*dy*sin(f2) + (k3+2*k2 ) * dy*dy + k1 << NL;
+    //display << cos(f2) << ( (k3+2*k2 ) * dy*dy + k1 - (k1+k3)*dy*sin(f2) ) / (k1*dx) << NL;
+    /*const double a1 = - ( k1+k3 )*dy / ( k1*dx );
+    const double b1 = ( (k3+2*k2 ) * dy*dy + k1 ) / (k1*dx);
+    const double x1 = -(a1*b1+sqrt(a1*a1-b1*b1+1)) / (a1*a1 + 1);
+    const double x2 = -(a1*b1-sqrt(a1*a1-b1*b1+1)) / (a1*a1 + 1);
+    //display << sin(f2) << x1 << x2 << NL;
+    //display << a1*a1 + 1 << NL << ( k1*k1 + k3*(2*k1+k3)*dy*dy ) / ( k1*k1*dx*dx ) << NL;
+    //display << a1*a1-b1*b1+1 << NL << ( k3*k3 - 4*k1*k2 - (2*k2+k3)*dy*dy*(2*k2+k3) )*dy*dy / ( k1*k1*dx*dx ) << NL;
+    const double xx1 = (
+        (k1+k3)*dy* ( (k3+2*k2 ) * dy*dy + k1 ) -  k1*dx*dy * sqrt( k3*k3 - 4*k1*k2 - _pow2((2*k2+k3)*dy) ) 
+        ) / ( k1*k1 + k3*(2*k1+k3)*dy*dy );
+    const double xx2 =  (
+        (k1+k3)*dy* ( (k3+2*k2 ) * dy*dy + k1 ) +  k1*dx*dy * sqrt( k3*k3 - 4*k1*k2 - _pow2((2*k2+k3)*dy) ) 
+        ) / ( k1*k1 + k3*(2*k1+k3)*dy*dy );*/
+    //display << sin(f2) << xx1 << xx2 << NL;
+    //display << sin(f2) << ( (k3+2*k2 ) * dy*dy + k1 - k1*dx*cos(f2) ) / ((k1+k3)*dy) << NL;
+    const double a1 = - k1*dx / ((k1+k3)*dy);
+    const double b1 = ( (k3+2*k2 ) * dy*dy + k1 ) / ((k1+k3)*dy);
+    const double x1 = -(a1*b1+sqrt(a1*a1-b1*b1+1)) / (a1*a1 + 1);
+    const double x2 = -(a1*b1-sqrt(a1*a1-b1*b1+1)) / (a1*a1 + 1);
+    //display << cos(f2) << x1 << x2 << NL;
+    //display << a1*a1 + 1 << NL << ( k1*k1 + k3*(2*k1+k3)*dy*dy ) / ( (k1+k3)*(k1+k3)*dy*dy ) << NL;
+    //display << a1*a1-b1*b1+1 << NL << ( k3*k3 - 4*k1*k2 - (k3+2*k2 ) * (k3+2*k2 ) * dy*dy ) / ( (k1+k3)*(k1+k3) ) << NL;
+    const double xx1 = -(a1*b1
+        +sqrt(k3*k3 - 4*k1*k2 - (k3+2*k2 ) * (k3+2*k2 ) * dy*dy) / (k1+k3) ) 
+        / ( k1*k1 + k3*(2*k1+k3)*dy*dy ) * ( (k1+k3)*(k1+k3)*dy*dy );
+    const double xx2 = -(a1*b1
+        -sqrt(k3*k3 - 4*k1*k2 - (k3+2*k2 ) * (k3+2*k2 ) * dy*dy) / (k1+k3) ) 
+        / ( k1*k1 + k3*(2*k1+k3)*dy*dy ) * ( (k1+k3)*(k1+k3)*dy*dy );
+    display << x1 << xx1 << xx2 << NL;
+}
+
 } // end of namespace
 
 void opti2d_test ()
 {
     drawNewList2d ();
-    check2 ();
+    check3 ();
 //    minRectangleAroundPoints_test1();
 //    minRectangleAroundPolygon_test1();
 //    minParallelogramAroundPolygon_test1();
