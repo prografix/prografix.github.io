@@ -2272,12 +2272,12 @@ double t1 = timeInSec();
         display << "no" << NL;
 }
 
-typedef SortItem<nat, nat> HeapNode;
+typedef SortItem<nat, nat *> HeapNode;
 
 inline void tnn_swap ( HeapNode & p1, HeapNode & p2 )
 {
     _swap ( p1, p2 );
-    _swap ( p1.tail, p2.tail );
+    _swap ( *p1.tail, *p2.tail );
 }
 
 struct MatrElem;
@@ -2348,28 +2348,33 @@ struct SparseMatrix
         col[i] = 0;
     }
 
-    void test ()
+    const char * test ()
     {
+        const char * err = 0;
         for ( nat i = 0; i < n; ++i )
         {
             TreeElem * t = row[i];
+            nat rc = 0;
             while ( t )
             {
+                ++rc;
                 MatrElem * e = & t->data;
                 if ( e->row != i )
-                { display << "e->row != i" << NL; return; }
+                { err = "e->row != i"; goto m1; }
                 if ( t == row[i] && e->prevCol )
-                { display << "f->prevCol != 0" << NL; return; }
+                { err = "f->prevCol != 0"; goto m1; }
                 if ( e->prevCol && e->prevCol->data.nextCol != t )
-                { display << "e->prevCol->data.nextCol != t" << NL; return; }
+                { err = "e->prevCol->data.nextCol != t"; goto m1; }
                 if ( e->nextCol && e->nextCol->data.prevCol != t )
-                { display << "e->nextCol->data.prevCol != t" << NL; return; }
+                { err = "e->nextCol->data.prevCol != t"; goto m1; }
                 if ( e->prevCol == t )
-                { display << "e->prevCol == t" << NL; return; }
+                { err = "e->prevCol == t"; goto m1; }
                 if ( e->nextCol == t )
-                { display << "e->nextCol == t" << NL; return; }
+                { err = "e->nextCol == t"; goto m1; }
                 t = e->nextCol;
             }
+            if ( rc != num[i] )
+                { err = "rc != num[i]"; goto m1; }
         }
         for ( nat i = 0; i < n; ++i )
         {
@@ -2377,47 +2382,54 @@ struct SparseMatrix
             while ( t )
             {
                 if ( t->key != i )
-                { display << "t->key != i" << NL; return; }
+                { err = "t->key != i"; goto m1; }
                 MatrElem * e = & t->data;
                 if ( t == col[i] && e->prevRow )
-                { display << "f->prevRow != 0" << NL; return; }
+                { err = "f->prevRow != 0"; goto m1; }
                 if ( e->prevRow && e->prevRow->data.nextRow != t )
-                { display << "e->prevRow->data.nextRow != t" << NL; return; }
+                { err = "e->prevRow->data.nextRow != t"; goto m1; }
                 if ( e->nextRow && e->nextRow->data.prevRow != t )
-                { display << "e->nextRow->data.prevRow != t" << NL; return; }
+                { err = "e->nextRow->data.prevRow != t"; goto m1; }
                 if ( e->prevRow == t )
-                { display << "e->prevRow == t" << NL; return; }
+                { err = "e->prevRow == t"; goto m1; }
                 if ( e->nextRow == t )
-                { display << "e->nextRow == t" << NL; return; }
+                { err = "e->nextRow == t"; goto m1; }
                 t = e->nextRow;
             }
         }
+        return err;
+m1: display << err << NL;
+        return err;
     }
 };
 
-void test ( nat n, TreeElem * col[] )
+const char * test ( nat n, TreeElem * col[] )
 {
+    const char * err = 0;
     for ( nat i = 0; i < n; ++i )
     {
         TreeElem * t = col[i];
         while ( t )
         {
             if ( t->key != i )
-            { display << "t->key != i" << NL; return; }
+            { err = "t->key != i"; goto m1; }
             MatrElem * e = & t->data;
             if ( t == col[i] && e->prevRow )
-            { display << "f->prevRow != 0" << NL; return; }
+            { err = "f->prevRow != 0"; goto m1; }
             if ( e->prevRow && e->prevRow->data.nextRow != t )
-            { display << "e->prevRow->data.nextRow != t" << NL; return; }
+            { err = "e->prevRow->data.nextRow != t"; goto m1; }
             if ( e->nextRow && e->nextRow->data.prevRow != t )
-            { display << "e->nextRow->data.prevRow != t" << NL; return; }
+            { err = "e->nextRow->data.prevRow != t"; goto m1; }
             if ( e->prevRow == t )
-            { display << "e->prevRow == t" << NL; return; }
+            { err = "e->prevRow == t"; goto m1; }
             if ( e->nextRow == t )
-            { display << "e->nextRow == t" << NL; return; }
+            { err = "e->nextRow == t"; goto m1; }
             t = e->nextRow;
         }
     }
+    return err;
+m1: display << err << NL;
+    return err;
 }
 
 bool sluGaussRowT ( SparseMatrix & matr, double * b, double * x )
@@ -2428,10 +2440,12 @@ bool sluGaussRowT ( SparseMatrix & matr, double * b, double * x )
     TreeElem ** col = matr.col;
     AVL_Tree<nat, MatrElem> * tree = matr.tree();
     nat k;
+    DynArray<nat> index ( n );
     MinHeap<HeapNode, tnn_swap> heap ( n );
     for ( k = 0; k < n; ++k )
     {
-        heap << HeapNode ( num[k], k );
+        index[k] = k;
+        heap << HeapNode ( num[k], index(k) );
     }
 // Прямой ход
 //    double time1=0, time2=0, time3=0;
@@ -2439,10 +2453,11 @@ bool sluGaussRowT ( SparseMatrix & matr, double * b, double * x )
     TreeElem ** row2 = buf();
     TreeElem ** col2 = buf(n);
     for ( k = 0; k < n; ++k )
-    {matr.test();
+    {//matr.test();
         HeapNode si;
         heap >> si;
-        const nat ir = k;//si.tail; // номер строки матрицы
+        const nat ir = si.tail - index(); // номер строки матрицы
+display << num[ir] << NL;
 // Поиск максимального по модулю элемента в строке
         TreeElem * rk = row[ir];
         TreeElem * e = rk;
@@ -2478,9 +2493,9 @@ bool sluGaussRowT ( SparseMatrix & matr, double * b, double * x )
             col2[e->key] = e;
             e = e->data.nextCol;
         }
-test ( n, col2 );
+if ( test ( n, col2 ) ) return false;
         b[ir] *= p;
-matr.test();
+if ( matr.test() ) return false;
 // Вычитание строк
         TreeElem * c = col[em->key]; // столбец, где находится ведущий элемент
         while ( c )
@@ -2503,31 +2518,46 @@ matr.test();
                     me.row = jr;
                     me.value = - v * e->data.value;
                     me.nextCol = row[jr];
-                    me.nextRow = col[em->key];
+                    me.prevCol = 0;
+                    me.nextRow = col[e->key];
                     me.prevRow = 0;
                     TreeElem * t = tree[jr].addRec ( e->key, me );
                     row[jr] = t; // запишем новый элемент в начало строки
-                    col[em->key] = t; // запишем новый элемент в начало столбца
-                    t->data.nextRow->data.prevRow = t;
+                    col[e->key] = t; // запишем новый элемент в начало столбца
+                    if ( me.nextRow ) t->data.nextRow->data.prevRow = t;
+                    t->data.nextCol->data.prevCol = t;
                     ++num[jr];
                 }
                 e = e->data.nextCol;
             }
-            //if ( matr.num[jr] != heap[] )
+            const nat nr2 = matr.num[jr];
+            nat & nr1 = heap[index[jr]]->head;
+            if ( nr1 != nr2 )
             {
-
+                if ( nr1 > nr2 )
+                {
+                    nr1 = nr2;
+                    heap.raise(index[jr]);
+                }
+                else
+                {
+                    nr1 = nr2;
+                    heap.down(index[jr]);
+                }
             }
             c = c->data.nextRow;
         }
-matr.test();
+if ( matr.test() ) return false;
         matr.delCol ( em->key );
     }
-matr.test();//return 0;
+if ( matr.test() ) return false;
+//if ( test ( n, col2 ) ) return false;
 // Обратная подстановка
     for ( nat j = n; --j > 0; )
     {
-        const nat ic = row2[j]->key;
-        const double t = x[ic] = b[j];
+        TreeElem * e = row2[j];
+        const nat ic = e->key;
+        const double t = x[ic] = b[e->data.row];
         TreeElem * c = col2[ic];
         do
         {
@@ -2537,15 +2567,17 @@ matr.test();//return 0;
         }
         while ( c );
     }
-    x[row2[0]->key] = b[0];
+    x[row2[0]->key] = b[row2[0]->data.row];
+//display << row2[0]->data.row << NL;
+//if ( test ( n, col2 ) ) return false;
     return true;
 }
 
-void sluGaussRowT_test1()
+void sluGaussRowT_test2()
 {
     static PNormalRand rand;
 //    static PRand rand;
-    const nat n = 2;
+    const nat n = 50, m = 7;
     double c[n], x[n], b[n];
     for ( nat i = 0; i < n; ++i ) c[i] = rand();
     AVL_TreeNodeStor<nat, MatrElem> stor;
@@ -2555,15 +2587,59 @@ void sluGaussRowT_test1()
         b[i] = 0;
         for ( nat j = 0; j < n; ++j )
         {
-            if(j<i ) continue;
-            double t = rand();
+            if ( j + m < i || i + m < j ) continue;
+            double t = i == j ? 1 : rand();
             matr.add ( i, j, t );
             b[i] += t * c[j];
         }
     }
+    //DynArray2<double> work ( nCol1, nCol );
+    //slu_gauss ( ArrRef2<double> & data, ArrRef<double> & x );
     matr.test();
 double t0 = timeInSec();
     if ( sluGaussRowT ( matr, b, x ) )
+    {
+double t1 = timeInSec();
+        double max = 0;
+        for ( nat i = 0; i < n; ++i )
+        {
+            _maxa ( max, fabs ( x[i] - c[i] ) );
+//display << x[i] << c[i] << NL;
+        }
+        display << max << t1-t0 << NL;
+    }
+    else
+        display << "no" << NL;
+}
+
+void sluGaussRowT_test2a()
+{
+    static PNormalRand rand;
+//    static PRand rand;
+    const nat n = 49, m = 5;
+    double c[n];
+    for ( nat i = 0; i < n; ++i ) c[i] = rand();
+    DynArray2<double> matr ( n, n+1 );
+    for ( nat i = 0; i < n; ++i )
+    {
+        ArrRef<double> & row = matr[i];
+        row[n] = 0;
+        for ( nat j = 0; j < n; ++j )
+        {
+            if ( j + m < i || i + m < j )
+                row[j] = 0;
+            else
+            {
+                double t = i == j ? 1 : rand();
+                row[j] = t;
+                row[n] += t * c[j];
+            }
+        }
+    }
+    DynArray<double> x(n);
+double t0 = timeInSec();
+/*
+    if ( slu_gauss ( matr, x ) )
     {
 double t1 = timeInSec();
         double max = 0;
@@ -2576,6 +2652,23 @@ double t1 = timeInSec();
     }
     else
         display << "no" << NL;
+/*/
+    DynArray<nat> index ( n+1 );
+    if ( sluGaussRow ( matr, n, n+1, index(), n, n ) )
+    {
+        for ( nat i = 0; i < n; ++i ) x[index[i]] = matr[i][n];
+double t1 = timeInSec();
+        double max = 0;
+        for ( nat i = 0; i < n; ++i )
+        {
+            _maxa ( max, fabs ( x[i] - c[i] ) );
+            //display << x[i] << c[i] << NL;
+        }
+        display << max << t1-t0 << NL;
+    }
+    else
+        display << "no" << NL;
+//*/
 }
 
 void sluGaussRowO_test1()
@@ -3146,6 +3239,6 @@ void math_test ()
 //    minNorm_test3();
 //    log_test ();
 //    slu_gauss_test();
-    sluGaussRowT_test1();
+    sluGaussRowT_test2();
 //    chol_test1();
 }
