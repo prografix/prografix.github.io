@@ -283,8 +283,16 @@ namespace
         const double b = ( xx - yy ) * 0.5;
         const double d = sqrt ( xy * xy + b * b );
         mom.maxM = a * 0.5 + d;
-        mom.maxA.x = - xy;
-        mom.maxA.y = b - d;
+        if ( b > 0 )
+        {
+            mom.maxA.x = b + d;
+            mom.maxA.y = xy;
+        }
+        else
+        {
+            mom.maxA.x = - xy;
+            mom.maxA.y = b - d;
+        }
         const double q = mom.maxA * mom.maxA;
         if ( q == 0 )
         {
