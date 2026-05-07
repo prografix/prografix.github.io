@@ -1494,11 +1494,62 @@ display << tt2 / tt1 << NL;
 //display << max << im << NL;
 }
 
+void getLine2_test()
+{
+    static PRandPoint2d prand;
+    const nat n = 9;
+    FixArray<Vector2d, n> point;
+    point << prand;
+    /*const Mom2d mom = momentum2pnt ( point );
+    double xx = 0., xy = 0., yy = 0.;
+    for ( nat i = 0; i < point.size(); ++i )
+    {
+        const Vector2d v = point[i] - mom.o;
+        xx += v.y * v.y;
+        xy -= v.x * v.y;
+        yy += v.x * v.x;
+    }*/
+    double x2 = 0, x = 0, y2 = 0, y = 0, yx = 0;
+    for ( nat i = 0; i < n; ++i )
+    {
+        Vector2d & v = point[i];
+        //v.x = 0;
+        x2 += v.x * v.x;
+        x += v.x;
+        y2 += v.y * v.y;
+        y += v.y;
+        yx += v.y * v.x;
+    }
+    double xx = x2 - x*x/n;
+    double yy = y2 - y*y/n;
+    double xy = yx - x*y/n;
+    const double b = 0.5 * ( yy - xx );
+    const double d = sqrt ( xy * xy + b * b );
+    Vector2d maxA = b > 0 ? Vector2d ( b + d, - xy ) : Vector2d ( xy, b - d );
+    const double q = maxA * maxA;
+    if ( q == 0 )
+    {
+        maxA.x = 1.;
+        maxA.y = 0.;
+    }
+    else
+    {
+        maxA /= sqrt ( q );
+    }
+    Line2d res;
+    res.norm = maxA;
+    res.dist = - ( res.norm.x * x + res.norm.y * y ) / n;
+    Def<Line2d> line = getLine2 ( point );
+    display << line.norm.x << line.norm.y << line.dist << NL;
+    display << res.norm.x << res.norm.y << res.dist << NL;
+}
+
 } // end of namespace
 
 void approx2d_test()
 {
     drawNewList2d();
+    getLine2_test();
 //    getCirclePnt_test2();
 //    getEllipsePnt_test1();
 //    getEllipse_test();
@@ -1514,6 +1565,6 @@ void approx2d_test()
 //    getCircle1_test1();
 //    getNearPoint2_test1();
 //    spline_test3();
-    overlayConvexPolygons_test2();
+//    overlayConvexPolygons_test2();
     endNewList();
 }
