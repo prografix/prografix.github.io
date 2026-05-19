@@ -55,6 +55,43 @@ void momentum2sgm_test()
 //    display << min << max << NL << NL;
 }
 
+void momentum2sgm_test2 ()
+{
+    const nat n = 5;
+    FixArray<Segment2d, n> segm;
+    randSegment2d ( segm );
+    const Def<Vector2d> o = centerSgm ( segm );
+    double xx = 0., xy = 0., yy = 0.;
+    for ( nat i = 0; i < segm.size(); ++i )
+    {
+        const Segment2d & s = segm[i];
+        const double len = norm2 ( s );
+        const Vector2d a = s.a - o;
+        const Vector2d b = s.b - o;
+        xx += ( a.y * ( a.y + b.y ) + b.y * b.y ) * len;
+        xy -= ( a.x * ( a.y + a.y + b.y ) + b.x * ( a.y + b.y + b.y ) ) * len;
+        yy += ( a.x * ( a.x + b.x ) + b.x * b.x ) * len;
+    }
+    double xx2 = 0., xy2 = 0., yy2 = 0., x = 0, y = 0, mass = 0;
+    for ( nat i = 0; i < segm.size(); ++i )
+    {
+        const Segment2d & s = segm[i];
+        const double len = norm2 ( s );
+        const Vector2d & a = s.a;
+        const Vector2d & b = s.b;
+        yy2 += ( a.y * ( a.y + b.y ) + b.y * b.y ) * len;
+        xy2 -= ( a.x * ( a.y + a.y + b.y ) + b.x * ( a.y + b.y + b.y ) ) * len;
+        xx2 += ( a.x * ( a.x + b.x ) + b.x * b.x ) * len;
+        x += 0.5 * ( a.x + b.x ) * len;
+        y += 0.5 * ( a.y + b.y ) * len;
+        mass += len;
+    }
+    display << yy << xy << xx << NL;
+    display << xx2 - 3 * x*x / mass << xy2 + 6 * x*y / mass << yy2 - 3 * y*y / mass << NL;
+    display << o.x << o.y << NL;
+    display << x / mass << y / mass << NL;
+}
+
 void momentum2plg_test()
 {
     const nat n = 5;
@@ -369,7 +406,8 @@ void momentum2d_test()
 {
     drawNewList2d ();
 //    momentum2pnt_test();
-    testmom ();
+//    testmom ();
+    momentum2sgm_test2 ();
 //    testmomsegm ();
 //    momentum4pnt_test();
     endNewList();
