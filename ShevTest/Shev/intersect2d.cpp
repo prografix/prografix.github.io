@@ -583,20 +583,20 @@ bool intersection ( CCArrRef<Vector2d> & poly1, CCArrRef<Vector2d> & poly2, Suit
     }
     if ( p1.size() < 3 || p2.size() < 3 ) return true;
 // Вычисляем площади многоугольников
-    double a1 = area ( poly1 );
-    double a2 = area ( poly2 );
+    double a1 = area ( p1 );
+    double a2 = area ( p2 );
     if ( a1 == 0 || a2 == 0 ) return true;
-// Если один из многоугольников выпуклый, то применям специальный алгоритм пересечения
+// Если один из многоугольников выпуклый, то применяем специальный алгоритм пересечения
     if ( a1 > 0 && a2 > 0 )
     {
-        if ( isConvex ( poly1 ) )
+        if ( isConvex ( p1 ) )
         {
-            intersect1c ( poly1, poly2, res );
+            intersect1c ( p1, p2, res );
             return true;
         }
-        if ( isConvex ( poly2 ) )
+        if ( isConvex ( p2 ) )
         {
-            intersect1c ( poly2, poly1, res );
+            intersect1c ( p2, p1, res );
             return true;
         }
     }
@@ -711,7 +711,6 @@ bool intersection ( CCArrRef<Vector2d> & poly1, CCArrRef<Vector2d> & poly2, Suit
     }
     if ( vert.size() > 0 )
     {
-        Suite<Vector2d> poly;
         nat pre = vert.size() - 1;
         for ( nat cur = 0; cur < vert.size(); ++cur )
         {
@@ -738,8 +737,7 @@ bool intersection ( CCArrRef<Vector2d> & poly1, CCArrRef<Vector2d> & poly2, Suit
         }
         else
         {
-            DynArray<Vector2d> temp;
-            temp = p2;
+            DynArray<Vector2d> temp ( p2 );
             Def<Circle2d> cir = maxCircleInPolygon ( temp.reverse() );
             if ( cir.isDef ) o = cir.o;
         }
