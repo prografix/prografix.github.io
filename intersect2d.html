@@ -2,12 +2,9 @@
 <head><title>Пересечения на плоскости</title>
 <link rel="stylesheet" type="text/css" href="stylle.css"></head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
-<div align="center">
-<table width="900" cellspacing="0" cellpadding="0">
-<div align=center><br>
+<div align="center"><br>
 <font color="" style="font-size: 20pt">Пересечения на плоскости</font>
-</div>
-<div align=left><td><br>
+<table width="800" cellspacing="0" cellpadding="0"><tr><td><br>
 <p>&bull; Определение факта пересечения точки и многоугольника.
 Направление обхода вершин многоугольника может быть произвольным.
 Для определения применяется метод луча:
@@ -41,14 +38,14 @@ Def&lt;Segment2d> intersection ( const Segment2d & seg, const Ellipse2d & e );
 </pre>
 <p>&bull; Пересечение прямых и отрезков с многоугольником.
 Обход вершин многоугольника может быть произвольным.
-Результатом пересечения будет массив отрезков, возможно пустой:
+Результатом пересечения будет набор отрезков, возможно пустой:
 <pre>DynArrRef&lt;Segment2d> & intersection ( const Line2d & line, CArrRef&lt;Vector2d> poly, DynArrRef&lt;Segment2d> & res );
 SuiteRef&lt;Segment2d> & intersection ( const Segment2d & seg, CArrRef&lt;Vector2d> poly, SuiteRef&lt;Segment2d> & res );
 </pre>
 </p>
 <p>&bull; Следующая функция отсекает прямой часть многоугольника находящуюся в положительной полуплоскости.
 Обход вершин многоугольника может быть произвольным.
-Результатом пересечения будет массив многоугольников, возможно пустой:
+Результатом пересечения будет набор многоугольников, возможно пустой:
 <pre>
 SuiteRef&lt;Suite&lt;Vector2d>> & cut ( CArrRef&lt;Vector2d> poly, const Line2d & line, SuiteRef&lt; Suite&lt;Vector2d> > & res );
 </pre>
@@ -56,18 +53,20 @@ SuiteRef&lt;Suite&lt;Vector2d>> & cut ( CArrRef&lt;Vector2d> poly, const Line2d 
 <p>&bull; Пересечение выпуклого многоугольника с простым многоугольником.
 Обход вершин многоугольников должен быть против часовой стрелки.
 По сторонам выпуклого многоугольника строятся прямые, которые по очереди отсекают части от второго многоугольника.
-В результате получаем массив многоугольников, возможно пустой:
+В результате получаем набор многоугольников, возможно пустой:
 <pre>
 Suite&lt;Suite&lt;Vector2d>> & intersect1c ( CArrRef&lt;Vector2d> conv, CArrRef&lt;Vector2d> poly, Suite&lt; Suite&lt;Vector2d> > & res );
 </pre>
 </p>
 <p>&bull; Пересечение двух простых многоугольников.
-Обход вершин многоугольников должен быть против часовой стрелки.
-В результате получаем массив многоугольников, возможно пустой:
+Положительным считается обход вершин против часовой стрелки.
+В результате получаем набор многоугольников, возможно пустой:
 <pre>
 bool intersection ( CCArrRef&lt;Vector2d> & poly1, CCArrRef&lt;Vector2d> & poly2, Suite&lt; Suite&lt;Vector2d> > & res );
 </pre>
 В случае обнаружения ошибки в ходе выполнения функция возвращает значение false.
+Если поменять обход вершин одного многоугольника, то после применения этой функции получится вычитание одного многоугольника из другого.
+А если поменять обход вершин у двух многоугольников, примененить эту функцию и у результата тоже поменять обход вершин, то получится объединениение двух многоугольников.
 </p>
 <p>&bull; Пересечение множества полуплоскостей содержащих центр координат. Результатом будет выпуклый многоугольник:
 <pre>
