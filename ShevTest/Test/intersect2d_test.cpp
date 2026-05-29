@@ -4,6 +4,7 @@
 #include "../draw.h"
 
 #include "../Shev/rand.h"
+#include "../Shev/func1t.h"
 #include "../Shev/func2d.h"
 #include "../Shev/opti2d.h"
 #include "../Shev/trian2d.h"
@@ -433,24 +434,86 @@ void intersect1c_test()
     }
 }
 
-Def<Vector2d> getInsidePoint ( CArrRef<Vector2d> poly )
+bool intersection2 ( CCArrRef<Vector2d> & poly1, CCArrRef<Vector2d> & poly2, Suite< Suite<Vector2d> > & res )
 {
-    Def<Vector2d> res;
-    const nat n = poly.size();
-    if ( n < 3 ) return res;
-    nat i, im = 0;
-    double max = qmod ( poly.las() - poly[0] );
-    for ( i = 1; i < n; ++i )
+    const nat n1 = poly1.size();
+    const nat n2 = poly2.size();
+    if ( n1 < 3 || n2 < 3 )
+        return false;
+    Vector2d ua = poly1.las();
+    Suite<double> dist;
+    dist.resize ( n2 );
+    Suite<SortItem<double, Vector2d> > v1, v2;
+    for ( nat i = 0; i < n1; ++i )
     {
-        const double t = qmod ( poly[i] - poly[i-1] );
-        if ( max < t ) max = t, im = i;
+        Vector2d ub = poly1[i];
+        const Line2d line ( ua, ub );
+        for ( nat j = 0; j < n2; ++j ) dist[j] = line % poly2[j];
+        v1.resize();
+        v2.resize();
+        for ( nat j = 0; j < n2; ++j )
+        {
+            const Vector2d & va = poly2.cprev(j);
+            const Vector2d & vb = poly2[j];
+            const double a = dist.cprev(j);
+            const double b = dist[j];
+            const double c = a * b;
+            if ( c > 0 ) continue;
+            if ( c < 0 )
+            {
+                SortItem<double, Vector2d> & si = a < 0 ? v1.inc() : v2.inc();
+                si.tail = va + ( vb - va ) * ( a / ( a - b ) );
+                si.head = line.norm % si.tail;
+            }
+            else
+            {
+                if ( a == 0 )
+                {
+                    if ( b >= 0 || dist.cprev(j,2) < 0 ) continue;
+                    SortItem<double, Vector2d> & si = v2.inc();
+                    si.tail = va;
+                    si.head = line.norm % si.tail;
+                }
+                else
+                {
+                    if ( a >= 0 || dist.cnext(j) < 0 ) continue;
+                    SortItem<double, Vector2d> & si = v1.inc();
+                    si.tail = vb;
+                    si.head = line.norm % si.tail;
+                }
+            }
+        }
+        const double da = line.norm % ua;
+        const double db = line.norm % ub;
+        DynArray<Segment2d> sec;
+        if ( v1.size() > 1 )
+        {
+            quickSort123 ( v1 );
+            quickSort123 ( v2 );
+        }
+        sec.resize ( v1.size() );
+        for ( i = 0; i < v1.size(); ++i )
+        {
+            sec[i].a = v1[i].tail;
+            sec[i].b = v2[i].tail;
+        }
+        for ( nat j = 0; j < sec.size(); ++j )
+        {
+            double ai = line.norm % sec[j].a;
+            double bi = line.norm % sec[j].b;
+            if ( ai > bi )
+            {
+                _swap ( ai, bi );
+                _swap ( sec[j].a, sec[j].b );
+            }
+            if ( bi <= da || ai >= db ) continue;
+            //Segment2d & s = res.inc();
+            //s.a = ai > a ? sec[j].a : seg.a;
+            //s.b = bi < b ? sec[j].b : seg.b;
+        }
+        ua = ub;
     }
-    for ( i = 1; i < n; ++i )
-    {
-        nat j = im + i;
-        if ( j >= n ) j -= n;
-    }
-    return res;
+    return true;
 }
 
 void intersectPolygons()
@@ -471,13 +534,13 @@ void intersectPolygons()
     poly2[5] = Vector2d(-1,2);
     poly2 *= 0.5;
     nat i;
- /*   for ( i = 0; i < 1; ++i )
+    for ( i = 0; i < 1; ++i )
     {
         randPolygon ( poly1 );
         randPolygon ( poly2 );
     }
     poly1.reverse();
-    poly2.reverse();*/
+    poly2.reverse();
     drawPolygon ( poly1, 0.4f, 0.8f, 0.8f );
     drawPolygon ( poly2, 0.8f, 0.4f, 0.8f );
     Suite< Suite<Vector2d> > res; 
@@ -622,7 +685,7 @@ void intersect2d_test ()
 //    intersectSegmentPolygon();
 //    cutLinePolygon2();
 //    intersect1c_test();
-//    intersectPolygons();
-    intersectHalfPlanes();
+    intersectPolygons();
+//    intersectHalfPlanes();
     endNewList();
 }
