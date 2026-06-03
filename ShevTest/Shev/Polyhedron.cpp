@@ -726,7 +726,7 @@ Def<Vector3d> Polyhedron::centerOfMass () const
         {
             const Vector3d & v2 = vertex[f.index[j-1]];
             const Vector3d & v3 = vertex[f.index[j]];
-            const double p = ( v1 % v2 * v3 ) / 6.;
+            const double p = v1 % v2 * v3;
             c += ( v1 + v2 + v3 ) * p;
             m += p;
         }
