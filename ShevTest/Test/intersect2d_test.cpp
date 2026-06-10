@@ -440,10 +440,13 @@ bool intersection2 ( CCArrRef<Vector2d> & poly1, CCArrRef<Vector2d> & poly2, Sui
     const nat n2 = poly2.size();
     if ( n1 < 3 || n2 < 3 )
         return false;
-    Vector2d ua = poly1.las();
+    nat ip = n1 - 1;
+    Vector2d ua = poly1[ip];
     Suite<double> dist;
     dist.resize ( n2 );
-    Suite<SortItem<double, Vector2d> > v1, v2;
+    Suite<Segment2d> seg;
+    Suite<Set2<nat>> logc;
+    Suite<SortItem<double, Set2<Vector2d, nat>> > v1, v2;
     for ( nat i = 0; i < n1; ++i )
     {
         Vector2d ub = poly1[i];
@@ -461,57 +464,79 @@ bool intersection2 ( CCArrRef<Vector2d> & poly1, CCArrRef<Vector2d> & poly2, Sui
             if ( c > 0 ) continue;
             if ( c < 0 )
             {
-                SortItem<double, Vector2d> & si = a < 0 ? v1.inc() : v2.inc();
-                si.tail = va + ( vb - va ) * ( a / ( a - b ) );
-                si.head = line.norm % si.tail;
+                SortItem<double, Set2<Vector2d, nat>> & si = a < 0 ? v1.inc() : v2.inc();
+                si.tail.a = va + ( vb - va ) * ( a / ( a - b ) );
+                si.head = line.norm % si.tail.a;
             }
             else
             {
                 if ( a == 0 )
                 {
                     if ( b >= 0 || dist.cprev(j,2) < 0 ) continue;
-                    SortItem<double, Vector2d> & si = v2.inc();
-                    si.tail = va;
-                    si.head = line.norm % si.tail;
+                    SortItem<double, Set2<Vector2d, nat>> & si = v2.inc();
+                    si.tail.a = va;
+                    si.head = line.norm % si.tail.a;
                 }
                 else
                 {
                     if ( a >= 0 || dist.cnext(j) < 0 ) continue;
-                    SortItem<double, Vector2d> & si = v1.inc();
-                    si.tail = vb;
-                    si.head = line.norm % si.tail;
+                    SortItem<double, Set2<Vector2d, nat>> & si = v1.inc();
+                    si.tail.a = vb;
+                    si.head = line.norm % si.tail.a;
                 }
             }
         }
+        const nat n = v1.size();
+        if ( n != v2.size() )
+            return false;
+        if ( ! n )
+            continue;
         const double da = line.norm % ua;
         const double db = line.norm % ub;
-        DynArray<Segment2d> sec;
-        if ( v1.size() > 1 )
+        if ( n > 1 )
         {
             quickSort123 ( v1 );
             quickSort123 ( v2 );
         }
-        sec.resize ( v1.size() );
-        for ( i = 0; i < v1.size(); ++i )
+        seg.resize();
+        logc.resize();
+        for ( nat j = 0; j < n; ++j )
         {
-            sec[i].a = v1[i].tail;
-            sec[i].b = v2[i].tail;
-        }
-        for ( nat j = 0; j < sec.size(); ++j )
-        {
-            double ai = line.norm % sec[j].a;
-            double bi = line.norm % sec[j].b;
-            if ( ai > bi )
+            const Set2<Vector2d, nat> & w1 = v1[i].tail;
+            const Set2<Vector2d, nat> & w2 = v2[i].tail;
+            double ai = line.norm % w1.a;
+            double bi = line.norm % w2.a;
+            /*if ( ai > bi )
             {
                 _swap ( ai, bi );
                 _swap ( sec[j].a, sec[j].b );
-            }
+            }*/
             if ( bi <= da || ai >= db ) continue;
-            //Segment2d & s = res.inc();
-            //s.a = ai > a ? sec[j].a : seg.a;
-            //s.b = bi < b ? sec[j].b : seg.b;
+            Segment2d & s = seg.inc();
+            Set2<nat> & lc = logc.inc();
+            if ( ai > da )
+            {
+                s.a = w1.a;
+                lc.a = w1.b;
+            }
+            else
+            {
+                s.a = ua;
+                lc.a = ip * 2;
+            }
+            if ( bi < db )
+            {
+                s.b = w2.a;
+                lc.b = w2.b;
+            }
+            else
+            {
+                s.b = ub;
+                lc.b = i * 2;
+            }
         }
         ua = ub;
+        ip = i;
     }
     return true;
 }
@@ -539,12 +564,12 @@ void intersectPolygons()
         randPolygon ( poly1 );
         randPolygon ( poly2 );
     }
-    poly1.reverse();
-    poly2.reverse();
+    //poly1.reverse();
+   // poly2.reverse();
     drawPolygon ( poly1, 0.4f, 0.8f, 0.8f );
     drawPolygon ( poly2, 0.8f, 0.4f, 0.8f );
     Suite< Suite<Vector2d> > res; 
-    intersection ( poly1, poly2, res );
+    unionPolygons ( poly1, poly2, res );
     for ( i = 0; i < res.size(); ++i )
     {
         drawPolygon ( res[i], 1, 1, 0 );
@@ -564,9 +589,9 @@ void intersectPolygons2()
         double a1 = area ( poly1 );
         double a2 = area ( poly2 );
         Suite< Suite<Vector2d> > res; 
-        if ( ! intersection ( poly1, poly2, res ) )
+        if ( ! intersectPolygons ( poly1, poly2, res ) )
         {
-            intersection ( poly1, poly2, res );
+            intersectPolygons ( poly1, poly2, res );
             display << i << "err" << NL;
             continue;
         }
@@ -574,7 +599,7 @@ void intersectPolygons2()
         for ( j = 0; j < res.size(); ++j ) a3 += area ( res[j] );
         poly1.reverse();
         poly2.reverse();
-        if ( ! intersection ( poly1, poly2, res ) )
+        if ( ! intersectPolygons ( poly1, poly2, res ) )
         {
             display << i << "err" << NL;
             continue;
@@ -587,7 +612,7 @@ void intersectPolygons2()
             display << i << t << NL;
             drawPolygon ( poly1, 0.4f, 0.8f, 0.8f );
             drawPolygon ( poly2, 0.8f, 0.4f, 0.8f );
-            intersection ( poly1, poly2, res );
+            intersectPolygons ( poly1, poly2, res );
             for ( j = 0; j < res.size(); ++j )
             {
                 drawPolygon ( res[j], 1, 1, 0 );
@@ -595,7 +620,7 @@ void intersectPolygons2()
             break;
         }
         poly1.reverse();
-        intersection ( poly1, poly2, res );
+        intersectPolygons ( poly1, poly2, res );
         double a5 = 0;
         for ( j = 0; j < res.size(); ++j ) a5 += area ( res[j] );
         t = a1 - a3 - a5;
@@ -604,7 +629,7 @@ void intersectPolygons2()
             display << i << t << NL;
             drawPolygon ( poly1, 0.4f, 0.8f, 0.8f );
             drawPolygon ( poly2, 0.8f, 0.4f, 0.8f );
-            intersection ( poly1, poly2, res );
+            intersectPolygons ( poly1, poly2, res );
             for ( j = 0; j < res.size(); ++j )
             {
                 drawPolygon ( res[j], 1, 1, 0 );
@@ -613,7 +638,7 @@ void intersectPolygons2()
         }
         poly1.reverse();
         poly2.reverse();
-        intersection ( poly1, poly2, res );
+        intersectPolygons ( poly1, poly2, res );
         double a6 = 0;
         for ( j = 0; j < res.size(); ++j ) a6 += area ( res[j] );
         t = a2 - a3 - a6;
@@ -622,7 +647,7 @@ void intersectPolygons2()
             display << i << t << NL;
             drawPolygon ( poly1, 0.4f, 0.8f, 0.8f );
             drawPolygon ( poly2, 0.8f, 0.4f, 0.8f );
-            intersection ( poly1, poly2, res );
+            intersectPolygons ( poly1, poly2, res );
             for ( j = 0; j < res.size(); ++j )
             {
                 drawPolygon ( res[j], 1, 1, 0 );

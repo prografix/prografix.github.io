@@ -560,27 +560,17 @@ intersect1c ( CArrRef<Vector2d> conv, CArrRef<Vector2d> poly, Suite< Suite<Vecto
 //
 //             Пересечение двух простых многоугольников
 //
-//**************************** 28.05.2014 *********************************//
+//**************************** 09.06.2026 *********************************//
 
 inline void put ( Suite<Vector2d> & p, const Vector2d & v )
 {
     if ( p.size() == 0 || p.las() != v ) p.inc() = v;
 }
 
-bool intersection ( CCArrRef<Vector2d> & poly1, CCArrRef<Vector2d> & poly2, Suite< Suite<Vector2d> > & res )
+static bool intersection ( ArrRef<Vector2d> & p1, ArrRef<Vector2d> & p2, Suite< Suite<Vector2d> > & res )
 {
-    res.resize();
-    if ( poly1.size() < 3 || poly2.size() < 3 ) return true;
-    Suite<Vector2d> p1 ( poly1.size() ), p2 ( poly2.size() );
     nat i, j;
-    for ( i = 0; i < poly1.size(); ++i )
-    {
-        if ( poly1[i] != poly1.cprev(i) ) p1.inc() = poly1[i];
-    }
-    for ( i = 0; i < poly2.size(); ++i )
-    {
-        if ( poly2[i] != poly2.cprev(i) ) p2.inc() = poly2[i];
-    }
+    res.resize();
     if ( p1.size() < 3 || p2.size() < 3 ) return true;
 // Вычисляем площади многоугольников
     double a1 = area ( p1 );
@@ -604,7 +594,7 @@ bool intersection ( CCArrRef<Vector2d> & poly1, CCArrRef<Vector2d> & poly2, Suit
     if ( fabs ( a1 ) < fabs ( a2 ) )
     {
         _swap ( a1, a2 );
-        _swap ( p1, p2 );
+        p1.swap ( p2 );
     }
 // Находим точки пересечения границ многоугольников
     const nat n = p2.size();
@@ -907,6 +897,60 @@ bool intersection ( CCArrRef<Vector2d> & poly1, CCArrRef<Vector2d> & poly2, Suit
         }
         while ( itog.next() );
     }
+    return true;
+}
+
+bool intersectPolygons ( CCArrRef<Vector2d> & poly1, CCArrRef<Vector2d> & poly2, Suite< Suite<Vector2d> > & res )
+{
+    res.resize();
+    if ( poly1.size() < 3 || poly2.size() < 3 ) return true;
+    Suite<Vector2d> p1 ( poly1.size() ), p2 ( poly2.size() );
+    nat i;
+    for ( i = 0; i < poly1.size(); ++i )
+    {
+        if ( poly1[i] != poly1.cprev(i) ) p1.inc() = poly1[i];
+    }
+    for ( i = 0; i < poly2.size(); ++i )
+    {
+        if ( poly2[i] != poly2.cprev(i) ) p2.inc() = poly2[i];
+    }
+    return intersection ( p1, p2, res );
+}
+
+bool differencePolygons ( CCArrRef<Vector2d> & poly1, CCArrRef<Vector2d> & poly2, Suite< Suite<Vector2d> > & res )
+{
+    res.resize(0);
+    if ( poly1.size() < 3 || poly2.size() < 3 ) return true;
+    Suite<Vector2d> p1 ( poly1.size() ), p2 ( poly2.size() );
+    nat i;
+    for ( i = 0; i < poly1.size(); ++i )
+    {
+        if ( poly1[i] != poly1.cprev(i) ) p1.inc() = poly1[i];
+    }
+    for ( i = 0; i < poly2.size(); ++i )
+    {
+        if ( poly2[i] != poly2.cprev(i) ) p2.inc() = poly2[i];
+    }
+    return intersection ( p1, p2.reverse(), res );
+}
+
+bool unionPolygons ( CCArrRef<Vector2d> & poly1, CCArrRef<Vector2d> & poly2, Suite< Suite<Vector2d> > & res )
+{
+    res.resize(0);
+    if ( poly1.size() < 3 || poly2.size() < 3 ) return true;
+    Suite<Vector2d> p1 ( poly1.size() ), p2 ( poly2.size() );
+    nat i;
+    for ( i = 0; i < poly1.size(); ++i )
+    {
+        if ( poly1[i] != poly1.cprev(i) ) p1.inc() = poly1[i];
+    }
+    for ( i = 0; i < poly2.size(); ++i )
+    {
+        if ( poly2[i] != poly2.cprev(i) ) p2.inc() = poly2[i];
+    }
+    if ( ! intersection ( p1.reverse(), p2.reverse(), res ) )
+        return false;
+    for ( i = 0; i < res.size(); ++i ) res[i].reverse();
     return true;
 }
 

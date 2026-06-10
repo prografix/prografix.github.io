@@ -79,7 +79,7 @@ if ( ii == 330 )
         {
             for ( i = 0; i < plus.size(); ++i )
             {
-                if ( ! intersection ( sect2[plus[i].tail], temp2, res ) )
+                if ( ! intersectPolygons ( sect2[plus[i].tail], temp2, res ) )
                 {
 //                    intersection ( sect2[plus[i].tail], temp2, res );
                     continue;
@@ -118,7 +118,7 @@ if ( ii == 330 )
                     else ++j;
                 }
                 // Пересекаем положительные многоугольники
-                if ( ! intersection ( vert1, temp2, res ) )
+                if ( ! intersectPolygons ( vert1, temp2, res ) )
                     continue;
                 // Пересекаем результат с отрицательными многоугольниками
                 for ( nat k = 0; k < res.size(); ++k )
@@ -132,9 +132,9 @@ if ( ii == 330 )
                         res3.resize();
                         for ( nat k1 = 0; k1 < res1.size(); ++k1 )
                         {
-                            if ( ! intersection ( vert2, res1[k1], res2 ) )
+                            if ( ! intersectPolygons ( vert2, res1[k1], res2 ) )
                             {
-//                                intersection ( vert2, res1[k1], res2 );
+//                                intersectPolygons ( vert2, res1[k1], res2 );
                                 continue;
                             }
                             for ( nat k2 = 0; k2 < res2.size(); ++k2 )
@@ -1072,11 +1072,11 @@ void checkintersect ( List<ListItem<Set2<Plane3d, DynArray<Vector2d> > > > & b1,
         {
             if ( ! near_ ( b2.cur()->a, plane, eps ) ) continue;
             DynArray<Vector2d> & a2 = b2.cur()->b;
-            intersection ( a1, a2, res );
+            intersectPolygons ( a1, a2, res );
             if ( res.size() == 0 ) continue;
-            if ( ! intersection ( a1.reverse(), a2.reverse(), res ) )
+            if ( ! intersectPolygons ( a1.reverse(), a2.reverse(), res ) )
             {/*
-                intersection ( a1, a2, res );
+                intersectPolygons ( a1, a2, res );
                 nat j;
                 for ( j = 0; j < a1.size(); ++j ) display << a1[j] << isIntersect ( a1[j], a2 ) << NL;
                 display << NL;
@@ -1091,9 +1091,9 @@ void checkintersect ( List<ListItem<Set2<Plane3d, DynArray<Vector2d> > > > & b1,
                     if ( ! b2.next() ) break;
                     if ( ! near_ ( b2.cur()->a, plane, eps ) ) continue;
                     ArrRef<Vector2d> a3 = b2.cur()->b;
-                    intersection ( a3, a2, res );
+                    intersectPolygons ( a3, a2, res );
                     if ( res.size() == 0 ) continue;
-                    intersection ( a3.reverse(), a2.reverse(), res );
+                    intersectPolygons ( a3.reverse(), a2.reverse(), res );
                     if ( res.size() == 1 )
                     {
                         a2 = res[0].reverse();

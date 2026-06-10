@@ -4,7 +4,7 @@
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
 <div align="center"><br>
 <font color="" style="font-size: 20pt">Пересечения на плоскости</font>
-<table width="800" cellspacing="0" cellpadding="0"><tr><td><br>
+<table width="900" cellspacing="0" cellpadding="0"><tr><td><br>
 <p>&bull; Определение факта пересечения точки и многоугольника.
 Направление обхода вершин многоугольника может быть произвольным.
 Для определения применяется метод луча:
@@ -62,11 +62,17 @@ Suite&lt;Suite&lt;Vector2d>> & intersect1c ( CArrRef&lt;Vector2d> conv, CArrRef&
 Положительным считается обход вершин против часовой стрелки.
 В результате получаем набор многоугольников, возможно пустой:
 <pre>
-bool intersection ( CCArrRef&lt;Vector2d> & poly1, CCArrRef&lt;Vector2d> & poly2, Suite&lt; Suite&lt;Vector2d> > & res );
+bool intersectPolygons ( CCArrRef&lt;Vector2d> & poly1, CCArrRef&lt;Vector2d> & poly2, Suite&lt; Suite&lt;Vector2d> > & res );
 </pre>
 В случае обнаружения ошибки в ходе выполнения функция возвращает значение false.
 Если поменять обход вершин одного многоугольника, то после применения этой функции получится вычитание одного многоугольника из другого.
 А если поменять обход вершин у двух многоугольников, примененить эту функцию и у результата тоже поменять обход вершин, то получится объединениение двух многоугольников.
+Иначе можно воспользоваться следующими функциями, которые делают нужные преобразования:
+<pre>
+bool differencePolygons ( CCArrRef&lt;Vector2d> & poly1, CCArrRef&lt;Vector2d> & poly2, Suite&lt; Suite&lt;Vector2d> > & res );
+
+bool unionPolygons ( CCArrRef&lt;Vector2d> & poly1, CCArrRef&lt;Vector2d> & poly2, Suite&lt; Suite&lt;Vector2d> > & res );
+</pre>
 </p>
 <p>&bull; Пересечение множества полуплоскостей содержащих центр координат. Результатом будет выпуклый многоугольник:
 <pre>
