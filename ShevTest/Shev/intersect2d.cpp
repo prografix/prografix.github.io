@@ -560,48 +560,55 @@ intersect1c ( CArrRef<Vector2d> conv, CArrRef<Vector2d> poly, Suite< Suite<Vecto
 //
 //             Пересечение двух простых многоугольников
 //
-//**************************** 09.06.2026 *********************************//
+//**************************** 11.06.2026 *********************************//
 
 inline void put ( Suite<Vector2d> & p, const Vector2d & v )
 {
     if ( p.size() == 0 || p.las() != v ) p.inc() = v;
 }
 
-static bool intersection ( ArrRef<Vector2d> & p1, ArrRef<Vector2d> & p2, Suite< Suite<Vector2d> > & res )
+static bool intersection ( ArrRef<Vector2d> & poly1, ArrRef<Vector2d> & poly2, Suite< Suite<Vector2d> > & res )
 {
     nat i, j;
     res.resize();
-    if ( p1.size() < 3 || p2.size() < 3 ) return true;
+    if ( poly1.size() < 3 || poly2.size() < 3 ) return true;
 // Вычисляем площади многоугольников
-    double a1 = area ( p1 );
-    double a2 = area ( p2 );
+    double a1 = area ( poly1 );
+    double a2 = area ( poly2 );
     if ( a1 == 0 || a2 == 0 ) return true;
 // Если один из многоугольников выпуклый, то применяем специальный алгоритм пересечения
     if ( a1 > 0 && a2 > 0 )
     {
-        if ( isConvex ( p1 ) )
+        if ( isConvex ( poly1 ) )
         {
-            intersect1c ( p1, p2, res );
+            intersect1c ( poly1, poly2, res );
             return true;
         }
-        if ( isConvex ( p2 ) )
+        if ( isConvex ( poly2 ) )
         {
-            intersect1c ( p2, p1, res );
+            intersect1c ( poly2, poly1, res );
             return true;
         }
     }
 // Делаем первым многоугольник с большей площадью по модулю
+    nat n1 = poly1.size();
+    nat n2 = poly2.size();
+    Vector2d * vert1 = poly1();
+    Vector2d * vert2 = poly2();
     if ( fabs ( a1 ) < fabs ( a2 ) )
     {
         _swap ( a1, a2 );
-        p1.swap ( p2 );
+        _swap ( n1, n2 );
+        _swap ( vert1, vert2 );
     }
+    ArrRef<Vector2d> p1 ( vert1, n1 );
+    ArrRef<Vector2d> p2 ( vert2, n2 );
 // Находим точки пересечения границ многоугольников
-    const nat n = p2.size();
+    const nat n = n2;
     Suite<Set4<Vector2d, nat, nat, bool> > vert;
     SortItem<double, Set4<Vector2d, nat, nat, bool> > v;
     Suite<SortItem<double, Set4<Vector2d, nat, nat, bool> > > arr;
-    for ( i = 0; i < p1.size(); ++i )
+    for ( i = 0; i < n1; ++i )
     {
         const Vector2d & va1 = p1[i];
         const Vector2d & vb1 = p1.cnext(i);
@@ -609,7 +616,7 @@ static bool intersection ( ArrRef<Vector2d> & p1, ArrRef<Vector2d> & p2, Suite< 
         const double sa1 = dir1 * va1;
         const double sb1 = dir1 * vb1;
         arr.resize();
-        for ( j = 0; j < p2.size(); ++j )
+        for ( j = 0; j < n2; ++j )
         {
             const Vector2d & va2 = p2[j];
             const Vector2d & vb2 = p2.cnext(j);
@@ -750,10 +757,10 @@ static bool intersection ( ArrRef<Vector2d> & p1, ArrRef<Vector2d> & p2, Suite< 
         {
             if ( ( ob.a - oa.a ) * ( p1.cnext(oa.b) - p1[oa.b] ) < 0 )
             {
-                for ( i = 1; i <= p1.size(); ++i )
+                for ( i = 1; i <= n1; ++i )
                 {
                     j = oa.b + i;
-                    if ( j >= p1.size() ) j -= p1.size();
+                    if ( j >= n1 ) j -= n1;
                     put ( p3, p1[j] );
                 }
             }
@@ -763,7 +770,7 @@ static bool intersection ( ArrRef<Vector2d> & p1, ArrRef<Vector2d> & p2, Suite< 
             for ( i = oa.b;; )
             {
                 if ( i == ob.b ) break;
-                if ( ++i == p1.size() ) i = 0;
+                if ( ++i == n1 ) i = 0;
                 put ( p3, p1[i] );
             }
         }
@@ -772,10 +779,10 @@ static bool intersection ( ArrRef<Vector2d> & p1, ArrRef<Vector2d> & p2, Suite< 
         {
             if ( ( ob.a - oa.a ) * ( p2.cnext(oa.c) - p2[oa.c] ) > 0 )
             {
-                for ( i = 1; i <= p2.size(); ++i )
+                for ( i = 1; i <= n2; ++i )
                 {
                     j = oa.c + i;
-                    if ( j >= p2.size() ) j -= p2.size();
+                    if ( j >= n2 ) j -= n2;
                     put ( p3, p2[j] );
                 }
             }
@@ -785,7 +792,7 @@ static bool intersection ( ArrRef<Vector2d> & p1, ArrRef<Vector2d> & p2, Suite< 
             for ( i = ob.c;; )
             {
                 if ( i == oa.c ) break;
-                if ( ++i == p2.size() ) i = 0;
+                if ( ++i == n2 ) i = 0;
                 put ( p3, p2[i] );
             }
         }
@@ -844,10 +851,10 @@ static bool intersection ( ArrRef<Vector2d> & p1, ArrRef<Vector2d> & p2, Suite< 
                     {
                         if ( ( ob.a - oa.a ) * ( p1.cnext(oa.b) - p1[oa.b] ) < 0 )
                         {
-                            for ( i = 1; i <= p1.size(); ++i )
+                            for ( i = 1; i <= n1; ++i )
                             {
                                 j = oa.b + i;
-                                if ( j >= p1.size() ) j -= p1.size();
+                                if ( j >= n1 ) j -= n1;
                                 put ( p3, p1[j] );
                             }
                         }
@@ -857,7 +864,7 @@ static bool intersection ( ArrRef<Vector2d> & p1, ArrRef<Vector2d> & p2, Suite< 
                         for ( i = oa.b;; )
                         {
                             if ( i == ob.b ) break;
-                            if ( ++i == p1.size() ) i = 0;
+                            if ( ++i == n1 ) i = 0;
                             put ( p3, p1[i] );
                         }
                     }
@@ -870,10 +877,10 @@ static bool intersection ( ArrRef<Vector2d> & p1, ArrRef<Vector2d> & p2, Suite< 
                     {
                         if ( ( ob.a - oa.a ) * ( p2.cnext(oa.c) - p2[oa.c] ) < 0 )
                         {
-                            for ( i = 1; i <= p2.size(); ++i )
+                            for ( i = 1; i <= n2; ++i )
                             {
                                 j = oa.c + i;
-                                if ( j >= p2.size() ) j -= p2.size();
+                                if ( j >= n2 ) j -= n2;
                                 put ( p3, p2[j] );
                             }
                         }
@@ -883,7 +890,7 @@ static bool intersection ( ArrRef<Vector2d> & p1, ArrRef<Vector2d> & p2, Suite< 
                         for ( i = oa.c;; )
                         {
                             if ( i == ob.c ) break;
-                            if ( ++i == p2.size() ) i = 0;
+                            if ( ++i == n2 ) i = 0;
                             put ( p3, p2[i] );
                         }
                     }

@@ -194,7 +194,7 @@ intersect1c ( CArrRef<Vector2d> conv, CArrRef<Vector2d> poly, Suite< Suite<Vecto
 //
 //             Пересечение двух простых многоугольников
 //
-//**************************** 09.06.2026 *********************************//
+//**************************** 11.06.2026 *********************************//
 
 bool intersectPolygons ( CCArrRef<Vector2d> & poly1, CCArrRef<Vector2d> & poly2, Suite< Suite<Vector2d> > & res );
 
