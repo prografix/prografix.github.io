@@ -167,13 +167,6 @@ public:
         for ( nat i = 0; i < _size; ++i ) _data.var[i] <= s;
         return *this;
     }
-// Обмен данными
-    ArrRef & swap ( ArrRef & a )
-    {
-        _swap ( _size, a._size );
-        _swap ( _data, a._data );
-        return *this;
-    }
 };
 </pre>
 Шаблон классов FixArrRef представляет собой ссылку на массив постоянной длины:
