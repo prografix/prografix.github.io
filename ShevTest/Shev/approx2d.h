@@ -172,6 +172,16 @@ Def<Conform2d> overlayConvexPolygons ( CCArrRef<Vector2d> & vert1, CCArrRef<Vect
 Def<Affin2d> overlayPointsOnConvexPolygon ( CCArrRef<Vector2d> & point, CCArrRef<Line2d> & line );
 
 
+//************************ 12.06.2026 *******************************//
+//
+//         Совмещение двух выпуклых многоугольников при помощи
+//          преобразования сохраняющего площадь без смещения
+//
+//************************ 12.06.2026 *******************************//
+
+Def<LinTran2d> overlayConvexPolygonsNM ( CCArrRef<Vector2d> & poly1, CCArrRef<Vector2d> & poly2 );
+
+
 //************************ 13.07.2005 *******************************//
 //
 //      Вычисление ближайшей точки к заданным прямым

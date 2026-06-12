@@ -2,10 +2,9 @@
 <head><title>Аппроксимация многоугольника</title>
 <link rel="stylesheet" type="text/css" href="stylle.css"></head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
-<div align="center">
-<table width="800" cellspacing="0" cellpadding="0">
-<br><font color="" style="font-size: 20pt">Аппроксимация многоугольника</font>
-<div align=left><td>
+<div align="center"><br>
+<font color="" style="font-size: 20pt">Аппроксимация многоугольника</font>
+<table width="900" cellspacing="0" cellpadding="0"><tr><td>
 <p><br>Если многоугольник надо аппроксимировать кругом, то можно построить круг у которого центр масс и площадь
 будут такие же, как у многоугольника.
 Если многоугольник надо аппроксимировать эллипсом ( прямоугольником ), то можно воспользоваться 
@@ -48,6 +47,12 @@ Def&lt;Conform2d> minMaxPointsConvexPolygon ( CCArrRef&lt;Vector2d> & point, CCA
 Def&lt;Conform2d> overlayConvexPolygons ( CCArrRef&lt;Vector2d> & vert1, CCArrRef&lt;Vector2d> & vert2 );
 </pre>
 <p>
+&bull; Совмещение двух выпуклых многоугольников при помощи линейного преобразования первого многоугольника ( без смещения ):
+</p>
+<pre>
+Def&lt;LinTran2d> overlayConvexPolygonsNM ( CCArrRef&lt;Vector2d> & vert1, CCArrRef&lt;Vector2d> & vert2 );
+</pre>
+<p>
 В приложении <a href="demo/demo.html">DEMO</a> можно посмотреть примеры использования этих функций.
 </p>
 <p>Описание классов Circle2d, Ellipse2d и Rectangle2d находится <a href="figure2d.html">здесь</a>.
@@ -59,7 +64,7 @@ Def&lt;Conform2d> overlayConvexPolygons ( CCArrRef&lt;Vector2d> & vert1, CCArrRe
 <p>Исходники находятся в <a href="source/source.zip">approx2d.cpp</a></p>
 <p>Примеры использования всех этих функций можно посмотреть в приложении <a href="demo/demo.html">DEMO</a>.</p>
 <a href="rus_approx.html">Наверх</a>
-</td>
+</td></tr>
 </table></div>
 <pre>
 

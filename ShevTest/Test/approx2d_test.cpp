@@ -1386,47 +1386,31 @@ Def<Conform2d> minMaxPointsConvexPolygon3 ( CCArrRef<Vector2d> & point, CCArrRef
 
 void overlayConvexPolygons_test()
 {
-    static PRand rand;
-    Spin2d spin = getRandSpin2d ( rand() );
     Suite<Vector2d> poly1;
-    poly1.resize ( 9 );
-    randConvexPolygon ( poly1 ) *= 0.6;
+    poly1.resize ( 19 );
+    randConvexPolygon ( poly1 );
+    poly1 -= centerPlg ( poly1 );
+    poly1 *= 1 / sqrt ( area ( poly1 ) );
     Suite<Vector2d> poly2;
-    poly2.resize ( 4 );
-    regularPolygon ( poly2 );
-    poly2.resize ( 9 );
-    randConvexPolygon ( poly2 ) *= 0.6;
-    poly2 = poly1; poly1.dec (); poly1 *= spin;
-//drawPolygon ( poly1, 0, 0, 1 );
+    poly2.resize ( 18 );
+    randConvexPolygon ( poly2 );
+    poly2 -= centerPlg ( poly2 );
+    poly2 *= 1 / sqrt ( area ( poly2 ) );
+drawPolygon ( poly1, 0, 0, 1 );
 drawPolygon ( poly2, 0, 1, 1 );
-//    DynArray<Line2d> line ( poly2.size() );
-//    if ( ! points2lines ( poly2, line ) ) return;
-double t0 = timeInSec (); time1=0;
-    Def<Conform2d> conf = overlayConvexPolygons ( poly1, poly2 );
+double t0 = timeInSec ();
+    Def<LinTran2d> conf = overlayConvexPolygonsNM ( poly1, poly2 );
 double t1 = timeInSec ();
     Suite<Vector2d> tmp;
     if ( conf.isDef )
     {
         tmp = poly1;
         tmp *= conf;
-//display << area ( tmp ) << NL;
-drawPolygon ( tmp, 1, 0, 0 );
-    }
-double t2 = timeInSec ();
-    conf = minMaxPointsConvexPolygon2 ( poly1, poly2 );
-    //Def<Vector2d> conf = overlayConvexPolygonsNR ( poly1, poly2 );
-    //Def<Vector2d> conf = minMaxPointsConvexPolygonNR ( poly1, poly2 );
-//    Def<Affin2d> aff = overlayPointsOnConvexPolygon ( poly1, line );
-double t3 = timeInSec ();
-display << t1-t0 << time1 << NL;
-//display << kk1 << kk2 << NL;
-    if ( conf.isDef )
-    {
-        tmp = poly1;
-        tmp *= conf;
-//display << area ( tmp ) << NL;
 drawPolygon ( tmp, 1, 1, 0 );
+display << t1-t0 << NL;
+return;
     }
+    display << "no" << NL;
 }
 
 double maxPointsConvexPolygon ( Def<Conform2d> & conf, CCArrRef<Vector2d> & point, CCArrRef<Vector2d> & vert )
@@ -1549,7 +1533,7 @@ void getLine2_test()
 void approx2d_test()
 {
     drawNewList2d();
-    getLine2_test();
+//    getLine2_test();
 //    getCirclePnt_test2();
 //    getEllipsePnt_test1();
 //    getEllipse_test();
@@ -1565,6 +1549,6 @@ void approx2d_test()
 //    getCircle1_test1();
 //    getNearPoint2_test1();
 //    spline_test3();
-//    overlayConvexPolygons_test2();
+    overlayConvexPolygons_test();
     endNewList();
 }

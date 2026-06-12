@@ -1067,6 +1067,13 @@ Def<Affin2d> overlayPointsOnConvexPolygon ( CCArrRef<Vector2d> & point, CCArrRef
     return res;
 }
 
+//************************ 12.06.2026 *******************************//
+//
+//         —овмещение двух выпуклых многоугольников при помощи
+//          преобразовани€ сохран€ющего площадь без смещени€
+//
+//************************ 12.06.2026 *******************************//
+
 Def<LinTran2d> overlayConvexPolygonsNM ( CCArrRef<Vector2d> & poly1, CCArrRef<Vector2d> & poly2 )
 {
     Def<LinTran2d> res;
@@ -1177,6 +1184,17 @@ Def<LinTran2d> overlayConvexPolygonsNM ( CCArrRef<Vector2d> & poly1, CCArrRef<Ve
             plane.d3 = ny * pm.y;
             plane.d4 = 1;
             plane.d5 = line2[km].dist;
+        }
+        else
+        {
+            const double nx = line1[km].norm.x;
+            const double ny = line1[km].norm.y;
+            plane.d0 = ny * pm.y;
+            plane.d1 = nx * -pm.y;
+            plane.d2 = ny * -pm.x;
+            plane.d3 = nx * pm.x;
+            plane.d4 = 1;
+            plane.d5 = line1[km].dist;
         }
         model.cut ( plane, stor );
     }
