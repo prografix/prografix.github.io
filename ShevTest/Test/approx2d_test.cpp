@@ -1396,21 +1396,38 @@ void overlayConvexPolygons_test()
     randConvexPolygon ( poly2 );
     poly2 -= centerPlg ( poly2 );
     poly2 *= 1 / sqrt ( area ( poly2 ) );
-drawPolygon ( poly1, 0, 0, 1 );
+//drawPolygon ( poly1, 0, 0, 1 );
 drawPolygon ( poly2, 0, 1, 1 );
 double t0 = timeInSec ();
     Def<LinTran2d> conf = overlayConvexPolygonsNM ( poly1, poly2 );
 double t1 = timeInSec ();
     Suite<Vector2d> tmp;
+    double a1=0, a2=0;
     if ( conf.isDef )
     {
         tmp = poly1;
         tmp *= conf;
+        Suite< Suite<Vector2d> > res;
+        intersectPolygons ( tmp, poly2, res );
+        for ( nat i = 0; i < res.size(); ++i )
+            a1 += area ( res[i] );
 drawPolygon ( tmp, 1, 1, 0 );
-display << t1-t0 << NL;
-return;
     }
-    display << "no" << NL;
+double t2 = timeInSec ();
+    Def<LinTran2d> conf2 = overlayConvexPolygonsNM1 ( poly1, poly2 );
+double t3 = timeInSec ();
+    if ( conf2.isDef )
+    {
+        tmp = poly1;
+        tmp *= conf2;
+        Suite< Suite<Vector2d> > res;
+        intersectPolygons ( tmp, poly2, res );
+        for ( nat i = 0; i < res.size(); ++i )
+            a2 += area ( res[i] );
+drawPolygon ( tmp, 1, 0, 0 );
+    }
+display << t1-t0 << t3-t2 << NL;
+display << a1 << a2 << NL;
 }
 
 double maxPointsConvexPolygon ( Def<Conform2d> & conf, CCArrRef<Vector2d> & point, CCArrRef<Vector2d> & vert )

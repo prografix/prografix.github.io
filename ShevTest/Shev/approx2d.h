@@ -180,6 +180,8 @@ Def<Affin2d> overlayPointsOnConvexPolygon ( CCArrRef<Vector2d> & point, CCArrRef
 //************************ 12.06.2026 *******************************//
 
 Def<LinTran2d> overlayConvexPolygonsNM ( CCArrRef<Vector2d> & poly1, CCArrRef<Vector2d> & poly2 );
+Def<LinTran2d> overlayConvexPolygonsNM1 ( CCArrRef<Vector2d> & poly1, CCArrRef<Vector2d> & poly2 );
+Def<LinTran2d> overlayConvexPolygonsNM2 ( CCArrRef<Vector2d> & poly1, CCArrRef<Vector2d> & poly2 );
 
 
 //************************ 13.07.2005 *******************************//
