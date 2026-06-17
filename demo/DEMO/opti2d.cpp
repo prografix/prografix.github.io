@@ -704,7 +704,7 @@ Def<Ellipse2d> minEllipseAroundPointsA ( CArrRef<Vector2d> point )
     case 0:
         return res;
     }
-    nat i, im = 0;;
+    nat i, im = 0;
     CmbArray<nat, 5> support, support2;
     support.resize ( 3 );
 // Находим первую опорную точку

@@ -29,7 +29,7 @@ public:
 
     Def<Matrix2> operator ~ () const
     {
-        SLU2<T, Set2<T>> slu;
+        SLU2<T, Set2<T> > slu;
         slu.base() = *this;
         slu.ac.a = 1; slu.bc.a = 0;
         slu.ac.b = 0; slu.bc.b = 1;
@@ -57,6 +57,53 @@ template <class T> Matrix2<T> operator * ( const Matrix2<T> & l, const Matrix2<T
 }
 
 
+//************************ 13.02.2026 *************************//
+//
+//          Симметричная квадратная матрица 2-го порядка 
+//
+//************************ 13.02.2026 *************************//
+
+template <class T> class SymMatrix2
+{
+public:
+    T aa, ab, bb;
+
+    SymMatrix2 & set ( const T & v )
+    {
+        aa = ab = bb = v;
+        return *this;
+    }
+
+    Def<SymMatrix2> operator ~ () const
+    {
+        SymSLU2<T, Set2<T> > slu;
+        slu.base() = *this;
+        slu.ac.a = 1; slu.bc.a = 0;
+        slu.ac.b = 0; slu.bc.b = 1;
+        Def<SymMatrix2> m;
+        Set2<T> sa, sb; 
+        if ( ! slu.gauss ( sa, sb ) ) return m;
+        m.isDef = true;
+        m.aa = sa.a; m.ab = sa.b;
+        m.bb = sb.b;
+        return m;
+    }
+
+    T determinant() const
+    {
+        return aa * bb - ab * ab;
+    }
+};
+
+template <class T> Matrix2<T> operator * ( const SymMatrix2<T> & l, const SymMatrix2<T> & r )
+{
+    Matrix2<T> m;
+    m.aa = l.aa * r.aa + l.ab * r.ab; m.ab = l.aa * r.ab + l.ab * r.bb;
+    m.ba = l.ab * r.aa + l.bb * r.ab; m.bb = l.ab * r.ab + l.bb * r.bb;
+    return m;
+}
+
+
 //*************************************************************//
 //
 //              Квадратная матрица 3-го порядка 
@@ -80,7 +127,7 @@ public:
 
     Def<Matrix3> operator ~ () const
     {
-        SLU3<T, Set3<T>> slu;
+        SLU3<T, Set3<T> > slu;
         slu.base() = *this;
         slu.ad.a = 1; slu.ad.b = 0; slu.ad.c = 0;
         slu.bd.a = 0; slu.bd.b = 1; slu.bd.c = 0;
@@ -136,7 +183,7 @@ public:
 
     Def<SymMatrix3> operator ~ () const
     {
-        SymSLU3<T, Set3<T>> slu;
+        SymSLU3<T, Set3<T> > slu;
         slu.base() = *this;
         slu.ad.a = 1; slu.ad.b = 0; slu.ad.c = 0;
         slu.bd.a = 0; slu.bd.b = 1; slu.bd.c = 0;
@@ -192,6 +239,25 @@ public:
         return *this;
     }
 
+    Def<Matrix4> operator ~ () const
+    {
+        SLU4<T, Set4<T> > slu;
+        slu.base() = *this;
+        slu.ae.a = 1; slu.ae.b = 0; slu.ae.c = 0; slu.ae.d = 0;
+        slu.be.a = 0; slu.be.b = 1; slu.be.c = 0; slu.be.d = 0;
+        slu.ce.a = 0; slu.ce.b = 0; slu.ce.c = 1; slu.ce.d = 0;
+        slu.de.a = 0; slu.de.b = 0; slu.de.c = 0; slu.de.d = 1;
+        Def<Matrix4> m;
+        Set4<T> sa, sb, sc, sd; 
+        if ( ! slu.gauss ( sa, sb, sc, sd ) ) return m;
+        m.isDef = true;
+        m.aa = sa.a; m.ab = sa.b; m.ac = sa.c; m.ad = sa.d;
+        m.ba = sb.a; m.bb = sb.b; m.bc = sb.c; m.bd = sb.d;
+        m.ca = sc.a; m.cb = sc.b; m.cc = sc.c; m.cd = sc.d;
+        m.da = sd.a; m.db = sd.b; m.dc = sd.c; m.dd = sd.d;
+        return m;
+    }
+
     T determinant() const
     {
         Matrix3<T> m;
@@ -244,6 +310,20 @@ public:
     }
 };
 
+template <class T> Matrix4<T> operator * ( const Matrix4<T> & l, const Matrix4<T> & r )
+{
+    Matrix4<T> m;
+    m.aa = l.aa * r.aa + l.ab * r.ba + l.ac * r.ca + l.ad * r.da; m.ab = l.aa * r.ab + l.ab * r.bb + l.ac * r.cb + l.ad * r.db; 
+    m.ac = l.aa * r.ac + l.ab * r.bc + l.ac * r.cc + l.ad * r.dc; m.ad = l.aa * r.ad + l.ab * r.bd + l.ac * r.cd + l.ad * r.dd;
+    m.ba = l.ba * r.aa + l.bb * r.ba + l.bc * r.ca + l.bd * r.da; m.bb = l.ba * r.ab + l.bb * r.bb + l.bc * r.cb + l.bd * r.db;
+    m.bc = l.ba * r.ac + l.bb * r.bc + l.bc * r.cc + l.bd * r.dc; m.bd = l.ba * r.ad + l.bb * r.bd + l.bc * r.cd + l.bd * r.dd;
+    m.ca = l.ca * r.aa + l.cb * r.ba + l.cc * r.ca + l.cd * r.da; m.cb = l.ca * r.ab + l.cb * r.bb + l.cc * r.cb + l.cd * r.db;
+    m.cc = l.ca * r.ac + l.cb * r.bc + l.cc * r.cc + l.cd * r.dc; m.cd = l.ca * r.ad + l.cb * r.bd + l.cc * r.cd + l.cd * r.dd;
+    m.da = l.da * r.aa + l.db * r.ba + l.dc * r.ca + l.dd * r.da; m.db = l.da * r.ab + l.db * r.bb + l.dc * r.cb + l.dd * r.db;
+    m.dc = l.da * r.ac + l.db * r.bc + l.dc * r.cc + l.dd * r.dc; m.dd = l.da * r.ad + l.db * r.bd + l.dc * r.cd + l.dd * r.dd;
+    return m;
+}
+
 //************************ 20.11.2002 *************************//
 //
 // Решение систем линейных уравнений 2-го порядка методом Гаусса
@@ -251,12 +331,13 @@ public:
 //
 //************************ 10.04.2015 *************************//
 
-template <class T1, class T2 = T1> class SLU2 : public Derived<Matrix2<T1>>
+template <class T1, class T2 = T1> class SLU2 : public Derived<Matrix2<T1> >
 {
 public:
     T2 ac, bc;
-
-// Решение системы линейных уравнений 2-го порядка методом Гаусса
+    
+// aa * x + ab * y = ac
+// ba * x + bb * y = bc
     bool gauss ( T2 & x, T2 & y ) const
     {
         T2 v1, v2;
@@ -302,6 +383,66 @@ public:
     }
 };
 
+//************************ 13.02.2026 *************************//
+//
+// Решение систем линейных уравнений 2-го порядка методом Гаусса
+//         Выбор ведущего элемента по столбцам
+//                Симметричная матрица
+//
+//************************ 13.02.2026 *************************//
+
+template <class T1, class T2 = T1> class SymSLU2 : public Derived<SymMatrix2<T1> >
+{
+public:
+    T2 ac, bc;
+    
+// aa * x + ab * y = ac
+// ab * x + bb * y = bc
+    bool gauss ( T2 & x, T2 & y ) const
+    {
+        T2 v1, v2;
+        const double ma = qmod ( aa );
+        const double mb = qmod ( ab );
+        if ( ma >= mb )
+        {
+            if ( ! ma ) return false;
+            const T1 c = ab / aa;
+            const T1 b = bb - c * ab;
+            if ( ! b ) return false;
+            ( v1 = ac ) /= aa;
+            ( v2 = v1 ) *= ab;
+            ( ( y = bc ) -= v2 ) /= b;
+            ( v2 = y ) *= c;
+        }
+        else
+        {
+            const T1 c = bb / ab;
+            const T1 a = ab - c * aa;
+            if ( ! a ) return false;
+            ( v1 = bc ) /= ab;
+            ( v2 = v1 ) *= aa;
+            ( ( y = ac ) -= v2 ) /= a;
+            ( v2 = y ) *= c;
+        }
+        ( x = v1 ) -= v2;
+        return true;
+    }
+
+    SymSLU2 & fill ( const T1 & v1, const T2 & v2 )
+    {
+        set ( v1 );
+        ac = bc = v2;
+        return *this;
+    }
+
+    SymSLU2 & operator += ( const SymSLU2 & slu )
+    {
+        aa += slu.aa; ab += slu.ab; ac += slu.ac;
+                      bb += slu.bb; bc += slu.bc;
+        return *this;
+    }
+};
+
 //************************ 20.11.2002 *************************//
 //
 // Решение систем линейных уравнений 3-го порядка методом Гаусса
@@ -309,12 +450,11 @@ public:
 //
 //************************ 24.04.2019 *************************//
 
-template <class T1, class T2 = T1> class SLU3 : public Derived<Matrix3<T1>>
+template <class T1, class T2 = T1> class SLU3 : public Derived<Matrix3<T1> >
 {
 public:
     T2 ad, bd, cd;
 
-// Решение системы линейных уравнений 3-го порядка методом Гаусса
 // aa * x + ab * y + ac * z = ad
 // ba * x + bb * y + bc * z = bd
 // ca * x + cb * y + cc * z = cd
@@ -375,20 +515,11 @@ public:
 //
 //************************ 21.08.2023 *************************//
 
-template <class T1, class T2 = T1> class SymSLU3 : public Derived<SymMatrix3<T1>>
+template <class T1, class T2 = T1> class SymSLU3 : public Derived<SymMatrix3<T1> >
 {
 public:
     T2 ad, bd, cd;
 
-    SymSLU3 & operator += ( const SymSLU3 & slu )
-    {
-        aa += slu.aa; ab += slu.ab; ac += slu.ac; ad += slu.ad;
-        bb += slu.bb; bc += slu.bc; bd += slu.bd;
-        cc += slu.cc; cd += slu.cd;
-        return *this;
-    }
-
-// Решение системы линейных уравнений 3-го порядка методом Гаусса
 // aa * x + ab * y + ac * z = ad
 // ab * x + bb * y + bc * z = bd
 // ac * x + bc * y + cc * z = cd
@@ -439,6 +570,14 @@ public:
         ad = bd = cd = v2;
         return *this;
     }
+
+    SymSLU3 & operator += ( const SymSLU3 & slu )
+    {
+        aa += slu.aa; ab += slu.ab; ac += slu.ac; ad += slu.ad;
+        bb += slu.bb; bc += slu.bc; bd += slu.bd;
+        cc += slu.cc; cd += slu.cd;
+        return *this;
+    }
 };
 
 //************************ 12.05.2012 *************************//
@@ -448,12 +587,11 @@ public:
 //
 //************************ 24.04.2019 *************************//
 
-template <class T1, class T2 = T1> class SLU4 : public Matrix4<T1>
+template <class T1, class T2 = T1> class SLU4 : public Derived<Matrix4<T1> >
 {
 public:
     T2 ae, be, ce, de;
 
-// Решение системы линейных уравнений 4-го порядка методом Гаусса
 // aa * xa + ab * xb + ac * xc + ad * xd = ae
 // ba * xa + bb * xb + bc * xc + bd * xd = be
 // ca * xa + cb * xb + cc * xc + cd * xd = ce

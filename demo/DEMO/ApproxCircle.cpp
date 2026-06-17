@@ -9,6 +9,7 @@
 #include "ShevArray.h"
 #include "Vector2d.h"
 #include "approx2d.h"
+#include "moment2d.h"
 #include "func2d.h"
 #include "rand.h"
 #include "draw.h"
@@ -65,6 +66,10 @@ public:
         }
         polygon2.resize ( 9 );
         randConvexPolygon ( polygon2 );
+        polygon1 -= centerPlg ( polygon1 );
+        polygon2 -= centerPlg ( polygon2 );
+        polygon1 *= 1 / sqrt ( area ( polygon1 ) );
+        polygon2 *= 1 / sqrt ( area ( polygon2 ) );
     }
     void picture ( nat type )
     {
@@ -137,14 +142,21 @@ public:
                 draw ( getRectanglePlg ( polygon1 ), 1, 1, 0 );
             }
             break;
-        case 6: // аппроксимация многоугольника прямоугольником
+        case 6: // наложение многоугольников 1
             {
                 drawPolygon ( polygon1, 0, 1, 1 );
                 Def<Conform2d> conf = overlayConvexPolygons ( polygon2, polygon1 );
                 drawPolygon ( DynArray<Vector2d> ( polygon2 ) *= conf, 1, 1, 0 );
             }
             break;
-        case 7: // сплайн
+        case 7: // наложение многоугольников 2
+            {
+                drawPolygon ( polygon1, 0, 1, 1 );
+                Def<LinTran2d> conf = overlayConvexPolygonsNM ( polygon2, polygon1 );
+                drawPolygon ( DynArray<Vector2d> ( polygon2 ) *= conf, 1, 1, 0 );
+            }
+            break;
+        case 8: // сплайн
             {
                 nat i;
                 DynArray<Vector2d> norm ( polygon1.size() );

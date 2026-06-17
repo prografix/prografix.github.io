@@ -283,8 +283,16 @@ namespace
         const double b = ( xx - yy ) * 0.5;
         const double d = sqrt ( xy * xy + b * b );
         mom.maxM = a * 0.5 + d;
-        mom.maxA.x = - xy;
-        mom.maxA.y = b - d;
+        if ( b > 0 )
+        {
+            mom.maxA.x = b + d;
+            mom.maxA.y = xy;
+        }
+        else
+        {
+            mom.maxA.x = - xy;
+            mom.maxA.y = b - d;
+        }
         const double q = mom.maxA * mom.maxA;
         if ( q == 0 )
         {
@@ -301,7 +309,7 @@ namespace
     }
 } // namespace
 
-Def<Mom2d> momentum2pnt ( CArrRef<Vector2d> point )
+Def<Mom2d> momentum2pnt ( CCArrRef<Vector2d> & point )
 {
     const Def<Vector2d> o = centerPnt ( point );
     if ( ! o.isDef ) return Def<Mom2d>();
@@ -316,7 +324,7 @@ Def<Mom2d> momentum2pnt ( CArrRef<Vector2d> point )
     return solve ( xx, xy, yy, o );
 }
 
-Def<Mom2d> momentum2pnt ( CArrRef<Vector2d> point, CArrRef<double> mass )
+Def<Mom2d> momentum2pnt ( CCArrRef<Vector2d> & point, CCArrRef<double> & mass )
 {
     const Def<Vector2d> o = centerPnt ( point, mass );
     if ( ! o.isDef ) return Def<Mom2d>();
@@ -331,7 +339,7 @@ Def<Mom2d> momentum2pnt ( CArrRef<Vector2d> point, CArrRef<double> mass )
     return solve ( xx, xy, yy, o );
 }
 
-Def<Mom2d> momentum2sgm ( CArrRef<Segment2d> segm )
+Def<Mom2d> momentum2sgm ( CCArrRef<Segment2d> & segm )
 {
     const Def<Vector2d> o = centerSgm ( segm );
     if ( ! o.isDef ) return Def<Mom2d>();
@@ -349,8 +357,10 @@ Def<Mom2d> momentum2sgm ( CArrRef<Segment2d> segm )
     return solve ( xx / 3, xy / 6, yy / 3, o );
 }
 
-Mom2d momentum2plg ( CArrRef<Vector2d> vert, const Vector2d & o )
+Def<Mom2d> momentum2plg ( CCArrRef<Vector2d> & vert, const Vector2d & o )
 {
+    if ( ! vert.size() )
+        return Def<Mom2d>();
     Vector2d a = vert.las() - o;
     double xx = 0., xy = 0., yy = 0.;
     for ( nat i = 0; i < vert.size(); ++i )
@@ -365,7 +375,7 @@ Mom2d momentum2plg ( CArrRef<Vector2d> vert, const Vector2d & o )
     return solve ( xx / 12, xy / 24, yy / 12, o );
 }
 
-Def<Mom2d> momentum2plg ( CArrRef<Vector2d> vert )
+Def<Mom2d> momentum2plg ( CCArrRef<Vector2d> & vert )
 {
     const Def<Vector2d> o = centerPlg ( vert );
     return o.isDef ? momentum2plg ( vert, o ) : Def<Mom2d>();

@@ -1067,6 +1067,375 @@ Def<Affin2d> overlayPointsOnConvexPolygon ( CCArrRef<Vector2d> & point, CCArrRef
     return res;
 }
 
+//************************ 12.06.2026 *******************************//
+//
+//         Совмещение двух выпуклых многоугольников при помощи
+//          преобразования сохраняющего площадь без смещения
+//
+//************************ 12.06.2026 *******************************//
+
+Def<LinTran2d> overlayConvexPolygonsNM ( CCArrRef<Vector2d> & poly1, CCArrRef<Vector2d> & poly2 )
+{
+    Def<LinTran2d> res;
+    const nat n1 = poly1.size();
+    const nat n2 = poly2.size();
+    if ( n1 < 3 || n2 < 3 ) return res;
+// Получение границ многоугольника в виде прямых линий
+    DynArray<Line2d> line1 ( n1 );
+    if ( ! points2lines ( poly1, line1 ) ) return res;
+    DynArray<Line2d> line2 ( n2 );
+    if ( ! points2lines ( poly2, line2 ) ) return res;
+// Инициализация области допустимых преобразований
+    List< Vertex<5> > stor;
+    WireModel<5> model;
+    model.simplex ( 4*(5+1), stor );
+    Double<5> dn;
+    dn.fill ( 2 );
+    model.vlist -= dn;
+// Поиск оптимального преобразования
+    for ( nat i = 0; i < 1000; ++i )
+    {
+// Поиск максимального решения
+        Double<5> best;
+        best.d4 = -1e9;
+        Show< Vertex<5> > show ( model.vlist );
+        if ( show.top() )
+        do
+        {
+            const Vertex<5> * p = show.cur();
+            const Double<5> & pc = p->coor;
+            const double c = pc.d0 * pc.d3 - pc.d1 * pc.d2 - 1;
+            for ( nat k = 0; k < 5; ++k )
+            {
+                const Vertex<5> * v = p->vertex[k];
+                if ( v < p ) continue;
+                const Double<5> & vc = v->coor;
+                const double a0 = vc.d0 - pc.d0;
+                const double a1 = vc.d1 - pc.d1;
+                const double a2 = vc.d2 - pc.d2;
+                const double a3 = vc.d3 - pc.d3;
+                const double a = a0 * a3 - a1 * a2;
+                const double b = a0 * pc.d3 + a3 * pc.d0 - a1 * pc.d2 - a2 * pc.d1;
+                double r[2];
+                const nat n = root2 ( a, b, c, r );
+                for ( nat j = 0; j < n; ++j )
+                {
+                    const double t = r[j];
+                    if ( t >= 0 && t <= 1 )
+                    {
+                        const double h = pc.d4 + t * ( vc.d4 - pc.d4 );
+                        if ( best.d4 < h )
+                        {
+                            best.d4 = h;
+                            best.d0 = pc.d0 + t * a0;
+                            best.d1 = pc.d1 + t * a1;
+                            best.d2 = pc.d2 + t * a2;
+                            best.d3 = pc.d3 + t * a3;
+                        }
+                    }
+                }
+            }
+        }
+        while ( show.next() );
+// Поиск максимального нарушения ограничений для выбранного решения
+        nat km = n2;
+        Vector2d pm;
+        double max = 0.;
+        bool is1 = true;
+        for ( nat j = 0; j < n1; ++j )
+        {
+            const Vector2d & p = poly1[j];
+            const Vector2d p1 ( best.d0*p.x + best.d1*p.y,
+                                best.d2*p.x + best.d3*p.y );
+            for ( nat k = 0; k < n2; ++k )
+            {
+                const double t = line2[k] % p1;
+                if ( km == n2 || max < t ) max = t, pm = p, km = k;
+            }
+        }
+        for ( nat j = 0; j < n2; ++j )
+        {
+            const Vector2d & p = poly2[j];
+            const Vector2d p1 ( best.d3*p.x - best.d1*p.y,
+                                best.d0*p.y - best.d2*p.x );
+            for ( nat k = 0; k < n1; ++k )
+            {
+                const double t = line1[k] % p1;
+                if ( max < t ) max = t, pm = p, km = k, is1 = false;
+            }
+        }
+        max += best.d4;
+// Если нарушение мало, то завершение программы
+        if ( max < 1e-5 )
+        {
+            const LinTran2d at ( Vector2d ( best.d0, best.d1 ), 
+                                 Vector2d ( best.d2, best.d3 ) );
+            return at;
+        }
+// Применение ограничения к области допустимых преобразований
+        Double<6> plane;
+        if ( is1 )
+        {
+            const double nx = line2[km].norm.x;
+            const double ny = line2[km].norm.y;
+            plane.d0 = nx * pm.x;
+            plane.d1 = nx * pm.y;
+            plane.d2 = ny * pm.x;
+            plane.d3 = ny * pm.y;
+            plane.d4 = 1;
+            plane.d5 = line2[km].dist;
+        }
+        else
+        {
+            const double nx = line1[km].norm.x;
+            const double ny = line1[km].norm.y;
+            plane.d0 = ny * pm.y;
+            plane.d1 = nx * -pm.y;
+            plane.d2 = ny * -pm.x;
+            plane.d3 = nx * pm.x;
+            plane.d4 = 1;
+            plane.d5 = line1[km].dist;
+        }
+        model.cut ( plane, stor );
+    }
+    return res;
+}
+
+Def<LinTran2d> overlayConvexPolygonsNM1 ( CCArrRef<Vector2d> & poly1, CCArrRef<Vector2d> & poly2 )
+{
+    Def<LinTran2d> res;
+    const nat n1 = poly1.size();
+    const nat n2 = poly2.size();
+    if ( n1 < 3 || n2 < 3 ) return res;
+// Получение границ многоугольника в виде прямых линий
+    DynArray<Line2d> line1 ( n1 );
+    if ( ! points2lines ( poly1, line1 ) ) return res;
+    DynArray<Line2d> line2 ( n2 );
+    if ( ! points2lines ( poly2, line2 ) ) return res;
+// Инициализация области допустимых преобразований
+    List< Vertex<5> > stor;
+    WireModel<5> model;
+    model.simplex ( 4*(5+1), stor );
+    Double<5> dn;
+    dn.fill ( 2 );
+    model.vlist -= dn;
+// Поиск оптимального преобразования
+    for ( nat i = 0; i < 1000; ++i )
+    {
+// Поиск максимального решения
+        Double<5> best;
+        best.d4 = -1e9;
+        Show< Vertex<5> > show ( model.vlist );
+        if ( show.top() )
+        do
+        {
+            const Vertex<5> * p = show.cur();
+            const Double<5> & pc = p->coor;
+            const double c = pc.d0 * pc.d3 - pc.d1 * pc.d2 - 1;
+            for ( nat k = 0; k < 5; ++k )
+            {
+                const Vertex<5> * v = p->vertex[k];
+                if ( v < p ) continue;
+                const Double<5> & vc = v->coor;
+                const double a0 = vc.d0 - pc.d0;
+                const double a1 = vc.d1 - pc.d1;
+                const double a2 = vc.d2 - pc.d2;
+                const double a3 = vc.d3 - pc.d3;
+                const double a = a0 * a3 - a1 * a2;
+                const double b = a0 * pc.d3 + a3 * pc.d0 - a1 * pc.d2 - a2 * pc.d1;
+                double r[2];
+                const nat n = root2 ( a, b, c, r );
+                for ( nat j = 0; j < n; ++j )
+                {
+                    const double t = r[j];
+                    if ( t >= 0 && t <= 1 )
+                    {
+                        const double h = pc.d4 + t * ( vc.d4 - pc.d4 );
+                        if ( best.d4 < h )
+                        {
+                            best.d4 = h;
+                            best.d0 = pc.d0 + t * a0;
+                            best.d1 = pc.d1 + t * a1;
+                            best.d2 = pc.d2 + t * a2;
+                            best.d3 = pc.d3 + t * a3;
+                        }
+                    }
+                }
+            }
+        }
+        while ( show.next() );
+// Поиск максимального нарушения ограничений для выбранного решения
+        nat km = n2;
+        Vector2d pm;
+        double max = 0.;
+        for ( nat j = 0; j < n1; ++j )
+        {
+            const Vector2d & p = poly1[j];
+            const Vector2d p1 ( best.d0*p.x + best.d1*p.y,
+                                best.d2*p.x + best.d3*p.y );
+            for ( nat k = 0; k < n2; ++k )
+            {
+                const double t = line2[k] % p1;
+                if ( km == n2 || max < t ) max = t, pm = p, km = k;
+            }
+        }
+        max += best.d4;
+// Если нарушение мало, то завершение программы
+        if ( max < 1e-5 )
+        {
+            const LinTran2d at ( Vector2d ( best.d0, best.d1 ), 
+                                 Vector2d ( best.d2, best.d3 ) );
+            return at;
+        }
+// Применение ограничения к области допустимых преобразований
+        Double<6> plane;
+        const double nx = line2[km].norm.x;
+        const double ny = line2[km].norm.y;
+        plane.d0 = nx * pm.x;
+        plane.d1 = nx * pm.y;
+        plane.d2 = ny * pm.x;
+        plane.d3 = ny * pm.y;
+        plane.d4 = 1;
+        plane.d5 = line2[km].dist;
+        model.cut ( plane, stor );
+    }
+    return res;
+}
+
+Def<LinTran2d> overlayConvexPolygonsNM2 ( CCArrRef<Vector2d> & poly1, CCArrRef<Vector2d> & poly2 )
+{
+    Def<LinTran2d> res;
+    const nat n1 = poly1.size();
+    const nat n2 = poly2.size();
+    if ( n1 < 3 || n2 < 3 ) return res;
+// Получение границ многоугольника в виде прямых линий
+    DynArray<Line2d> line1 ( n1 );
+    if ( ! points2lines ( poly1, line1 ) ) return res;
+    DynArray<Line2d> line2 ( n2 );
+    if ( ! points2lines ( poly2, line2 ) ) return res;
+// Инициализация области допустимых преобразований
+    List< Vertex<6> > stor;
+    WireModel<6> model;
+    model.simplex ( 4*(6+1), stor );
+    Double<6> dn;
+    dn.fill ( 2 );
+    model.vlist -= dn;
+// Поиск оптимального преобразования
+    for ( nat i = 0; i < 1000; ++i )
+    {
+// Поиск максимального решения
+        Double<6> best;
+        best.d4 = best.d5 = -1e9;
+        Show< Vertex<6> > show ( model.vlist );
+        if ( show.top() )
+        do
+        {
+            const Vertex<6> * p = show.cur();
+            const Double<6> & pc = p->coor;
+            const double c = pc.d0 * pc.d3 - pc.d1 * pc.d2 - 1;
+            for ( nat k = 0; k < 6; ++k )
+            {
+                const Vertex<6> * v = p->vertex[k];
+                if ( v < p ) continue;
+                const Double<6> & vc = v->coor;
+                const double a0 = vc.d0 - pc.d0;
+                const double a1 = vc.d1 - pc.d1;
+                const double a2 = vc.d2 - pc.d2;
+                const double a3 = vc.d3 - pc.d3;
+                const double a = a0 * a3 - a1 * a2;
+                const double b = a0 * pc.d3 + a3 * pc.d0 - a1 * pc.d2 - a2 * pc.d1;
+                double r[2];
+                const nat n = root2 ( a, b, c, r );
+                for ( nat j = 0; j < n; ++j )
+                {
+                    const double t = r[j];
+                    if ( t >= 0 && t <= 1 )
+                    {
+                        const double h1 = pc.d4 + t * ( vc.d4 - pc.d4 );
+                        const double h2 = pc.d5 + t * ( vc.d5 - pc.d5 );
+                        if ( best.d4 + best.d5 < h1 + h2 )
+                        {
+                            best.d4 = h1;
+                            best.d5 = h2;
+                            best.d0 = pc.d0 + t * a0;
+                            best.d1 = pc.d1 + t * a1;
+                            best.d2 = pc.d2 + t * a2;
+                            best.d3 = pc.d3 + t * a3;
+                        }
+                    }
+                }
+            }
+        }
+        while ( show.next() );
+// Поиск максимального нарушения ограничений для выбранного решения
+        nat k1 = n2;
+        Vector2d pm1;
+        double max1 = 0.;
+        for ( nat j = 0; j < n1; ++j )
+        {
+            const Vector2d & p = poly1[j];
+            const Vector2d p1 ( best.d0*p.x + best.d1*p.y,
+                                best.d2*p.x + best.d3*p.y );
+            for ( nat k = 0; k < n2; ++k )
+            {
+                const double t = line2[k] % p1;
+                if ( k1 == n2 || max1 < t ) max1 = t, pm1 = p, k1 = k;
+            }
+        }
+        max1 += best.d4;
+        nat k2 = n1;
+        Vector2d pm2;
+        double max2 = 0.;
+        for ( nat j = 0; j < n2; ++j )
+        {
+            const Vector2d & p = poly2[j];
+            const Vector2d p1 ( best.d3*p.x - best.d1*p.y,
+                                best.d0*p.y - best.d2*p.x );
+            for ( nat k = 0; k < n1; ++k )
+            {
+                const double t = line1[k] % p1;
+                if ( k2 == n1 || max2 < t ) max2 = t, pm2 = p, k2 = k;
+            }
+        }
+        max2 += best.d5;
+// Если нарушение мало, то завершение программы
+        if ( max1 < 1e-5 && max2 < 1e-5 )
+        {
+            const LinTran2d at ( Vector2d ( best.d0, best.d1 ), 
+                                 Vector2d ( best.d2, best.d3 ) );
+            return at;
+        }
+// Применение ограничения к области допустимых преобразований
+        Double<7> plane;
+        if ( max1 > max2 )
+        {
+            const double nx = line2[k1].norm.x;
+            const double ny = line2[k1].norm.y;
+            plane.d0 = nx * pm1.x;
+            plane.d1 = nx * pm1.y;
+            plane.d2 = ny * pm1.x;
+            plane.d3 = ny * pm1.y;
+            plane.d4 = 1;
+            plane.d5 = 0;
+            plane.d6 = line2[k1].dist;
+        }
+        else
+        {
+            const double nx = line1[k2].norm.x;
+            const double ny = line1[k2].norm.y;
+            plane.d0 = ny * pm2.y;
+            plane.d1 = nx * -pm2.y;
+            plane.d2 = ny * -pm2.x;
+            plane.d3 = nx * pm2.x;
+            plane.d4 = 0;
+            plane.d5 = 1;
+            plane.d6 = line1[k2].dist;
+        }
+        model.cut ( plane, stor );
+    }
+    return res;
+}
+
 //************************* 13.07.2005 ******************************//
 //
 //      Вычисление ближайшей точки к заданным прямым
