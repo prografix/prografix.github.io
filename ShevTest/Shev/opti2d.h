@@ -70,12 +70,12 @@ Def<Triangle2d> minTriangleAroundPointsA        ( CCArrRef<Vector2d> & inner );
 //
 //**************************** 14.03.2010 *********************************//
 
-Def<Rectangle2d> minRectangleAroundConvexPolygonA ( CArrRef<Vector2d> inner );
-Def<Rectangle2d> minRectangleAroundConvexPolygonP ( CArrRef<Vector2d> inner );
-Def<Rectangle2d> minRectangleAroundPolygonA ( CArrRef<Vector2d> inner );
-Def<Rectangle2d> minRectangleAroundPolygonP ( CArrRef<Vector2d> inner );
-Def<Rectangle2d> minRectangleAroundPointsA ( CArrRef<Vector2d> inner );
-Def<Rectangle2d> minRectangleAroundPointsP ( CArrRef<Vector2d> inner );
+Def<Rectangle2d> minRectangleAroundConvexPolygonA ( CCArrRef<Vector2d> & inner );
+Def<Rectangle2d> minRectangleAroundConvexPolygonP ( CCArrRef<Vector2d> & inner );
+Def<Rectangle2d> minRectangleAroundPolygonA ( CCArrRef<Vector2d> & inner );
+Def<Rectangle2d> minRectangleAroundPolygonP ( CCArrRef<Vector2d> & inner );
+Def<Rectangle2d> minRectangleAroundPointsA ( CCArrRef<Vector2d> & inner );
+Def<Rectangle2d> minRectangleAroundPointsP ( CCArrRef<Vector2d> & inner );
 
 
 //**************************** 17.10.2015 *********************************//
@@ -85,8 +85,8 @@ Def<Rectangle2d> minRectangleAroundPointsP ( CArrRef<Vector2d> inner );
 //
 //**************************** 17.10.2015 *********************************//
 
-Def<Rhombus2d> minRhombusAroundPointsA ( CArrRef<Vector2d> inner );
-Def<Rhombus2d> minRhombusAroundPointsP ( CArrRef<Vector2d> inner );
+Def<Rhombus2d> minRhombusAroundPointsA ( CCArrRef<Vector2d> & inner );
+Def<Rhombus2d> minRhombusAroundPointsP ( CCArrRef<Vector2d> & inner );
 
 
 //**************************** 23.05.2009 *********************************//
