@@ -2756,6 +2756,7 @@ struct MatrElemStor : public IMatrElemStor
 
 bool sluGaussRowT ( SparseMatrix2 & matr, double * b, double * x )
 {
+double t0 = timeInSec();
     const nat n = matr.n;
     nat * num = matr.count();
     MatrElem2 ** row = matr.row;
@@ -2773,8 +2774,10 @@ bool sluGaussRowT ( SparseMatrix2 & matr, double * b, double * x )
     DynArray<MatrElem2 *> buf ( n+n, 0 );
     MatrElem2 ** row2 = buf();
     MatrElem2 ** col2 = buf(n);
+double t1 = timeInSec(), time1=0, time2=0;
     for ( k = 0; k < n; ++k )
     {//matr.test();
+//double t0 = timeInSec();
         HeapNode si;
         heap >> si;
         const nat ir = si.tail - index(); // номер строки матрицы
@@ -2814,8 +2817,9 @@ bool sluGaussRowT ( SparseMatrix2 & matr, double * b, double * x )
             e = e->nextCol;
         }
         b[ir] *= p;
-if ( matr.test() )
-return false;
+//if ( matr.test() )
+//return false;
+double t0 = timeInSec();
 // Вычитание строк
         MatrElem2 * c = col[em->col]; // столбец, где находится ведущий элемент
         while ( c )
@@ -2825,29 +2829,36 @@ return false;
             b[jr] -= v * b[ir]; // изменение свободных членов
             MatrElem2 * ei = rk; // элемент ведущей строки
             MatrElem2 * ej = row[jr];
+            bool empty = true;
             while ( ei )
             {
- m1:            if ( ! ej )
+ m1:            if ( ej->col < ei->col )
                 {
-                    do
+                    if ( ej->nextCol )
                     {
-                        
-                        ei = ei->nextCol;
+                        ej = ej->nextCol;
+                        goto m1;
                     }
-                    while ( ei );
-                    break;
-                }
-                if ( ej->col < ei->col )
-                {
-                    ej = ej->nextCol;
-                    goto m1;
+                    else
+                    {
+                        empty = false;
+                        break;
+                    }
                 }
                 else
                 if ( ej->col == ei->col )
                 {
                     ej->value -= v * ei->value;
-                    ej = ej->nextCol;
                     ei = ei->nextCol;
+                    if ( ej->nextCol )
+                    {
+                        ej = ej->nextCol;
+                    }
+                    else
+                    {
+                        if ( ei ) empty = false;
+                        break;
+                    }
                 }
                 else
                 {
@@ -2870,6 +2881,26 @@ return false;
                     ei = ei->nextCol;
                 }
             }
+            if ( ! empty )
+            {
+                do // записывем новые элементы в конец строки
+                {
+                    MatrElem2 * t = matr.stor.get();
+                    t->row = jr;
+                    t->col = ei->col;
+                    t->value = - v * ei->value;
+                    t->nextCol = 0;
+                    t->prevCol = ej;
+                    t->nextRow = col[t->col];
+                    t->prevRow = 0;
+                    ej = ej->nextCol = t;
+                    col[t->col] = t; // запишем новый элемент в начало списка
+                    if ( t->nextRow ) t->nextRow->prevRow = t;
+                    ++num[jr];
+                    ei = ei->nextCol;
+                }
+                while ( ei );
+            }
             const nat nr2 = matr.count[jr];
             nat & nr1 = heap[index[jr]]->head;
             if ( nr1 != nr2 )
@@ -2887,10 +2918,15 @@ return false;
             }
             c = c->nextRow;
         }
-if ( matr.test() )
-return false;
+double t1 = timeInSec();
+//if ( matr.test() )
+//return false;
         matr.delCol ( em->col );
+double t2 = timeInSec();
+time1 += t1-t0;
+time2 += t2-t1;
     }
+double t2 = timeInSec();
 // Обратная подстановка
     for ( nat j = n; --j > 0; )
     {
@@ -2907,6 +2943,9 @@ return false;
         while ( c );
     }
     x[row2[0]->col] = b[row2[0]->row];
+double t3 = timeInSec();
+//display << t1-t0 << t2-t1 << t3-t2 << NL;
+display << time1 << time2 << NL;
     return true;
 }
 
@@ -2914,11 +2953,12 @@ void sluGaussRowT_test1()
 {
     static PNormalRand rand;
 //    static PRand rand;
-    const nat n = 5, m = 2;
+    const nat n = 9999, m = 12;
     double c[n], x[n], b[n];
     for ( nat i = 0; i < n; ++i ) c[i] = rand();
     MatrElemStor stor;
     SparseMatrix2 matr ( n, stor );
+    nat k = 0;
     for ( nat i = 0; i < n; ++i )
     {
         b[i] = 0;
@@ -2927,7 +2967,9 @@ void sluGaussRowT_test1()
             if ( j + m < i || i + m < j ) continue;
             double t = i == j ? 1 : rand();
             matr.add ( i, j, t );
+//display << i << j << t << NL;
             b[i] += t * c[j];
+            ++k;
         }
     }
     matr.test();
@@ -2941,10 +2983,52 @@ double t1 = timeInSec();
             _maxa ( max, fabs ( x[i] - c[i] ) );
 //display << x[i] << c[i] << NL;
         }
-        display << max << t1-t0 << NL;
+        display << double(n*n)/k << max << t1-t0 << NL;
     }
     else
         display << "no" << NL;
+}
+
+void sluGaussRowT_test2()
+{
+    static PNormalRand rand;
+//    static PRand rand;
+    for ( nat n = 10; n < 1000; ++n )
+    {
+    const nat m = 3;
+    DynArray<double> c(n), x(n), b(n);
+    for ( nat i = 0; i < n; ++i ) c[i] = rand();
+    MatrElemStor stor;
+    SparseMatrix2 matr ( n, stor );
+    nat k = 0;
+    for ( nat i = 0; i < n; ++i )
+    {
+        b[i] = 0;
+        for ( nat j = n; j-- > 0; )
+        {
+            if ( j + m < i || i + m < j ) continue;
+            double t = i == j ? 1 : rand();
+            matr.add ( i, j, t );
+//display << i << j << t << NL;
+            b[i] += t * c[j];
+            ++k;
+        }
+    }
+double t0 = timeInSec();
+    if ( sluGaussRowT ( matr, b(), x() ) )
+    {
+double t1 = timeInSec();
+        double max = 0;
+        for ( nat i = 0; i < n; ++i )
+        {
+            _maxa ( max, fabs ( x[i] - c[i] ) );
+//display << x[i] << c[i] << NL;
+        }
+        display << double(n*n)/k << max << t1-t0 << n << NL;
+    }
+    else
+        display << "no" << NL;
+    }
 }
 
 void sluGaussRowT_test1b()
@@ -3092,7 +3176,7 @@ void sluGaussRowT_test2b()
     }
 }
 
-void sluGaussRowT_test2()
+void sluGaussRowT_test2c()
 {
     static PNormalRand rand;
 //    static PRand rand;
