@@ -885,6 +885,246 @@ if ( ii == rj.size() )
     return true;
 }
 
+typedef SortItem<nat, nat *> HeapNode;
+
+inline void tnn_swap ( HeapNode & p1, HeapNode & p2 )
+{
+    _swap ( p1, p2 );
+    _swap ( *p1.tail, *p2.tail );
+}
+
+SparseMatrix2L::~SparseMatrix2L()
+{
+    for ( nat i = 0; i < n; ++i )
+    {
+        MatrElem2L * t = row[i];
+        while ( t )
+        {
+            MatrElem2L * p = t->nextCol;
+            stor.put ( t );
+            t = p;
+        }
+    }
+}
+
+void SparseMatrix2L::add ( nat ir, nat ic, double value )
+{
+    MatrElem2L * e = stor.get();
+    e->row = ir;
+    e->col = ic;
+    e->value = value;
+    e->prevCol = 0;
+    e->nextCol = row[ir];
+    e->prevRow = 0;
+    e->nextRow = col[ic];
+    row[ir] = col[ic] = e;
+    if ( e->nextCol ) e->nextCol->prevCol = e;
+    if ( e->nextRow ) e->nextRow->prevRow = e;
+    ++count[ir];
+}
+
+void SparseMatrix2L::delCol ( nat i )
+{
+    MatrElem2L * t = col[i];
+    while ( t )
+    {
+        MatrElem2L * e = t;
+        t = e->nextRow;
+        if ( e->nextCol )
+            e->nextCol->prevCol = e->prevCol;
+        if ( e->prevCol )
+            e->prevCol->nextCol = e->nextCol;
+        else
+            row[e->row] = e->nextCol;
+        
+        if ( e->nextRow )
+            e->nextRow->prevRow = e->prevRow;
+        if ( e->prevRow )
+            e->prevRow->nextRow = e->nextRow;
+
+        --count[e->row];
+        stor.put ( e );
+    }
+    col[i] = 0;
+}
+
+bool sluGaussRow2L ( SparseMatrix2L & matr, double * b, double * x )
+{
+    const nat n = matr.n;
+    nat * num = matr.count();
+    MatrElem2L ** row = matr.row;
+    MatrElem2L ** col = matr.col;
+    nat k;
+    DynArray<nat> index ( n );
+    MinHeap<HeapNode, tnn_swap> heap ( n );
+    for ( k = 0; k < n; ++k )
+    {
+        index[k] = k;
+        heap << HeapNode ( num[k], index(k) );
+    }
+// Прямой ход
+    DynArray<MatrElem2L *> buf ( n+n, 0 );
+    MatrElem2L ** row2 = buf();
+    MatrElem2L ** col2 = buf(n);
+    for ( k = 0; k < n; ++k )
+    {
+        HeapNode si;
+        heap >> si;
+        const nat ir = si.tail - index(); // номер строки матрицы
+// Поиск максимального по модулю элемента в строке
+        MatrElem2L * rk = row[ir];
+        MatrElem2L * e = rk;
+        MatrElem2L * em = e;
+        double max = 0;
+        while ( e )
+        {
+            if ( _maxa ( max, fabs ( e->value ) ) ) em = e;
+            e = e->nextCol;
+        }
+        if ( ! max )
+            return false;
+        row2[k] = em;
+// Нормализация строки
+        const double p = 1. / em->value;
+        e = rk;
+        while ( e )
+        {
+            e->value *= p;
+// Убираем элемент из списка столбцов исходной матрицы
+            if (  e->prevRow )
+                 e->prevRow->nextRow = e->nextRow;
+            else
+                col[e->col] = e->nextRow;
+            if (  e->nextRow )
+                 e->nextRow->prevRow = e->prevRow;
+// Добавляем элемент в список столбцов второй матрицы
+            MatrElem2L * c = col2[e->col];
+            e->prevRow = 0;
+            if ( e->nextRow = c )
+                 c->prevRow = e;
+            col2[e->col] = e;
+            e = e->nextCol;
+        }
+        b[ir] *= p;
+// Вычитание строк
+        MatrElem2L * c = col[em->col]; // столбец, где находится ведущий элемент
+        while ( c )
+        {
+            const nat jr = c->row; // номер строки, из которой вычитается ведущая строка
+            const double v = c->value; // значение элемента jr строки и em->col столбца
+            b[jr] -= v * b[ir]; // изменение свободных членов
+            MatrElem2L * ei = rk; // элемент ведущей строки
+            MatrElem2L * ej = row[jr];
+            bool empty = true;
+            while ( ei )
+            {
+ m1:            if ( ej->col < ei->col )
+                {
+                    if ( ej->nextCol )
+                    {
+                        ej = ej->nextCol;
+                        goto m1;
+                    }
+                    else
+                    {
+                        empty = false;
+                        break;
+                    }
+                }
+                else
+                if ( ej->col == ei->col )
+                {
+                    ej->value -= v * ei->value;
+                    ei = ei->nextCol;
+                    if ( ej->nextCol )
+                    {
+                        ej = ej->nextCol;
+                    }
+                    else
+                    {
+                        if ( ei ) empty = false;
+                        break;
+                    }
+                }
+                else
+                {
+                    MatrElem2L * t = matr.stor.get();
+                    t->row = jr;
+                    t->col = ei->col;
+                    t->value = - v * ei->value;
+                    t->nextCol = ej;
+                    t->prevCol = ej->prevCol;
+                    t->nextRow = col[t->col];
+                    t->prevRow = 0;
+                    if ( t->prevCol )
+                        t->prevCol->nextCol = t;
+                    else
+                        row[jr] = t;
+                    t->nextCol->prevCol = t;
+                    col[t->col] = t; // запишем новый элемент в начало списка
+                    if ( t->nextRow ) t->nextRow->prevRow = t;
+                    ++num[jr];
+                    ei = ei->nextCol;
+                }
+            }
+            if ( ! empty )
+            {
+                do // записывем новые элементы в конец строки
+                {
+                    MatrElem2L * t = matr.stor.get();
+                    t->row = jr;
+                    t->col = ei->col;
+                    t->value = - v * ei->value;
+                    t->nextCol = 0;
+                    t->prevCol = ej;
+                    t->nextRow = col[t->col];
+                    t->prevRow = 0;
+                    ej = ej->nextCol = t;
+                    col[t->col] = t; // запишем новый элемент в начало списка
+                    if ( t->nextRow ) t->nextRow->prevRow = t;
+                    ++num[jr];
+                    ei = ei->nextCol;
+                }
+                while ( ei );
+            }
+            const nat nr2 = matr.count[jr];
+            nat & nr1 = heap[index[jr]]->head;
+            if ( nr1 != nr2 )
+            {
+                if ( nr1 > nr2 )
+                {
+                    nr1 = nr2;
+                    heap.raise(index[jr]);
+                }
+                else
+                {
+                    nr1 = nr2;
+                    heap.down(index[jr]);
+                }
+            }
+            c = c->nextRow;
+        }
+        matr.delCol ( em->col );
+    }
+// Обратная подстановка
+    for ( nat j = n; --j > 0; )
+    {
+        MatrElem2L * e = row2[j];
+        const nat ic = e->col;
+        const double t = x[ic] = b[e->row];
+        MatrElem2L * c = col2[ic];
+        do
+        {
+            b[c->row] -= t * c->value;
+            // Переходим к следующему элементу столбца
+            c = c->nextRow;
+        }
+        while ( c );
+    }
+    x[row2[0]->col] = b[row2[0]->row];
+    return true;
+}
+
 //*********************************************************************//
 //
 //      Решение систем линейных уравнений методом
