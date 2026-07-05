@@ -48,7 +48,7 @@ public:
         {
             const nat j = i >> 1;
             if ( heap[j] >= heap[i] ) break;
-            _swap ( heap[i], heap[j] );
+            swap_func ( heap[i], heap[j] );
             i = j;
         }
     }
@@ -62,7 +62,7 @@ public:
             const nat i2 = i1 + 1;
             const nat j = i2 > _size ? i1 : heap[i1] >= heap[i2] ? i1 : i2;
             if ( heap[i] >= heap[j] ) break;
-            _swap ( heap[i], heap[j] );
+            swap_func ( heap[i], heap[j] );
             i = j;
         }
     }
@@ -72,7 +72,7 @@ public:
         if ( i >= _size ) return false;
         const nat i1 = i + 1;
         if ( i1 == _size ) { _size--; return true; }
-        _swap ( heap[i1], heap[_size] );
+        swap_func ( heap[i1], heap[_size] );
         if ( heap[i1] < heap[_size--] )
             down ( i );
         else
@@ -91,7 +91,7 @@ public:
     {
         if ( _size == 0 ) return false;
         o = heap[1];
-        _swap ( heap[1], heap[_size--] );
+        swap_func ( heap[1], heap[_size--] );
         down ( 0 );
         return true;
     }
