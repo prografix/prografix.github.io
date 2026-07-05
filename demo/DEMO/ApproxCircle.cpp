@@ -142,21 +142,30 @@ public:
                 draw ( getRectanglePlg ( polygon1 ), 1, 1, 0 );
             }
             break;
-        case 6: // наложение многоугольников 1
+        case 6: // наложение многоугольников Conform2d
             {
                 drawPolygon ( polygon1, 0, 1, 1 );
                 Def<Conform2d> conf = overlayConvexPolygons ( polygon2, polygon1 );
                 drawPolygon ( DynArray<Vector2d> ( polygon2 ) *= conf, 1, 1, 0 );
             }
             break;
-        case 7: // наложение многоугольников 2
+        case 7: // наложение многоугольников LinTran2d
             {
                 drawPolygon ( polygon1, 0, 1, 1 );
                 Def<LinTran2d> conf = overlayConvexPolygonsNM ( polygon2, polygon1 );
                 drawPolygon ( DynArray<Vector2d> ( polygon2 ) *= conf, 1, 1, 0 );
             }
             break;
-        case 8: // сплайн
+        case 8: // наложение многоугольников Affin2d
+            {
+                drawPolygon ( polygon1, 0, 1, 1 );
+                DynArray<Line2d> line1 ( polygon1.size() );
+                points2lines ( polygon1, line1 );
+                Def<Affin2d> conf = overlayPointsOnConvexPolygon ( polygon2, line1 );
+                drawPolygon ( DynArray<Vector2d> ( polygon2 ) *= conf, 1, 1, 0 );
+            }
+            break;
+        case 9: // сплайн
             {
                 nat i;
                 DynArray<Vector2d> norm ( polygon1.size() );
