@@ -82,12 +82,12 @@ struct Mom2d
     Vector2d o; // центр масс
 };
 
-Def<Mom2d> momentum2pnt ( CArrRef<Vector2d> point );
-Def<Mom2d> momentum2pnt ( CArrRef<Vector2d> point, CArrRef<double> mass );
-Def<Mom2d> momentum2sgm ( CArrRef<Segment2d> segm );
-Def<Mom2d> momentum2plg ( CArrRef<Vector2d> vert );
+Def<Mom2d> momentum2pnt ( CCArrRef<Vector2d> & point );
+Def<Mom2d> momentum2pnt ( CCArrRef<Vector2d> & point, CCArrRef<double> & mass );
+Def<Mom2d> momentum2sgm ( CCArrRef<Segment2d> & segm );
+Def<Mom2d> momentum2plg ( CCArrRef<Vector2d> & vert );
 
-Mom2d momentum2plg ( CArrRef<Vector2d> vert, const Vector2d & o );
+Def<Mom2d> momentum2plg ( CCArrRef<Vector2d> & vert, const Vector2d & o );
 
 
 //**************************** 25.09.2009 *********************************//

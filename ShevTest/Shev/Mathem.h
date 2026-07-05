@@ -129,6 +129,52 @@ bool slu_gauss ( ArrRef2<double> & data, const nat nc, ArrRef<nat> & col );
 bool sluGaussRow ( nat n, Suite<SortItem<nat, double> > * a, double * b, double * x );
 
 
+//*************************** 29.06.2026 ******************************//
+//
+//      Решение систем линейных уравнений методом Гаусса
+//      для разреженной матрицы. Выбор ведущего элемента по строкам.
+//      Двусвязанные списки элементов по строкам и столбцам.
+//
+//*************************** 29.06.2026 ******************************//
+
+struct MatrElem2L
+{
+    nat row, col; 
+    double value;
+    MatrElem2L * prevCol, * nextCol;
+    MatrElem2L * prevRow, * nextRow;
+};
+
+struct IMatrElem2LStor
+{
+    virtual MatrElem2L * get() = 0;
+    virtual void put ( MatrElem2L * ) = 0;
+};
+
+struct SparseMatrix2L
+{
+    IMatrElem2LStor & stor;
+    DynArray<MatrElem2L *> buf;
+    DynArray<nat> count;
+    MatrElem2L ** row, ** col;
+    nat n;
+
+    SparseMatrix2L ( nat nn, IMatrElem2LStor & s ) : n(nn), buf(nn+nn, 0), count(nn, 0), stor(s)
+    {
+        row = buf();
+        col = buf(n);
+    }
+
+    ~SparseMatrix2L();
+
+    void add ( nat ir, nat ic, double value );
+
+    void delCol ( nat i );
+};
+
+bool sluGaussRow2L ( SparseMatrix2L & matr, double * b, double * x );
+
+
 //*********************************************************************//
 //
 //      Решение систем линейных уравнений методом

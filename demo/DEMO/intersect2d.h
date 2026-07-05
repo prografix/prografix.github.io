@@ -194,9 +194,13 @@ intersect1c ( CArrRef<Vector2d> conv, CArrRef<Vector2d> poly, Suite< Suite<Vecto
 //
 //             Пересечение двух простых многоугольников
 //
-//**************************** 23.05.2012 *********************************//
+//**************************** 11.06.2026 *********************************//
 
-bool intersection ( CCArrRef<Vector2d> & poly1, CCArrRef<Vector2d> & poly2, Suite< Suite<Vector2d> > & res );
+bool intersectPolygons ( CCArrRef<Vector2d> & poly1, CCArrRef<Vector2d> & poly2, Suite< Suite<Vector2d> > & res );
+
+bool differencePolygons ( CCArrRef<Vector2d> & poly1, CCArrRef<Vector2d> & poly2, Suite< Suite<Vector2d> > & res );
+
+bool unionPolygons ( CCArrRef<Vector2d> & poly1, CCArrRef<Vector2d> & poly2, Suite< Suite<Vector2d> > & res );
 
 
 //**************************** 24.11.2023 *********************************//

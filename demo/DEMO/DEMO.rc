@@ -157,15 +157,15 @@ BEGIN
     COMBOBOX        IDC_COMBO_ROTATE,68,3,80,42,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
 END
 
-IDD_APPROX_2D DIALOG 0, 0, 156, 53
+IDD_APPROX_2D DIALOGEX 0, 0, 163, 53
 STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_VISIBLE | WS_CAPTION | WS_SYSMENU
 CAPTION "Аппроксимация на плоскости"
-FONT 8, "MS Sans Serif"
+FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
     COMBOBOX        IDC_POINTS_NUM,51,32,28,98,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "К-во точек",IDC_STATIC,11,35,36,8
-    PUSHBUTTON      "Следующий",IDC_NEXT_POINTS,91,31,50,14
-    COMBOBOX        IDC_COMBO_VAR,13,10,124,80,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
+    PUSHBUTTON      "Следующий",IDC_NEXT_POINTS,93,31,50,14
+    COMBOBOX        IDC_COMBO_VAR,13,10,135,97,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
 END
 
 IDD_MIN_2D DIALOG 0, 0, 214, 90
@@ -340,7 +340,7 @@ BEGIN
     IDD_APPROX_2D, DIALOG
     BEGIN
         LEFTMARGIN, 7
-        RIGHTMARGIN, 149
+        RIGHTMARGIN, 156
         TOPMARGIN, 7
         BOTTOMMARGIN, 46
     END
@@ -640,12 +640,14 @@ BEGIN
     IDC_COMBO_VAR, 0x403, 24, 0
 0xedec, 0xe3ee, 0xf3ee, 0xeee3, 0xfceb, 0xe8ed, 0x20ea, 0x3e2d, 0xfd20, 
 0xebeb, 0xefe8, 0x00f1, 
-    IDC_COMBO_VAR, 0x403, 31, 0
-0xedec, 0xe3ee, 0xf3ee, 0xeee3, 0xfceb, 0xe8ed, 0x20ea, 0x3e2d, 0xef20, 
-0xfff0, 0xeeec, 0xe3f3, 0xebee, 0xedfc, 0xeae8, "\000" 
-    IDC_COMBO_VAR, 0x403, 31, 0
-0xedec, 0xe3ee, 0xf3ee, 0xeee3, 0xfceb, 0xe8ed, 0x20ea, 0x3e2d, 0xec20, 
-0xeeed, 0xeee3, 0xe3f3, 0xebee, 0xedfc, 0xeae8, "\000" 
+    IDC_COMBO_VAR, 0x403, 32, 0
+0xedec, 0xe3ee, 0xf3ee, 0xeee3, 0xfceb, 0xe8ed, 0xe8ea, 0x2d20, 0x203e, 
+0xf0ef, 0xecff, 0xf3ee, 0xeee3, 0xfceb, 0xe8ed, 0x00ea, 
+    IDC_COMBO_VAR, 0x403, 15, 0
+0xedec, 0xe3ee, 0xf3ee, 0xeee3, 0xfceb, 0xe8ed, 0xe8ea, "\000" 
+    IDC_COMBO_VAR, 0x403, 26, 0
+0xedec, 0xe3ee, 0xf3ee, 0xeee3, 0xfceb, 0xe8ed, 0xe8ea, 0xe120, 0xe7e5, 
+0xf120, 0xe2e4, 0xe3e8, 0x00e0, 
     IDC_COMBO_VAR, 0x403, 7, 0
 0xeff1, 0xe0eb, 0xede9, "\000" 
     0
@@ -946,6 +948,11 @@ BEGIN
     0
 END
 
+IDD_APPROX_2D AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
 #endif    // Русский (Россия) resources
 /////////////////////////////////////////////////////////////////////////////
 
@@ -967,7 +974,7 @@ STYLE DS_SETFONT | DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "About DEMO"
 FONT 8, "MS Sans Serif", 0, 0, 0x0
 BEGIN
-    LTEXT           "DEMO version 62",IDC_STATIC,49,10,60,8,SS_NOPREFIX
+    LTEXT           "DEMO version 63",IDC_STATIC,49,10,60,8,SS_NOPREFIX
     LTEXT           "prografix.github.io",IDC_STATIC,49,25,55,8
     DEFPUSHBUTTON   "OK",IDOK,51,42,50,14,WS_GROUP
 END
@@ -1017,6 +1024,17 @@ BEGIN
     END
 END
 #endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// AFX_DIALOG_LAYOUT
+//
+
+IDD_ABOUTBOX AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
 
 
 /////////////////////////////////////////////////////////////////////////////
@@ -1114,8 +1132,8 @@ END
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 62,0,0,0
- PRODUCTVERSION 62,0,0,1
+ FILEVERSION 63,0,0,0
+ PRODUCTVERSION 63,0,0,1
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
  FILEFLAGS 0x1L
@@ -1131,12 +1149,12 @@ BEGIN
         BLOCK "040904b0"
         BEGIN
             VALUE "FileDescription", "DEMO MFC Application"
-            VALUE "FileVersion", "62.0.0.0"
+            VALUE "FileVersion", "63.0.0.0"
             VALUE "InternalName", "DEMO"
             VALUE "LegalCopyright", "prografix.github.io"
             VALUE "OriginalFilename", "DEMO.EXE"
             VALUE "ProductName", "DEMO Application"
-            VALUE "ProductVersion", "62.0.0.1"
+            VALUE "ProductVersion", "63.0.0.1"
         END
     END
     BLOCK "VarFileInfo"
@@ -1184,17 +1202,6 @@ BEGIN
     BUTTON      ID_RESET
     SEPARATOR
     BUTTON      ID_APP_ABOUT
-END
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// AFX_DIALOG_LAYOUT
-//
-
-IDD_ABOUTBOX AFX_DIALOG_LAYOUT
-BEGIN
-    0
 END
 
 

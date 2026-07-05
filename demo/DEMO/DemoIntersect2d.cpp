@@ -225,7 +225,7 @@ public:
                     drawPolygon ( poly1, 1, 0, 0 );
                     drawPolygon ( poly2, 1, 1, 0 );
                     Suite< Suite<Vector2d> > res; 
-                    intersection ( poly2, poly1, res );
+                    intersectPolygons ( poly2, poly1, res );
                     for ( nat i = 0; i < res.size(); ++i )
                     {
                         drawPolygon ( res[i], 0, 1, 1 );

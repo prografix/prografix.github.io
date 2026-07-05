@@ -53,6 +53,12 @@ Def&lt;Conform2d> overlayConvexPolygons ( CCArrRef&lt;Vector2d> & vert1, CCArrRe
 Def&lt;LinTran2d> overlayConvexPolygonsNM ( CCArrRef&lt;Vector2d> & vert1, CCArrRef&lt;Vector2d> & vert2 );
 </pre>
 <p>
+&bull; Совмещение группы точек с выпуклым многоугольником при помощи преобразования сохраняющего площадь:
+</p>
+<pre>
+Def&lt;Affin2d> overlayPointsOnConvexPolygon ( CCArrRef&lt;Vector2d> & point, CCArrRef&lt;Line2d> & line );
+</pre>
+<p>
 В приложении <a href="demo/demo.html">DEMO</a> можно посмотреть примеры использования этих функций.
 </p>
 <p>Описание классов Circle2d, Ellipse2d и Rectangle2d находится <a href="figure2d.html">здесь</a>.

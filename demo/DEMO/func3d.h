@@ -221,3 +221,12 @@ bool normalizePolyhedronV1 ( ArrRef<Set2<DynArray<nat>, Plane3d> > & facet, ArrR
 //********************** 08.04.2024 ***************************//
 
 bool normalizePolyhedronV2 ( ArrRef<Set2<DynArray<nat>, Plane3d> > & facet, ArrRef<Vector3d> & vertex );
+
+
+//********************** 10.02.2026 ***************************//
+//
+//      Ћокальна€ нормализаци€ многогранника ( верси€ 1 )
+//
+//********************** 10.02.2026 ***************************//
+
+double normalizePolyhedronLocV1 ( ArrRef<Set2<DynArray<nat>, Plane3d> > & facet, ArrRef<Vector3d> & vertex, double lvl );

@@ -726,7 +726,7 @@ Def<Vector3d> Polyhedron::centerOfMass () const
         {
             const Vector3d & v2 = vertex[f.index[j-1]];
             const Vector3d & v3 = vertex[f.index[j]];
-            const double p = ( v1 % v2 * v3 ) / 6.;
+            const double p = v1 % v2 * v3;
             c += ( v1 + v2 + v3 ) * p;
             m += p;
         }
@@ -1046,4 +1046,41 @@ bool normalizeV2 ( Polyhedron & poly )
     }
     vertex.swap ( poly.vertex );
     return true;
+}
+
+//********************** 10.02.2026 ***************************//
+//
+//      Локальная нормализация многогранника ( версия 1 )
+//         Минимизация суммы квадратов сдвигов вершин
+//
+//********************** 10.02.2026 ***************************//
+
+bool normalizeLocV1 ( Polyhedron & poly )
+{
+    nat i;
+    DynArray<Vector3d> vertex ( * poly.vertex );
+    const nat nf = poly.facet.size();
+    DynArray<Set2<DynArray<nat>, Plane3d> > facet ( nf );
+    for ( i = 0; i < nf; ++i )
+    {
+        const Facet & f = poly.facet[i];
+        if ( f.nv < 3 ) continue;
+        Set2<DynArray<nat>, Plane3d> & s = facet[i];
+        s.b = f.plane;
+        s.a.resize ( f.nv );
+        for ( nat j = 0; j < f.nv; ++j ) s.a[j] = f.index[j];
+    }
+    double getMaxDif ( CCArrRef<Set2<DynArray<nat>, Plane3d> > & facet, CCArrRef<Vector3d> & vertex );
+    const double dif1 = getMaxDif ( facet, vertex );
+    const double dif2 = normalizePolyhedronLocV1 ( facet, vertex, 0 );
+    if ( dif1 > dif2 )
+    {
+        for ( i = 0; i < nf; ++i )
+        {
+            poly.facet[i].plane = facet[i].b;
+        }
+        vertex.swap ( poly.vertex );
+        return true;
+    }
+    return false;
 }

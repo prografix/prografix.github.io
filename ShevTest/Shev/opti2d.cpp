@@ -1097,7 +1097,7 @@ void minRectangleAroundConvexPolygon ( CCArrRef<Vector2d> & inner, const MathFun
     y2 = ay * inner[gmax2];
 }
 
-Def<Rectangle2d> minRectangleAroundConvexPolygon ( CArrRef<Vector2d> inner, const MathFunc2 & func )
+Def<Rectangle2d> minRectangleAroundConvexPolygon ( CCArrRef<Vector2d> & inner, const MathFunc2 & func )
 {
     Def<Rectangle2d> res;
     if ( inner.size() == 0 ) return res;
@@ -1114,36 +1114,36 @@ Def<Rectangle2d> minRectangleAroundConvexPolygon ( CArrRef<Vector2d> inner, cons
 
 // Выпуклый многоугольник
 
-Def<Rectangle2d> minRectangleAroundConvexPolygonA ( CArrRef<Vector2d> inner )
+Def<Rectangle2d> minRectangleAroundConvexPolygonA ( CCArrRef<Vector2d> & inner )
 {
     return minRectangleAroundConvexPolygon ( inner, MathMul() );
 }
 
-Def<Rectangle2d> minRectangleAroundConvexPolygonP ( CArrRef<Vector2d> inner )
+Def<Rectangle2d> minRectangleAroundConvexPolygonP ( CCArrRef<Vector2d> & inner )
 {
     return minRectangleAroundConvexPolygon ( inner, MathAdd() );
 }
 
 // Простой многоугольник
 
-Def<Rectangle2d> minRectangleAroundPolygonA ( CArrRef<Vector2d> inner )
+Def<Rectangle2d> minRectangleAroundPolygonA ( CCArrRef<Vector2d> & inner )
 {
     return minRectangleAroundConvexPolygonA ( convexPolygon ( inner, Suite<Vector2d> ( inner.size() ) ) );
 }
 
-Def<Rectangle2d> minRectangleAroundPolygonP ( CArrRef<Vector2d> inner )
+Def<Rectangle2d> minRectangleAroundPolygonP ( CCArrRef<Vector2d> & inner )
 {
     return minRectangleAroundConvexPolygonP ( convexPolygon ( inner, Suite<Vector2d> ( inner.size() ) ) );
 }
 
 // Множество точек
 
-Def<Rectangle2d> minRectangleAroundPointsA ( CArrRef<Vector2d> inner )
+Def<Rectangle2d> minRectangleAroundPointsA ( CCArrRef<Vector2d> & inner )
 {
     return minRectangleAroundConvexPolygonA ( convexNlogN ( inner, Suite<Vector2d> ( inner.size() ) ) );
 }
 
-Def<Rectangle2d> minRectangleAroundPointsP ( CArrRef<Vector2d> inner )
+Def<Rectangle2d> minRectangleAroundPointsP ( CCArrRef<Vector2d> & inner )
 {
     return minRectangleAroundConvexPolygonP ( convexNlogN ( inner, Suite<Vector2d> ( inner.size() ) ) );
 }
@@ -1177,7 +1177,7 @@ protected:
     CArrRef<Vector2d> inner;
 public:
 
-    explicit MinRhombusAroundPoints ( CArrRef<Vector2d> p ) : inner(p), min(1e300)
+    explicit MinRhombusAroundPoints ( CCArrRef<Vector2d> & p ) : inner(p), min(1e300)
     {
         vect[0].x = 1;
         vect[1].x = vect[3].x = 0;
@@ -1212,7 +1212,7 @@ class MinRhombusAroundPointsA : public MinRhombusAroundPoints
 {
 public:
 
-    explicit MinRhombusAroundPointsA ( CArrRef<Vector2d> p ) : MinRhombusAroundPoints ( p ) {}
+    explicit MinRhombusAroundPointsA ( CCArrRef<Vector2d> & p ) : MinRhombusAroundPoints ( p ) {}
     virtual double operator () ( double y ) const
     {
         vect[1].y =  y;
@@ -1225,7 +1225,7 @@ public:
     }
 };
 
-Def<Rhombus2d> minRhombusAroundPointsA ( CArrRef<Vector2d> inner )
+Def<Rhombus2d> minRhombusAroundPointsA ( CCArrRef<Vector2d> & inner )
 {
     return MinRhombusAroundPointsA ( inner ).run();
 }
@@ -1234,7 +1234,7 @@ class MinRhombusAroundPointsP : public MinRhombusAroundPoints
 {
 public:
 
-    explicit MinRhombusAroundPointsP ( CArrRef<Vector2d> p ) : MinRhombusAroundPoints ( p ) {}
+    explicit MinRhombusAroundPointsP ( CCArrRef<Vector2d> & p ) : MinRhombusAroundPoints ( p ) {}
     virtual double operator () ( double y ) const
     {
         vect[1].y =  y;
@@ -1247,7 +1247,7 @@ public:
     }
 };
 
-Def<Rhombus2d> minRhombusAroundPointsP ( CArrRef<Vector2d> inner )
+Def<Rhombus2d> minRhombusAroundPointsP ( CCArrRef<Vector2d> & inner )
 {
     return MinRhombusAroundPointsP ( inner ).run();
 }
