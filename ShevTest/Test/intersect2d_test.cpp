@@ -337,6 +337,168 @@ void intersectSegmentPolygon()
     for ( nat i = 0; i < res.size(); ++i ) draw ( res[i], 1, 0, 1 );
 }
 
+class ICutGuru
+{
+public:
+    virtual CCArrRef<nat> & getPolygon () = 0;
+    virtual CCArrRef<double> & getDist () = 0;
+    virtual bool isOrder ( nat, nat ) = 0;
+    virtual nat  newVert ( nat, nat ) = 0;
+};
+
+class CutGuru2d : public ICutGuru
+{
+    Suite<nat> ivert;
+    DynArray<double> dist;
+    Suite<Vector2d> poly;
+    const Line2d line;
+public:
+    virtual CCArrRef<nat> & getPolygon () { return ivert; }
+    virtual CCArrRef<double> & getDist () { return dist; }
+    virtual bool isOrder ( nat a, nat b )
+    {
+        return line.norm % ( poly[a] - poly[b] ) <= 0;
+    }
+    virtual nat newVert ( nat, nat ) = 0;
+
+    CutGuru2d ( CCArrRef<Vector2d> & p, const Line2d & l ) : line(l)
+    {
+        poly = p;
+        const nat n = poly.size();
+        ivert.resize();
+        dist.resize();
+        for ( nat i = 0; i < n; ++i )
+        {
+            ivert[i] = i;
+            dist[i] = line % poly[i];
+        }
+    }
+};
+
+void insertSort ( ArrRef<Set2<nat> > & a, ICutGuru & x )
+{
+    for ( nat j = 1; j < a.size(); ++j )
+    {
+        const Set2<nat> b = a[j];
+        int i = j - 1;
+        if ( x.isOrder ( a[i].b, b.b ) ) continue;
+        do
+        {
+            a[i+1] = a[i];
+            if ( --i < 0 ) break;
+        }
+        while ( x.isOrder ( b.b, a[i].b ) );
+        a[i+1] = b;
+    }
+}
+
+SuiteRef< Suite<nat> > & cutPolygon ( ICutGuru & guru, SuiteRef< Suite<nat> > & res )
+{
+    CCArrRef<nat> & poly = guru.getPolygon();
+    const nat n = poly.size();
+    if ( !n ) return res;
+    nat i;
+    const nat n2 = n / 2;
+    DynArray<Set2<nat> > arr ( n );
+    LtdSuiteRef<Set2<nat> > v1 ( arr, 0, n2 ), v2 ( arr, n2, n2 );
+    CCArrRef<double> & dist = guru.getDist();
+    for ( i = 0; i < n; ++i )
+    {
+        const nat ia = poly.cprev(i);
+        const nat ib = poly[i];
+        const double a = dist[ia];
+        const double b = dist[ib];
+        const double c = a * b;
+        if ( c > 0 ) continue;
+        if ( c < 0 )
+        {
+            Set2<nat> & si = a < 0 ? v1.inc() : v2.inc();
+            si.a = i;
+            si.b = guru.newVert ( ia, ib );
+        }
+        else
+        {
+            if ( a == 0 )
+            {
+                if ( b >= 0 || dist.cprev(i>0?i-1:n-1) < 0 ) continue;
+                Set2<nat> & si = v2.inc();
+                si.a = i;
+                si.b = ia;
+            }
+            else
+            {
+                if ( a > 0 || dist.cnext(i) < 0 ) continue;
+                Set2<nat> & si = v1.inc();
+                si.a = i;
+                si.b = ib;
+            }
+        }
+    }
+    const nat m = v1.size();
+// Нет пересечения с гиперплоскостью
+    if ( m == 0 )
+    {
+        for ( i = 0; i < n; ++i )
+        {
+            const double d = dist[poly[i]];
+            if ( d != 0 )
+            {
+                if ( d < 0 ) res.inc() = poly;
+                break;
+            }
+        }
+        return res;
+    }
+// Пересечение с гиперплоскостью - это один отрезок
+    if ( m == 1 )
+    {
+        Suite<nat> & s = res.inc();
+        s.resize();
+        s.inc() = v2[0].b;
+        for ( i = v2[0].a;; )
+        {
+            if ( poly[i] != s.las() ) s.inc() = poly[i];
+            if ( ++i == n ) i = 0;
+            if ( i == v1[0].a ) break;
+        }
+        const nat v = v1[0].b;
+        if ( s[0] != v && s.las() != v ) s.inc() = v;
+        if ( s.size() < 3 ) res.dec();
+        return res;
+    }
+// Пересечение с гиперплоскостью - это несколько отрезков
+    insertSort ( v1, guru );
+    insertSort ( v2, guru );
+    for ( nat j = 0; j < m; ++j )
+    {
+        if ( s2[j].tail == m ) continue;
+        Suite<nat> & s = res.inc();
+        s.resize();
+        for ( nat k = j;; )
+        {
+            const nat c = s2[k].tail;
+            s2[k].tail = m;
+            const nat i1 = v1[c].a;
+            s.inc() = v2[c].b;
+            for ( i = v2[c].a;; )
+            {
+                if ( poly[i] != s.las() ) s.inc() = poly[i];
+                if ( ++i == n ) i = 0;
+                if ( i == i1 ) break;
+            }
+            const nat v = v1[c].b;
+            if ( s.las() != v && s[0] != v ) s.inc() = v;
+            for ( k = j; k < m; ++k )
+            {
+                if ( s1[k].tail == c ) break;
+            }
+            if ( k == j ) break;
+        }
+        if ( s.size() < 3 ) res.dec();
+    }
+    return res;
+}
+
 void cutLinePolygon()
 {
     FixArray<Vector2d, 10> vert;
