@@ -226,7 +226,7 @@ void tree_test();
 
 void CMainFrame::OnTest() 
 {
-//    intersect3d_test();
+//    intersect2d_test();
 //    momentum2d_test();
 //    polyhedron_test();
 //    S2D_Model_test();
@@ -238,14 +238,14 @@ void CMainFrame::OnTest()
 //    complex_test();
 //    trian2d_test();
 //    func3d_test();
-    opti2d_test();
+//    opti2d_test();
 //    matrix_test();
 //    linalg_test();
 //    recon_test();
 //    array_test();
 //    calc_test();
 //    file_test();
-//    math_test();
+    math_test();
 //    rand_test();
 //    tree_test();
 //    filePYH_test();
