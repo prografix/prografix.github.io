@@ -3845,15 +3845,29 @@ bool maxPolyhedronInConvexPolyhedron2 ( const Polyhedron & inner, const Polyhedr
             1; c.xyX;  c.zxX;
         c.xyX;    -1; -c.xtX;
         c.zxX; c.xtX;     -1;
+        
+           -1; c.xyY;  c.ytY;
+        c.xyY;     1;  c.yzY;
+       -c.ytY; c.yzY;     -1;
+        
+           -1;-c.ztZ;  c.zxZ;
+        c.ztZ;    -1;  c.yzZ;
+        c.zxZ; c.yzZ;      1;
 
         lt.x.x = tt + xx - yy - zz; lt.x.y = xy - zt;           lt.x.z = zx + yt;
         lt.y.x = xy + zt;           lt.y.y = tt + yy - zz - xx; lt.y.z = yz - xt;
         lt.z.x = zx - yt;           lt.z.y = yz + xt;           lt.z.z = tt + zz - xx - yy;
         */
-        cor.d0 = nxx + nyy + nzz + c.xtT * ( nzy - nyz ) + c.ytT * ( nxz - nzx ) + c.ztT * ( nyx - nxy );
-        cor.d1 = nxx - nyy - nzz + c.xyX * ( nxy + nyx ) + c.zxX * ( nxz + nzx ) + c.xtX * ( nzy - nyz );
-        cor.d2 = nyy - nzz - nxx;
-        cor.d3 = nzz - nxx - nyy;
+        const double xyp = nyx + nxy;
+        const double xym = nyx - nxy;
+        const double yzp = nyz + nyz;
+        const double yzm = nyz - nyz;
+        const double zxp = nzx + nzx;
+        const double zxm = nzx - nzx;
+        cor.d0 = nxx + nyy + nzz + c.ztT * xym + c.xtT * yzm + c.ytT * zxm;
+        cor.d1 = nxx - nyy - nzz + c.xyX * xyp + c.xtX * yzm + c.zxX * zxp;
+        cor.d2 = nyy - nzz - nxx + c.xyY * xyp + c.yzY * yzp + c.ytY * zxm;
+        cor.d3 = nzz - nxx - nyy + c.ztZ * xym + c.yzZ * yzp + c.zxZ * zxp;
 //double t = cor * best + plane[km].dist; t -= max;
         if ( ! cutSimplex ( arr, D4(), cor, max ) )
             return false;
