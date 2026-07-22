@@ -195,7 +195,16 @@ Def<Vector3d> getNearPointR ( CCArrRef<Plane3d> & plane, ArrRef<double> & mass )
 //
 //************************ 13.09.2010 *******************************//
 
-Def<Vector3d> getNearPoint2 ( CArrRef<Line3d> line );
+Def<Vector3d> getNearPoint2 ( CCArrRef<Line3d> & line );
+
+
+//************************* 21.07.2026 ******************************//
+//
+//    Робастный метод вычисления ближайшей точки к заданным прямым
+//
+//************************* 21.07.2026 ******************************//
+
+Def<Vector3d> getNearPointR ( CCArrRef<Line3d> & line, DynArrRef<Plane3d> & plane, DynArrRef<double> & mass );
 
 
 //************************ 10.03.2012 *******************************//
@@ -205,4 +214,4 @@ Def<Vector3d> getNearPoint2 ( CArrRef<Line3d> line );
 //
 //************************ 10.03.2012 *******************************//
 
-Def<Vector3d> getNearPointU ( CArrRef<Line3d> line );
+Def<Vector3d> getNearPointU ( CCArrRef<Line3d> & line );

@@ -2,16 +2,16 @@
 <head><title>Вычисление ближайшей точки к заданным прямым в пространстве</title>
 <link rel="stylesheet" type="text/css" href="stylle.css"></head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
-<div align="center"><center>
-<table width="800" cellspacing="0" cellpadding="0">
-<div align=center><br>
+<div align="center"><br>
 <font color="" style="font-size: 20pt">Вычисление ближайшей точки к заданным прямым в пространстве</font>
-</div>
-<br><div align=left><td>
+<table width="900" cellspacing="0" cellpadding="0"><tr><td><br>
 <p>
+<p>Пусть задано множество прямых в пространстве и надо найти точку наиболее близкую к ним.
+В качестве критерия близости будем рассматривать некоторую <a href=normv.html>норму вектора</a> расстояний от точки до прямых.
+В этом случае нужно найти точку, которая минимизирует выбранную норму.
+<br><br>
 Если считать критерием близости сумму квадратов расстояний от точки до каждой прямой, 
-то эта задача является задачей <a href="rus_lss.html">наименьших квадратов</a>, и 
-она может быть решена одним из описанных там методов.
+то эта задача является задачей <a href="rus_lss.html">наименьших квадратов</a>, и она может быть решена одним из описанных там методов.
 </p>
 <p>
 Квадрат расстояния от точки до прямой можно представить, как
@@ -26,19 +26,24 @@ v - координаты точки для которой определяетс
 Следующая функция вычисляет эту точку:
 </p>
 <pre>
-Def&lt;Vector3d> getNearPoint2 ( CArrRef&lt;Line3d> line );
+Def&lt;Vector3d> getNearPoint2 ( CCArrRef&lt;Line3d> & line );
 </pre>
 <p>
 Если нужно задать прямым разный вес, то для этого надо умножить поле dir на соответствующий вес.
 </p>
 <p>
-Предыдущий алгоритм минимизирует <a href="normv.html">2-норму</a> вектора расстояний от точки до прямых.
+Робастный метод аппроксимации предназначен для данных с выбросами. Для этой функции нужны временные массивы plane и mass:
+</p>
+<pre>
+Def&lt;Vector3d> getNearPointR ( CCArrRef&lt;Line3d> & line, DynArrRef&lt;Plane3d> & plane, DynArrRef&lt;double> & mass );
+</pre>
+<p>
 Если же выбрать бесконечную норму, то задача сводится к поиску <a href="minfig3d.html">минимальной сферы</a>, 
 пересекающей все данные прямые.
 Центр этой сферы будет точкой у которой максимальное расстояние до прямых будет минимальным:
 </p>
 <pre>
-Def&lt;Vector3d> getNearPointU ( CArrRef&lt;Line3d> line );
+Def&lt;Vector3d> getNearPointU ( CCArrRef&lt;Line3d> & line );
 </pre>
 <p>
 Описание класса Line3d находится <a href="figure3d.html">здесь</a>. 
@@ -51,7 +56,6 @@ Def&lt;Vector3d> getNearPointU ( CArrRef&lt;Line3d> line );
 <pre>
 
 </pre>
-</td></div>
-</table>
+</td></tr></table></div>
 </body>
 </html>

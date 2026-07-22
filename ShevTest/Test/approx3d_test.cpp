@@ -228,6 +228,9 @@ void getNearPoint_test2()
 {
     static PRandVector3d vrand;
     FixArray<Line3d, 12> line;
+    double max = 0;
+    Suite<Plane3d> plane;
+    Suite<double> mass;
     for ( nat j = 0; j < 100; ++j )
     {
         const Vector3d o = vrand();
@@ -236,9 +239,10 @@ void getNearPoint_test2()
             line[i].dir = vrand();
             line[i].point = o + 1e-5 * vrand();
         }
-        const Def<Vector3d> p = getNearPoint2 ( line );
+        const Def<Vector3d> p = getNearPointR ( line, plane, mass );
         if ( p.isDef )
         {
+            _maxa ( max, norm2 ( p - o ) );
             if ( qmod ( p - o ) > 1e-10 ) 
             {
                 display << ( p - o ) << NL;
@@ -249,7 +253,7 @@ void getNearPoint_test2()
             display << "err" << NL;
         }
     }
-    display << "end" << NL;
+    display << max << "end" << NL;
 }
 
 Def<Vector3d> getNearPoint1b ( CArrRef<Plane3d> plane, nat & ix1, nat & ix2, nat & ix3 )
@@ -1519,12 +1523,12 @@ void approx3d_test ()
     drawNewList2d();
 //    getSphere_test2();
 //    getNearPoint_test3();
-//    getNearPoint_test2();
+    getNearPoint_test2();
 //    getPlane_test();
 //    getEllipsoid_test();
 //    getCuboid_test();
 //    getNearPoint4_3_test1();
 //    getLinePoint_test1();
-    minMaxPointsConvexPolyhedron_test2();
+//    minMaxPointsConvexPolyhedron_test2();
     endNewList();
 }

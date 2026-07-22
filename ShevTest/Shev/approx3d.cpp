@@ -1496,7 +1496,7 @@ Def<Vector3d> getNearPointR ( CCArrRef<Plane3d> & plane, ArrRef<double> & mass )
 //
 //************************ 05.09.2012 *******************************//
 
-Def<Vector3d> getNearPoint2 ( CArrRef<Line3d> line )
+Def<Vector3d> getNearPoint2 ( CCArrRef<Line3d> & line )
 {
     Def<Vector3d> res;
     const nat n = line.size();
@@ -1538,6 +1538,44 @@ Def<Vector3d> getNearPoint2 ( CArrRef<Line3d> line )
     return res;
 }
 
+//************************* 21.07.2026 ******************************//
+//
+//    Робастный метод вычисления ближайшей точки к заданным прямым
+//
+//************************* 21.07.2026 ******************************//
+
+Def<Vector3d> getNearPointR ( CCArrRef<Line3d> & line, DynArrRef<Plane3d> & plane, DynArrRef<double> & mass )
+{
+    const nat n = line.size();
+    if ( n < 2 )
+        return Def<Vector3d>();
+    const nat n3 = n * 3;
+    plane.resize ( n3 );
+    mass.resize ( n3 );
+    nat j = 0;
+    for ( nat i = 0; i < n; ++i )
+    {
+        const Vector3d & d = line[i].dir;
+        const Vector3d & p = line[i].point;
+        Plane3d & p1 = plane[j++];
+        p1.norm.x = -d.y;
+        p1.norm.y =  d.x;
+        p1.norm.z =  0.;
+        p1.dist = p.x * d.y - p.y * d.x;
+        Plane3d & p2 = plane[j++];
+        p2.norm.x = -d.z;
+        p2.norm.y =  0.;
+        p2.norm.z =  d.x;
+        p2.dist = p.x * d.z - p.z * d.x;
+        Plane3d & p3 = plane[j++];
+        p3.norm.x =  0.;
+        p3.norm.y = -d.z;
+        p3.norm.z =  d.y;
+        p3.dist = p.y * d.z - p.z * d.y;
+    }
+    return getNearPointR ( plane, mass );
+}
+
 //************************ 10.03.2012 *******************************//
 //
 //      Вычисление ближайшей точки к заданным прямым
@@ -1545,7 +1583,7 @@ Def<Vector3d> getNearPoint2 ( CArrRef<Line3d> line )
 //
 //************************ 10.03.2012 *******************************//
 
-Def<Vector3d> getNearPointU ( CArrRef<Line3d> line )
+Def<Vector3d> getNearPointU ( CCArrRef<Line3d> & line )
 {
     const Def<Sphere3d> s = minSphere ( line );
     return Def<Vector3d> ( s.o, s.isDef );
