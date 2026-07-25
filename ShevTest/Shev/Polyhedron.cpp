@@ -1010,6 +1010,7 @@ bool normalizeV1 ( Polyhedron & poly )
         return false;
     for ( i = 0; i < nf; ++i )
     {
+        if ( facet[i].a.size() < 3 ) continue;
         poly.facet[i].plane = facet[i].b;
     }
     vertex.swap ( poly.vertex );
@@ -1042,6 +1043,7 @@ bool normalizeV2 ( Polyhedron & poly )
         return false;
     for ( i = 0; i < nf; ++i )
     {
+        if ( facet[i].a.size() < 3 ) continue;
         poly.facet[i].plane = facet[i].b;
     }
     vertex.swap ( poly.vertex );
@@ -1077,6 +1079,7 @@ bool normalizeLocV1 ( Polyhedron & poly )
     {
         for ( i = 0; i < nf; ++i )
         {
+            if ( facet[i].a.size() < 3 ) continue;
             poly.facet[i].plane = facet[i].b;
         }
         vertex.swap ( poly.vertex );
