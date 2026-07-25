@@ -19,32 +19,32 @@
 
 //**************************** 17.11.2012 *********************************//
 //
-//                            Объём фигуры
+//                            РћР±СЉС‘Рј С„РёРіСѓСЂС‹
 //
 //**************************** 17.11.2012 *********************************//
 
-double volume ( const Polyhedron & poly ) // Объём многогранника
+double volume ( const Polyhedron & poly ) // РћР±СЉС‘Рј РјРЅРѕРіРѕРіСЂР°РЅРЅРёРєР°
 {
     return poly.volume();
 }
 
 //**************************** 17.11.2012 *********************************//
 //
-//                        Площади поверхностей
+//                        РџР»РѕС‰Р°РґРё РїРѕРІРµСЂС…РЅРѕСЃС‚РµР№
 //
 //**************************** 12.06.2017 *********************************//
 
-double getArea ( const Facet & facet, CArrRef<Vector3d> vertex ) // Площадь грани многогранника
+double getArea ( const Facet & facet, CArrRef<Vector3d> vertex ) // РџР»РѕС‰Р°РґСЊ РіСЂР°РЅРё РјРЅРѕРіРѕРіСЂР°РЅРЅРёРєР°
 {
     return facet.getArea ( vertex );
 }
 
-double getArea ( const Polyhedron & fig ) // Площадь поверхности многогранника
+double getArea ( const Polyhedron & fig ) // РџР»РѕС‰Р°РґСЊ РїРѕРІРµСЂС…РЅРѕСЃС‚Рё РјРЅРѕРіРѕРіСЂР°РЅРЅРёРєР°
 {
     return fig.getArea();
 }
 
-double getArea ( const Triangle3d & fig ) // Площадь поверхности треугольника с двух сторон
+double getArea ( const Triangle3d & fig ) // РџР»РѕС‰Р°РґСЊ РїРѕРІРµСЂС…РЅРѕСЃС‚Рё С‚СЂРµСѓРіРѕР»СЊРЅРёРєР° СЃ РґРІСѓС… СЃС‚РѕСЂРѕРЅ
 {
     return fig.getArea();
 }
@@ -76,7 +76,7 @@ double getArea ( const Cone3d & fig )
 
 //**************************** 10.10.2009 *********************************//
 //
-//            Определение габаритов множества точек
+//            РћРїСЂРµРґРµР»РµРЅРёРµ РіР°Р±Р°СЂРёС‚РѕРІ РјРЅРѕР¶РµСЃС‚РІР° С‚РѕС‡РµРє
 //
 //**************************** 10.10.2009 *********************************//
 
@@ -101,7 +101,7 @@ Def<Segment3d> dimensions ( CArrRef<Vector3d> point )
 
 //**************************** 08.01.2009 *********************************//
 //
-//          Диаметр множества точек вдоль заданного направления
+//          Р”РёР°РјРµС‚СЂ РјРЅРѕР¶РµСЃС‚РІР° С‚РѕС‡РµРє РІРґРѕР»СЊ Р·Р°РґР°РЅРЅРѕРіРѕ РЅР°РїСЂР°РІР»РµРЅРёСЏ
 //
 //**************************** 08.01.2009 *********************************//
 
@@ -128,7 +128,7 @@ double diameterPnt ( CArrRef<Vector3d> point, const Vector3d & dir )
 
 //**************************** 09.12.2017 *********************************//
 //
-//               Минимальный диаметр множества точек
+//               РњРёРЅРёРјР°Р»СЊРЅС‹Р№ РґРёР°РјРµС‚СЂ РјРЅРѕР¶РµСЃС‚РІР° С‚РѕС‡РµРє
 //
 //**************************** 09.12.2017 *********************************//
 
@@ -141,18 +141,18 @@ double diameterPnt ( CArrRef<Vector3d> point )
 
 //**************************** 03.06.2017 *********************************//
 //
-//      Вычисление квадрата расстояния от точки до треугольника
+//      Р’С‹С‡РёСЃР»РµРЅРёРµ РєРІР°РґСЂР°С‚Р° СЂР°СЃСЃС‚РѕСЏРЅРёСЏ РѕС‚ С‚РѕС‡РєРё РґРѕ С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°
 //
 //**************************** 24.06.2017 *********************************//
 
-// Функция getDistance2Edge вычисляет квадрат расстояния от точки до ребра треугольника
+// Р¤СѓРЅРєС†РёСЏ getDistance2Edge РІС‹С‡РёСЃР»СЏРµС‚ РєРІР°РґСЂР°С‚ СЂР°СЃСЃС‚РѕСЏРЅРёСЏ РѕС‚ С‚РѕС‡РєРё РґРѕ СЂРµР±СЂР° С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°
 
 bool getDistance2Edge ( double a, double b, double c, double & d )
 {
-    // Проверим попадает ли проекция точки на ребро?
+    // РџСЂРѕРІРµСЂРёРј РїРѕРїР°РґР°РµС‚ Р»Рё РїСЂРѕРµРєС†РёСЏ С‚РѕС‡РєРё РЅР° СЂРµР±СЂРѕ?
     const double t = fabs ( b - c );
     if ( t >= a ) return false;
-    // Вычислим квадрат расстояния до ребра
+    // Р’С‹С‡РёСЃР»РёРј РєРІР°РґСЂР°С‚ СЂР°СЃСЃС‚РѕСЏРЅРёСЏ РґРѕ СЂРµР±СЂР°
     d = b + c - 0.5 * ( a + t * t / a );
     if ( d > 0 )
         d *= 0.5;
@@ -163,20 +163,20 @@ bool getDistance2Edge ( double a, double b, double c, double & d )
 
 double getDistance2Facet ( double a, double b, double c, double d, double e, double f, double q )
 {
-    // Вычислим скалярные произведения
+    // Р’С‹С‡РёСЃР»РёРј СЃРєР°Р»СЏСЂРЅС‹Рµ РїСЂРѕРёР·РІРµРґРµРЅРёСЏ
     const double p1 = 0.5 * ( a + c - b );
     const double p2 = 0.5 * ( d + a - e );
     const double p3 = 0.5 * ( c + d - f );
-    // Проверим попадает ли проекция точки внутрь треугольника?
+    // РџСЂРѕРІРµСЂРёРј РїРѕРїР°РґР°РµС‚ Р»Рё РїСЂРѕРµРєС†РёСЏ С‚РѕС‡РєРё РІРЅСѓС‚СЂСЊ С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°?
     const double g = a * p3 - p1 * p2;
     if ( g <= 0 ) return q;
-    // Если треугольник - вырожденный, то вернём квадрат расстояния до ребра
+    // Р•СЃР»Рё С‚СЂРµСѓРіРѕР»СЊРЅРёРє - РІС‹СЂРѕР¶РґРµРЅРЅС‹Р№, С‚Рѕ РІРµСЂРЅС‘Рј РєРІР°РґСЂР°С‚ СЂР°СЃСЃС‚РѕСЏРЅРёСЏ РґРѕ СЂРµР±СЂР°
     const double h = a * c - p1 * p1;
     if ( h <= 0 ) return q;
     const double gg = g * g;
     const double ah = a * h;
     if ( 4 * gg * c >= ah * h ) return q;
-    // Вычислим квадрат расстояния до плоскости треугольника
+    // Р’С‹С‡РёСЃР»РёРј РєРІР°РґСЂР°С‚ СЂР°СЃСЃС‚РѕСЏРЅРёСЏ РґРѕ РїР»РѕСЃРєРѕСЃС‚Рё С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°
     q -= gg / ah;
     return q < 0 ? 0 : q;
 }
@@ -185,10 +185,10 @@ double getDistance2Triangle ( double ab, double bc, double ca, double ap, double
 {
     double d = _min ( ap, bp, cp );
     if ( ! d ) return 0;
-    // Вычислим квадраты расстояний до рёбер треугольника
+    // Р’С‹С‡РёСЃР»РёРј РєРІР°РґСЂР°С‚С‹ СЂР°СЃСЃС‚РѕСЏРЅРёР№ РґРѕ СЂС‘Р±РµСЂ С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°
     double d1, d2, d3;
-    nat edge = 0; // номер ближайшего к точке ребра
-    nat count = 0; // количество рёбер на которые есть проекция точки
+    nat edge = 0; // РЅРѕРјРµСЂ Р±Р»РёР¶Р°Р№С€РµРіРѕ Рє С‚РѕС‡РєРµ СЂРµР±СЂР°
+    nat count = 0; // РєРѕР»РёС‡РµСЃС‚РІРѕ СЂС‘Р±РµСЂ РЅР° РєРѕС‚РѕСЂС‹Рµ РµСЃС‚СЊ РїСЂРѕРµРєС†РёСЏ С‚РѕС‡РєРё
     if ( getDistance2Edge ( ab, ap, bp, d1 ) )
     {
         if ( d > d1 ) d = d1, edge = 1;
@@ -205,7 +205,7 @@ double getDistance2Triangle ( double ab, double bc, double ca, double ap, double
         ++count;
     }
     if ( ! d ) return 0;
-    // Если точка проецируется хотя бы на 2 ребра треугольника 
+    // Р•СЃР»Рё С‚РѕС‡РєР° РїСЂРѕРµС†РёСЂСѓРµС‚СЃСЏ С…РѕС‚СЏ Р±С‹ РЅР° 2 СЂРµР±СЂР° С‚СЂРµСѓРіРѕР»СЊРЅРёРєР° 
     if ( count > 1 )
     {
         switch ( edge )
@@ -220,21 +220,21 @@ double getDistance2Triangle ( double ab, double bc, double ca, double ap, double
 
 double getDistance2 ( const Triangle3d & t, const Vector3d & p )
 {
-    // Вычислим квадраты расстояний до вершин треугольника
+    // Р’С‹С‡РёСЃР»РёРј РєРІР°РґСЂР°С‚С‹ СЂР°СЃСЃС‚РѕСЏРЅРёР№ РґРѕ РІРµСЂС€РёРЅ С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°
     const double ap = qmod ( t.a - p );
     const double bp = qmod ( t.b - p );
     const double cp = qmod ( t.c - p );
-    // Вычислим квадраты расстояний между вершинами треугольника
+    // Р’С‹С‡РёСЃР»РёРј РєРІР°РґСЂР°С‚С‹ СЂР°СЃСЃС‚РѕСЏРЅРёР№ РјРµР¶РґСѓ РІРµСЂС€РёРЅР°РјРё С‚СЂРµСѓРіРѕР»СЊРЅРёРєР°
     const double ab = qmod ( t.a - t.b );
     const double bc = qmod ( t.b - t.c );
     const double ca = qmod ( t.c - t.a );
-    // Основной алгоритм
+    // РћСЃРЅРѕРІРЅРѕР№ Р°Р»РіРѕСЂРёС‚Рј
     return getDistance2Triangle ( ab, bc, ca, ap, bp, cp );
 }
 
 //**************************** 27.01.2018 *********************************//
 //
-//          Вычисление расстояния от точки до прямоугольника
+//          Р’С‹С‡РёСЃР»РµРЅРёРµ СЂР°СЃСЃС‚РѕСЏРЅРёСЏ РѕС‚ С‚РѕС‡РєРё РґРѕ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєР°
 //
 //**************************** 27.01.2018 *********************************//
 
@@ -249,11 +249,11 @@ double getDistance ( const Rectangle3d & fig, const Vector3d & p )
 
 //**************************** 15.08.2009 *********************************//
 //
-//    Вычисление расстояния от точки до границы эллипсоида
-//    a, b, c - это значения полуосей эллипсоида
-//    d - это расстояние ( отрицательное, если точка внутри эллипсоида )
-//    r - это ближайшая точка на границе эллипсоида
-//    Возвращает false, если среди чисел a, b, c есть неположительные
+//    Р’С‹С‡РёСЃР»РµРЅРёРµ СЂР°СЃСЃС‚РѕСЏРЅРёСЏ РѕС‚ С‚РѕС‡РєРё РґРѕ РіСЂР°РЅРёС†С‹ СЌР»Р»РёРїСЃРѕРёРґР°
+//    a, b, c - СЌС‚Рѕ Р·РЅР°С‡РµРЅРёСЏ РїРѕР»СѓРѕСЃРµР№ СЌР»Р»РёРїСЃРѕРёРґР°
+//    d - СЌС‚Рѕ СЂР°СЃСЃС‚РѕСЏРЅРёРµ ( РѕС‚СЂРёС†Р°С‚РµР»СЊРЅРѕРµ, РµСЃР»Рё С‚РѕС‡РєР° РІРЅСѓС‚СЂРё СЌР»Р»РёРїСЃРѕРёРґР° )
+//    r - СЌС‚Рѕ Р±Р»РёР¶Р°Р№С€Р°СЏ С‚РѕС‡РєР° РЅР° РіСЂР°РЅРёС†Рµ СЌР»Р»РёРїСЃРѕРёРґР°
+//    Р’РѕР·РІСЂР°С‰Р°РµС‚ false, РµСЃР»Рё СЃСЂРµРґРё С‡РёСЃРµР» a, b, c РµСЃС‚СЊ РЅРµРїРѕР»РѕР¶РёС‚РµР»СЊРЅС‹Рµ
 //
 //**************************** 15.08.2009 *********************************//
 
@@ -287,7 +287,7 @@ bool getDistanceEld ( double a, double b, double c, const Vector3d & p, double &
     const double f = func ( 0 );
     if ( f > 0 )
     {
-// Исходная точка вне эллипсоида
+// РСЃС…РѕРґРЅР°СЏ С‚РѕС‡РєР° РІРЅРµ СЌР»Р»РёРїСЃРѕРёРґР°
         double t = ( sqrt ( D ) - 1 ) / _min ( a2, b2, c2 );
         zeroin ( 0, t, func, 0, t ) ;
         r.x = p.x / ( 1 + t * a2 );
@@ -298,7 +298,7 @@ bool getDistanceEld ( double a, double b, double c, const Vector3d & p, double &
     }
     if ( f < 0 )
     {
-// Исходная точка внутри эллипсоида
+// РСЃС…РѕРґРЅР°СЏ С‚РѕС‡РєР° РІРЅСѓС‚СЂРё СЌР»Р»РёРїСЃРѕРёРґР°
         if ( a <= b && a <= c )
         {
             double t = a * ( fabs ( p.x ) - a );
@@ -405,7 +405,7 @@ bool getDistanceEld ( double a, double b, double c, const Vector3d & p, double &
                 r.z = c * sqrt ( 1 - r.x * r.x * a2 - r.y * r.y * b2 );
             }
         }
-// Если найденная точка не лежит на границе эллипсоида, то сдвигаем её туда по нормали
+// Р•СЃР»Рё РЅР°Р№РґРµРЅРЅР°СЏ С‚РѕС‡РєР° РЅРµ Р»РµР¶РёС‚ РЅР° РіСЂР°РЅРёС†Рµ СЌР»Р»РёРїСЃРѕРёРґР°, С‚Рѕ СЃРґРІРёРіР°РµРј РµС‘ С‚СѓРґР° РїРѕ РЅРѕСЂРјР°Р»Рё
         const double k0 = r.x * r.x * a2 + r.y * r.y * b2 + r.z * r.z * c2 - 1;
         if ( fabs ( k0 ) > 1e-15 )
         {
@@ -421,7 +421,7 @@ bool getDistanceEld ( double a, double b, double c, const Vector3d & p, double &
     }
     else
     {
-// Исходная точка на границе эллипсоида
+// РСЃС…РѕРґРЅР°СЏ С‚РѕС‡РєР° РЅР° РіСЂР°РЅРёС†Рµ СЌР»Р»РёРїСЃРѕРёРґР°
         r = p;
         d = 0;
     }
@@ -430,8 +430,8 @@ bool getDistanceEld ( double a, double b, double c, const Vector3d & p, double &
 
 //****************** 28.08.2003 *******************************//
 //
-//      Сфера построенная по трём точкам.
-//      o - центр сферы, q - квадрат радиуса.
+//      РЎС„РµСЂР° РїРѕСЃС‚СЂРѕРµРЅРЅР°СЏ РїРѕ С‚СЂС‘Рј С‚РѕС‡РєР°Рј.
+//      o - С†РµРЅС‚СЂ СЃС„РµСЂС‹, q - РєРІР°РґСЂР°С‚ СЂР°РґРёСѓСЃР°.
 //
 //*************************************************************//
 
@@ -455,8 +455,8 @@ bool getSphere ( Vector3d a, Vector3d b, const Vector3d & c, Vector3d & o, doubl
 
 //****************** 28.08.2003 *******************************//
 //
-//      Сфера построенная по четырём точкам.
-//      o - центр сферы, q - квадрат радиуса.
+//      РЎС„РµСЂР° РїРѕСЃС‚СЂРѕРµРЅРЅР°СЏ РїРѕ С‡РµС‚С‹СЂС‘Рј С‚РѕС‡РєР°Рј.
+//      o - С†РµРЅС‚СЂ СЃС„РµСЂС‹, q - РєРІР°РґСЂР°С‚ СЂР°РґРёСѓСЃР°.
 //
 //*************************************************************//
 
@@ -478,8 +478,8 @@ bool getSphere ( Vector3d a, Vector3d b, Vector3d c, const Vector3d & d, Vector3
 
 //****************** 11.04.2010 *******************************//
 //
-//      Сфера построенная по четырём плоскостям
-//      Расстояния до центра сферы отрицательные
+//      РЎС„РµСЂР° РїРѕСЃС‚СЂРѕРµРЅРЅР°СЏ РїРѕ С‡РµС‚С‹СЂС‘Рј РїР»РѕСЃРєРѕСЃС‚СЏРј
+//      Р Р°СЃСЃС‚РѕСЏРЅРёСЏ РґРѕ С†РµРЅС‚СЂР° СЃС„РµСЂС‹ РѕС‚СЂРёС†Р°С‚РµР»СЊРЅС‹Рµ
 //
 //****************** 11.04.2010 *******************************//
 
@@ -509,7 +509,7 @@ Def<Sphere3d> spherePPPP ( const Plane3d & a, const Plane3d & b, const Plane3d &
 
 //****************** 23.01.2010 *******************************//
 //
-//      Выпуклая оболочка точек в пространстве.
+//      Р’С‹РїСѓРєР»Р°СЏ РѕР±РѕР»РѕС‡РєР° С‚РѕС‡РµРє РІ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРµ.
 //
 //****************** 23.01.2010 *******************************//
 
@@ -587,7 +587,7 @@ static void putFacet ( TrianFacet & fa, MaxHeap< SortItem<double, TrianFacet*>, 
 static void putFacet ( TrianFacet & fa, MaxHeap<SortItem<double, TrianFacet*>, tf_swap> & heap, 
                        CCArrRef<Vector3d> & vert, const Vector3d & o, double eps )
 {
-// Вычисление приоритета
+// Р’С‹С‡РёСЃР»РµРЅРёРµ РїСЂРёРѕСЂРёС‚РµС‚Р°
     if ( fa.list.size() == 0 ) return;
     const double d = -1. / ( fa.plane % o );
     fa.list.top();
@@ -603,7 +603,7 @@ static void putFacet ( TrianFacet & fa, MaxHeap<SortItem<double, TrianFacet*>, t
         p->a *= d;
         if ( ! fa.list.next() ) break;
     }
-// Постановка в очередь
+// РџРѕСЃС‚Р°РЅРѕРІРєР° РІ РѕС‡РµСЂРµРґСЊ
     Item1d * p = fa.list.top();
     if ( p == 0 ) return;
     while ( fa.list.next() )
@@ -641,7 +641,7 @@ bool convexHull ( CCArrRef<Vector3d> & point, nat & nv, ArrRef<nat> & iv, nat & 
     if ( n < 4 ) return false;
     nat i;
     for ( i = 0; i < n; ++i ) iv[i] = i;
-// Находим первую начальную точку
+// РќР°С…РѕРґРёРј РїРµСЂРІСѓСЋ РЅР°С‡Р°Р»СЊРЅСѓСЋ С‚РѕС‡РєСѓ
     nat im = 0;
     double max = qmod ( point[0] );
     for ( i = 1; i < n; ++i )
@@ -651,7 +651,7 @@ bool convexHull ( CCArrRef<Vector3d> & point, nat & nv, ArrRef<nat> & iv, nat & 
     }
     const double eps = 1e-12 * sqrt ( max );
     _swap ( iv[im], iv[0] );
-// Находим вторую начальную точку
+// РќР°С…РѕРґРёРј РІС‚РѕСЂСѓСЋ РЅР°С‡Р°Р»СЊРЅСѓСЋ С‚РѕС‡РєСѓ
     im = 1;
     max = 0.;
     for ( i = 1; i < n; ++i )
@@ -661,7 +661,7 @@ bool convexHull ( CCArrRef<Vector3d> & point, nat & nv, ArrRef<nat> & iv, nat & 
     }
     if ( !max ) return false;
     _swap ( iv[im], iv[1] );
-// Находим третью начальную точку
+// РќР°С…РѕРґРёРј С‚СЂРµС‚СЊСЋ РЅР°С‡Р°Р»СЊРЅСѓСЋ С‚РѕС‡РєСѓ
     im = 2;
     max = 0.;
     const Vector3d dir = point[iv[1]] - point[iv[0]];
@@ -674,7 +674,7 @@ bool convexHull ( CCArrRef<Vector3d> & point, nat & nv, ArrRef<nat> & iv, nat & 
     }
     if ( max < eps * eps ) return false;
     _swap ( iv[im], iv[2] );
-// Находим четвёртую начальную точку
+// РќР°С…РѕРґРёРј С‡РµС‚РІС‘СЂС‚СѓСЋ РЅР°С‡Р°Р»СЊРЅСѓСЋ С‚РѕС‡РєСѓ
     Vector3d norm = dir % ( point[iv[2]] - point[iv[0]] );
     if ( !norm ) return false;
     norm.setNorm2();
@@ -689,7 +689,7 @@ bool convexHull ( CCArrRef<Vector3d> & point, nat & nv, ArrRef<nat> & iv, nat & 
     if ( max < eps ) return false;
     _swap ( iv[im], iv[3] );
     if ( plane % point[iv[3]] > 0 ) _swap ( iv[1], iv[2] );
-// Строим модель тетраэдра
+// РЎС‚СЂРѕРёРј РјРѕРґРµР»СЊ С‚РµС‚СЂР°СЌРґСЂР°
     nv = 4;
     nf = 4;
     const nat array[12] = { 3, 2, 1, 2, 3, 0, 1, 0, 3, 0, 1, 2 };
@@ -711,7 +711,7 @@ bool convexHull ( CCArrRef<Vector3d> & point, nat & nv, ArrRef<nat> & iv, nat & 
         e[2] = 2;
         fi.plane = Plane3d ( point[iv[v[0]]], point[iv[v[1]]], point[iv[v[2]]] );
     }
-// Вычисляем центр вписанной сферы
+// Р’С‹С‡РёСЃР»СЏРµРј С†РµРЅС‚СЂ РІРїРёСЃР°РЅРЅРѕР№ СЃС„РµСЂС‹
     Vector3d o;
     {
         const Plane3d & plane0 = facet[0].plane;
@@ -728,7 +728,7 @@ bool convexHull ( CCArrRef<Vector3d> & point, nat & nv, ArrRef<nat> & iv, nat & 
         slu.ca = v2.x - v3.x; slu.cb = v2.y - v3.y; slu.cc = v2.z - v3.z; slu.cd = plane3.dist - plane2.dist;
         slu.gauss ( o.x, o.y, o.z );
     }
-// Распределяем внешние точки по граням
+// Р Р°СЃРїСЂРµРґРµР»СЏРµРј РІРЅРµС€РЅРёРµ С‚РѕС‡РєРё РїРѕ РіСЂР°РЅСЏРј
     for ( i = 4; i < n; ++i )
     {
         const Vector3d & v = point[iv[i]];
@@ -743,10 +743,10 @@ bool convexHull ( CCArrRef<Vector3d> & point, nat & nv, ArrRef<nat> & iv, nat & 
         if ( jm == 4 ) continue;
         facet[jm].list.addAftLas ( new Item1d ( max, iv[i] ) );
     }
-// Ставим в очередь грани с внешними точками
+// РЎС‚Р°РІРёРј РІ РѕС‡РµСЂРµРґСЊ РіСЂР°РЅРё СЃ РІРЅРµС€РЅРёРјРё С‚РѕС‡РєР°РјРё
     MaxHeap<SortItem<double, TrianFacet*>, tf_swap> heap ( n - 4 );
     for ( i = 0; i < 4; ++i ) putFacet ( facet[i], heap );
-// Добавляем оставшиеся точки по одной
+// Р”РѕР±Р°РІР»СЏРµРј РѕСЃС‚Р°РІС€РёРµСЃСЏ С‚РѕС‡РєРё РїРѕ РѕРґРЅРѕР№
     Suite<nat> buf1;
     Suite< Set2<nat> > buf2;
     while ( heap.size() > 0 )
@@ -756,7 +756,7 @@ bool convexHull ( CCArrRef<Vector3d> & point, nat & nv, ArrRef<nat> & iv, nat & 
         TrianFacet & f0 = * t.tail;
         const Vector3d & v = point[iv[nv] = f0.list.fir()->info];
         f0.list.delFir();
-// Делаем вместо одной грани три
+// Р”РµР»Р°РµРј РІРјРµСЃС‚Рѕ РѕРґРЅРѕР№ РіСЂР°РЅРё С‚СЂРё
         const nat n0 = nat ( t.tail - &facet[0] );
         const nat n1 = nf;
         const nat n2 = nf + 1;
@@ -799,11 +799,11 @@ bool convexHull ( CCArrRef<Vector3d> & point, nat & nv, ArrRef<nat> & iv, nat & 
         buf1.inc() = n1;
         buf1.inc() = n2;
         ++nv;
-// Распределяем внешние точки по новым граням
+// Р Р°СЃРїСЂРµРґРµР»СЏРµРј РІРЅРµС€РЅРёРµ С‚РѕС‡РєРё РїРѕ РЅРѕРІС‹Рј РіСЂР°РЅСЏРј
         moveVert ( f0, 1, facet, point, iv, o );
         moveVert ( f0, 2, facet, point, iv, o );
         moveVert ( f1, 1, facet, point, iv, o );
-// Устраняем невыпуклости
+// РЈСЃС‚СЂР°РЅСЏРµРј РЅРµРІС‹РїСѓРєР»РѕСЃС‚Рё
         buf2.inc() = Set2<nat> ( n0, 0 );
         buf2.inc() = Set2<nat> ( n1, 0 );
         buf2.inc() = Set2<nat> ( n2, 0 );
@@ -850,7 +850,7 @@ bool convexHull ( CCArrRef<Vector3d> & point, nat & nv, ArrRef<nat> & iv, nat & 
             }
         }
         while ( buf2.size() > 0 );
-// Ставим в очередь грани с внешними точками
+// РЎС‚Р°РІРёРј РІ РѕС‡РµСЂРµРґСЊ РіСЂР°РЅРё СЃ РІРЅРµС€РЅРёРјРё С‚РѕС‡РєР°РјРё
         for ( i = 0; i < buf1.size(); ++i ) putFacet ( facet[buf1[i]], heap, point, o, eps );
         buf1.resize ( 0 );
     }
@@ -864,7 +864,7 @@ Polyhedron & convexHull ( CCArrRef<Vector3d> & point, Polyhedron & poly )
     DynArray<nat> iv ( point.size() );
     DynArray<TrianFacet> facet ( 2*point.size() - 4 );
     if ( ! convexHull ( point, nv, iv, nf, facet ) ) return poly.makeVoid();
-// Заполнение многогранника
+// Р—Р°РїРѕР»РЅРµРЅРёРµ РјРЅРѕРіРѕРіСЂР°РЅРЅРёРєР°
     poly.vertex.resize ( nv );
     for ( i = 0; i < nv; ++i ) poly.vertex[i] = point[iv[i]];
     poly.facet.resize ( nf );
@@ -889,7 +889,7 @@ Polyhedron & convexHull ( CCArrRef<Vector3d> & point, Polyhedron & poly )
 
 //****************** 20.11.2003 *******************************//
 //
-//      Получение плоскостей выпуклой оболочки
+//      РџРѕР»СѓС‡РµРЅРёРµ РїР»РѕСЃРєРѕСЃС‚РµР№ РІС‹РїСѓРєР»РѕР№ РѕР±РѕР»РѕС‡РєРё
 //
 //****************** 03.01.2011 *******************************//
 
@@ -903,7 +903,7 @@ DynArrRef<Plane3d> & convexHull ( CCArrRef<Vector3d> & point, DynArrRef<Plane3d>
     {
         return plane.resize(0);
     }
-// Заполнение массива плоскостей
+// Р—Р°РїРѕР»РЅРµРЅРёРµ РјР°СЃСЃРёРІР° РїР»РѕСЃРєРѕСЃС‚РµР№
     plane.resize ( nf );
     for ( nat i = 0; i < nf; ++i ) plane[i] = facet[i].plane;
     return plane;
@@ -911,7 +911,7 @@ DynArrRef<Plane3d> & convexHull ( CCArrRef<Vector3d> & point, DynArrRef<Plane3d>
 
 //****************** 07.09.2021 *******************************//
 //
-//      Получение вершин выпуклой оболочки
+//      РџРѕР»СѓС‡РµРЅРёРµ РІРµСЂС€РёРЅ РІС‹РїСѓРєР»РѕР№ РѕР±РѕР»РѕС‡РєРё
 //
 //****************** 07.09.2021 *******************************//
 
@@ -921,9 +921,9 @@ DynArrRef<Vector3d> & convexHull ( CCArrRef<Vector3d> & point, DynArrRef<Vector3
     nat nf, nv;
     DynArray<nat> iv ( point.size() );
     DynArray<TrianFacet> facet ( 2*point.size() - 4 );
-// Выпуклая оболочка
+// Р’С‹РїСѓРєР»Р°СЏ РѕР±РѕР»РѕС‡РєР°
     if ( ! convexHull ( point, nv, iv, nf, facet ) ) return vert.resize();
-// Заполнение массива вершин
+// Р—Р°РїРѕР»РЅРµРЅРёРµ РјР°СЃСЃРёРІР° РІРµСЂС€РёРЅ
     vert.resize ( nv );
     for ( nat i = 0; i < nv; ++i ) vert[i] = point[iv[i]];
     return vert;
@@ -931,7 +931,7 @@ DynArrRef<Vector3d> & convexHull ( CCArrRef<Vector3d> & point, DynArrRef<Vector3
 
 //****************** 04.11.2014 *******************************//
 //
-//      Выпуклая оболочка многогранника
+//      Р’С‹РїСѓРєР»Р°СЏ РѕР±РѕР»РѕС‡РєР° РјРЅРѕРіРѕРіСЂР°РЅРЅРёРєР°
 //
 //****************** 04.11.2014 *******************************//
 
@@ -967,7 +967,7 @@ Polyhedron & convexHull ( const Polyhedron & inner, Polyhedron & outer )
     DynArray<nat> iv ( inner.vertex.size() );
     DynArray<TrianFacet> facet ( 2*iv.size() - 4 );
     if ( ! convexHull ( inner.vertex, nv, iv, nf, facet ) ) return outer.makeVoid();
-// Создание массивов рёбер
+// РЎРѕР·РґР°РЅРёРµ РјР°СЃСЃРёРІРѕРІ СЂС‘Р±РµСЂ
     Suite<SortItem<Set2<nat>, nat> > isi;
     Suite<IEdgeF3D> iedge;
     for ( i = 0; i < inner.facet.size(); ++i )
@@ -1036,7 +1036,7 @@ Polyhedron & convexHull ( const Polyhedron & inner, Polyhedron & outer )
         }
     }
     quickSort123 ( osi );
-// Найдём одинаковые рёбра у входного и выходного многогранников
+// РќР°Р№РґС‘Рј РѕРґРёРЅР°РєРѕРІС‹Рµ СЂС‘Р±СЂР° Сѓ РІС…РѕРґРЅРѕРіРѕ Рё РІС‹С…РѕРґРЅРѕРіРѕ РјРЅРѕРіРѕРіСЂР°РЅРЅРёРєРѕРІ
     nat i1 = 0, i2 = 0, count = 0;
     for(;;)
     {
@@ -1065,10 +1065,10 @@ Polyhedron & convexHull ( const Polyhedron & inner, Polyhedron & outer )
     {
         return outer = inner;
     }
-// Заполнение вершин выходного многогранника
+// Р—Р°РїРѕР»РЅРµРЅРёРµ РІРµСЂС€РёРЅ РІС‹С…РѕРґРЅРѕРіРѕ РјРЅРѕРіРѕРіСЂР°РЅРЅРёРєР°
     outer.vertex.resize ( nv );
     for ( i = 0; i < nv; ++i ) outer.vertex[i] = inner.vertex[iv[i]];
-// Удаление лишних рёбер
+// РЈРґР°Р»РµРЅРёРµ Р»РёС€РЅРёС… СЂС‘Р±РµСЂ
     DynArray<Set2<Suite<nat>, const TrianFacet *> > arr ( oedge.size() );
     for ( i = 0; i < iedge.size(); ++i )
     {
@@ -1077,7 +1077,7 @@ Polyhedron & convexHull ( const Polyhedron & inner, Polyhedron & outer )
 m3:     nat ii = ei.some->next;
 m2:     OEdgeF3D & e1 = oedge[ii];
         if ( !! e1.some ) continue;
-        if ( e1.isDel ) goto m1; // проверка на случай зацикливания
+        if ( e1.isDel ) goto m1; // РїСЂРѕРІРµСЂРєР° РЅР° СЃР»СѓС‡Р°Р№ Р·Р°С†РёРєР»РёРІР°РЅРёСЏ
         SortItem<Set2<nat>, nat> si;
         si.head.a = iv[e1.b];
         si.head.b = iv[e1.a];
@@ -1097,7 +1097,7 @@ m2:     OEdgeF3D & e1 = oedge[ii];
         ii = e2.next;
         goto m2;
     }
-// Заполнение граней выходного многогранника ( основной вариант )
+// Р—Р°РїРѕР»РЅРµРЅРёРµ РіСЂР°РЅРµР№ РІС‹С…РѕРґРЅРѕРіРѕ РјРЅРѕРіРѕРіСЂР°РЅРЅРёРєР° ( РѕСЃРЅРѕРІРЅРѕР№ РІР°СЂРёР°РЅС‚ )
     count = 0;
     for ( i = 0; i < oedge.size(); ++i )
     {
@@ -1109,7 +1109,7 @@ m2:     OEdgeF3D & e1 = oedge[ii];
         {
             OEdgeF3D & t = oedge[j];
             set.a.inc() = t.a;
-            if ( set.a.size() == oedge.size() ) goto m1; // проверка на случай зацикливания
+            if ( set.a.size() == oedge.size() ) goto m1; // РїСЂРѕРІРµСЂРєР° РЅР° СЃР»СѓС‡Р°Р№ Р·Р°С†РёРєР»РёРІР°РЅРёСЏ
             const TrianFacet * f = facet(j/3);
             if ( set.b != f )
             {
@@ -1135,7 +1135,7 @@ m2:     OEdgeF3D & e1 = oedge[ii];
         ++count;
     }
     return outer.linkFacets();
-// Заполнение граней выходного многогранника ( запасной вариант, если основной не получился )
+// Р—Р°РїРѕР»РЅРµРЅРёРµ РіСЂР°РЅРµР№ РІС‹С…РѕРґРЅРѕРіРѕ РјРЅРѕРіРѕРіСЂР°РЅРЅРёРєР° ( Р·Р°РїР°СЃРЅРѕР№ РІР°СЂРёР°РЅС‚, РµСЃР»Рё РѕСЃРЅРѕРІРЅРѕР№ РЅРµ РїРѕР»СѓС‡РёР»СЃСЏ )
 m1: outer.facet.resize ( nf );
     for ( i = 0; i < nf; ++i )
     {
@@ -1158,7 +1158,7 @@ m1: outer.facet.resize ( nf );
 
 //****************** 21.08.2012 *******************************//
 //
-//      Проверка многогранника на выпуклость
+//      РџСЂРѕРІРµСЂРєР° РјРЅРѕРіРѕРіСЂР°РЅРЅРёРєР° РЅР° РІС‹РїСѓРєР»РѕСЃС‚СЊ
 //
 //****************** 21.08.2012 *******************************//
 
@@ -1185,7 +1185,7 @@ bool isConvex ( const Polyhedron & poly )
 
 //********************** 22.04.2018 ***************************//
 //
-//      Получение поворота совмещающего пары векторов
+//      РџРѕР»СѓС‡РµРЅРёРµ РїРѕРІРѕСЂРѕС‚Р° СЃРѕРІРјРµС‰Р°СЋС‰РµРіРѕ РїР°СЂС‹ РІРµРєС‚РѕСЂРѕРІ
 //
 //********************** 22.04.2018 ***************************//
 
@@ -1248,9 +1248,9 @@ Spin3d makeSpin3d ( CCArrRef<Set2<Vector3d> > & data )
 
 //********************** 04.05.2023 ***************************//
 //
-//           Нормализация многогранника ( версия 1 )
-//         Минимизация суммы квадратов сдвигов вершин
-// Нормали граней с количеством вершин больше трёх не меняются
+//           РќРѕСЂРјР°Р»РёР·Р°С†РёСЏ РјРЅРѕРіРѕРіСЂР°РЅРЅРёРєР° ( РІРµСЂСЃРёСЏ 1 )
+//         РњРёРЅРёРјРёР·Р°С†РёСЏ СЃСѓРјРјС‹ РєРІР°РґСЂР°С‚РѕРІ СЃРґРІРёРіРѕРІ РІРµСЂС€РёРЅ
+// РќРѕСЂРјР°Р»Рё РіСЂР°РЅРµР№ СЃ РєРѕР»РёС‡РµСЃС‚РІРѕРј РІРµСЂС€РёРЅ Р±РѕР»СЊС€Рµ С‚СЂС‘С… РЅРµ РјРµРЅСЏСЋС‚СЃСЏ
 //
 //********************** 04.05.2023 ***************************//
 
@@ -1464,8 +1464,8 @@ bool normalizePolyhedronV1 ( ArrRef<Set2<DynArray<nat>, Plane3d> > & facet, ArrR
 
 //********************** 08.04.2024 ***************************//
 //
-//           Нормализация многогранника ( версия 2 )
-//         Минимизация суммы квадратов сдвигов вершин
+//           РќРѕСЂРјР°Р»РёР·Р°С†РёСЏ РјРЅРѕРіРѕРіСЂР°РЅРЅРёРєР° ( РІРµСЂСЃРёСЏ 2 )
+//         РњРёРЅРёРјРёР·Р°С†РёСЏ СЃСѓРјРјС‹ РєРІР°РґСЂР°С‚РѕРІ СЃРґРІРёРіРѕРІ РІРµСЂС€РёРЅ
 //
 //********************** 08.04.2024 ***************************//
 
@@ -1543,7 +1543,7 @@ bool normalizePlanes ( ArrRef<Set2<DynArray<nat>, Plane3d> > & facet, CCArrRef<V
             ++k;
         }
     }
-    // Перемножение матриц aa = at * vp
+    // РџРµСЂРµРјРЅРѕР¶РµРЅРёРµ РјР°С‚СЂРёС† aa = at * vp
     for ( i = 0; i < k; ++i )
     {
         CCArrRef<SortItem<nat, double> > & ai = at[i];
@@ -1568,9 +1568,9 @@ bool normalizePlanes ( ArrRef<Set2<DynArray<nat>, Plane3d> > & facet, CCArrRef<V
             }
         }
     }
-    // Решение СЛАУ aa * la == b
+    // Р РµС€РµРЅРёРµ РЎР›РђРЈ aa * la == b
     bool ok = k < 150 ? slu_LDLt ( k, aa(), b(), la() ) : slu_LDLtO ( k, aa(), b(), la() );
-    // Вычисляем смещения вершин
+    // Р’С‹С‡РёСЃР»СЏРµРј СЃРјРµС‰РµРЅРёСЏ РІРµСЂС€РёРЅ
     for ( i = 0; i < k; ++i )
     {
         CCArrRef<SortItem<nat, double> > & row = at[i];
@@ -1580,7 +1580,7 @@ bool normalizePlanes ( ArrRef<Set2<DynArray<nat>, Plane3d> > & facet, CCArrRef<V
             dv[s.head] -= la[i] * s.tail;
         }
     }
-    // Исправляем плоскости
+    // РСЃРїСЂР°РІР»СЏРµРј РїР»РѕСЃРєРѕСЃС‚Рё
     for ( i = 0; i < nf; ++i )
     {
         Set2<DynArray<nat>, Plane3d> & f = facet[i];
@@ -1639,7 +1639,7 @@ bool normalizePolyhedronV2 ( ArrRef<Set2<DynArray<nat>, Plane3d> > & facet, ArrR
 
 //********************** 10.02.2026 ***************************//
 //
-//      Локальная нормализация многогранника ( версия 1 )
+//      Р›РѕРєР°Р»СЊРЅР°СЏ РЅРѕСЂРјР°Р»РёР·Р°С†РёСЏ РјРЅРѕРіРѕРіСЂР°РЅРЅРёРєР° ( РІРµСЂСЃРёСЏ 1 )
 //
 //********************** 10.02.2026 ***************************//
 
@@ -1665,8 +1665,6 @@ double getMaxDif ( CCArrRef<Set2<DynArray<nat>, Plane3d> > & facet, CCArrRef<Vec
         {
             const double t = f.b % vertex[f.a[j]];
             _maxa ( max, fabs ( t ) );
-            if ( max > 7e-3 )
-                j=j;
         }
     }
     return max;
@@ -1676,12 +1674,12 @@ bool recalc ( nat k, ArrRef<Set2<DynArray<nat>, Plane3d> > & facet, ArrRef<Vecto
                CCArrRef<Set2<nat> > & index, CCArrRef<Suite<nat> > & varr )
 {
     nat i;
-    // Изменяем вершины и плоскость грани для лучшего совпадения
+    // РР·РјРµРЅСЏРµРј РІРµСЂС€РёРЅС‹ Рё РїР»РѕСЃРєРѕСЃС‚СЊ РіСЂР°РЅРё РґР»СЏ Р»СѓС‡С€РµРіРѕ СЃРѕРІРїР°РґРµРЅРёСЏ
     Set2<DynArray<nat>, Plane3d> & fk = facet[k];
     Vector3d & c = fk.b.norm;
     Vector3d a, b;
     reper ( c, a, b );
-    Vector3d o = null3d;
+    Vector3d o ( 0, 0, 0 );
     const nat nv = fk.a.size();
     for ( i = 0; i < nv; ++i ) o += vertex[fk.a[i]];
     o /= nv;
@@ -1706,10 +1704,10 @@ bool recalc ( nat k, ArrRef<Set2<DynArray<nat>, Plane3d> > & facet, ArrRef<Vecto
     const double e = 1e-6;
     for ( i = 0; i < nv; ++i )
     {
-        // Отображаем вершину на плоскость грани
+        // РћС‚РѕР±СЂР°Р¶Р°РµРј РІРµСЂС€РёРЅСѓ РЅР° РїР»РѕСЃРєРѕСЃС‚СЊ РіСЂР°РЅРё
         Vector3d & v = vertex[fk.a[i]];
         v -= ( fk.b % v ) * c;
-        // Двигаем вершину в плоскости грани для лучшего совпадения с соседними гранями
+        // Р”РІРёРіР°РµРј РІРµСЂС€РёРЅСѓ РІ РїР»РѕСЃРєРѕСЃС‚Рё РіСЂР°РЅРё РґР»СЏ Р»СѓС‡С€РµРіРѕ СЃРѕРІРїР°РґРµРЅРёСЏ СЃ СЃРѕСЃРµРґРЅРёРјРё РіСЂР°РЅСЏРјРё
         const Suite<nat> & fs = varr[fk.a[i]];
         if ( fs.size() < 2 )
             continue;
@@ -1755,7 +1753,10 @@ double normalizePolyhedronLocV1 ( ArrRef<Set2<DynArray<nat>, Plane3d> > & facet,
     {
         const Set2<DynArray<nat>, Plane3d> & f = facet[i];
         if ( f.a.size() > 3 )
-            index.inc() = Set2<nat> ( i, index.size() );
+        {
+            const Set2<nat> s ( i, index.size() );
+            index.inc() = s;
+        }
     }
     const nat n = index.size();
     if ( n > 0 )
