@@ -292,7 +292,7 @@ Def<Circle2d> minCircle ( CArrRef<Line2d> line )
     const Vector2d v1 = line1.norm - line3.norm;
     const Vector2d v2 = line2.norm - line3.norm;
     const double p = v2 % v1;
-    if ( p == 0 ) return Circle2d();
+    if ( p == 0 ) return Def<Circle2d>();
     const double d1 = line1.dist - line3.dist;
     const double d2 = line2.dist - line3.dist;
     Vector2d o;
@@ -774,6 +774,7 @@ Def<Ellipse2d> minEllipseAroundPointsA ( CArrRef<Vector2d> point )
                 const Vector2d & v2 = point[support[i2]];
                 if ( ee.isDef && ee ( v2 ) < 1 + 1e-14 ) continue;
                 ee = minEllipseAround3PointsA ( point[im], v1, v2 );
+                if ( ! ee.isDef ) continue;
                 support2.resize ( 3 );
                 support2[0] = support[i2];
                 support2[1] = support[i1];
@@ -855,7 +856,7 @@ Def<Triangle2d> minTriangleAroundConvexPolygonA ( CCArrRef<Vector2d> & poly )
 {
     Def<Triangle2d> res;
     const nat n = poly.size();
-    if ( n < 2 ) return res;
+    if ( n < 3 ) return res;
     if ( n == 3 )
     {
         return Triangle2d ( poly[0], poly[1], poly[2] );
@@ -1467,7 +1468,7 @@ void recalc ( SegmItem * pp, SegmItem * cp, SegmItem * np, const Vector2d & o2 )
     slu.gauss ( s, t );
     cp->a.a = ps.b = ps.a + t * ( ps.b - ps.a );
     cp->a.b = ns.a = ns.a + s * ( ns.b - ns.a );
-    pp->info = pp->info = 0;
+    pp->info = np->info = 0;
 }
 
 class SegmListMinArea
@@ -1590,7 +1591,7 @@ inline void recalc ( SegmList & list, SegmItem * p, CArrRef<Vector2d> inner )
     p->a.b = inner[p->b.b];
     pp->a.b = p->a.a = intersect ( pp, p );
     np->a.a = p->a.b = intersect ( np, p );
-    pp->info = pp->info = 0;
+    pp->info = np->info = 0;
 }
 
 // Подвигаем стороны N-угольника
@@ -1611,14 +1612,13 @@ void tuning ( SegmList & list, CCArrRef<Vector2d> & inner )
             double t1 = 0.5 * ( u * u );
             if ( p->b.a == p->b.b )
             {
-                double q = u * u;
-                double a = qmod ( inner[p->b.a] - p->a.a );
-                double b = qmod ( inner[p->b.a] - p->a.b );
-                if ( fabs ( a - b ) < 1e-6 * q )
+                const double a = qmod ( inner[p->b.a] - p->a.a );
+                const double b = qmod ( inner[p->b.a] - p->a.b );
+                if ( fabs ( a - b ) < 1e-6 * t1 )
                     continue;
-                nat j = p->b.b + 1;
+                /*nat j = p->b.b + 1;
                 if ( j == m ) j = 0;
-                double t2 = u * ( inner[j] - p->a.a );
+                double t2 = u * ( inner[j] - p->a.a );*/
             }
             double t2 = u * ( inner[p->b.a] - p->a.a );
             double t3 = u * ( inner[p->b.b] - p->a.a );
