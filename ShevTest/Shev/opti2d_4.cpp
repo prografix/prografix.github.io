@@ -31,10 +31,13 @@ bool points2lines ( CCArrRef<Vector2d> & poly, Conform2d & conf, ArrRef<Line2d> 
 
 bool maxStretchPolygonInConvexPolygonANR ( CCArrRef<Vector2d> & inner, CCArrRef<Vector2d> & outer, Affin2d & res )
 {
+    if ( inner.size() < 3 )
+        return false;
 // ѕолучение границ многоугольника в виде пр€мых линий
     Conform2d conf;
     DynArray<Line2d> line ( outer.size() );
-    if ( ! points2lines ( outer, conf, line ) ) return false;
+    if ( ! points2lines ( outer, conf, line ) )
+        return false;
 // »нициализаци€ области допустимых преобразований
     List< Vertex<4> > stor;
     WireModel<4> model;
@@ -546,7 +549,7 @@ Def<Vector3d> maxZ ( const Set3<Vector3d, nat> & p3, CArrRef<Set3<Plane3d[3], bo
             const Plane3d & plane3 = o3.a[0];
             if ( plane3.norm * dir < eps ) continue;
             const Def<Vector3d> c = intersection ( plane1, plane2, plane3 );
-            if ( c.z < 0 ) continue;
+            if ( ! c.isDef || c.z < 0 ) continue;
             if ( i + 1 < i2 && o3.a[2] % c > 0 ) continue;
             if ( i > i1 + 1 && o3.a[1] % c > 0 ) continue;
             double t = dir * ( c - start );
@@ -826,6 +829,8 @@ Def<Conform2d> maxConvexPolygonInPolygon ( CCArrRef<Vector2d> & inner, CCArrRef<
         tmp *= spin;
         inn *= spin;
     }
+    if ( ! res.isDef )
+        return res;
     MaxConvexPolygonInPolygon func ( inner, outer, inn, out );
     fmax ( (im-1) * 360. / n, (im+1) * 360. / n, func, 0.1 );
     return func.res;
