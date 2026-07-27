@@ -2259,7 +2259,7 @@ bool columnScale ( bool (*func) ( IMatrix<double> & a, CArrRef<double> b, ArrRef
 // Делаем копию исходной матрицы
     HMatrix<double> c ( a );
 // Масштабируем столбцы матрицы
-    DynArray<double> sb ( n + m + 1 );
+    DynArray<double> sb ( n + m );
     ArrRef<double> scale ( sb, n, m );
     nat i, j;
     for ( j = 0; j < m; ++j )
@@ -2286,8 +2286,7 @@ bool columnScale ( bool (*func) ( IMatrix<double> & a, CArrRef<double> b, ArrRef
         }
     }
 // Масштабируем столбец правой части системы
-    double & s = scale[m];
-    s = 1.;
+    double s = 1.;
     double max = 0.;
     for ( i = 0; i < n; ++i )
     {
