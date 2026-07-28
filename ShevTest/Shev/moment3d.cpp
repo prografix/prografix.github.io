@@ -305,11 +305,25 @@ Def<Mom3d> momentum2sgm ( CArrRef<Segment3d> segm )
 
 Def<Mom3d> momentum2fct ( nat i, const Polyhedron & poly )
 {
+    if ( i >= poly.facet.size() )
+        return Def<Mom3d>();
     const Def<Vector3d> o = centerOfMass ( i, poly );
-    if ( ! o.isDef ) return Def<Mom3d>();
+    if ( ! o.isDef )
+        return Def<Mom3d>();
+    const Facet & facet = poly.facet[i];
+    if ( facet.nv < 3 )
+    {
+        Def<Mom3d> res;
+        res.minMom = res.midMom = res.maxMom = 0;
+        res.minNorm = x3d;
+        res.midNorm = y3d;
+        res.maxNorm = z3d;
+        res.o = o;
+        res.isDef = true;
+        return res;
+    }
     double xx, xy, xz, yy, yz, zz;
     xx = xy = xz = yy = yz = zz = 0.;
-    const Facet & facet = poly.facet[i];
     const Vector3d a = poly.vertex[facet.index[0]] - o;
     Vector3d b = poly.vertex[facet.index[1]] - o;
     for ( nat j = 2; j < facet.nv; ++j )
@@ -346,7 +360,7 @@ Def<Mom3d> momentum2plh ( const Polyhedron & poly )
         for ( nat j = 2; j < facet.nv; ++j )
         {
             const Vector3d c = poly.vertex[facet.index[j]] - o;
-            const double g = ( ( b - a ) % ( b - c ) * facet.plane.norm ) * d / 120.;
+            const double g = ( ( b - a ) % ( b - c ) * facet.plane.norm ) * d / 240.;
             xx += g * ( a.x * ( a.x + b.x + c.x ) + b.x * ( b.x + c.x ) + c.x * c.x ) * 2.;
             xy += g * ( a.x * ( a.y + b.y + c.y ) + b.x * ( b.y + c.y ) + c.x * c.y +
                         a.y * ( a.x + b.x + c.x ) + b.y * ( b.x + c.x ) + c.y * c.x );
@@ -375,7 +389,7 @@ Def<Ellipsoid3d> getEllipsoid ( const Def<Mom3d> & mom )
     const double x = fabs ( mom.minMom );
     const double y = fabs ( mom.midMom );
     const double z = fabs ( mom.maxMom );
-    const double k = 15. / ( 4. * M_PI );
+    const double k = 15. / ( 2. * M_PI );
     const double x1 = log ( k * x );
     const double y1 = log ( k * y );
     const double z1 = log ( k * z );
