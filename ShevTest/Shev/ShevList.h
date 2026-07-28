@@ -595,9 +595,9 @@ public:
     const T * cur () const { return (const T *) ShowList::cur(); }
     const T * las () const { return (const T *) ShowList::las(); }
 // Первый элемент с заданным свойством:
-    const T * fir ( Predicate1 & p ) const { return (const T *) ShowList::fir(); }
+    const T * fir ( Predicate1 & p ) const { return (const T *) ShowList::fir(p); }
 // Последний элемент с заданным свойством:
-    const T * las ( Predicate1 & p ) const { return (const T *) ShowList::las(); }
+    const T * las ( Predicate1 & p ) const { return (const T *) ShowList::las(p); }
 // Сделать текущим первый элемент
     const T * top () { return (const T *) ShowList::top(); }
 // Сделать текущим последний элемент
