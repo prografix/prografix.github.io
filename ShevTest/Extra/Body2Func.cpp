@@ -291,7 +291,7 @@ Def<Mom3d> momentum2plh ( const Body & body )
         while ( side.next() )
         {
             const Vector3d c = side.cur()->vert0()->point - o;
-            const double g = ( ( b - a ) % ( b - c ) * s->plane.norm ) * d / 120.;
+            const double g = ( ( b - a ) % ( b - c ) * s->plane.norm ) * d / 240.;
             xx += g * ( a.x * ( a.x + b.x + c.x ) + b.x * ( b.x + c.x ) + c.x * c.x ) * 2.;
             xy += g * ( a.x * ( a.y + b.y + c.y ) + b.x * ( b.y + c.y ) + c.x * c.y +
                         a.y * ( a.x + b.x + c.x ) + b.y * ( b.x + c.x ) + c.y * c.x );
