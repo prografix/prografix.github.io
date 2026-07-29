@@ -360,7 +360,7 @@ Def<Mom3d> momentum2plh ( const Polyhedron & poly )
         for ( nat j = 2; j < facet.nv; ++j )
         {
             const Vector3d c = poly.vertex[facet.index[j]] - o;
-            const double g = ( ( b - a ) % ( b - c ) * facet.plane.norm ) * d / 240.;
+            const double g = ( ( b - a ) % ( b - c ) * facet.plane.norm ) * d / 60.;
             xx += g * ( a.x * ( a.x + b.x + c.x ) + b.x * ( b.x + c.x ) + c.x * c.x ) * 2.;
             xy += g * ( a.x * ( a.y + b.y + c.y ) + b.x * ( b.y + c.y ) + c.x * c.y +
                         a.y * ( a.x + b.x + c.x ) + b.y * ( b.x + c.x ) + c.y * c.x );
@@ -389,7 +389,7 @@ Def<Ellipsoid3d> getEllipsoid ( const Def<Mom3d> & mom )
     const double x = fabs ( mom.minMom );
     const double y = fabs ( mom.midMom );
     const double z = fabs ( mom.maxMom );
-    const double k = 15. / ( 2. * M_PI );
+    const double k = 15. / ( 8. * M_PI );
     const double x1 = log ( k * x );
     const double y1 = log ( k * y );
     const double z1 = log ( k * z );
@@ -421,9 +421,10 @@ Def<Cuboid3d> getCuboid ( const Def<Mom3d> & mom )
     const double x = fabs ( mom.minMom );
     const double y = fabs ( mom.midMom );
     const double z = fabs ( mom.maxMom );
-    const double x1 = log ( 0.75 * x );
-    const double y1 = log ( 0.75 * y );
-    const double z1 = log ( 0.75 * z );
+    const double k = 3. / 16. ;
+    const double x1 = log ( k * x );
+    const double y1 = log ( k * y );
+    const double z1 = log ( k * z );
     const double a1 = ( 4. * x1 - y1 - z1 ) * 0.1;
     const double b1 = ( 4. * y1 - z1 - x1 ) * 0.1;
     const double c1 = ( 4. * z1 - x1 - y1 ) * 0.1;
