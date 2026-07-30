@@ -117,6 +117,11 @@ public:
     bool getCDblPtr( nat index, const double * & value ) const;
 };
 
+inline bool getValue ( const ValueSet & ui, const void * & v, int tag )
+{
+    return ui.getCVoidPtr ( tag, v );
+}
+
 inline bool getValue ( const ValueSet & ui, int & v, int tag )
 {
     return ui.getInt ( tag, v );
