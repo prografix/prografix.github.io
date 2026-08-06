@@ -1538,7 +1538,6 @@ void trian2d_test ()
     drawNewList2d();
 //    trian_test4();
 //    convexParts_test2();
-//    trianSeidel_test2();
 //    trianSweepLine_test();
     splitPolygon_test2();
     endNewList();
