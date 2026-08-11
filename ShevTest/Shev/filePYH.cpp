@@ -59,6 +59,11 @@ bool loadPYH ( IReadFile & file, Polyhedron & poly, char * text )
             {
                 faceti.index.resize ( 3 * faceti.nv + 1 );
                 if ( file.read ( faceti.index(), 4, faceti.nv ) != faceti.nv ) return false;
+                for ( nat j = 0; j < faceti.nv; ++j )
+                {
+                    if ( faceti.index[j] >= nverts )
+                        return false;
+                }
             }
         }
         temp.linkFacets ();
