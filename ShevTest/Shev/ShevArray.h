@@ -250,12 +250,14 @@ template <class T> class DynArrRef : public ArrRef<T>
 protected:
     DynArrRef ( T * d, nat n ) : ArrRef<T>( d, n ) {}
 public:
+    virtual ~DynArrRef () {}
     virtual DynArrRef & resize ( nat n = 0 ) = 0;
 
     DynArrRef & resize ( nat n, const T & a )
     {
+        const T t = a; // на случай, если а лежит в массиве
         resize ( n );
-        for ( nat i = 0; i < _size; ++i ) _data.var[i] = a;
+        for ( nat i = 0; i < _size; ++i ) _data.var[i] = t;
         return *this;
     }
 
@@ -283,7 +285,7 @@ template <class T> class DynArray : public DynArrRef<T>
     DynArray ( const DynArray & );
 public:
 explicit DynArray ( nat n = 0 ) : DynArrRef<T> ( n > 0 ? new T[n] : 0, n ) {}
-explicit DynArray ( CCArrRef<T> & r ) : DynArrRef<T> ( new T[r.size()], r.size() )
+explicit DynArray ( CCArrRef<T> & r ) : DynArrRef<T> ( r.size() > 0 ? new T[r.size()] : 0, r.size() )
     {
         for ( nat i = 0; i < _size; ++i ) _data.var[i] = r[i];
     }
@@ -501,8 +503,11 @@ public:
     {
         for ( nat i = 0; i < _size; ++i )
         {
-            if ( _data.var[i] == t ) _del ( i );
-            return true;
+            if ( _data.var[i] == t )
+            {
+                _del ( i );
+                return true;
+            }
         }
         return false;
     }
@@ -655,7 +660,7 @@ template <class T> class LtdSuiteRef : public SuiteRef<T>
 #ifdef ARRAY_TEST
         if ( n > real_size ) outOfRange ( "LtdSuiteRef::resizeAndCopy", real_size, n );
 #endif
-        _size = real_size;
+        _size = n < real_size ? n : real_size;
     }
 public:
     LtdSuiteRef ( ArrRef<T> & a, nat i, nat n ) : SuiteRef<T>( a(i), 0, n )

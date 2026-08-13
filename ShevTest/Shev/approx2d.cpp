@@ -125,7 +125,7 @@ Def<Line2d> getLine1 ( CCArrRef<Vector2d> & point, CCArrRef<double> & mass )
 {
     Def<Line2d> res;
     const nat n = point.size();
-    if ( n < 2 ) return res;
+    if ( n < 2 || mass.size() < n ) return res;
     double min = 1e300;
     nat j, i1 = 0, i2 = n;
     if ( n < 20 )
@@ -326,7 +326,8 @@ Line2d getLineU ( CCArrRef<Vector2d> & point, double & r )
 // Добавляем новую вершину в многоугольник
         const Vector2d & v = point[im];
         max = 0;
-        Vector2d a = vert.las() - v;
+        im = vert.size() - 1;
+        Vector2d a = vert[im] - v;
         for ( i = 0; i < vert.size(); ++i )
         {
             const Vector2d b = vert[i] - v;
@@ -365,60 +366,6 @@ Def<Line2d> getLineR ( CCArrRef<Vector2d> & arr, ArrRef<double> & mass )
 {
     Def<Line2d> res;
     approxR ( arr, mass, res );
-    return res;
-}
-
-//************************* 06.12.2006 ******************************//
-//
-//           Аппроксимация прямой набора из n отрезков
-//      Минимизируется момент 1-го порядка относительно прямой
-//
-//************************* 10.01.2011 ******************************//
-
-Def<Line2d> getLine1 ( CCArrRef<Segment2d> & segm )
-{
-    Def<Line2d> res = getLine2 ( segm );
-    if ( ! res.isDef ) return res;
-    const Segment2d & s = segm[0];
-    double ax = res.norm % s.a;
-    double ay = res.norm * s.a;
-    double bx = res.norm % s.b;
-    double by = res.norm * s.b;
-    double maxX, minX, maxY, minY;
-    if ( ax < bx ) minX = ax, maxX = bx; else minX = bx, maxX = ax;
-    if ( ay < by ) minY = ay, maxY = by; else minY = by, maxY = ay;
-    nat i;
-    for ( i = 1; i < segm.size(); ++i )
-    {
-        const Segment2d & s = segm[i];
-        double ax = res.norm % s.a;
-        double ay = res.norm * s.a;
-        double bx = res.norm % s.b;
-        double by = res.norm * s.b;
-        _mina ( minX, _min ( ax, bx ) );
-        _maxa ( maxX, _max ( ax, bx ) );
-        _mina ( minY, _min ( ay, by ) );
-        _maxa ( minY, _max ( ay, by ) );
-
-    }
-    const double eps = 1e-9 * ( maxX - minX );
-    double stepD = ( maxY - minY ) / 8;
-    if ( stepD < eps ) return res;
-    double stepA = atan2 ( maxY - minY, maxX - minX ) / 8;
-    for (;;)
-    {
-        double sum2 = 0.;
-        Vector2d gra1 (0,0);
-        for ( i = 0; i < segm.size(); ++i )
-        {
-            const Segment2d & s = segm[i];
-        }
-        if ( stepD < eps )
-        {
-            break;
-        }
-        stepD *= 0.5;
-    }
     return res;
 }
 
@@ -481,7 +428,8 @@ Def<Circle2d> getCirclePnt22 ( CArrRef<Vector2d> p )
     {
         res.o.x = 0.5 * c[0];
         res.o.y = 0.5 * c[1];
-        res.r = sqrt ( res.o * res.o + q - 2. * ( res.o.x * x + res.o.y * y ) );
+        const double t = res.o * res.o + q - 2. * ( res.o.x * x + res.o.y * y );
+        res.r = t <= 0 ? 0 : sqrt ( t );
         res.isDef = true;
     }
     return res;
@@ -514,7 +462,7 @@ Def<Circle2d> getCirclePnt2 ( CArrRef<Vector2d> p )
             b[i] = v * p[i];
         }
         FixArray<double, 3> c;
-        if ( ! ortholin ( a, b, c, stor ) ) return Circle2d();
+        if ( ! ortholin ( a, b, c, stor ) ) return Def<Circle2d>();
         res.o.x = c[0];
         res.o.y = c[1];
         res.r   = c[2];
@@ -2016,7 +1964,7 @@ Def<Vector2d> getNearPoint2 ( CArrRef<Line2d> line, CArrRef<double> mass )
 {
     Def<Vector2d> p;
     const nat n = line.size();
-    if ( n < 2 ) return p;
+    if ( n < 2 || mass.size() < n ) return p;
     HMatrix<double> a ( n, 2 );
     CmbArray<double, 80> b ( n );
     for ( nat i = 0; i < n; ++i )

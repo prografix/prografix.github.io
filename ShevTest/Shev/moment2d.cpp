@@ -171,6 +171,8 @@ Def<Vector2d> centerPnt ( CCArrRef<Vector2d> & point )
 
 Def<Vector2d> centerPnt ( CCArrRef<Vector2d> & point, CCArrRef<double> & mass )
 {
+    if ( point.size() > mass.size() )
+        return Def<Vector2d>();
     double m = 0.;
     Vector2d o ( 0, 0 );
     for ( nat i = 0; i < point.size(); ++i )
@@ -235,8 +237,7 @@ Def<Vector2d> center4pnt ( CCArrRef<Vector2d> & point )
             o1 += d * ( point[j] + o );
             c += d;
         }
-        if ( c ) o1 /= 2 * c;
-        o = o1;
+        if ( c ) o = o1 / ( 2 * c );
     }
     return o;
 }
@@ -390,7 +391,8 @@ Def<Mom2d> momentum2plg ( CCArrRef<Vector2d> & vert )
 Def<Ellipse2d> getEllipse ( const Def<Mom2d> & mom )
 {
     Def<Ellipse2d> res;
-    if ( ! mom.isDef ) return res;
+    if ( ! mom.isDef || ! mom.minM || ! mom.maxM )
+        return res;
     res.o = mom.o;
     const double x = fabs ( mom.minM );
     const double y = fabs ( mom.maxM );

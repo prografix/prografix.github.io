@@ -239,9 +239,12 @@ Def<Segment2d> intersection ( const Segment2d & seg, const Ellipse2d & e )
 {
     Def<Segment2d> res;
     const Affin2d af1 = e.getAffin2d();
-    const Affin2d af2 = ~af1;
+    const Def<Affin2d> af2 = ~af1;
+    if ( ! af2.isDef )
+        return res;
     res = intersection ( Segment2d ( af2 ( seg.a ), af2 ( seg.b ) ), Circle2d ( null2d, 1 ) );
-    if ( ! res.isDef ) return res;
+    if ( ! res.isDef )
+        return res;
     res.a = af1 ( res.a );
     res.b = af1 ( res.b );
     return res;
@@ -256,7 +259,8 @@ Def<Segment2d> intersection ( const Segment2d & seg, const Ellipse2d & e )
 DynArrRef<Segment2d> & intersection ( const Line2d & line, CArrRef<Vector2d> poly, DynArrRef<Segment2d> & res )
 {
     const nat n = poly.size();
-    if ( n < 2 || ! line.norm ) return res.resize();
+    if ( n < 2 || ! line.norm )
+        return res.resize();
     const nat n2 = n / 2;
     DynArray<SortItem<double, Vector2d> > arr ( n );
     LtdSuiteRef<SortItem<double, Vector2d> > v1 ( arr,  0, n2 ), v2 ( arr, n2, n2 );
@@ -298,6 +302,8 @@ DynArrRef<Segment2d> & intersection ( const Line2d & line, CArrRef<Vector2d> pol
             }
         }
     }
+    if ( v1.size() != v2.size() )
+        return res;
     if ( v1.size() > 1 )
     {
         quickSort123 ( v1 );
@@ -354,7 +360,8 @@ SuiteRef< Suite<Vector2d> > & cut ( CArrRef<Vector2d> poly, const Line2d & line,
                                     SuiteRef< Suite<Vector2d> > & res )
 {
     const nat n = poly.size();
-    if ( n == 0 || ! line.norm ) return res;
+    if ( n == 0 || ! line.norm )
+        return res;
     const double ax = fabs ( line.norm.x );
     const double ay = fabs ( line.norm.y );
     const bool xgy = ax > ay;
@@ -435,6 +442,8 @@ SuiteRef< Suite<Vector2d> > & cut ( CArrRef<Vector2d> poly, const Line2d & line,
             }
         }
     }
+    if ( v1.size() != v2.size() )
+        return res;
     const nat m = v1.size();
 // Нет пересечения с прямой
     if ( m == 0 )
@@ -1000,6 +1009,8 @@ bool intersectHalfPlanes ( CCArrRef<Line2d> & line, DynArrRef<Vector2d> & poly )
         const Vector2d & b = point[ic];
         const Vector2d norm ( a.y - b.y, b.x - a.x );
         const double dist = - ( norm * b );
+        if ( ! dist )
+            return false;
         poly[i] = Vector2d (norm.x / dist, norm.y / dist);
         ip = ic;
     }

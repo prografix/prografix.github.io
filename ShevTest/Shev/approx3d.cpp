@@ -71,28 +71,29 @@ Line3d getLineU ( CCArrRef<Vector3d> & data, double & r )
     if ( n == 0 )
     {
         res.point = null3d;
-        res.dir = Vector3d ( 0, 0, 1 );
+        res.dir = z3d;
         r = 0;
         return res;
     }
     if ( n == 1 )
     {
 m1:     res.point = data[0];
-        res.dir = Vector3d ( 0, 0, 1 );
+        res.dir = z3d;
         r = 0;
         return res;
     }
+    nat i0 = 0, i1 = 1;
     if ( n == 2 )
     {
-m2:     Vector3d v = data[1] - data[0];
+m2:     Vector3d v = data[i1] - data[i0];
         if ( ! v ) goto m1;
-        res.point = 0.5 * ( data[0] + data[1] );
+        res.point = 0.5 * ( data[i0] + data[i1] );
         res.dir = v.setNorm2();
         r = 0;
         return res;
     }
 // Поиск первой начальной точки
-    nat i, i0 = 0;
+    nat i;
     double max = 0;
     for ( i = 1; i < n; ++i )
     {
@@ -102,7 +103,7 @@ m2:     Vector3d v = data[1] - data[0];
     if ( max == 0 ) goto m1;
     const Vector3d & p0 = data[i0];
 // Поиск второй начальной точки
-    nat i1 = i0;
+    i1 = i0;
     max = 0;
     for ( i = 0; i < n; ++i )
     {
@@ -248,7 +249,6 @@ m2:     Vector3d v = data[1] - data[0];
         cor.d4 = qy;
         cor.d5 = qz;
         cor.d6 = -max;
-        double d = cor % best;
         model.cut ( cor, stor );
     }
     return res;
@@ -562,7 +562,8 @@ Def<Sphere3d> getSpherePnt22 ( CArrRef<Vector3d> p )
         res.o.x = 0.5 * c[0];
         res.o.y = 0.5 * c[1];
         res.o.z = 0.5 * c[2];
-        res.r = sqrt ( res.o * res.o + q - 2. * ( res.o.x * x + res.o.y * y + res.o.z * z ) );
+        const double t = res.o * res.o + q - 2. * ( res.o.x * x + res.o.y * y + res.o.z * z );
+        res.r = t <= 0 ? 0 : sqrt ( t );
         res.isDef = true;
     }
     return res;
@@ -823,6 +824,8 @@ Def<Conform3d> minMaxPointsConvexPolyhedron1R ( CCArrRef<Vector3d> & point, cons
         return res;
 // Поиск без вращения для точности вписания
     Def<Double<4> > d4 = minMaxPointsConvexPolyhedronNR ( r, v.x, v.y, point, poly.facet );
+    if ( ! d4.isDef )
+        return res;
 // Запись результата
     res.spin = Spin3d ( Vector3d(0,0,1), atan2 ( v.y, v.x ) );
     res.trans.x = d4.d1;
@@ -1430,7 +1433,8 @@ Def<Vector3d> getNearPoint2 ( CArrRef<Plane3d> plane, CArrRef<double> mass )
 {
     Def<Vector3d> res;
     const nat n = plane.size();
-    if ( n < 3 ) return res;
+    if ( n < 3 || mass.size() < n )
+        return res;
     HMatrix<double> a ( n, 3 );
     CmbArray<double, 80> b ( n );
     for ( nat i = 0; i < n; ++i )

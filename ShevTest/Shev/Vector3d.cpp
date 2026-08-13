@@ -342,8 +342,8 @@ Def<Spin3d> getSpin3d ( const Vector3d & vx, const Vector3d & vy, const Vector3d
     double d[4];
     jacobi ( 4, a, d, v );
     nat im = 0;
-    double max = fabs ( d[0] );
-    for ( nat i = 1; i < 4; ++i ) if ( _maxa ( max, fabs ( d[i] ) ) ) im = i;
+    double max = d[0];
+    for ( nat i = 1; i < 4; ++i ) if ( _maxa ( max, d[i] ) ) im = i;
     Def<Spin3d> res;
     if ( d[im] <= 0 ) return res;
     res.x = v[0][im];

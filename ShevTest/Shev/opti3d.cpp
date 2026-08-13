@@ -303,7 +303,9 @@ Def<Sphere3d> minSphere ( CArrRef<Plane3d> plane )
     if ( nn < 3 ) return res;
     if ( nn == 3 )
     {
-        return Sphere3d ( 0, intersection ( plane[0], plane[1], plane[2] ) );
+        const Def<Vector3d> o = intersection ( plane[0], plane[1], plane[2] );
+        if ( o.isDef ) res = Sphere3d ( 0, o );
+        return res;
     }
     const nat n1 = nn - 1;
     const nat n2 = n1 - 1;
@@ -518,7 +520,8 @@ Def<Sphere3d> minSphere ( CArrRef<Line3d> data )
     Vector3d o;
     double q;
     minSphere ( data[0], data[1], o, q );
-    if ( n == 2 ) return res;
+    if ( n == 2 )
+        return Sphere3d ( sqrt(q), o );
     nat np = 2, ip[4], nr, ir[3];
     ip[0] = 0;
     ip[1] = 1;

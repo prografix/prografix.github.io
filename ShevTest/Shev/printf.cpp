@@ -149,6 +149,207 @@ void writeHex ( SuiteRef<char> & buf, nat32 i, int32 width, char a, bool zero )
     ArrRef<char> ( buf, k, buf.size()-k ).reverse();
 }
 
+void writeOct ( SuiteRef<char> & buf, nat32 i, int32 width, bool zero )
+{
+    const nat k = buf.size();
+    if ( ! i )
+    {
+        buf.inc() = '0';
+        --width;
+    }
+    else
+    {
+        while ( i > 0 )
+        {
+            buf.inc() = '0' + char ( i % 8 );
+            i /= 8;
+            --width;
+        }
+    }
+    if ( zero )
+    {
+        while ( width > 0 )
+        {
+            buf.inc() = '0';
+            --width;
+        }
+    }
+    ArrRef<char> ( buf, k, buf.size()-k ).reverse();
+}
+
+void writeInt ( SuiteRef<char> & buf, int64 i, int32 width, bool plus, bool zero )
+{
+    const nat k = buf.size();
+    bool minus = false;
+    if ( i < 0 )
+    {
+        if ( i == ( -9223372036854775807LL - 1 ) )
+        {
+            buf.addAftLas ( CArrRef<char> ( "8085774586302733229", 19 ) );
+            width -= 19;
+        }
+        else
+        {
+            i = - i;
+        }
+        minus = true;
+    }
+    if ( buf.size() == k )
+    {
+        if ( ! i )
+        {
+            buf.inc() = '0';
+            --width;
+        }
+        else
+        {
+            while ( i > 0 )
+            {
+                buf.inc() = '0' + char ( i % 10 );
+                i /= 10;
+                --width;
+            }
+        }
+    }
+    if ( zero )
+    {
+        while ( width > 1 )
+        {
+            buf.inc() = '0';
+            --width;
+        }
+        if ( minus )
+        {
+            buf.inc() = '-';
+        }
+        else
+        if ( plus )
+        {
+            buf.inc() = '+';
+        }
+        else
+        if ( width > 0 )
+        {
+            buf.inc() = '0';
+        }
+    }
+    else
+    {
+        if ( minus )
+        {
+            buf.inc() = '-';
+        }
+        else
+        if ( plus )
+        {
+            buf.inc() = '+';
+        }
+    }
+    ArrRef<char> ( buf, k, buf.size()-k ).reverse();
+}
+
+void writeInt ( SuiteRef<char> & buf, nat64 i, int32 width, bool plus, bool zero )
+{
+    const nat k = buf.size();
+    if ( ! i )
+    {
+        buf.inc() = '0';
+        --width;
+    }
+    else
+    {
+        while ( i > 0 )
+        {
+            buf.inc() = '0' + char ( i % 10 );
+            i /= 10;
+            --width;
+        }
+    }
+    if ( zero )
+    {
+        while ( width > 1 )
+        {
+            buf.inc() = '0';
+            --width;
+        }
+        if ( plus )
+        {
+            buf.inc() = '+';
+        }
+        else
+        if ( width > 0 )
+        {
+            buf.inc() = '0';
+        }
+    }
+    else
+    {
+        if ( plus )
+        {
+            buf.inc() = '+';
+        }
+    }
+    ArrRef<char> ( buf, k, buf.size()-k ).reverse();
+}
+
+void writeHex ( SuiteRef<char> & buf, nat64 i, int32 width, char a, bool zero )
+{
+    const nat k = buf.size();
+    if ( ! i )
+    {
+        buf.inc() = '0';
+        --width;
+    }
+    else
+    {
+        a -= 10;
+        while ( i > 0 )
+        {
+            const char c = char ( i % 16 );
+            buf.inc() = c + ( c < 10 ? '0' : a );
+            i /= 16;
+            --width;
+        }
+    }
+    if ( zero )
+    {
+        while ( width > 0 )
+        {
+            buf.inc() = '0';
+            --width;
+        }
+    }
+    ArrRef<char> ( buf, k, buf.size()-k ).reverse();
+}
+
+void writeOct ( SuiteRef<char> & buf, nat64 i, int32 width, bool zero )
+{
+    const nat k = buf.size();
+    if ( ! i )
+    {
+        buf.inc() = '0';
+        --width;
+    }
+    else
+    {
+        while ( i > 0 )
+        {
+            buf.inc() = '0' + char ( i % 8 );
+            i /= 8;
+            --width;
+        }
+    }
+    if ( zero )
+    {
+        while ( width > 0 )
+        {
+            buf.inc() = '0';
+            --width;
+        }
+    }
+    ArrRef<char> ( buf, k, buf.size()-k ).reverse();
+}
+
 void copy ( double d, Suite<nat32> & arr )
 {
     int ip;
@@ -158,23 +359,27 @@ void copy ( double d, Suite<nat32> & arr )
     nat32 * p32 = (nat32 *) & n64;
     arr.inc() = p32[0];
     if ( p32[1] ) arr.inc() = p32[1];
-    nat k = ip / 32;
-    if ( k > 0 )
+    if ( ip > 0 )
     {
-        arr.inc(k) <<= 2;
-        for ( nat i = 0; i < k; ++i ) arr[i] = 0;
+        nat k = nat ( ip ) / 32;
+        if ( k > 0 )
+        {
+            arr.inc ( k );
+            arr >>= k;
+            for ( nat i = 0; i < k; ++i ) arr[i] = 0;
+        }
+        k = nat ( ip ) % 32;
+        if ( !k ) return;
+        nat32 n32 = 0;
+        for ( nat i = 0; i < arr.size(); ++i )
+        {
+            n64 = arr[i];
+            n64 <<= k;
+            arr[i] = p32[0] + n32;
+            n32 = p32[1];
+        }
+        if ( n32 ) arr.inc() = n32;
     }
-    k = ip % 32;
-    if ( !k ) return;
-    nat32 n32 = 0;
-    for ( nat i = 0; i < arr.size(); ++i )
-    {
-        n64 = arr[i];
-        n64 <<= k;
-        arr[i] = p32[0] + n32;
-        n32 = p32[1];
-    }
-    if ( n32 ) arr.inc() = n32;
 }
 
 nat32 divide10 ( ArrRef<nat32> arr )
@@ -206,17 +411,17 @@ void writeFltDec_ ( SuiteRef<char> & buf, real64 d, nat32 prec, bool plus, bool 
         isSign = true;
         sign = '+';
     }
-    if ( round && prec < 308 ) // îêðóãëÿåì ÷èñëî
+    if ( round && prec < 308 ) // Ð¾ÐºÑ€ÑƒÐ³Ð»ÑÐµÐ¼ Ñ‡Ð¸ÑÐ»Ð¾
     {
         real64 p = 2.;
         for ( nat32 i = 0; i < prec; ++i ) p *= 10.;
         d += 1. / p;
     }
-    real64 f = modf ( d, &d ); // òåïåðü â d öåëàÿ ÷àñòü ÷èñëà, à â f - äðîáíàÿ
+    real64 f = modf ( d, &d ); // Ñ‚ÐµÐ¿ÐµÑ€ÑŒ Ð² d Ñ†ÐµÐ»Ð°Ñ Ñ‡Ð°ÑÑ‚ÑŒ Ñ‡Ð¸ÑÐ»Ð°, Ð° Ð² f - Ð´Ñ€Ð¾Ð±Ð½Ð°Ñ
     if ( d > 0 )
     {
         const nat k = buf.size();
-        if ( d < ldexp ( 1., 63 ) ) // åñëè ÷èñëî ïîìåñòèòñÿ â int64
+        if ( d < ldexp ( 1., 63 ) ) // ÐµÑÐ»Ð¸ Ñ‡Ð¸ÑÐ»Ð¾ Ð¿Ð¾Ð¼ÐµÑÑ‚Ð¸Ñ‚ÑÑ Ð² int64
         {
             nat64 u = nat64 ( d );
             while ( u > 0 )
@@ -243,12 +448,16 @@ void writeFltDec_ ( SuiteRef<char> & buf, real64 d, nat32 prec, bool plus, bool 
         if ( isSign ) buf.inc() = sign;
         buf.inc() = '0';
     }
-    buf.inc() = '.';
-    for ( nat32 i = 0; i < prec; ++i )
+    if ( prec > 0 )
     {
-        real64 t;
-        f = modf ( 10*f, &t );
-        buf.inc() = '0' + char ( t );
+        buf.inc() = '.';
+        for ( nat32 i = 0; i < prec; ++i )
+        {
+            real64 t;
+            f = modf ( 10*f, &t );
+            if ( t > 9 ) t = 9;
+            buf.inc() = '0' + char ( t );
+        }
     }
 }
 
@@ -299,7 +508,7 @@ void writeFltDec ( SuiteRef<char> & buf, real64 d, nat32 prec, bool plus )
     else writeFltDec_ ( buf, d, prec, plus, true );
 }
 
-void writeExpDec ( SuiteRef<char> & buf, real64 d, nat32 prec, bool plus )
+void writeExpDec ( SuiteRef<char> & buf, real64 d, nat32 prec, bool plus, char eChar )
 {
     const char * p = 0;
     switch ( fpclass ( d ) )
@@ -318,7 +527,8 @@ void writeExpDec ( SuiteRef<char> & buf, real64 d, nat32 prec, bool plus )
     if ( d == 0 )
     {
         writeFltDec_ ( buf, d, prec, plus, false );
-        p = "e+000";
+        buf.inc() = eChar;
+        p = "+000";
         for ( nat i = 0; p[i]; ++i ) buf.inc() = p[i];
         return;
     }
@@ -334,16 +544,16 @@ void writeExpDec ( SuiteRef<char> & buf, real64 d, nat32 prec, bool plus )
         a  *= 10.;
         --i;
     }
-    if ( prec < 308 ) // îêðóãëÿåì ÷èñëî
+    if ( prec < 308 ) // Ð¾ÐºÑ€ÑƒÐ³Ð»ÑÐµÐ¼ Ñ‡Ð¸ÑÐ»Ð¾
     {
-        real64 p = 2.;
-        for ( nat32 j = 0; j < prec; ++j ) p *= 10.;
-        a += 1. / p;
+        real64 pr = 2.;
+        for ( nat32 j = 0; j < prec; ++j ) pr *= 10.;
+        a += 1. / pr;
         if ( a >= 10 ) a = 1., ++i;
     }
     if ( d < 0 ) a = -a;
     writeFltDec_ ( buf, a, prec, plus, false );
-    buf.inc() = 'e';
+    buf.inc() = eChar;
     writeInt ( buf, i, 4, true, true );
 }
 
@@ -827,8 +1037,21 @@ toAscii:
 
                 switch ( radix )
                 {
+                case 8:
+                    if ( flagSet & LongDoubleBit )
+                        writeOct ( buf, temp64, width, fillZeros );
+                    else
+                        writeOct ( buf, (nat32) temp64, width, fillZeros );
+                    break;
                 case 10:
-                    if ( isSigned )
+                    if ( flagSet & LongDoubleBit )
+                    {
+                        if ( isSigned )
+                            writeInt ( buf, (int64) temp64, width, plusSign, fillZeros );
+                        else
+                            writeInt ( buf, temp64, width, plusSign, fillZeros );
+                    }
+                    else if ( isSigned )
                     {
                         writeInt ( buf, (int32) temp64, width, plusSign, fillZeros );
                     }
@@ -838,7 +1061,10 @@ toAscii:
                     }
                     break;
                 case 16:
-                    writeHex ( buf, (nat32) temp64, width, fc - 'X' + 'A', fillZeros );
+                    if ( flagSet & LongDoubleBit )
+                        writeHex ( buf, temp64, width, fc - 'X' + 'A', fillZeros );
+                    else
+                        writeHex ( buf, (nat32) temp64, width, fc - 'X' + 'A', fillZeros );
                     break;
                 }
                 goto CopySpace;
@@ -850,29 +1076,7 @@ toAscii:
                 /* fall through to _ch */
 
             case (_ch):                 /* char, normal  */
-
-                /* The 'c' conversion takes a character as parameter.
-                 * Note, however, that the character occupies an
-                 * (int) sized cell in the argument list.
-                 *
-                 * Note: We must handle both narrow and wide versions
-                 * depending on the flags specified and the version called:
-                 *
-                 * Format           printf          wprintf
-                 * ----------------------------------------
-                 * %c               narrow          wide
-                 * %C               wide            narrow
-                 * %hc              narrow          narrow
-                 * %hC              narrow          narrow
-                 * %lc              wide            wide
-                 * %lC              wide            wide
-                 *
-                 *
-                 */
-                 /* Use default char size for normal operation */
-//                tempStr[0] = (char)va_arg(argP,int);
-//                tempStr[1] = ('\0');
-//                cP = tempStr;
+                buf.inc() = (char) va_arg ( argP, int );
                 goto CopyLen;
 
             case (_St):                 /* string, opposite */
@@ -905,7 +1109,10 @@ toAscii:
                         while ( cP[i] ) buf.inc() = cP[i], ++i;
                     }
                     else
-                        buf = CArrRef<char> ( cP, precision );
+                    {
+                        for ( nat i = 0; i < (nat) precision && cP[i]; ++i )
+                            buf.inc() = cP[i];
+                    }
                 }
 
                 goto CopyLen;
@@ -913,15 +1120,43 @@ toAscii:
             case (_fl):                 /* float        */
                 {
                     const double dbl = va_arg ( argP, double );
+                    const nat32 prec = precision < 0 ? 6 : (nat32) precision;
                     if ( fc == 'f' || fc == 'F' )
-                        writeFltDec ( buf, dbl, precision < 0 ? 6 : precision, plusSign );
+                        writeFltDec ( buf, dbl, prec, plusSign );
                     else
-                        writeExpDec ( buf, dbl, precision < 0 ? 6 : precision, plusSign );
+                    if ( fc == 'g' || fc == 'G' )
+                    {
+                        nat32 p = prec == 0 ? 1 : prec;
+                        real64 a = fabs ( dbl );
+                        int32 exp = 0;
+                        if ( a != 0 )
+                        {
+                            while ( a >= 10. ) a /= 10., ++exp;
+                            while ( a < 1. ) a *= 10., --exp;
+                        }
+                        if ( exp < -4 || exp >= (int32) p )
+                            writeExpDec ( buf, dbl, p - 1, plusSign, fc == 'G' ? 'E' : 'e' );
+                        else
+                        {
+                            const int32 fprec = (int32) p - 1 - exp;
+                            writeFltDec ( buf, dbl, fprec < 0 ? 0 : (nat32) fprec, plusSign );
+                            bool hasDot = false;
+                            for ( nat j = 0; j < buf.size(); ++j )
+                                if ( buf[j] == '.' ) { hasDot = true; break; }
+                            if ( hasDot )
+                            {
+                                while ( buf.size() > 0 && buf[buf.size()-1] == '0' ) buf.dec();
+                                if ( buf.size() > 0 && buf[buf.size()-1] == '.' ) buf.dec();
+                            }
+                        }
+                    }
+                    else
+                        writeExpDec ( buf, dbl, prec, plusSign, ( fc == 'E' ) ? 'E' : 'e' );
                 }
 
 CopySpace:
                 
-                if ( space && buf[0] != ' ' && buf[0] != '+' && buf[0] != '-' )
+                if ( space && buf.size() > 0 && buf[0] != ' ' && buf[0] != '+' && buf[0] != '-' )
                 {
                     buf.inc() = ' ';
                     buf >>= 1;
@@ -958,13 +1193,7 @@ CopyLen:
                 goto NEXT;
 
             case (_ns) :                 /* number sent */
-                //cP = va_arg(argP,char *);
-                /*if (flagSet & isLongBit)
-                    *((long *)cP) = totalSent;
-                else if (flagSet & isShortBit)
-                    *((short *)cP) = totalSent;
-                else
-                    *((int *)cP) = totalSent;*/
+                (void) va_arg ( argP, int * );
                 goto NEXT;
 
 

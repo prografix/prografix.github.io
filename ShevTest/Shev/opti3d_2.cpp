@@ -109,7 +109,8 @@ Def<Sphere3d> maxSphereInConvexPolyhedron ( const Segment3d & dim, CArrRef<const
 
 Def<Sphere3d> maxSphereInConvexPolyhedron ( const Polyhedron & poly )
 {
-    if ( poly.facet.size() < 4 || poly.vertex.size() < 4 ) return Sphere3d();
+    if ( poly.facet.size() < 4 || poly.vertex.size() < 4 )
+        return Def<Sphere3d>();
     DynArray<const Plane3d *> plane ( poly.facet.size() );
     for ( nat i = 0; i < poly.facet.size(); ++i ) plane[i] = & poly.facet[i].plane;
     return maxSphereInConvexPolyhedron ( dimensions ( poly.vertex ), plane );
@@ -943,6 +944,8 @@ inline double distance ( const Affin3d & b, const Plane3d & p )
 Def<Ellipsoid3d> maxEllipsoidInConvexPolyhedronV ( const Polyhedron & poly )
 {
     Def<Ellipsoid3d> res;
+    if ( poly.vertex.size() < 4 )
+        return res;
     const nat n = poly.facet.size();
     switch ( n )
     {
@@ -954,7 +957,10 @@ Def<Ellipsoid3d> maxEllipsoidInConvexPolyhedronV ( const Polyhedron & poly )
     case 4:
         return maxEllipsoidInTetrahedronV ( poly.vertex[0], poly.vertex[1], poly.vertex[2], poly.vertex[3] );
     }
-    const Affin3d stand = getEllipsoidPlg ( poly ).getAffin3d();
+    Def<Ellipsoid3d> tmp = getEllipsoidPlg ( poly );
+    if ( ! tmp.isDef )
+        return res;
+    const Affin3d stand = tmp.getAffin3d();
     Polyhedron poly2;
     poly2 = poly;
     poly2 *= ~stand;
@@ -1017,7 +1023,10 @@ Def<Ellipsoid3d> maxEllipsoidInConvexPolyhedronV ( const Polyhedron & poly )
                 cut ( p1, plane1[i], p2, stor3d );
                 _swap ( p1, p2 );
             }
-            const Affin3d stand2 = getEllipsoidPlg ( p1 ).getAffin3d();
+            tmp = getEllipsoidPlg ( p1 );
+            if ( ! tmp.isDef )
+                return res;
+            const Affin3d stand2 = tmp.getAffin3d();
             const Affin3d back = ~stand2;
             plane1 *= back;
             for ( i = 0; i < vert.size(); ++i ) vert[i] = back ( poly0.vertex[i] );
@@ -1053,7 +1062,7 @@ Def<Tetrahedron> maxTetrahedronInConvexPolyhedronV ( const Polyhedron & poly )
     CCArrRef<Vector3d> & vert = poly.vertex;
     if ( vert.size() < 4 ) return res;
     nat m0(0), m1(1), m2(2), m3(3);
-    double max = 0, vol;
+    double max = -1, vol;
     for ( nat i0 =    0; i0 < vert.size() - 3; ++i0 )
     for ( nat i1 = i0+1; i1 < vert.size() - 2; ++i1 )
     {
@@ -1399,7 +1408,7 @@ Def<Conform3d> maxPolyhedronInConvexPolyhedron1R ( const Polyhedron & inner,
     const nat nv = inner.vertex.size();
     if ( nv < 2 ) return err;
     const nat np = outer.facet.size();
-    if ( nv < 4 ) return err;
+    if ( np < 4 ) return err;
     DynArray<Vector3d> vert ( nv );
     DynArray<Plane3d> plane ( np );
     Def<Segment3d> dim1 = dimensions ( inner.vertex );
@@ -1624,26 +1633,10 @@ Conform3d maxPointsInConvexPolyhedron ( CCArrRef<Vector3d> & inner, const Polyhe
     return best;
 }
 
-// 4 0.50
-
-// 5 2000 0.98714408934317
-// 6 2000 0.98599014840494
-// 6 4000 0.98637045687301
-// 7 2000 0.99098404450523
-
-// 3 0.50
-
-// 5 1000 0.99517802869498
-// 6 1000 0.99301289526858
-// 7 1000 0.99299717731266
-
-// 4 0.25
-
-// 5 1000 0.99370074484359
-// 6 1000 0.99504127159171
-// 7 2000 0.99820092665806
-
 Def<Conform3d> maxPolyhedronInConvexPolyhedron ( const Polyhedron & inner, const Polyhedron & outer )
 {
-    return maxPointsInConvexPolyhedron ( inner.vertex, outer );
+    Def<Conform3d> res;
+    res.base() = maxPointsInConvexPolyhedron ( inner.vertex, outer );
+    res.isDef = res.base().magn > 0;
+    return res;
 }
