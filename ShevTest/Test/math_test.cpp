@@ -3526,6 +3526,254 @@ void chol_test1()
     for ( nat i = 0; i < 5; ++i ) display << x[i] << c[i] << NL;
 }
 
+// rootls генерирует структуру уровней с корнем в узле, задаваемым входным параметром root.
+// Учитываются лишь те узлы, которым соответствуют ненулевые значения masc.
+// Входные параметры:
+//     root - заданный корень структуры уровней
+//     xadj, adjncy - массивы, хранящие структуру смежности заданного графа
+//     masc - нужен для задания подграфа
+// Выходные параметры:
+//     nlvl - число уровней в структуре уровней
+//     xls, ls - массивы для структуры уровней
+
+void rootls ( const nat root, const nat * xadj, const nat * adjncy, nat * masc, nat & nlvl, nat * xls, nat * ls )
+{
+    // Присвоение начальных значений
+    masc[root] = 0;
+    ls[0] = root;
+    nlvl = 0;
+    nat lvlend = 0, ccsize = 1;
+    do
+    {
+        // lbegin - начало текущего уровня
+        // lvlend - конец этого уровня
+        nat lbegin = lvlend;
+        lvlend = ccsize;
+        xls[nlvl++] = lbegin;
+        // Построить следующий уровень, находя всех отмеченных соседей узлов текущего уровня.
+        for ( nat i = lbegin; i < lvlend; ++i )
+        {
+            const nat node = ls[i];
+            const nat jstrt = xadj[node];
+            const nat jstop = xadj[node+1];
+            //if ( jstop < jstrt ) continue;
+            for ( nat j = jstrt; j < jstop; ++j )
+            {
+                const nat nbr = adjncy[j];
+                if ( ! masc[nbr] )
+                    continue;
+                ls[ccsize++] = nbr;
+                masc[nbr] = 0;
+            }
+        }
+    }
+    while ( ccsize > lvlend );
+    xls[nlvl] = lvlend;
+    // Восстановить значения в masc
+    for ( nat i = 0; i < ccsize; ++i ) masc[ls[i]] = 1;
+}
+
+// fnroot реализует модифицированный вариант схемы Гибса, Пула и Стокмейера отыскания псевдопериферийных узлов.
+// Она определяет такой узел для подграфа, задаваемого masc и root.
+// Входные параметры:
+//      xadj, adjncy - массивы, хранящие структуру смежности заданного графа
+//      masc - задааёт подграф. Узля для которых masc[i] = 0 игнорируются.
+// Изменяемый параметр:
+//      root - на входе вместе с masc определяет компоненту, для которой ищется псевдопериферийный узел.
+//            на выходе - это найденный узел.
+// Выходные параметры:
+//      nlvl - число уровней в структуре уровней
+//      xls, ls - массивы для структуры уровней
+// Используемая подпрограмма:
+//      rootls.
+
+void fnroot ( nat & root, const nat * xadj, const nat * adjncy, nat * masc, nat & nlvl, nat * xls, nat * ls )
+{
+    // определить структуру уровней с корнем в root
+    rootls ( root, xadj, adjncy, masc, nlvl, xls, ls );
+    if ( nlvl == 1 )
+        return;
+    const nat ccsize = xls[nlvl];
+    while ( nlvl < ccsize )
+    {
+        // Выбрать в последнем уровне узел с минимальной степенью
+        nat jstrt = xls[nlvl-1];
+        nat mindeg = ccsize;
+        root = ls[jstrt];
+        for ( nat j = jstrt; j < ccsize; ++j )
+        {
+            nat node = ls[j];
+            nat ndeg = 0;
+            nat kstop = xadj[node+1];
+            for ( nat k = xadj[node]; k < kstop; ++k )
+            {
+                if ( masc[adjncy[k]] ) ++ndeg;
+            }
+            if ( mindeg > ndeg )
+                mindeg = ndeg, root = node;
+        }
+        // И построить структуру уровней в этом узле
+        nat nunlvl;
+        rootls ( root, xadj, adjncy, masc, nunlvl, xls, ls );
+        if ( nunlvl <= nlvl )
+            return;
+        nlvl = nunlvl;
+    }
+}
+
+// degree вычисляет степени узлов в связанной компоненте, задаваемой masc и root.
+// Учитываются лишь те узлы, которым соответствуют ненулевые значения masc.
+// Входные параметры:
+//      root - узел определяющий компоненту
+//      xadj, adjncy - массивы, хранящие структуру смежности заданного графа
+//      masc - нужен для задания подграфа
+// Выходные параметры:
+//      deg - массив, содержащий степени узлов в компоненте
+//      ccsize - число узлов в компоненты, заданной root и masc
+// Рабочий параметр:
+//      ls - массив для хранения узлов в компоненты, уровень за уровнем
+
+void degree ( const nat root, const nat * xadj, const nat * adjncy, nat * masc, nat * deg, bool * flag, nat & ccsize, nat * ls )
+{
+    ls[0] = root;
+    flag[root] = 1;
+    nat lvlend = 0;
+    ccsize = 1;
+    do
+    {
+        // lbegin - начало текущего уровня
+        // lvlend - конец этого уровня
+        nat lbegin = lvlend;
+        lvlend = ccsize;
+        // Найти степени узлов текущего уровеня и построить следующий уровень.
+        for ( nat i = lbegin; i < lvlend; ++i )
+        {
+            const nat node = ls[i];
+            const nat jstrt = xadj[node];
+            const nat jstop = xadj[node+1];
+            nat ideg = 0;
+            for ( nat j = jstrt; j < jstop; ++j )
+            {
+                const nat nbr = adjncy[j];
+                if ( ! masc[nbr] )
+                    continue;
+                ++ideg;
+                if ( flag[nbr] )
+                    continue;
+                flag[nbr] = 1;
+                ls[ccsize++] = nbr;
+            }
+            deg[node] = ideg;
+        }
+    }
+    while ( ccsize > lvlend );
+    // Восстановить правильные знаки в xadj
+    for ( nat i = 0; i < ccsize; ++i ) flag[ls[i]] = 0;
+}
+
+void rcm ( const nat root, const nat * xadj, const nat * adjncy, nat * masc, nat * deg, bool * flag, nat & ccsize, nat * perm )
+{
+    degree ( root, xadj, adjncy, masc, deg, flag, ccsize, perm );
+    masc[root] = 0;
+    if ( ccsize <= 1 )
+        return;
+    nat lvlend = 0;
+    nat lnbr = 1;
+    do
+    {
+        // lbegin - начало текущего уровня
+        // lvlend - конец этого уровня
+        nat lbegin = lvlend;
+        lvlend = lnbr;
+        // Найти степени узлов текущего уровеня и построить следующий уровень.
+        for ( nat i = lbegin; i < lvlend; ++i )
+        {
+            const nat node = perm[i];
+            const nat jstrt = xadj[node];
+            const nat jstop = xadj[node+1];
+            nat fnbr = lnbr + 1;
+            for ( nat j = jstrt; j < jstop; ++j )
+            {
+                const nat nbr = adjncy[j];
+                if ( ! masc[nbr] )
+                    continue;
+                masc[nbr] = 0;
+                perm[lnbr++] = nbr;
+            }
+            if ( fnbr >= lnbr ) continue;
+            // Упорядочить соседей данного узла по возрастанию степеней методом пузырька.
+            nat k = fnbr;
+            do
+            {
+                nat l = k++;
+                const nat nbr = perm[k];
+                while ( l >= fnbr )
+                {
+                    const nat lperm = perm[l];
+                    if ( deg[lperm] <= deg[nbr] ) break;
+                    perm[l+1] = lperm;
+                    --l;
+                }
+                perm[l+1] = nbr;
+            }
+            while ( k < lnbr );
+        }
+    }
+    while ( lnbr > lvlend );
+    // Получено упорядочивание Катхилла-Макки. Ниже оно будет обращено.
+    nat k = ccsize / 2;
+    nat l = ccsize - 1;
+    for ( nat i = 0; i < k; ++i )
+    {
+        const nat lperm = perm[l];
+        perm[l] = perm[i];
+        perm[i] = lperm;
+        --l;
+    }
+}
+
+void test_fnroot()
+{
+    nat root = 2, nlvl, n=8, ccsize;
+    DynArray<nat> xadj(n+1), masc(n,1), xls(n), deg(n), ls(n);
+    DynArray<bool> flag(n,0);
+    Suite<nat> adjncy;
+    xadj.resize(n+1);
+    xadj[0] = adjncy.size();
+    adjncy.inc() = 1;
+    xadj[1] = adjncy.size();
+    adjncy.inc() = 0;
+    adjncy.inc() = 2;
+    adjncy.inc() = 7;
+    xadj[2] = adjncy.size();
+    adjncy.inc() = 1;
+    adjncy.inc() = 3;
+    adjncy.inc() = 7;
+    xadj[3] = adjncy.size();
+    adjncy.inc() = 2;
+    adjncy.inc() = 4;
+    adjncy.inc() = 5;
+    xadj[4] = adjncy.size();
+    adjncy.inc() = 3;
+    adjncy.inc() = 5;
+    xadj[5] = adjncy.size();
+    adjncy.inc() = 3;
+    adjncy.inc() = 4;
+    adjncy.inc() = 6;
+    xadj[6] = adjncy.size();
+    adjncy.inc() = 5;
+    adjncy.inc() = 7;
+    xadj[7] = adjncy.size();
+    adjncy.inc() = 1;
+    adjncy.inc() = 2;
+    adjncy.inc() = 6;
+    xadj[8] = adjncy.size();
+    //rootls ( root, xadj(), adjncy(), masc(), nlvl, xls(), ls() );
+    fnroot ( root, xadj(), adjncy(), masc(), nlvl, xls(), ls() );
+    degree ( root, xadj(), adjncy(), masc(), deg(), flag(), ccsize, ls() );
+    nlvl=nlvl;
+}
+
 } // namespace
 
 void math_test ()
@@ -3552,6 +3800,7 @@ void math_test ()
 //    minNorm_test3();
 //    log_test ();
 //    slu_gauss_test();
-    sluGaussRowT_test2();
+//    sluGaussRowT_test2();
 //    chol_test1();
+    test_fnroot();
 }
