@@ -347,6 +347,9 @@
     <ClCompile Include="Shev\atrian.cpp">
       <Filter>Shev cpp</Filter>
     </ClCompile>
+    <ClCompile Include="Shev\ageom.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ShevTest.rc">
@@ -619,6 +622,9 @@
       <Filter>Shev h</Filter>
     </ClInclude>
     <ClInclude Include="Shev\TrianFacet.h">
+      <Filter>Shev h</Filter>
+    </ClInclude>
+    <ClInclude Include="Shev\ageom.h">
       <Filter>Shev h</Filter>
     </ClInclude>
   </ItemGroup>

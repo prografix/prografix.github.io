@@ -11,6 +11,7 @@
 #include "../Shev/Vector2d.h"
 #include "../Shev/ShevArray.h"
 #include "../Shev/intersect2d.h"
+#include "../Shev/ageom.h"
 
 #include "display.h"
 
@@ -337,216 +338,9 @@ void intersectSegmentPolygon()
     for ( nat i = 0; i < res.size(); ++i ) draw ( res[i], 1, 0, 1 );
 }
 
-class ICutGuru
-{
-public:
-    virtual CCArrRef<Set2<nat, int>> & getVerts () = 0;
-    virtual bool isOrder ( nat, nat ) = 0;
-    virtual nat  newVert ( nat, nat ) = 0;
-};
-
-void insertSort ( ArrRef<Set2<nat> > & a, ICutGuru & x )
-{
-    for ( nat j = 1; j < a.size(); ++j )
-    {
-        const Set2<nat> b = a[j];
-        int i = j - 1;
-        if ( x.isOrder ( a[i].b, b.b ) ) continue;
-        do
-        {
-            a[i+1] = a[i];
-            if ( --i < 0 ) break;
-        }
-        while ( x.isOrder ( b.b, a[i].b ) );
-        a[i+1] = b;
-    }
-}
-
-bool cutPolygon ( ICutGuru & guru, SuiteRef< Suite<nat> > & res )
-{
-    res.resize();
-    CCArrRef<Set2<nat, int>> & vert = guru.getVerts();
-    const nat n = vert.size();
-    if ( n < 3 )
-        return false;
-    nat i;
-    const nat n2 = n / 2;
-    DynArray<Set2<nat> > arr ( n );
-    LtdSuiteRef<Set2<nat> > vi ( arr, 0, n2 ), vo ( arr, n2, n2 );
-    int sum = 0, ip = n-1;
-    for ( i = 0; i < n; ++i )
-    {
-        const Set2<nat, int> vp = vert[ip];
-        const Set2<nat, int> vc = vert[i];
-        sum += vc.b;
-        if ( vp.b < 0 && vc.b >= 0 )
-        {
-            if ( vc.b > 0 || vert.cnext(i).b >= 0 )
-            {
-                Set2<nat> & si = vo.inc();
-                si.a = ip;
-                si.b = vc.b > 0 ? guru.newVert ( vp.a, vc.a ) : vc.a;
-            }
-        }
-        else
-        if ( vc.b < 0 && vp.b >= 0 )
-        {
-            if ( vp.b > 0 || vert.cprev(ip).b >= 0 )
-            {
-                Set2<nat> & si = vi.inc();
-                si.a = i;
-                si.b = vp.b > 0 ? guru.newVert ( vp.a, vc.a ) : vp.a;
-            }
-        }
-        ip = i;
-    }
-    const nat m = vo.size();
-// Нет пересечения с гиперплоскостью
-    if ( m == 0 )
-    {
-        if ( sum < 0 )
-        {
-            Suite<nat> & poly = res.inc();
-            poly.resize(n);
-            for ( i = 0; i < n; ++i ) poly[i] = vert[i].a;
-        }
-        return true;
-    }
-// Пересечение с гиперплоскостью - это один отрезок
-    if ( m == 1 )
-    {
-        Suite<nat> & s = res.inc();
-        s.resize();
-        s.inc() = vi[0].b;
-        for ( i = vi[0].a;; )
-        {
-            if ( vert[i].a != s.las() ) s.inc() = vert[i].a;
-            if ( i == vo[0].a ) break;
-            if ( ++i == n ) i = 0;
-        }
-        const nat v = vo[0].b;
-        if ( s[0] != v && s.las() != v ) s.inc() = v;
-        if ( s.size() < 3 ) res.dec();
-        return true;
-    }
-//    return true;
-// Пересечение с гиперплоскостью - это несколько отрезков
-    if ( vo[0].a < vi[0].a ) vo <<= 1;
-    DynArray<Set2<nat> > arr2 ( m + m );
-    ArrRef<Set2<nat> > si ( arr2, 0, m ), so ( arr2, m, m );
-    for ( i = 0; i < m; ++i )
-    {
-        si[i].a = i;
-        si[i].b = vi[i].b;
-        so[i].a = i;
-        so[i].b = vo[i].b;
-    }
-    insertSort ( si, guru );
-    insertSort ( so, guru );
-    for ( nat j = 0; j < m; ++j )
-    {
-        if ( si[j].a == m ) continue;
-        Suite<nat> & s = res.inc();
-        s.resize();
-        for ( nat k = j;; )
-        {
-            const nat c = si[k].a;
-            si[k].a = m;
-            const nat i1 = vo[c].a;
-            s.inc() = vi[c].b;
-            for ( i = vi[c].a;; )
-            {
-                if ( vert[i].a != s.las() ) s.inc() = vert[i].a;
-                if ( ++i == n ) i = 0;
-                if ( i == i1 ) break;
-            }
-            const nat v = vo[c].b;
-            if ( s.las() != v && s[0] != v ) s.inc() = v;
-            for ( k = j; k < m; ++k )
-            {
-                if ( so[k].a == c ) break;
-            }
-            if ( k == j ) break;
-        }
-        if ( s.size() < 3 ) res.dec();
-    }
-    return true;
-}
-
-class CutGuru2d : public ICutGuru
-{
-    Suite<Set2<nat, int>> ivert;
-    DynArray<double> dist;
-    Suite<Vector2d> poly;
-    const Line2d line;
-    const nat nv;
-public:
-    virtual CCArrRef<Set2<nat, int>> & getVerts ()  { return ivert; }
-    virtual bool isOrder ( nat a, nat b )
-    {
-        return line.norm % ( poly[a] - poly[b] ) <= 0;
-    }
-    virtual nat newVert ( nat ia, nat ib )
-    {
-        const Vector2d & va = poly[ia];
-        const Vector2d & vb = poly[ib];
-        const double da = ia < nv ? dist[ia] : 0;
-        const double db = ib < nv ? dist[ib] : 0;
-        Vector2d p;
-        if ( fabs ( line.norm.x ) > fabs ( line.norm.y ) )
-        {
-            p.y = ( va.y * db - vb.y * da ) / ( db - da );
-            p.x = - ( line.norm.y * p.y + line.dist ) / line.norm.x;
-        }
-        else
-        {
-            p.x = ( va.x * db - vb.x * da ) / ( db - da );
-            p.y = - ( line.norm.x * p.x + line.dist ) / line.norm.y;
-        }
-        const nat n = poly.size();
-        poly.inc() = p;
-        return n;
-    }
-
-    CutGuru2d ( CCArrRef<Vector2d> & p, const Line2d & l ) : line(l), nv ( p.size() )
-    {
-        poly = p;
-        ivert.resize ( nv );
-        dist.resize ( nv );
-        for ( nat i = 0; i < nv; ++i )
-        {
-            ivert[i].a = i;
-            const double d = dist[i] = line % poly[i];
-            ivert[i].b = d < 0 ? -1 : d > 0 ? 1 : 0;
-        }
-    }
-    CCArrRef<Vector2d> & getVert() { return poly; }
-};
-
-bool cutPolygon ( CCArrRef<Vector2d> & poly, const Line2d & line, DynArrRef< DynArray<Vector2d> > & res )
-{
-    Suite< Suite<nat> > temp;
-    CutGuru2d guru ( poly, line );
-    if ( ! cutPolygon ( guru, temp ) )
-        return false;
-    CCArrRef<Vector2d> & vert = guru.getVert();
-    const nat np = temp.size();
-    res.resize ( np );
-    for ( nat i = 0; i < np; ++i )
-    {
-        CCArrRef<nat> & ii = temp[i];
-        DynArray<Vector2d> & pi = res[i];
-        const nat n = ii.size();
-        pi.resize ( n );
-        for ( nat j = 0; j < n; ++j ) pi[j] = vert[ii[j]];
- //       i=i;
-    }
-    return true;
-}
-
 void cutLinePolygon()
 {
-    FixArray<Vector2d, 8> vert;
+    FixArray<Vector2d, 9> vert;
     FixArray<Vector2d,4> quad;
     quad[0] = Vector2d ( 2, 2 );
     quad[1] = Vector2d (-2, 2 );
@@ -557,15 +351,18 @@ void cutLinePolygon()
 //    for ( nat j = 0; j < 15; ++j )
     {
         randPolygon ( vert );
-        a = prand();
-        b = prand();
+        a = 0.5 * prand();
+        b = 0.5 * prand();
     }
-    /*vert[0] = Vector2d ( 0, 0 );
+    /*vert[0] = Vector2d ( 1, 0 );
     vert[1] = Vector2d ( 0, 1 );
-    vert[2] = Vector2d ( 1, 0 );
-    a = Vector2d ( 1, 1 );
-    b = Vector2d ( 1, 0 );*/
-    //vert.reverse();
+    vert[2] = Vector2d (-1, 0 );
+    vert[3] = Vector2d (-0.5, 0 );
+    vert[4] = Vector2d ( 0, -1 );
+    vert[5] = Vector2d (0.5, 0 );
+    a = Vector2d ( 1, 0 );
+    b = Vector2d (-1, 0 );*/
+    vert.reverse();
     drawPolygon ( vert, 0, 1, 1 );
     const Line2d line ( a, b );
     DynArray<Segment2d> seg;
@@ -580,6 +377,7 @@ void cutLinePolygon()
         }
     }
     else
+    /*
     {
         DynArray< DynArray<Vector2d> > res;
         cutPolygon ( vert, line, res );
@@ -588,6 +386,20 @@ void cutLinePolygon()
             drawPolygon ( res[i], 1, 0, 1 );
         }
     }
+    /*/
+    {
+        DynArray< DynArray<Vector2d> > plus, minus;
+        cutPolygon ( vert, line, plus, minus );
+        for ( nat i = 0; i < minus.size(); ++i )
+        {
+            drawPolygon ( minus[i], 1, 0, 1 );
+        }
+        for ( nat i = 0; i < plus.size(); ++i )
+        {
+            drawPolygon ( plus[i], 0, 1, 0 );
+        }
+    }
+    //*/
 }
 
 void cutLinePolygon2()

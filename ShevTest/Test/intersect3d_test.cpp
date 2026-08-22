@@ -18,6 +18,7 @@
 #include "../Shev/trans.h"
 #include "../Shev/func1t.h"
 #include "../Shev/func2d.h"
+#include "../Shev/ageom.h"
 #include "PolyhedronErrorRecipient.h"
 
 #include "display.h"
@@ -634,6 +635,103 @@ void intersectHalfSpaces()
         display << NL;
     }
 }
+
+//**************************** 20.08.2026 *********************************//
+//
+//               Отсечение положительной части многоугольника
+//
+//**************************** 20.08.2026 *********************************//
+
+class CutGuru3d : public ICutPolygonGuru
+{
+    Suite<int> status;
+    DynArray<double> dist;
+    Suite<Vector3d> poly;
+    const Plane3d plane;
+    const nat nv;
+public:
+    virtual CCArrRef<int> & getStatus ()  { return status; }
+    virtual bool isOrder ( nat a, nat b )
+    {
+        return 0;//plane.norm % ( poly[a] - poly[b] ) <= 0;
+    }
+    virtual nat newVert ( nat ia, nat ib )
+    {
+        const Vector3d & va = poly[ia];
+        const Vector3d & vb = poly[ib];
+        const double da = dist[ia];
+        const double db = dist[ib];
+        Vector3d p;
+        const double ax = fabs ( plane.norm.x );
+        const double ay = fabs ( plane.norm.y );
+        const double az = fabs ( plane.norm.z );
+        if ( ax >= ay && ax >= az )
+        {
+            if ( fabs (da) < fabs (db) )
+            {
+                const double t = da / ( db - da );
+                p.y = va.y + ( va.y - vb.y ) * t;
+                p.z = va.z + ( va.z - vb.z ) * t;
+            }
+            else
+            {
+                const double t = db / ( db - da );
+                p.y = vb.y + ( vb.y - va.y ) * t;
+                p.z = vb.z + ( vb.z - va.z ) * t;
+            }
+            p.x = - ( plane.norm.y * p.y + plane.norm.z * p.z + plane.dist ) / plane.norm.x;
+        }
+        else
+        if ( ay >= ax && ay >= az )
+        {
+            if ( fabs (da) < fabs (db) )
+            {
+                const double t = da / ( db - da );
+                p.x = va.x + ( va.x - vb.x ) * t;
+                p.z = va.z + ( va.z - vb.z ) * t;
+            }
+            else
+            {
+                const double t = db / ( db - da );
+                p.x = vb.x + ( vb.x - va.x ) * t;
+                p.z = vb.z + ( vb.z - va.z ) * t;
+            }
+            p.y = - ( plane.norm.x * p.x + plane.norm.z * p.z + plane.dist ) / plane.norm.y;
+        }
+        else
+        {
+            if ( fabs (da) < fabs (db) )
+            {
+                const double t = da / ( db - da );
+                p.x = va.x + ( va.x - vb.x ) * t;
+                p.y = va.y + ( va.y - vb.y ) * t;
+            }
+            else
+            {
+                const double t = db / ( db - da );
+                p.x = vb.x + ( vb.x - va.x ) * t;
+                p.y = vb.y + ( vb.y - va.y ) * t;
+            }
+            p.z = - ( plane.norm.x * p.x + plane.norm.y * p.y + plane.dist ) / plane.norm.z;
+        }
+        const nat n = poly.size();
+        poly.inc() = p;
+        return n;
+    }
+
+    CutGuru3d ( CCArrRef<Vector3d> & p, const Plane3d & l ) : plane(l), nv ( p.size() )
+    {
+        poly = p;
+        status.resize ( nv );
+        dist.resize ( nv );
+        for ( nat i = 0; i < nv; ++i )
+        {
+            const double d = dist[i] = plane % poly[i];
+            status[i] = d < 0 ? -1 : d > 0 ? 1 : 0;
+        }
+    }
+    CCArrRef<Vector3d> & getVert() { return poly; }
+};
 
 } // namespace
 

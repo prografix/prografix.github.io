@@ -143,6 +143,7 @@
     <ClCompile Include="ShevTestDoc.cpp" />
     <ClCompile Include="ShevTestView.cpp" />
     <ClCompile Include="Shev\acoder.cpp" />
+    <ClCompile Include="Shev\ageom.cpp" />
     <ClCompile Include="Shev\approx.cpp" />
     <ClCompile Include="Shev\approx2d.cpp" />
     <ClCompile Include="Shev\approx3d.cpp" />
@@ -253,6 +254,7 @@
     <ClInclude Include="ShevTest.h" />
     <ClInclude Include="ShevTestDoc.h" />
     <ClInclude Include="ShevTestView.h" />
+    <ClInclude Include="Shev\ageom.h" />
     <ClInclude Include="Shev\AVL_TreeList.h" />
     <ClInclude Include="Shev\TrianFacet.h" />
     <ClInclude Include="StdAfx.h" />

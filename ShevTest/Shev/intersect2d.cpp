@@ -6,6 +6,7 @@
 #include "opti2d.h"
 #include "ShevArray.h"
 #include "intersect2d.h"
+#include "ageom.h"
 
 //**************************** 08.03.2011 *********************************//
 //
@@ -524,6 +525,121 @@ SuiteRef< Suite<Vector2d> > & cut ( CArrRef<Vector2d> poly, const Line2d & line,
     DynArray<double> d;
     res.resize();
     return cut ( poly, line, arr, d, res );
+}
+
+//**************************** 20.08.2026 *********************************//
+//
+//               Отсечение положительной части многоугольника
+//
+//**************************** 20.08.2026 *********************************//
+
+class CutGuru2d : public ICutPolygonGuru
+{
+    Suite<int> status;
+    DynArray<double> dist;
+    Suite<Vector2d> poly;
+    const Line2d line;
+    const nat nv;
+public:
+    virtual CCArrRef<int> & getStatus ()  { return status; }
+    virtual bool isOrder ( nat a, nat b )
+    {
+        return line.norm % ( poly[a] - poly[b] ) <= 0;
+    }
+    virtual nat newVert ( nat ia, nat ib )
+    {
+        const Vector2d & va = poly[ia];
+        const Vector2d & vb = poly[ib];
+        const double da = dist[ia];
+        const double db = dist[ib];
+        Vector2d p;
+        if ( fabs ( line.norm.x ) > fabs ( line.norm.y ) )
+        {
+            p.y = fabs ( da ) < fabs ( db ) ? 
+                va.y + ( va.y - vb.y ) * da / ( db - da ) : 
+                vb.y + ( vb.y - va.y ) * db / ( da - db );
+            p.x = - ( line.norm.y * p.y + line.dist ) / line.norm.x;
+        }
+        else
+        {
+            p.x = fabs ( da ) < fabs ( db ) ? 
+                va.x + ( va.x - vb.x ) * da / ( db - da ) : 
+                vb.x + ( vb.x - va.x ) * db / ( da - db );
+            p.y = - ( line.norm.x * p.x + line.dist ) / line.norm.y;
+        }
+        const nat n = poly.size();
+        poly.inc() = p;
+        return n;
+    }
+
+    CutGuru2d ( CCArrRef<Vector2d> & p, const Line2d & l ) : line(l), nv ( p.size() )
+    {
+        poly = p;
+        status.resize ( nv );
+        dist.resize ( nv );
+        for ( nat i = 0; i < nv; ++i )
+        {
+            const double d = dist[i] = line % poly[i];
+            status[i] = d < 0 ? -1 : d > 0 ? 1 : 0;
+        }
+    }
+    CCArrRef<Vector2d> & getVert() { return poly; }
+};
+
+bool cutPolygon ( CCArrRef<Vector2d> & poly, const Line2d & line, DynArrRef< DynArray<Vector2d> > & res )
+{
+    Suite< Suite<nat> > temp;
+    CutGuru2d guru ( poly, line );
+    if ( ! cutPolygon ( guru, temp ) )
+        return false;
+    CCArrRef<Vector2d> & vert = guru.getVert();
+    const nat np = temp.size();
+    res.resize ( np );
+    for ( nat i = 0; i < np; ++i )
+    {
+        CCArrRef<nat> & ii = temp[i];
+        DynArray<Vector2d> & pi = res[i];
+        const nat n = ii.size();
+        pi.resize ( n );
+        for ( nat j = 0; j < n; ++j ) pi[j] = vert[ii[j]];
+    }
+    return true;
+}
+
+//**************************** 20.08.2026 *********************************//
+//
+//               Разрезание многоугольника на две части
+//
+//**************************** 20.08.2026 *********************************//
+
+bool cutPolygon ( CCArrRef<Vector2d> & poly, const Line2d & line, DynArrRef< DynArray<Vector2d> > & plus, DynArrRef< DynArray<Vector2d> > & minus )
+{
+    Suite< Suite<nat> > ptemp, mtemp;
+    CutGuru2d guru ( poly, line );
+    if ( ! cutPolygon ( guru, ptemp, mtemp ) )
+        return false;
+    CCArrRef<Vector2d> & vert = guru.getVert();
+    const nat nm = mtemp.size();
+    minus.resize ( nm );
+    for ( nat i = 0; i < nm; ++i )
+    {
+        CCArrRef<nat> & ii = mtemp[i];
+        DynArray<Vector2d> & pi = minus[i];
+        const nat n = ii.size();
+        pi.resize ( n );
+        for ( nat j = 0; j < n; ++j ) pi[j] = vert[ii[j]];
+    }
+    const nat np = ptemp.size();
+    plus.resize ( np );
+    for ( nat i = 0; i < np; ++i )
+    {
+        CCArrRef<nat> & ii = ptemp[i];
+        DynArray<Vector2d> & pi = plus[i];
+        const nat n = ii.size();
+        pi.resize ( n );
+        for ( nat j = 0; j < n; ++j ) pi[j] = vert[ii[j]];
+    }
+    return true;
 }
 
 //**************************** 28.01.2011 *********************************//
