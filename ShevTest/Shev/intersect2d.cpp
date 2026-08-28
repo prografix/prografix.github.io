@@ -350,11 +350,145 @@ SuiteRef<Segment2d> & intersection ( const Segment2d & seg, CArrRef<Vector2d> po
     return res;
 }
 
+//**************************** 20.08.2026 *********************************//
+//
+//               Отсечение положительной части многоугольника
+//
+//**************************** 26.08.2026 *********************************//
+
+class CutGuru2d : public ICutPolygonGuru
+{
+    Suite<int> status;
+    DynArray<double> dist;
+    Suite<Vector2d> poly;
+    const Line2d line;
+    const nat nv;
+public:
+    virtual CCArrRef<int> & getStatus ()  { return status; }
+    virtual void arrange ( ArrRef<nat> & in, ArrRef<nat> & out )
+    {
+        nat i;
+        const nat m = in.size();
+        CmbArray<SortItem<double, nat>, 8> arr2 ( m+m );
+        ArrRef<SortItem<double, nat> > s1 ( arr2, 0, m ), s2 ( arr2, m, m );
+        for ( i = 0; i < m; ++i )
+        {
+            s1[i].head = line.norm % poly[in[i]];
+            s1[i].tail = i;
+            s2[i].head = line.norm % poly[out[i]];
+            s2[i].tail = i;
+        }
+        insertSort123 ( s1 );
+        insertSort123 ( s2 );
+        for ( i = 0; i < m; ++i )
+        {
+            in [i] = s1[i].tail;
+            out[i] = s2[i].tail;
+        }
+    }
+    virtual nat newVert ( nat ia, nat ib )
+    {
+        const Vector2d & va = poly[ia];
+        const Vector2d & vb = poly[ib];
+        const double da = dist[ia];
+        const double db = dist[ib];
+        Vector2d p;
+        if ( fabs ( line.norm.x ) > fabs ( line.norm.y ) )
+        {
+            p.y = fabs ( da ) < fabs ( db ) ? 
+                va.y + ( va.y - vb.y ) * da / ( db - da ) : 
+                vb.y + ( vb.y - va.y ) * db / ( da - db );
+            p.x = - ( line.norm.y * p.y + line.dist ) / line.norm.x;
+        }
+        else
+        {
+            p.x = fabs ( da ) < fabs ( db ) ? 
+                va.x + ( va.x - vb.x ) * da / ( db - da ) : 
+                vb.x + ( vb.x - va.x ) * db / ( da - db );
+            p.y = - ( line.norm.x * p.x + line.dist ) / line.norm.y;
+        }
+        const nat n = poly.size();
+        poly.inc() = p;
+        return n;
+    }
+
+    CutGuru2d ( CCArrRef<Vector2d> & p, const Line2d & l ) : line(l), nv ( p.size() )
+    {
+        poly = p;
+        dist.resize ( nv );
+        status.resize ( nv );
+        for ( nat i = 0; i < nv; ++i )
+        {
+            const double d = dist[i] = line % poly[i];
+            status[i] = d < 0 ? -1 : d > 0 ? 1 : 0;
+        }
+    }
+    CCArrRef<Vector2d> & getVert() { return poly; }
+};
+
+bool cutPolygon ( CCArrRef<Vector2d> & poly, const Line2d & line, DynArrRef< DynArray<Vector2d> > & res )
+{
+    Suite< Suite<nat> > temp;
+    CutGuru2d guru ( poly, line );
+    if ( ! cutPolygon ( guru, temp ) )
+        return false;
+    CCArrRef<Vector2d> & vert = guru.getVert();
+    const nat np = temp.size();
+    res.resize ( np );
+    for ( nat i = 0; i < np; ++i )
+    {
+        CCArrRef<nat> & ii = temp[i];
+        DynArray<Vector2d> & pi = res[i];
+        const nat n = ii.size();
+        pi.resize ( n );
+        for ( nat j = 0; j < n; ++j ) pi[j] = vert[ii[j]];
+    }
+    return true;
+}
+
+//**************************** 20.08.2026 *********************************//
+//
+//               Разрезание многоугольника на две части
+//
+//**************************** 26.08.2026 *********************************//
+
+bool cutPolygon ( CCArrRef<Vector2d> & poly, const Line2d & line, DynArrRef< DynArray<Vector2d> > & plus, DynArrRef< DynArray<Vector2d> > & minus )
+{
+    Suite< Suite<nat> > ptemp, mtemp;
+    CutGuru2d guru ( poly, line );
+    if ( ! cutPolygon ( guru, ptemp, mtemp ) )
+        return false;
+    CCArrRef<Vector2d> & vert = guru.getVert();
+    const nat nm = mtemp.size();
+    minus.resize ( nm );
+    for ( nat i = 0; i < nm; ++i )
+    {
+        CCArrRef<nat> & ii = mtemp[i];
+        DynArray<Vector2d> & pi = minus[i];
+        const nat n = ii.size();
+        pi.resize ( n );
+        for ( nat j = 0; j < n; ++j ) pi[j] = vert[ii[j]];
+    }
+    const nat np = ptemp.size();
+    plus.resize ( np );
+    for ( nat i = 0; i < np; ++i )
+    {
+        CCArrRef<nat> & ii = ptemp[i];
+        DynArray<Vector2d> & pi = plus[i];
+        const nat n = ii.size();
+        pi.resize ( n );
+        for ( nat j = 0; j < n; ++j ) pi[j] = vert[ii[j]];
+    }
+    return true;
+}
+
 //**************************** 28.01.2011 *********************************//
 //
-//               Отсечение части многоугольника прямой
+//            Пересечение выпуклого многоугольника с простым
 //
 //**************************** 28.01.2011 *********************************//
+
+static
 
 SuiteRef< Suite<Vector2d> > & cut ( CArrRef<Vector2d> poly, const Line2d & line, 
                                     DynArrRef<Set2<nat, Vector2d> > & arr, DynArrRef<double> & d,
@@ -519,138 +653,8 @@ SuiteRef< Suite<Vector2d> > & cut ( CArrRef<Vector2d> poly, const Line2d & line,
     return res;
 }
 
-SuiteRef< Suite<Vector2d> > & cut ( CArrRef<Vector2d> poly, const Line2d & line, SuiteRef< Suite<Vector2d> > & res )
-{
-    DynArray<Set2<nat, Vector2d> > arr;
-    DynArray<double> d;
-    res.resize();
-    return cut ( poly, line, arr, d, res );
-}
-
-//**************************** 20.08.2026 *********************************//
-//
-//               Отсечение положительной части многоугольника
-//
-//**************************** 20.08.2026 *********************************//
-
-class CutGuru2d : public ICutPolygonGuru
-{
-    Suite<int> status;
-    DynArray<double> dist;
-    Suite<Vector2d> poly;
-    const Line2d line;
-    const nat nv;
-public:
-    virtual CCArrRef<int> & getStatus ()  { return status; }
-    virtual bool isOrder ( nat a, nat b )
-    {
-        return line.norm % ( poly[a] - poly[b] ) <= 0;
-    }
-    virtual nat newVert ( nat ia, nat ib )
-    {
-        const Vector2d & va = poly[ia];
-        const Vector2d & vb = poly[ib];
-        const double da = dist[ia];
-        const double db = dist[ib];
-        Vector2d p;
-        if ( fabs ( line.norm.x ) > fabs ( line.norm.y ) )
-        {
-            p.y = fabs ( da ) < fabs ( db ) ? 
-                va.y + ( va.y - vb.y ) * da / ( db - da ) : 
-                vb.y + ( vb.y - va.y ) * db / ( da - db );
-            p.x = - ( line.norm.y * p.y + line.dist ) / line.norm.x;
-        }
-        else
-        {
-            p.x = fabs ( da ) < fabs ( db ) ? 
-                va.x + ( va.x - vb.x ) * da / ( db - da ) : 
-                vb.x + ( vb.x - va.x ) * db / ( da - db );
-            p.y = - ( line.norm.x * p.x + line.dist ) / line.norm.y;
-        }
-        const nat n = poly.size();
-        poly.inc() = p;
-        return n;
-    }
-
-    CutGuru2d ( CCArrRef<Vector2d> & p, const Line2d & l ) : line(l), nv ( p.size() )
-    {
-        poly = p;
-        status.resize ( nv );
-        dist.resize ( nv );
-        for ( nat i = 0; i < nv; ++i )
-        {
-            const double d = dist[i] = line % poly[i];
-            status[i] = d < 0 ? -1 : d > 0 ? 1 : 0;
-        }
-    }
-    CCArrRef<Vector2d> & getVert() { return poly; }
-};
-
-bool cutPolygon ( CCArrRef<Vector2d> & poly, const Line2d & line, DynArrRef< DynArray<Vector2d> > & res )
-{
-    Suite< Suite<nat> > temp;
-    CutGuru2d guru ( poly, line );
-    if ( ! cutPolygon ( guru, temp ) )
-        return false;
-    CCArrRef<Vector2d> & vert = guru.getVert();
-    const nat np = temp.size();
-    res.resize ( np );
-    for ( nat i = 0; i < np; ++i )
-    {
-        CCArrRef<nat> & ii = temp[i];
-        DynArray<Vector2d> & pi = res[i];
-        const nat n = ii.size();
-        pi.resize ( n );
-        for ( nat j = 0; j < n; ++j ) pi[j] = vert[ii[j]];
-    }
-    return true;
-}
-
-//**************************** 20.08.2026 *********************************//
-//
-//               Разрезание многоугольника на две части
-//
-//**************************** 20.08.2026 *********************************//
-
-bool cutPolygon ( CCArrRef<Vector2d> & poly, const Line2d & line, DynArrRef< DynArray<Vector2d> > & plus, DynArrRef< DynArray<Vector2d> > & minus )
-{
-    Suite< Suite<nat> > ptemp, mtemp;
-    CutGuru2d guru ( poly, line );
-    if ( ! cutPolygon ( guru, ptemp, mtemp ) )
-        return false;
-    CCArrRef<Vector2d> & vert = guru.getVert();
-    const nat nm = mtemp.size();
-    minus.resize ( nm );
-    for ( nat i = 0; i < nm; ++i )
-    {
-        CCArrRef<nat> & ii = mtemp[i];
-        DynArray<Vector2d> & pi = minus[i];
-        const nat n = ii.size();
-        pi.resize ( n );
-        for ( nat j = 0; j < n; ++j ) pi[j] = vert[ii[j]];
-    }
-    const nat np = ptemp.size();
-    plus.resize ( np );
-    for ( nat i = 0; i < np; ++i )
-    {
-        CCArrRef<nat> & ii = ptemp[i];
-        DynArray<Vector2d> & pi = plus[i];
-        const nat n = ii.size();
-        pi.resize ( n );
-        for ( nat j = 0; j < n; ++j ) pi[j] = vert[ii[j]];
-    }
-    return true;
-}
-
-//**************************** 28.01.2011 *********************************//
-//
-//            Пересечение выпуклого многоугольника с простым
-//
-//**************************** 28.01.2011 *********************************//
-
-Suite< Suite<Vector2d> > & 
-intersect1c ( CArrRef<Vector2d> conv, CArrRef<Vector2d> poly, 
-              Suite< Suite<Vector2d> > & tmp, Suite< Suite<Vector2d> > & res )
+Suite< DynArray<Vector2d> > & 
+intersect1c ( CArrRef<Vector2d> conv, CArrRef<Vector2d> poly, Suite< DynArray<Vector2d> > & res )
 {
     res.resize();
     const nat n = conv.size();
@@ -659,6 +663,7 @@ intersect1c ( CArrRef<Vector2d> conv, CArrRef<Vector2d> poly,
     Suite<double> d;
     res.inc() = poly;
     bool none = true;
+    Suite< DynArray<Vector2d> > tmp;
     for ( nat i = 0; i < conv.size(); ++i )
     {
         const Vector2d & a = conv.cprev(i);
@@ -666,19 +671,12 @@ intersect1c ( CArrRef<Vector2d> conv, CArrRef<Vector2d> poly,
         if ( a == b ) continue;
         none = false;
         const Line2d line ( a, b );
-        for ( nat j = 0; j < res.size(); ++j ) cut ( res[j], line, arr, d, tmp );
+        for ( nat j = 0; j < res.size(); ++j ) cutPolygon ( res[j], line, tmp );
         _swap ( res, tmp );
         tmp.resize();
     }
     if ( none ) res.dec();
     return res;
-}
-
-Suite< Suite<Vector2d> > & 
-intersect1c ( CArrRef<Vector2d> conv, CArrRef<Vector2d> poly, Suite< Suite<Vector2d> > & res )
-{
-    Suite< Suite<Vector2d> > tmp;
-    return intersect1c ( conv, poly, tmp, res );
 }
 
 //**************************** 23.05.2012 *********************************//
@@ -692,6 +690,14 @@ inline void put ( Suite<Vector2d> & p, const Vector2d & v )
     if ( p.size() == 0 || p.las() != v ) p.inc() = v;
 }
 
+inline void intersect1c ( CCArrRef<Vector2d> & poly1, CCArrRef<Vector2d> & poly2, Suite< Suite<Vector2d> > & res )
+{
+    Suite< DynArray<Vector2d> > tmp;
+    intersect1c ( poly1, poly2, tmp );
+    res.resize ( tmp.size() );
+    for ( nat i = 0; i < tmp.size(); ++i ) res[i] = tmp[i];
+}
+
 static bool intersection ( ArrRef<Vector2d> & poly1, ArrRef<Vector2d> & poly2, Suite< Suite<Vector2d> > & res )
 {
     nat i, j;
@@ -701,23 +707,39 @@ static bool intersection ( ArrRef<Vector2d> & poly1, ArrRef<Vector2d> & poly2, S
     double a1 = area ( poly1 );
     double a2 = area ( poly2 );
     if ( a1 == 0 || a2 == 0 ) return true;
+    nat n1 = poly1.size();
+    nat n2 = poly2.size();
 // Если один из многоугольников выпуклый, то применяем специальный алгоритм пересечения
     if ( a1 > 0 && a2 > 0 )
     {
-        if ( isConvex ( poly1 ) )
+        if ( n1 < n2 )
         {
-            intersect1c ( poly1, poly2, res );
-            return true;
+            if ( isConvex ( poly1 ) )
+            {
+                intersect1c ( poly1, poly2, res );
+                return true;
+            }
+            if ( isConvex ( poly2 ) )
+            {
+                intersect1c ( poly2, poly1, res );
+                return true;
+            }
         }
-        if ( isConvex ( poly2 ) )
+        else
         {
-            intersect1c ( poly2, poly1, res );
-            return true;
+            if ( isConvex ( poly2 ) )
+            {
+                intersect1c ( poly2, poly1, res );
+                return true;
+            }
+            if ( isConvex ( poly1 ) )
+            {
+                intersect1c ( poly1, poly2, res );
+                return true;
+            }
         }
     }
 // Делаем первым многоугольник с большей площадью по модулю
-    nat n1 = poly1.size();
-    nat n2 = poly2.size();
     Vector2d * vert1 = poly1();
     Vector2d * vert2 = poly2();
     if ( fabs ( a1 ) < fabs ( a2 ) )
