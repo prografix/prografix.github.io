@@ -6,16 +6,16 @@
 class ICutPolygonGuru
 {
 public:
+    virtual nat newVert ( nat, nat ) = 0;
     virtual CCArrRef<int> & getStatus () = 0;
-    virtual bool isOrder ( nat, nat ) = 0;
-    virtual nat  newVert ( nat, nat ) = 0;
+    virtual void arrange ( ArrRef<nat> & in, ArrRef<nat> & out ) = 0;
 };
 
 //**************************** 20.08.2026 *********************************//
 //
 //               Отсечение положительной части многоугольника
 //
-//**************************** 20.08.2026 *********************************//
+//**************************** 26.08.2026 *********************************//
 
 bool cutPolygon ( ICutPolygonGuru & guru, SuiteRef< Suite<nat> > & minus );
 
@@ -23,6 +23,6 @@ bool cutPolygon ( ICutPolygonGuru & guru, SuiteRef< Suite<nat> > & minus );
 //
 //               Разрезание многоугольника на две части
 //
-//**************************** 20.08.2026 *********************************//
+//**************************** 26.08.2026 *********************************//
 
 bool cutPolygon ( ICutPolygonGuru & guru, SuiteRef< Suite<nat> > & plus, SuiteRef< Suite<nat> > & minus );

@@ -362,7 +362,6 @@ class CutGuru2d : public ICutPolygonGuru
     DynArray<double> dist;
     Suite<Vector2d> poly;
     const Line2d line;
-    const nat nv;
 public:
     virtual CCArrRef<int> & getStatus ()  { return status; }
     virtual void arrange ( ArrRef<nat> & in, ArrRef<nat> & out )
@@ -412,8 +411,9 @@ public:
         return n;
     }
 
-    CutGuru2d ( CCArrRef<Vector2d> & p, const Line2d & l ) : line(l), nv ( p.size() )
+    CutGuru2d ( CCArrRef<Vector2d> & p, const Line2d & l ) : line(l)
     {
+        const nat nv = p.size();
         poly = p;
         dist.resize ( nv );
         status.resize ( nv );
@@ -486,184 +486,17 @@ bool cutPolygon ( CCArrRef<Vector2d> & poly, const Line2d & line, DynArrRef< Dyn
 //
 //            Пересечение выпуклого многоугольника с простым
 //
-//**************************** 28.01.2011 *********************************//
-
-static
-
-SuiteRef< Suite<Vector2d> > & cut ( CArrRef<Vector2d> poly, const Line2d & line, 
-                                    DynArrRef<Set2<nat, Vector2d> > & arr, DynArrRef<double> & d,
-                                    SuiteRef< Suite<Vector2d> > & res )
-{
-    const nat n = poly.size();
-    if ( n == 0 || ! line.norm )
-        return res;
-    const double ax = fabs ( line.norm.x );
-    const double ay = fabs ( line.norm.y );
-    const bool xgy = ax > ay;
-    double kx, ky, kd;
-    if ( xgy )
-    {
-        kx = line.norm.x > 0 ? 1 : -1;
-        ky = line.norm.y / ax;
-        kd = line.dist / ax;
-    }
-    else
-    {
-        kx = line.norm.x / ay;
-        ky = line.norm.y > 0 ? 1 : -1;
-        kd = line.dist / ay;
-    }
-    arr.resize ( n );
-    d.resize ( n );
-    nat i;
-    if ( xgy )
-    {
-        for ( i = 0; i < n; ++i )
-        {
-            double t = ky * poly[i].y + kd;
-            d[i] = kx * poly[i].x + t;
-        }
-    }
-    else
-    {
-        for ( i = 0; i < n; ++i )
-        {
-            double t = kx * poly[i].x + kd;
-            d[i] = ky * poly[i].y + t;
-        }
-    }
-    const nat n2 = n / 2;
-    LtdSuiteRef<Set2<nat, Vector2d> > v1 ( arr, 0, n2 ), v2 ( arr, n2, n2 );
-    for ( i = 0; i < n; ++i )
-    {
-        const Vector2d & va = poly.cprev(i);
-        const Vector2d & vb = poly[i];
-        const double a = d.cprev(i);
-        const double b = d[i];
-        const double c = a * b;
-        if ( c > 0 ) continue;
-        if ( c < 0 )
-        {
-            Set2<nat, Vector2d> & si = a < 0 ? v1.inc() : v2.inc();
-            si.a = i;
-            if ( xgy )
-            {
-                si.b.y = va.y + ( vb.y - va.y ) * ( a / ( a - b ) );
-                double t = ky * si.b.y + kd;
-                si.b.x = - kx * t;
-            }
-            else
-            {
-                si.b.x = va.x + ( vb.x - va.x ) * ( a / ( a - b ) );
-                double t = kx * si.b.x + kd;
-                si.b.y = - ky * t;
-            }
-        }
-        else
-        {
-            if ( a == 0 )
-            {
-                if ( b >= 0 || d.cprev(i>0?i-1:n-1) < 0 ) continue;
-                Set2<nat, Vector2d> & si = v2.inc();
-                si.a = i;
-                si.b = va;
-            }
-            else
-            {
-                if ( a > 0 || d.cnext(i) < 0 ) continue;
-                Set2<nat, Vector2d> & si = v1.inc();
-                si.a = i;
-                si.b = vb;
-            }
-        }
-    }
-    if ( v1.size() != v2.size() )
-        return res;
-    const nat m = v1.size();
-// Нет пересечения с прямой
-    if ( m == 0 )
-    {
-        for ( i = 0; i < n; ++i )
-        {
-            if ( d[i] < 0 )
-            {
-                res.inc() = poly;
-                break;
-            }
-        }
-        return res;
-    }
-// Пересечение с прямой - это один отрезок
-    if ( m == 1 )
-    {
-        Suite<Vector2d> & s = res.inc();
-        s.resize();
-        s.inc() = v2[0].b;
-        for ( i = v2[0].a;; )
-        {
-            if ( poly[i] != s.las() ) s.inc() = poly[i];
-            if ( ++i == n ) i = 0;
-            if ( i == v1[0].a ) break;
-        }
-        const Vector2d & v = v1[0].b;
-        if ( s[0] != v && s.las() != v ) s.inc() = v;
-        if ( s.size() < 3 ) res.dec();
-        return res;
-    }
-// Пересечение с прямой - это несколько отрезков
-    if ( v1[0].a < v2[0].a ) v1 <<= 1;
-    DynArray<SortItem<double, nat> > arr2 ( m+m );
-    ArrRef<SortItem<double, nat> > s1 ( arr2, 0, m ), s2 ( arr2, m, m );
-    for ( i = 0; i < m; ++i )
-    {
-        s1[i].head = line.norm % v1[i].b;
-        s1[i].tail = i;
-        s2[i].head = line.norm % v2[i].b;
-        s2[i].tail = i;
-    }
-    insertSort123 ( s1 );
-    insertSort123 ( s2 );
-    for ( nat j = 0; j < m; ++j )
-    {
-        if ( s2[j].tail == m ) continue;
-        Suite<Vector2d> & s = res.inc();
-        s.resize();
-        for ( nat k = j;; )
-        {
-            const nat c = s2[k].tail;
-            s2[k].tail = m;
-            const nat i1 = v1[c].a;
-            s.inc() = v2[c].b;
-            for ( i = v2[c].a;; )
-            {
-                if ( poly[i] != s.las() ) s.inc() = poly[i];
-                if ( ++i == n ) i = 0;
-                if ( i == i1 ) break;
-            }
-            const Vector2d & v = v1[c].b;
-            if ( s.las() != v && s[0] != v ) s.inc() = v;
-            for ( k = j; k < m; ++k )
-            {
-                if ( s1[k].tail == c ) break;
-            }
-            if ( k == j ) break;
-        }
-        if ( s.size() < 3 ) res.dec();
-    }
-    return res;
-}
+//**************************** 28.08.2026 *********************************//
 
 Suite< DynArray<Vector2d> > & 
-intersect1c ( CArrRef<Vector2d> conv, CArrRef<Vector2d> poly, Suite< DynArray<Vector2d> > & res )
+intersect1c ( CCArrRef<Vector2d> & conv, CCArrRef<Vector2d> & poly, Suite< DynArray<Vector2d> > & res )
 {
     res.resize();
     const nat n = conv.size();
     if ( n < 3 ) return res;
-    Suite<Set2<nat, Vector2d> > arr;
-    Suite<double> d;
     res.inc() = poly;
     bool none = true;
-    Suite< DynArray<Vector2d> > tmp;
+    Suite< DynArray<Vector2d> > tmp, one;
     for ( nat i = 0; i < conv.size(); ++i )
     {
         const Vector2d & a = conv.cprev(i);
@@ -671,9 +504,13 @@ intersect1c ( CArrRef<Vector2d> conv, CArrRef<Vector2d> poly, Suite< DynArray<Ve
         if ( a == b ) continue;
         none = false;
         const Line2d line ( a, b );
-        for ( nat j = 0; j < res.size(); ++j ) cutPolygon ( res[j], line, tmp );
-        _swap ( res, tmp );
         tmp.resize();
+        for ( nat j = 0; j < res.size(); ++j )
+        {
+            if ( ! cutPolygon ( res[j], line, one ) ) continue;
+            for ( nat k = 0; k < one.size(); ++k ) tmp.inc() = one[k];
+        }
+        _swap ( res, tmp );
     }
     if ( none ) res.dec();
     return res;
@@ -751,7 +588,6 @@ static bool intersection ( ArrRef<Vector2d> & poly1, ArrRef<Vector2d> & poly2, S
     ArrRef<Vector2d> p1 ( vert1, n1 );
     ArrRef<Vector2d> p2 ( vert2, n2 );
 // Находим точки пересечения границ многоугольников
-    const nat n = n2;
     Suite<Set4<Vector2d, nat, nat, bool> > vert;
     SortItem<double, Set4<Vector2d, nat, nat, bool> > v;
     Suite<SortItem<double, Set4<Vector2d, nat, nat, bool> > > arr;
@@ -760,8 +596,6 @@ static bool intersection ( ArrRef<Vector2d> & poly1, ArrRef<Vector2d> & poly2, S
         const Vector2d & va1 = p1[i];
         const Vector2d & vb1 = p1.cnext(i);
         const Vector2d dir1 ( vb1 - va1 );
-        const double sa1 = dir1 * va1;
-        const double sb1 = dir1 * vb1;
         arr.resize();
         for ( j = 0; j < n2; ++j )
         {

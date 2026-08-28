@@ -166,21 +166,13 @@ SuiteRef<Segment2d> & intersection ( CArrRef<Vector2d> poly, const Segment2d & s
 }
 
 
-//**************************** 28.01.2011 *********************************//
-//
-//               Отсечение части многоугольника прямой
-//
-//**************************** 28.01.2011 *********************************//
-
-SuiteRef< Suite<Vector2d> > & 
-cut ( CArrRef<Vector2d> poly, const Line2d & line, SuiteRef< Suite<Vector2d> > & res );
 
 
 //**************************** 20.08.2026 *********************************//
 //
 //               Отсечение положительной части многоугольника
 //
-//**************************** 20.08.2026 *********************************//
+//**************************** 26.08.2026 *********************************//
 
 bool cutPolygon ( CCArrRef<Vector2d> & poly, const Line2d & line, DynArrRef< DynArray<Vector2d> > & res );
 
@@ -189,7 +181,7 @@ bool cutPolygon ( CCArrRef<Vector2d> & poly, const Line2d & line, DynArrRef< Dyn
 //
 //               Разрезание многоугольника на две части
 //
-//**************************** 20.08.2026 *********************************//
+//**************************** 26.08.2026 *********************************//
 
 bool cutPolygon ( CCArrRef<Vector2d> & poly, const Line2d & line, DynArrRef< DynArray<Vector2d> > & plus, DynArrRef< DynArray<Vector2d> > & minus );
 
@@ -198,14 +190,11 @@ bool cutPolygon ( CCArrRef<Vector2d> & poly, const Line2d & line, DynArrRef< Dyn
 //
 //            Пересечение выпуклого многоугольника с простым
 //
-//**************************** 28.01.2011 *********************************//
+//**************************** 28.08.2026 *********************************//
 
-Suite< Suite<Vector2d> > & 
-intersect1c ( CArrRef<Vector2d> conv, CArrRef<Vector2d> poly, 
-              Suite< Suite<Vector2d> > & tmp, Suite< Suite<Vector2d> > & res );
 
-Suite< Suite<Vector2d> > & 
-intersect1c ( CArrRef<Vector2d> conv, CArrRef<Vector2d> poly, Suite< Suite<Vector2d> > & res );
+Suite< DynArray<Vector2d> > & 
+intersect1c ( CCArrRef<Vector2d> & conv, CCArrRef<Vector2d> & poly, Suite< DynArray<Vector2d> > & res );
 
 
 //**************************** 23.05.2012 *********************************//
