@@ -349,147 +349,6 @@ SuiteRef<Segment2d> & intersection ( const Segment2d & seg, CArrRef<Vector2d> po
     }
     return res;
 }
-static int areaSign ( const Vector2d & a, const Vector2d & b, const Vector2d & c )
-{
-    const double d = ( b - a ) % ( c - a );
-    return d > 0 ? 1 : d < 0 ? -1 : 0;
-}
-
-static void addVert ( Suite<Vector2d> & p, const Vector2d & v )
-{
-    if ( p.size() == 0 || p.las() != v ) p.inc() = v;
-}
-
-static nat advanceVert ( nat i, nat & cnt, nat n, bool inside, const Vector2d & v, Suite<Vector2d> & r )
-{
-    if ( inside ) addVert ( r, v );
-    ++cnt;
-    return i + 1 < n ? i + 1 : 0;
-}
-
-static bool insideConv ( const Vector2d & p, CCArrRef<Vector2d> & poly )
-{
-    const nat n = poly.size();
-    for ( nat i = 0; i < n; ++i )
-    {
-        const Vector2d & a = poly.cprev(i);
-        const Vector2d & b = poly[i];
-        if ( ( b - a ) % ( p - a ) < 0 ) return false;
-    }
-    return true;
-}
-
-static void copyPoly ( CCArrRef<Vector2d> & p, Suite<Vector2d> & r )
-{
-    r.resize ( p.size() );
-    for ( nat i = 0; i < p.size(); ++i ) r[i] = p[i];
-}
-
-static void finishPoly ( Suite<Vector2d> & tmp )
-{
-    if ( tmp.size() > 0 && tmp.las() == tmp[0] ) tmp.dec();
-    if ( tmp.size() < 3 ) tmp.resize();
-}
-
-void calcIntersect2c ( CCArrRef<Vector2d> & p1, CCArrRef<Vector2d> & p2, Suite<Vector2d> & res )
-{
-    res.resize();
-    const nat n = p1.size();
-    const nat m = p2.size();
-    if ( n < 3 || m < 3 ) return;
-    nat a = 0, b = 0, aa = 0, ba = 0;
-    int inflag = 0;
-    bool firstPoint = true;
-    Vector2d first;
-    const nat n2 = n + n;
-    const nat m2 = m + m;
-    while ( ( aa < n || ba < m ) && aa < n2 && ba < m2 )
-    {
-        const nat a1 = a > 0 ? a - 1 : n - 1;
-        const nat b1 = b > 0 ? b - 1 : m - 1;
-        const Vector2d A = p1[a] - p1[a1];
-        const Vector2d B = p2[b] - p2[b1];
-        if ( ! A )
-        {
-            a = advanceVert ( a, aa, n, false, p1[a], res );
-            continue;
-        }
-        if ( ! B )
-        {
-            b = advanceVert ( b, ba, m, false, p2[b], res );
-            continue;
-        }
-        const int cross = areaSign ( null2d, A, B );
-        const int aHB = areaSign ( p2[b1], p2[b], p1[a] );
-        const int bHA = areaSign ( p1[a1], p1[a], p2[b] );
-        const Def<Vector2d> ip = intersection ( Segment2d ( p1[a1], p1[a] ), Segment2d ( p2[b1], p2[b] ) );
-        int code = ip.isDef ? 1 : 0;
-        if ( ! code && cross == 0 && ( p2[b1] - p1[a1] ) % A == 0 )
-        {
-            const double t0 = A * p1[a1];
-            const double t1 = A * p1[a];
-            const double u0 = A * p2[b1];
-            const double u1 = A * p2[b];
-            if ( _min ( t0, t1 ) <= _max ( u0, u1 ) && _min ( u0, u1 ) <= _max ( t0, t1 ) )
-                code = 2;
-        }
-        if ( code == 1 )
-        {
-            if ( inflag == 0 && firstPoint )
-            {
-                aa = ba = 0;
-                firstPoint = false;
-                first = ip;
-            }
-            else if ( ! firstPoint && ip == first && res.size() > 0 )
-            {
-                break;
-            }
-            addVert ( res, ip );
-            if ( aHB > 0 ) inflag = 1;
-            else if ( bHA > 0 ) inflag = 2;
-        }
-        if ( code == 2 && A * B < 0 )
-        {
-            res.resize();
-            break;
-        }
-        if ( cross == 0 && aHB < 0 && bHA < 0 )
-        {
-            res.resize();
-            break;
-        }
-        if ( cross == 0 && aHB == 0 && bHA == 0 )
-        {
-            if ( inflag == 1 )
-                b = advanceVert ( b, ba, m, inflag == 2, p2[b], res );
-            else
-                a = advanceVert ( a, aa, n, inflag == 1, p1[a], res );
-        }
-        else if ( cross >= 0 )
-        {
-            if ( bHA > 0 )
-                a = advanceVert ( a, aa, n, inflag == 1, p1[a], res );
-            else
-                b = advanceVert ( b, ba, m, inflag == 2, p2[b], res );
-        }
-        else
-        {
-            if ( aHB > 0 )
-                b = advanceVert ( b, ba, m, inflag == 2, p2[b], res );
-            else
-                a = advanceVert ( a, aa, n, inflag == 1, p1[a], res );
-        }
-    }
-    if ( firstPoint )
-    {
-        if ( insideConv ( p1[0], p2 ) && insideConv ( p1.cnext(0), p2 ) )
-            copyPoly ( p1, res );
-        else if ( insideConv ( p2[0], p1 ) && insideConv ( p2.cnext(0), p1 ) )
-            copyPoly ( p2, res );
-    }
-    finishPoly ( res );
-}
 
 //**************************** 20.08.2026 *********************************//
 //
@@ -623,6 +482,160 @@ bool cutPolygon ( CCArrRef<Vector2d> & poly, const Line2d & line, DynArrRef< Dyn
     return true;
 }
 
+//**************************** 31.08.2026 *********************************//
+//
+//            Пересечение двух выпуклых многоугольников
+//
+//**************************** 31.08.2026 *********************************//
+
+inline int areaSign ( const Vector2d & a, const Vector2d & b, const Vector2d & c )
+{
+    const double d = ( b - a ) % ( c - a );
+    return d > 0 ? 1 : d < 0 ? -1 : 0;
+}
+
+inline void addVert ( SuiteRef<Vector2d> & p, const Vector2d & v )
+{
+    if ( p.size() == 0 || p.las() != v ) p.inc() = v;
+}
+
+inline nat advanceVert ( nat i, nat & cnt, nat n, bool inside, const Vector2d & v, SuiteRef<Vector2d> & r )
+{
+    if ( inside ) addVert ( r, v );
+    ++cnt;
+    return i + 1 < n ? i + 1 : 0;
+}
+
+static bool insideConv ( const Vector2d & p, CCArrRef<Vector2d> & poly )
+{
+    const nat n = poly.size();
+    for ( nat i = 0; i < n; ++i )
+    {
+        const Vector2d & a = poly.cprev(i);
+        const Vector2d & b = poly[i];
+        if ( ( b - a ) % ( p - a ) < 0 ) return false;
+    }
+    return true;
+}
+
+SuiteRef<Vector2d> & intersect2c ( CCArrRef<Vector2d> & p1, CCArrRef<Vector2d> & p2, SuiteRef<Vector2d> & res )
+{
+    res.resize();
+    const nat n = p1.size();
+    const nat m = p2.size();
+    if ( n < 3 || m < 3 )
+        return res;
+    nat a = 0, b = 0, aa = 0, ba = 0;
+    int inflag = 0;
+    bool firstPoint = true;
+    Vector2d first;
+    const nat n2 = n + n;
+    const nat m2 = m + m;
+    while ( ( aa < n || ba < m ) && aa < n2 && ba < m2 )
+    {
+        const nat a1 = a > 0 ? a - 1 : n - 1;
+        const Vector2d v1 = p1[a] - p1[a1];
+        if ( ! v1 )
+        {
+            a = advanceVert ( a, aa, n, false, p1[a], res );
+            continue;
+        }
+        const nat b1 = b > 0 ? b - 1 : m - 1;
+        const Vector2d v2 = p2[b] - p2[b1];
+        if ( ! v2 )
+        {
+            b = advanceVert ( b, ba, m, false, p2[b], res );
+            continue;
+        }
+        const int cross = areaSign ( null2d, v1, v2 );
+        const int aHB = areaSign ( p2[b1], p2[b], p1[a] );
+        const int bHA = areaSign ( p1[a1], p1[a], p2[b] );
+        const Def<Vector2d> ip = intersection ( Segment2d ( p1[a1], p1[a] ), Segment2d ( p2[b1], p2[b] ) );
+        int code = ip.isDef ? 1 : 0;
+        if ( ! code && cross == 0 && ( p2[b1] - p1[a1] ) % v1 == 0 )
+        {
+            const double t0 = v1 * p1[a1];
+            const double t1 = v1 * p1[a];
+            const double u0 = v1 * p2[b1];
+            const double u1 = v1 * p2[b];
+            if ( _min ( t0, t1 ) <= _max ( u0, u1 ) && _min ( u0, u1 ) <= _max ( t0, t1 ) )
+                code = 2;
+        }
+        if ( code == 1 )
+        {
+            if ( inflag == 0 && firstPoint )
+            {
+                aa = ba = 0;
+                firstPoint = false;
+                first = ip;
+            }
+            else if ( ! firstPoint && ip == first && res.size() > 0 )
+            {
+                break;
+            }
+            addVert ( res, ip );
+            if ( aHB > 0 ) inflag = 1;
+            else if ( bHA > 0 ) inflag = 2;
+        }
+        if ( code == 2 && v1 * v2 < 0 )
+        {
+            res.resize();
+            break;
+        }
+        if ( cross == 0 && aHB < 0 && bHA < 0 )
+        {
+            res.resize();
+            break;
+        }
+        if ( cross == 0 && aHB == 0 && bHA == 0 )
+        {
+            if ( inflag == 1 )
+                b = advanceVert ( b, ba, m, inflag == 2, p2[b], res );
+            else
+                a = advanceVert ( a, aa, n, inflag == 1, p1[a], res );
+        }
+        else if ( cross >= 0 )
+        {
+            if ( bHA > 0 )
+                a = advanceVert ( a, aa, n, inflag == 1, p1[a], res );
+            else
+                b = advanceVert ( b, ba, m, inflag == 2, p2[b], res );
+        }
+        else
+        {
+            if ( aHB > 0 )
+                b = advanceVert ( b, ba, m, inflag == 2, p2[b], res );
+            else
+                a = advanceVert ( a, aa, n, inflag == 1, p1[a], res );
+        }
+    }
+    if ( firstPoint )
+    {
+        if ( area ( p1 ) < area ( p2 ) )
+        {
+            Vector2d o = null2d;
+            o += p1;
+            o /= p1.size();
+            if ( insideConv ( o, p2 ) )
+                res = p1;
+        }
+        else
+        {
+            Vector2d o = null2d;
+            o += p2;
+            o /= p2.size();
+            if ( insideConv ( o, p1 ) )
+                res = p2;
+        }
+    }
+    else
+    {
+        if ( res.size() > 2 && res.las() == res[0] ) res.dec();
+        if ( res.size() < 3 ) res.resize();
+    }
+    return res;
+}
+
 //**************************** 28.01.2011 *********************************//
 //
 //            Пересечение выпуклого многоугольника с простым
@@ -682,26 +695,24 @@ static bool intersection ( ArrRef<Vector2d> & poly1, ArrRef<Vector2d> & poly2, S
     res.resize();
     if ( poly1.size() < 3 || poly2.size() < 3 ) return true;
 // Вычисляем площади многоугольников
-    double a1 = area ( poly1 );
-    double a2 = area ( poly2 );
-    if ( a1 == 0 || a2 == 0 ) return true;
-    nat n1 = poly1.size();
-    nat n2 = poly2.size();
-// Если один из многоугольников выпуклый, то применяем специальный алгоритм пересечения
-    if ( a1 > 0 && a2 > 0 )
+    double area1 = area ( poly1 );
+    double area2 = area ( poly2 );
+    if ( area1 == 0 || area2 == 0 ) return true;
+// Если какие-то из многоугольников выпуклые, то применяем специальные алгоритмы пересечения
+    if ( area1 > 0 && area2 > 0 )
     {
-        if ( n1 < n2 )
+        if ( isConvex ( poly1 ) )
         {
-            if ( isConvex ( poly1 ) )
-            {
-                intersect1c ( poly1, poly2, res );
-                return true;
-            }
             if ( isConvex ( poly2 ) )
             {
-                intersect1c ( poly2, poly1, res );
-                return true;
+                res.resize(1);
+                intersect2c ( poly1, poly2, res[0] );
+                if ( ! res[0].size() )
+                    res.resize();
             }
+            else
+                intersect1c ( poly1, poly2, res );
+            return true;
         }
         else
         {
@@ -710,24 +721,21 @@ static bool intersection ( ArrRef<Vector2d> & poly1, ArrRef<Vector2d> & poly2, S
                 intersect1c ( poly2, poly1, res );
                 return true;
             }
-            if ( isConvex ( poly1 ) )
-            {
-                intersect1c ( poly1, poly2, res );
-                return true;
-            }
         }
     }
 // Делаем первым многоугольник с большей площадью по модулю
+    nat n1 = poly1.size();
+    nat n2 = poly2.size();
     Vector2d * vert1 = poly1();
     Vector2d * vert2 = poly2();
-    if ( fabs ( a1 ) < fabs ( a2 ) )
+    if ( fabs ( area1 ) < fabs ( area2 ) )
     {
-        _swap ( a1, a2 );
         _swap ( n1, n2 );
         _swap ( vert1, vert2 );
+        _swap ( area1, area2 );
     }
-    ArrRef<Vector2d> p1 ( vert1, n1 );
-    ArrRef<Vector2d> p2 ( vert2, n2 );
+    CArrRef<Vector2d> p1 ( vert1, n1 );
+    CArrRef<Vector2d> p2 ( vert2, n2 );
 // Находим точки пересечения границ многоугольников
     Suite<Set4<Vector2d, nat, nat, bool> > vert;
     SortItem<double, Set4<Vector2d, nat, nat, bool> > v;
@@ -848,24 +856,11 @@ static bool intersection ( ArrRef<Vector2d> & poly1, ArrRef<Vector2d> & poly2, S
 // Случай, когда границы многоугольников не пересекаются
     if ( vert.size() == 0 )
     {
-        Def<Vector2d> o;
-        if ( a2 > 0 )
-        {
-            Def<Circle2d> cir = maxCircleInPolygon ( p2 );
-            if ( cir.isDef ) o = cir.o;
-        }
-        else
-        {
-            DynArray<Vector2d> temp ( p2 );
-            Def<Circle2d> cir = maxCircleInPolygon ( temp.reverse() );
-            if ( cir.isDef ) o = cir.o;
-        }
-        if ( ! o.isDef ) 
-        {
-            o = 0.5 * ( p2[0] + p2[1] );
-        }
-        if ( a1 > 0 == isIntersect ( o, p1 ) ) res.inc() = p2;
-        if ( a2 < 0 ) res.inc() = p1;
+        Vector2d o = null2d;
+        o += p2;
+        o /= n2;
+        if ( area1 > 0 == isIntersect ( o, p1 ) ) res.inc() = p2;
+        if ( area2 < 0 ) res.inc() = p1;
         return true;
     }
 // Случай, когда границы многоугольников пересекаются

@@ -367,16 +367,6 @@ void cutLinePolygon()
     const Line2d line ( a, b );
     DynArray<Segment2d> seg;
     if ( intersection ( quad, line, seg ).size() > 0 ) draw ( seg[0], 1, 1, 0 );
-    if ( 0 )
-    {
-        Suite< Suite<Vector2d> > res;
-        cut ( vert, line, res );
-        for ( nat i = 0; i < res.size(); ++i )
-        {
-            drawPolygon ( res[i], 1, 0, 1 );
-        }
-    }
-    else
     /*
     {
         DynArray< DynArray<Vector2d> > res;
@@ -406,7 +396,7 @@ void cutLinePolygon2()
 {
     static PRandPoint2d prand;
     FixArray<Vector2d, 12> poly;
-    Suite< Suite<Vector2d> > res; 
+    Suite< DynArray<Vector2d> > res; 
     for ( nat j = 0; j < 1000; ++j )
     {
         randPolygon ( poly );
@@ -427,10 +417,10 @@ void cutLinePolygon2()
             ky = line.norm.y > 0 ? 1 : -1;
             kd = line.dist / ay;
         }
-        cut ( poly, line, res );
+        cutPolygon ( poly, line, res );
         for ( nat k = 0; k < res.size(); ++k )
         {
-            Suite<Vector2d> & p = res[k];
+            CCArrRef<Vector2d> & p = res[k];
             if ( xgy )
             {
                 for ( nat i = 0; i < p.size(); ++i )
@@ -462,7 +452,7 @@ void intersect1c_test()
     randPolygon ( poly );
     drawPolygon ( conv, 0.4f, 0.8f, 0.8f );
     drawPolygon ( poly, 0.8f, 0.4f, 0.8f );
-    Suite< Suite<Vector2d> > res; 
+    Suite< DynArray<Vector2d> > res; 
     intersect1c ( conv, poly, res );
     for ( nat i = 0; i < res.size(); ++i )
     {
@@ -579,7 +569,7 @@ bool intersection2 ( CCArrRef<Vector2d> & poly1, CCArrRef<Vector2d> & poly2, Sui
 
 void intersectPolygons()
 {
-    FixArray<Vector2d, 5> poly1;
+    /*FixArray<Vector2d, 5> poly1;
     poly1[0] = Vector2d(1,-1);
     poly1[1] = Vector2d(0,0);
     poly1[2] = Vector2d(-0.5,2);
@@ -593,10 +583,14 @@ void intersectPolygons()
     poly2[3] = Vector2d(0,2);
     poly2[4] = Vector2d(-0.5,1);
     poly2[5] = Vector2d(-1,2);
-    poly2 *= 0.5;
+    poly2 *= 0.5;*/
+    const nat n = 9;
+    Suite<Vector2d> poly1(n,n),poly2(n,n);
     nat i;
     for ( i = 0; i < 1; ++i )
     {
+       // randConvexPolygon ( poly1 );
+       // randConvexPolygon ( poly2 );
         randPolygon ( poly1 );
         randPolygon ( poly2 );
     }
@@ -604,12 +598,22 @@ void intersectPolygons()
    // poly2.reverse();
     drawPolygon ( poly1, 0.4f, 0.8f, 0.8f );
     drawPolygon ( poly2, 0.8f, 0.4f, 0.8f );
-    Suite< Suite<Vector2d> > res; 
-    unionPolygons ( poly1, poly2, res );
+    //*
+    Suite< Suite<Vector2d> > res;
+double t1 = timeInSec ();
+    intersectPolygons ( poly1, poly2, res );
+double t2 = timeInSec ();
     for ( i = 0; i < res.size(); ++i )
     {
         drawPolygon ( res[i], 1, 1, 0 );
-    }
+    }/*/
+    Suite<Vector2d> res;
+double t1 = timeInSec ();
+    calcIntersect2c ( poly1, poly2, res );
+double t2 = timeInSec ();
+    drawPolygon ( res, 1, 1, 0 );
+*/
+//display << t2-t1 << NL;
 }
 
 void intersectPolygons2()
@@ -744,9 +748,9 @@ void intersect2d_test ()
 //    intersectSegmentEllipse();
 //    intersectLinePolygon();
 //    intersectSegmentPolygon();
-    cutLinePolygon();
+//    cutLinePolygon();
 //    intersect1c_test();
-//    intersectPolygons();
+    intersectPolygons();
 //    intersectHalfPlanes();
     endNewList();
 }

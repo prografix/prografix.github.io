@@ -50,6 +50,12 @@ SuiteRef&lt;Segment2d> & intersection ( const Segment2d & seg, CArrRef&lt;Vector
 SuiteRef&lt;Suite&lt;Vector2d>> & cut ( CArrRef&lt;Vector2d> poly, const Line2d & line, SuiteRef&lt; Suite&lt;Vector2d> > & res );
 </pre>
 </p>
+<p>&bull; Пересечение двух выпуклых многоугольников за линейное время от количества вершин.
+Обход вершин многоугольников против часовой стрелки:
+<pre>
+SuiteRef&lt;Vector2d> & intersect2c ( CCArrRef&lt;Vector2d> & poly1, CCArrRef&lt;Vector2d> & poly2, SuiteRef&lt;Vector2d> & res );
+</pre>
+</p>
 <p>&bull; Пересечение выпуклого многоугольника с простым многоугольником.
 Обход вершин многоугольников должен быть против часовой стрелки.
 По сторонам выпуклого многоугольника строятся прямые, которые по очереди отсекают части от второго многоугольника.

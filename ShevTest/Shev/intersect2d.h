@@ -186,12 +186,20 @@ bool cutPolygon ( CCArrRef<Vector2d> & poly, const Line2d & line, DynArrRef< Dyn
 bool cutPolygon ( CCArrRef<Vector2d> & poly, const Line2d & line, DynArrRef< DynArray<Vector2d> > & plus, DynArrRef< DynArray<Vector2d> > & minus );
 
 
+//**************************** 31.08.2026 *********************************//
+//
+//            Пересечение двух выпуклых многоугольников
+//
+//**************************** 31.08.2026 *********************************//
+
+SuiteRef<Vector2d> & intersect2c ( CCArrRef<Vector2d> & p1, CCArrRef<Vector2d> & p2, SuiteRef<Vector2d> & res );
+
+
 //**************************** 28.01.2011 *********************************//
 //
 //            Пересечение выпуклого многоугольника с простым
 //
 //**************************** 28.08.2026 *********************************//
-
 
 Suite< DynArray<Vector2d> > & 
 intersect1c ( CCArrRef<Vector2d> & conv, CCArrRef<Vector2d> & poly, Suite< DynArray<Vector2d> > & res );

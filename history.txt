@@ -3,6 +3,8 @@
 Разреженные матрицы
 Вписание многогранника в выпуклый многогранник
 
+2025 - функция optiL, разделы "Ряды Фурье" и "Ряды типа sin(x)/x".
+2024 - функция normalizeV2, шаблон Derived, статьи в Хабре
 2023 - функции splitPolygon, slu_LDLtO, intersectHalfPlanes и intersectHalfSpaces.
 2022 - функции _mina и _maxa.
 2021 - функция overlayConvexPolygons.
