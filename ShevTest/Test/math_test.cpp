@@ -3732,6 +3732,11 @@ void rcm ( const nat root, const nat * xadj, const nat * adjncy, nat * masc, nat
     }
 }
 
+void genrcm ()
+{
+
+}
+
 void test_fnroot()
 {
     nat root = 2, nlvl, n=8, ccsize;
