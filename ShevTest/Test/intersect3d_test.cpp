@@ -642,23 +642,50 @@ void intersectHalfSpaces()
 //
 //**************************** 20.08.2026 *********************************//
 
-class CutGuru3d : public ICutPolygonGuru
+class ICutPolyhedronGuru
+{
+public:
+    virtual nat newVert ( nat, nat ) = 0;
+    virtual CCArrRef<int> & getStatus () = 0;
+    virtual void arrange ( ArrRef<nat> & in, ArrRef<nat> & out ) = 0;
+};
+
+class CutPolyhedronGuru : public ICutPolyhedronGuru
 {
     Suite<int> status;
     DynArray<double> dist;
-    Suite<Vector3d> poly;
+    Suite<Vector3d> vert;
     const Plane3d plane;
     const nat nv;
 public:
     virtual CCArrRef<int> & getStatus ()  { return status; }
-    virtual bool isOrder ( nat a, nat b )
+    virtual void arrange ( ArrRef<nat> & in, ArrRef<nat> & out )
     {
-        return 0;//plane.norm % ( poly[a] - poly[b] ) <= 0;
+        nat i;
+        const nat m = in.size();
+        Vector3d dir ( 0, 0, 0 );
+        for ( i = 0; i < m; ++i ) dir += vert[out[i]] - vert[in[i]];
+        CmbArray<SortItem<double, nat>, 8> arr2 ( m+m );
+        ArrRef<SortItem<double, nat> > s1 ( arr2, 0, m ), s2 ( arr2, m, m );
+        for ( i = 0; i < m; ++i )
+        {
+            s1[i].head = dir * vert[in[i]];
+            s1[i].tail = i;
+            s2[i].head = dir * vert[out[i]];
+            s2[i].tail = i;
+        }
+        insertSort123 ( s1 );
+        insertSort123 ( s2 );
+        for ( i = 0; i < m; ++i )
+        {
+            in [i] = s1[i].tail;
+            out[i] = s2[i].tail;
+        }
     }
     virtual nat newVert ( nat ia, nat ib )
     {
-        const Vector3d & va = poly[ia];
-        const Vector3d & vb = poly[ib];
+        const Vector3d & va = vert[ia];
+        const Vector3d & vb = vert[ib];
         const double da = dist[ia];
         const double db = dist[ib];
         Vector3d p;
@@ -714,24 +741,108 @@ public:
             }
             p.z = - ( plane.norm.x * p.x + plane.norm.y * p.y + plane.dist ) / plane.norm.z;
         }
-        const nat n = poly.size();
-        poly.inc() = p;
+        const nat n = vert.size();
+        vert.inc() = p;
         return n;
     }
 
-    CutGuru3d ( CCArrRef<Vector3d> & p, const Plane3d & l ) : plane(l), nv ( p.size() )
+    CutPolyhedronGuru ( CCArrRef<Vector3d> & p, const Plane3d & l ) : plane(l), nv ( p.size() )
     {
-        poly = p;
+        vert = p;
         status.resize ( nv );
         dist.resize ( nv );
         for ( nat i = 0; i < nv; ++i )
         {
-            const double d = dist[i] = plane % poly[i];
+            const double d = dist[i] = plane % vert[i];
             status[i] = d < 0 ? -1 : d > 0 ? 1 : 0;
         }
     }
-    CCArrRef<Vector3d> & getVert() { return poly; }
+    CCArrRef<Vector3d> & getVert() { return vert; }
 };
+
+bool cut ( CutPolyhedronGuru & guru, CCArrRef<Facet> & facets )
+{
+    CCArrRef<int> & stataus = guru.getStatus();
+    nat i, j;
+// Находим рёбра многоугольников
+    List2n list;
+    //Suite<nat> & fullFacet = stor.fullFacet;
+    List<ListItem<List1n> > partFacet;
+    CmbSuite<SortItem<double, Set2<nat> >, 9> va, vb;
+    //Suite<SortItem<Set2<nat>, Vector3d> > & vert = stor.vert;
+    //fullFacet.resize();
+    //vert.resize();
+    for ( i = 0; i < facets.size(); ++i )
+    {
+        va.resize();
+        vb.resize();
+        const Facet & facet = facets[i];
+        if ( facet.nv < 3 ) continue;
+        for ( j = 0; j < facet.nv; ++j )
+        {
+            const nat u0 = facet.index[j];
+            const nat u1 = facet.index[j+1];
+            const int d0 = stataus[u0];
+            const int d1 = stataus[u1];
+            const int p = d0 * d1;
+            if ( p > 0 ) continue;
+            if ( p < 0 )
+            {
+                SortItem<double, Set2<nat> > & si = d0 < 0 ? va.inc() : vb.inc();
+                si.tail.a = j;
+                const nat ii = facet.index[facet.nv+1+j];
+                if ( i > ii )
+                {
+// Вершина многоугольника уже вычислена и находится в vert
+                    SortItem<Set2<nat>, Vector3d> v;
+                    v.head.a = ii;
+                    v.head.b = facet.index[facet.nv+facet.nv+1+j];
+                    //const nat k = lasEqu123 ( vert, v );
+                    //if ( k == vert.size() ) return false;
+                    //si.tail.b = nvold + k;
+                }
+                else
+                {
+// Вершину многоугольника надо вычислить
+                    //si.tail.b = nvold + vert.size();
+                    //SortItem<Set2<nat>, Vector3d> & v = vert.inc();
+                    //v.head.a = i;
+                    //v.head.b = j;
+                }
+            }
+            else
+            {
+                if ( d0 == 0 )
+                {
+                    if ( d1 >= 0 ) continue;
+                    if ( stataus[facet.index[j>0?j-1:facet.nv-1]] < 0 ) continue;
+                    SortItem<double, Set2<nat> > & si = vb.inc();
+                    si.tail.a = j;
+                    si.tail.b = u0;
+                }
+                else
+                {
+                    if ( d0 > 0 ) continue;
+                    nat j2 = j + 2;
+                    if ( j2 > facet.nv ) j2 -= facet.nv;
+                    if ( stataus[facet.index[j2]] < 0 ) continue;
+                    SortItem<double, Set2<nat> > & si = va.inc();
+                    si.tail.a = j;
+                    si.tail.b = u1;
+                }
+            }
+        }
+        const nat m = va.size();
+        if ( m == 0 )
+        {
+// Нет пересечения грани с плоскостью
+            for ( j = 0; j < facet.nv; ++j )
+            {
+            }
+        }
+    }
+    return false;
+}
 
 } // namespace
 
