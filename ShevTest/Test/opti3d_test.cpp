@@ -761,12 +761,61 @@ Def<Sphere3d> maxSphereInConvexPolyhedron1 ( const Segment3d & seg, CArrRef<cons
     return s;
 }
 
+bool maxSphereLP3 ( CArrRef<Plane3d> plane, ArrRef<nat> idx, nat h, Sphere3d & s )
+{
+    const nat n = idx.size();
+    bool ok = false;
+    for ( nat i = 2; i < n; ++i )
+    {
+        const bool s_ok = ok && plane[idx[i]] % s.o + s.r <= 0;
+        Sphere3d t;
+        //const bool t_ok = maxSphereLP2 ( plane, ArrRef<nat> ( idx, 0, i ), h, idx[i], rnd, t );
+        //ok = acceptSphere ( s_ok, s, t_ok, t );
+    }
+    return ok;
+}
+
 Def<Sphere3d> maxSphereInConvexPolyhedron1 ( const Polyhedron & poly )
 {
-    if ( poly.facet.size() < 4 || poly.vertex.size() < 4 ) return Def<Sphere3d>();
-    DynArray<const Plane3d *> plane ( poly.facet.size() );
-    for ( nat i = 0; i < poly.facet.size(); ++i ) plane[i] = & poly.facet[i].plane;
-    return maxSphereInConvexPolyhedron1 ( dimensions ( poly.vertex ), plane );
+    if ( poly.facet.size() < 4 || poly.vertex.size() < 4 )
+        return Def<Sphere3d>();
+    const Def<Segment3d> s = dimensions ( poly.vertex );
+    const double h = -0.1 * norm2 ( s.a - s.b );
+    const nat n = poly.facet.size();
+    const nat m = n + 4;
+    DynArray<Plane3d> plane ( m );
+    plane[0].norm = Vector3d ( -1, +1, -1 );
+    plane[1].norm = Vector3d ( -1, -1, +1 );
+    plane[2].norm = Vector3d ( +1, -1, -1 );
+    plane[3].norm = Vector3d ( +1, +1, +1 );
+    nat i;
+    for ( i = 0; i < 4; ++i )
+    {
+        Plane3d & pi = plane[i];
+        pi.dist = pi.norm * poly.vertex[0];
+        for ( nat j = 1; j < poly.vertex.size(); ++j ) _maxa ( pi.dist, pi.norm * poly.vertex[j] );
+        pi.dist = h - pi.dist;
+        pi.setNorm2();
+    }
+    DynArray<nat> idx ( n );
+    for ( i = 0; i < n; ++i ) idx[i] = i;
+    PRand rnd ( n );
+    shuffle ( idx, rnd );
+    for ( i = 0; i < n; ++i ) plane[i+4] = poly.facet[idx[i]].plane;
+    SLU4<double> slu;
+    slu.aa = plane[0].norm.x; slu.ab = plane[0].norm.y; slu.ac = plane[0].norm.z; slu.ad = 1; slu.ae = -plane[0].dist;
+    slu.ba = plane[1].norm.x; slu.bb = plane[1].norm.y; slu.bc = plane[1].norm.z; slu.bd = 1; slu.be = -plane[1].dist;
+    slu.ca = plane[2].norm.x; slu.cb = plane[2].norm.y; slu.cc = plane[2].norm.z; slu.cd = 1; slu.ce = -plane[2].dist;
+    slu.da = plane[3].norm.x; slu.db = plane[3].norm.y; slu.dc = plane[3].norm.z; slu.dd = 1; slu.de = -plane[3].dist;
+    Def<Sphere3d> res;
+    slu.gauss ( res.o.x, res.o.y, res.o.z, res.r );
+    bool ok = false;
+    for ( i = 4; i < m; ++i )
+    {
+        if ( plane[i] % res.o + res.r <= 0 )
+            continue;
+    }
+    return res;
 }
 
 Polyhedron & randPolyhedron ( nat np, Polyhedron & poly )
