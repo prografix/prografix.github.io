@@ -672,149 +672,187 @@ void minSphereLine_test()
     display << "end" << NL;
 }
 
-Def<Sphere3d> maxSphereInConvexPolyhedron1 ( const Segment3d & seg, CArrRef<const Plane3d *> plane )
+class SphereInConvexGuru
 {
-    Def<Sphere3d> s;
-    if ( plane.size() < 4 || seg.a == seg.b ) return s;
-    Plane3d tetra[4];
-    tetra[0].norm = Vector3d ( -1., 0., 0. );
-    tetra[1].norm = Vector3d ( 0., -1., 0. );
-    tetra[2].norm = Vector3d ( 0., 0., -1. );
-    tetra[3].norm = Vector3d ( 1., 1., 1. ).setNorm2();
-    const double shift = ( seg.b.x - seg.a.x + seg.b.y - seg.a.y + seg.b.z - seg.a.z ) / 8.;
-    tetra[0].dist = seg.a.x - shift;
-    tetra[1].dist = seg.a.y - shift;
-    tetra[2].dist = seg.a.z - shift;
-    tetra[3].dist = - ( tetra[3].norm * seg.b ) - shift;
-    const Plane3d * arr[4];
-    arr[0] = tetra;
-    arr[1] = tetra + 1;
-    arr[2] = tetra + 2;
-    arr[3] = tetra + 3;
-    Vector3d dir ( 1., 1., 1. );
-    Def<Vector3d> point ( Vector3d ( arr[0]->dist, arr[1]->dist, arr[2]->dist ) );
-    s.r = ( *arr[3] % point ) / ( -1. - dir * arr[3]->norm );
-    s.o = point + s.r * dir;
-    const double eps = 1e-9 * shift;
-    nat k;
-    for ( k = 0; k < 2*plane.size(); ++k )
+    DynArray<nat> index;
+    double micro;
+    Vector4d arr[5];
+    Plane3d plane[4];
+    const Polyhedron & poly;
+    const nat n;
+public:
+    SphereInConvexGuru ( const Polyhedron & p ) : poly(p), n ( p.facet.size() )
     {
-        double max = - s.r;
-        nat i, im;
-        for ( i = 0; i < plane.size(); ++i )
-        {
-            const double t = *plane[i] % s.o;
-            if ( max < t ) max = t, im = i;
-        }
-        if ( max + s.r <= eps )
-        {
-            break;
-        }
-        nat ib = 4;
-        Vector3d lo;
-        double lr = 0.;
+        const nat m = n + 4;
+        index.resize ( m );
+        const double c = 1 / sqrt ( 3 );
+        plane[0].norm = Vector3d ( -c, +c, -c );
+        plane[1].norm = Vector3d ( -c, -c, +c );
+        plane[2].norm = Vector3d ( +c, -c, -c );
+        plane[3].norm = Vector3d ( +c, +c, +c );
+        nat i;
         for ( i = 0; i < 4; ++i )
         {
-            const Plane3d * temp[3];
-            nat j, m = 0;
-            for ( j = 0; j < 4; ++j )
-            {
-                if ( j == i ) continue;
-                temp[m++] = arr[j];
-            }
-            point = intersection ( *temp[0], *temp[1], *temp[2] );
-            if ( ! point )
-            {
-                continue;
-            }
-            dir = ( temp[0]->norm - temp[2]->norm ) % ( temp[1]->norm - temp[2]->norm );
-            const Vector3d ave = ( temp[0]->norm + temp[1]->norm + temp[2]->norm ) / 3.;
-            double s = dir * ave;
-            if ( s > 0 )
-            {
-                s = - s;
-                dir = - dir;
-            }
-            const double sm = dir * plane[im]->norm;
-            if ( sm < 0 )
-            {
-                continue;
-            }
-            const double t = ( *plane[im] % point ) / ( sm - s );
-            const double q = t * s;
-            if ( q > lr )
-            {
-                lr = q;
-                lo = point - t * dir;
-                ib = i;
-            }
+            Plane3d & pi = plane[i];
+            pi.dist = pi.norm * poly.vertex[0];
+            for ( nat j = 1; j < poly.vertex.size(); ++j ) _maxa ( pi.dist, pi.norm * poly.vertex[j] );
+            pi.dist = - pi.dist;
         }
-        if ( ib == 4 )
+        double r = ( plane[0].dist + plane[1].dist + plane[2].dist + plane[3].dist ) / -4;
+        const double q = sqrt ( 3 ) / 2;
+        arr[0].x1 = ( plane[0].dist + plane[1].dist + r + r ) * q;
+        arr[0].x2 = ( plane[1].dist + plane[2].dist + r + r ) * q;
+        arr[0].x3 = ( plane[2].dist + plane[0].dist + r + r ) * q;
+        arr[0].x4 = r;
+        arr[1] = Vector4d ( +1, -1, +1, -c ).setNorm2();
+        arr[2] = Vector4d ( +1, +1, -1, -c ).setNorm2();
+        arr[3] = Vector4d ( -1, +1, +1, -c ).setNorm2();
+        arr[4] = Vector4d ( -1, -1, -1, -c ).setNorm2();
+        micro = 1e-9 * r;
+        r += micro;
+        for ( i = 0; i < 4; ++i )
         {
-            s.isDef = true;
-            return s;
+            plane[i].dist -= micro;
+            index[i] = i + n;
         }
-        s.o = lo;
-        s.r = lr;
-        arr[ib] = plane[im];
+        for ( i = 0; i < n; ++i ) index[i+4] = i;
+        PRand rand ( n );
+        shuffle ( ArrRef<nat> ( index, 4, n ), rand );
+       // check ();
     }
-    return s;
-}
-
-bool maxSphereLP3 ( CArrRef<Plane3d> plane, ArrRef<nat> idx, nat h, Sphere3d & s )
-{
-    const nat n = idx.size();
-    bool ok = false;
-    for ( nat i = 2; i < n; ++i )
+    bool isNoCut ( nat i )
     {
-        const bool s_ok = ok && plane[idx[i]] % s.o + s.r <= 0;
-        Sphere3d t;
-        //const bool t_ok = maxSphereLP2 ( plane, ArrRef<nat> ( idx, 0, i ), h, idx[i], rnd, t );
-        //ok = acceptSphere ( s_ok, s, t_ok, t );
+        const Vector4d & v = arr[0];
+        i = index[i];
+        const Plane3d & p = i < n ? poly.facet[i].plane : plane[i-n];
+        return p.norm.x * v.x1 + p.norm.y * v.x2 + p.norm.z * v.x3 + p.dist + v.x4 < micro;
     }
-    return ok;
+    bool makeNewSphere ( nat k, nat j )
+    {
+        nat i = index[j];
+        const Plane3d & p = i < n ? poly.facet[i].plane : plane[i-n];
+        const Vector4d cor ( p.norm.x, p.norm.y, p.norm.z, 1. );
+        nat ib = 0;
+        double sg, max;
+        for ( i = 1; i <= k; ++i )
+        {
+            const Vector4d & v = arr[i];
+            double t = cor * v;
+            if ( t > -1e-8 ) continue;
+            t = 1./ t;
+            if ( ib == 0 )
+            {
+                max = v.x4 * t;
+                ib = i;
+                sg = t;
+            }
+            else
+            {
+                const double s = v.x4 * t;
+                if ( s < max ) max = s, ib = i, sg = t;
+            }
+        }
+        if ( ib == 0 )
+            return false;
+        Vector4d & a0 = arr[0];
+        const Vector4d & v = arr[ib];
+        const double dist = p.norm.x * a0.x1 + p.norm.y * a0.x2 + p.norm.z * a0.x3 + p.dist + a0.x4;
+        a0 -= v * ( dist * sg );
+        for ( i = 1; i <= 4; ++i )
+        {
+            if ( i == ib ) continue;
+            Vector4d & ai = arr[i];
+            ai -= v * ( ( cor * ai ) * sg );
+            ai *= ( 1./ sqrt ( ai * ai ) );
+        }
+        _swap ( index[ib-1], index[j] );
+        if ( ib != k )
+        {
+            _swap ( index[ib-1], index[k-1] );
+            _swap ( arr[ib], arr[k] );
+        }//check ();
+        return true;
+    }
+    void check ()
+    {
+        double max[5] = { 0, 0, 0, 0, 0 };
+        const Vector4d & a0 = arr[0];
+        const Vector4d & a1 = arr[1];
+        const Vector4d & a2 = arr[2];
+        const Vector4d & a3 = arr[3];
+        const Vector4d & a4 = arr[4];
+        for ( nat j = 0; j < 4; ++j )
+        {
+            nat i = index[j];
+            const Plane3d & p = i < n ? poly.facet[i].plane : plane[i-n];
+            double t = p.norm.x * a0.x1 + p.norm.y * a0.x2 + p.norm.z * a0.x3 + a0.x4 + p.dist;
+            _maxa ( max[0], fabs(t));
+            if ( j != 0 ) t = p.norm.x * a1.x1 + p.norm.y * a1.x2 + p.norm.z * a1.x3 + a1.x4;
+            _maxa ( max[1], fabs(t));
+            if ( j != 1 ) t = p.norm.x * a2.x1 + p.norm.y * a2.x2 + p.norm.z * a2.x3 + a2.x4;
+            _maxa ( max[2], fabs(t));
+            if ( j != 2 ) t = p.norm.x * a3.x1 + p.norm.y * a3.x2 + p.norm.z * a3.x3 + a3.x4;
+            _maxa ( max[3], fabs(t));
+            if ( j != 3 ) t = p.norm.x * a4.x1 + p.norm.y * a4.x2 + p.norm.z * a4.x3 + a4.x4;
+            _maxa ( max[4], fabs(t));
+        }
+        for ( nat j = 0; j < 5; ++j )
+        if ( max[j] > 1e-9 )
+            max[j] = max[j];
+    }
+    Sphere3d getSphere()
+    {
+        const Vector4d & a0 = arr[0];
+        Sphere3d s;
+        s.o.x = a0.x1;
+        s.o.y = a0.x2;
+        s.o.z = a0.x3;
+        s.r = a0.x4;
+        return s;
+    }
+};
+
+bool runSeidelMethod ( nat n, SphereInConvexGuru & guru )
+{
+    for ( nat i4 = 4; i4 < n; ++i4 )
+    {
+        if ( guru.isNoCut ( i4 ) )
+            continue;
+        if ( ! guru.makeNewSphere ( 4, i4 ) )
+            return false;
+        for ( nat i3 = 4; i3 <= i4; ++i3 )
+        {
+            if ( guru.isNoCut ( i3 ) )
+                continue;
+            if ( ! guru.makeNewSphere ( 3, i3 ) )
+                return false;
+            for ( nat i2 = 4; i2 <= i3; ++i2 )
+            {
+                if ( guru.isNoCut ( i2 ) )
+                    continue;
+                if ( ! guru.makeNewSphere ( 2, i2 ) )
+                    return false;
+                for ( nat i1 = 4; i1 <= i2; ++i1 )
+                {
+                    if ( guru.isNoCut ( i1 ) )
+                        continue;
+                    if ( ! guru.makeNewSphere ( 1, i1 ) )
+                        return false;
+                }
+            }
+        }
+    }
+    return true;
 }
 
 Def<Sphere3d> maxSphereInConvexPolyhedron1 ( const Polyhedron & poly )
 {
-    if ( poly.facet.size() < 4 || poly.vertex.size() < 4 )
-        return Def<Sphere3d>();
-    const Def<Segment3d> s = dimensions ( poly.vertex );
-    const double h = -0.1 * norm2 ( s.a - s.b );
-    const nat n = poly.facet.size();
-    const nat m = n + 4;
-    DynArray<Plane3d> plane ( m );
-    plane[0].norm = Vector3d ( -1, +1, -1 );
-    plane[1].norm = Vector3d ( -1, -1, +1 );
-    plane[2].norm = Vector3d ( +1, -1, -1 );
-    plane[3].norm = Vector3d ( +1, +1, +1 );
-    nat i;
-    for ( i = 0; i < 4; ++i )
-    {
-        Plane3d & pi = plane[i];
-        pi.dist = pi.norm * poly.vertex[0];
-        for ( nat j = 1; j < poly.vertex.size(); ++j ) _maxa ( pi.dist, pi.norm * poly.vertex[j] );
-        pi.dist = h - pi.dist;
-        pi.setNorm2();
-    }
-    DynArray<nat> idx ( n );
-    for ( i = 0; i < n; ++i ) idx[i] = i;
-    PRand rnd ( n );
-    shuffle ( idx, rnd );
-    for ( i = 0; i < n; ++i ) plane[i+4] = poly.facet[idx[i]].plane;
-    SLU4<double> slu;
-    slu.aa = plane[0].norm.x; slu.ab = plane[0].norm.y; slu.ac = plane[0].norm.z; slu.ad = 1; slu.ae = -plane[0].dist;
-    slu.ba = plane[1].norm.x; slu.bb = plane[1].norm.y; slu.bc = plane[1].norm.z; slu.bd = 1; slu.be = -plane[1].dist;
-    slu.ca = plane[2].norm.x; slu.cb = plane[2].norm.y; slu.cc = plane[2].norm.z; slu.cd = 1; slu.ce = -plane[2].dist;
-    slu.da = plane[3].norm.x; slu.db = plane[3].norm.y; slu.dc = plane[3].norm.z; slu.dd = 1; slu.de = -plane[3].dist;
     Def<Sphere3d> res;
-    slu.gauss ( res.o.x, res.o.y, res.o.z, res.r );
-    bool ok = false;
-    for ( i = 4; i < m; ++i )
-    {
-        if ( plane[i] % res.o + res.r <= 0 )
-            continue;
-    }
+    if ( poly.facet.size() < 4 || poly.vertex.size() < 4 )
+        return res;
+    SphereInConvexGuru guru ( poly );
+    if ( runSeidelMethod ( poly.facet.size()+4, guru ) )
+        res = guru.getSphere();
     return res;
 }
 
@@ -851,22 +889,29 @@ void maxSphereInConvexPolyhedron_test ()
         s2[i] = 0;
     }
     static PRand prand;
-    for ( i = 0; i < 4000; ++i )
+    for ( i = 0; i < 1; ++i )
     {
         const nat np = 4 + prand.number(nn-3);
         Polyhedron poly;
         randPolyhedron ( np, poly );
-//        makeCuboid ( cx, cy, cz, poly );
-        Sphere3d o1, o2;
-if ( i == 17956 )
+if ( i < 9 )
 {
-    i = i;
+//    continue;
 }
+        //poly.makeCube ( 1 );
+        //poly.makeTetrahedron ( 1 );
+        draw ( poly, 0, 1, 1, 0, VM_WIRE );
+        Sphere3d o1, o2;
         double t0 = timeInSec();
         o1 = maxSphereInConvexPolyhedron1 ( poly );
+        draw ( o1, 1, 1, 0, 0, VM_WIRE );
         double t1 = timeInSec();
         o2 = maxSphereInConvexPolyhedron ( poly );
         double t2 = timeInSec();
+        draw ( o2, 0, 1, 0, 0, VM_WIRE );
+        display << o1.r << o1.o << NL;
+        display << o2.r << o2.o << NL;
+        display << t1-t0 << t2-t1 << NL;
         if ( o1.r <= 0 || o2.r <= 0 )
         {
 if ( i == 0 )
@@ -885,13 +930,13 @@ na[poly.vertex.size()] += 1;
 s1[poly.vertex.size()] += t1 - t0;
 s2[poly.vertex.size()] += t2 - t1;
 //display << poly.nfacets << t1 - t0 << t2 - t1 << NL;
-            if ( fabs ( o1.r - o2.r ) > 1e-11 ) display << i << o1.r << o2.r << o1.r - o2.r << NL;
+            //if ( fabs ( o1.r - o2.r ) > 1e-11 ) display << i << o1.r << o2.r << o1.r - o2.r << NL;
         }
     }
     for ( i = 0; i <= nn; ++i )
     {
         if ( na[i] == 0 ) continue;
-        display << i << s1[i] / na[i] << s2[i] / na[i] << na[i] << NL;
+        //display << i << s1[i] / na[i] << s2[i] / na[i] << na[i] << NL;
     }
     display << "end" << NL;
 }
@@ -3965,10 +4010,10 @@ void opti3d_test ()
 //    minEllipsoid_test();
 //    maxEllipsoidInConvexPolyhedron_test();
 //    maxCuboidInConvexPolyhedron_test();
-    maxPolyhedronInConvexPolyhedron2_test();
+//    maxPolyhedronInConvexPolyhedron2_test();
 //    maxConvexPolyhedronInPolyhedronNR_test();
 //    maxPolyhedronInConvexPolyhedron1R_test();
-//    maxSphereInConvexPolyhedron_test();
+    maxSphereInConvexPolyhedron_test();
 //    minSphereAroundPoints_test();
 //    minSphereAroundSpheres_test2();
 //    minSpherePlane_test();
