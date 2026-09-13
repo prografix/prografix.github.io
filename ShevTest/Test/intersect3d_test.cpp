@@ -762,7 +762,7 @@ public:
 
 bool cut ( CutPolyhedronGuru & guru, CCArrRef<Facet> & facets )
 {
-    CCArrRef<int> & stataus = guru.getStatus();
+    CCArrRef<int> & status = guru.getStatus();
     nat i, j;
 // Находим рёбра многоугольников
     List2n list;
@@ -782,8 +782,8 @@ bool cut ( CutPolyhedronGuru & guru, CCArrRef<Facet> & facets )
         {
             const nat u0 = facet.index[j];
             const nat u1 = facet.index[j+1];
-            const int d0 = stataus[u0];
-            const int d1 = stataus[u1];
+            const int d0 = status[u0];
+            const int d1 = status[u1];
             const int p = d0 * d1;
             if ( p > 0 ) continue;
             if ( p < 0 )
@@ -815,7 +815,7 @@ bool cut ( CutPolyhedronGuru & guru, CCArrRef<Facet> & facets )
                 if ( d0 == 0 )
                 {
                     if ( d1 >= 0 ) continue;
-                    if ( stataus[facet.index[j>0?j-1:facet.nv-1]] < 0 ) continue;
+                    if ( status[facet.index[j>0?j-1:facet.nv-1]] < 0 ) continue;
                     SortItem<double, Set2<nat> > & si = vb.inc();
                     si.tail.a = j;
                     si.tail.b = u0;
@@ -825,7 +825,7 @@ bool cut ( CutPolyhedronGuru & guru, CCArrRef<Facet> & facets )
                     if ( d0 > 0 ) continue;
                     nat j2 = j + 2;
                     if ( j2 > facet.nv ) j2 -= facet.nv;
-                    if ( stataus[facet.index[j2]] < 0 ) continue;
+                    if ( status[facet.index[j2]] < 0 ) continue;
                     SortItem<double, Set2<nat> > & si = va.inc();
                     si.tail.a = j;
                     si.tail.b = u1;
