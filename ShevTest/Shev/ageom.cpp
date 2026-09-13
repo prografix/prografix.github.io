@@ -55,6 +55,12 @@ bool cutPolygon ( ICutPolygonGuru & guru, SuiteRef< Suite<nat> > & minus )
         const int vp = status[ip];
         const int vc = status[i];
         sum += vc;
+// vp | va | vb | vn |  r  |
+//    | -1 |  1 |    | a-b | o
+//    | -1 |  0 | >= |  b  | o
+//    |  1 | -1 |    | a-b | i
+// >= |  0 | -1 |    |  a  | i
+        /*
         if ( vp < 0 && vc >= 0 )
         {
             if ( vc > 0 || status.cnext(i) >= 0 )
@@ -73,9 +79,49 @@ bool cutPolygon ( ICutPolygonGuru & guru, SuiteRef< Suite<nat> > & minus )
                 si.a = i;
                 si.b = vp > 0 ? guru.newVert ( i, ip ) : ip;
             }
+        }/*/
+// vp | va | vb | vn |  r  |
+//    | -1 |  1 |    | a-b | o
+// <= |  0 |  1 |    |  a  | o
+//    |  1 | -1 |    | a-b | i
+//    |  1 |  0 | <= |  b  | i
+        if ( vc > 0 )
+        {
+            if ( vp < 0 )
+            {
+                Set2<nat> & si = vo.inc();
+                si.a = i;
+                si.b = guru.newVert ( ip, i );
+            }
+            else
+            if ( vp == 0 && status.cprev(ip) <= 0 )
+            {
+                Set2<nat> & si = vo.inc();
+                si.a = i;
+                si.b = ip;
+            }
         }
+        else
+        if ( vp > 0 )
+        {
+            if ( vc < 0 )
+            {
+                Set2<nat> & si = vi.inc();
+                si.a = i;
+                si.b = guru.newVert ( i, ip );
+            }
+            else
+            if ( status.cnext(i) <= 0 )
+            {
+                Set2<nat> & si = vi.inc();
+                si.a = i;
+                si.b = i;
+            }
+        }//*/
         ip = i;
     }
+    if ( vi.size() != vo.size() )
+        return false;
     const nat m = vo.size();
 // Нет пересечения с гиперплоскостью
     if ( m == 0 )
@@ -173,7 +219,7 @@ bool cutPolygon ( ICutPolygonGuru & guru, SuiteRef< Suite<nat> > & plus, SuiteRe
         const int vp = status[ip];
         const int vc = status[i];
         sum += vc;
-        if ( vp < 0 && vc >= 0 )
+        /*if ( vp < 0 && vc >= 0 )
         {
             if ( vc > 0 || status.cnext(i) >= 0 )
             {
@@ -191,7 +237,45 @@ bool cutPolygon ( ICutPolygonGuru & guru, SuiteRef< Suite<nat> > & plus, SuiteRe
                 si.a = i;
                 si.b = vp > 0 ? guru.newVert ( i, ip ) : ip;
             }
+        }/*/
+// vp | va | vb | vn |  r  |
+//    | -1 |  1 |    | a-b | o
+// <= |  0 |  1 |    |  a  | o
+//    |  1 | -1 |    | a-b | i
+//    |  1 |  0 | <= |  b  | i
+        if ( vc > 0 )
+        {
+            if ( vp < 0 )
+            {
+                Set2<nat> & si = vo.inc();
+                si.a = i;
+                si.b = guru.newVert ( ip, i );
+            }
+            else
+            if ( vp == 0 && status.cprev(ip) <= 0 )
+            {
+                Set2<nat> & si = vo.inc();
+                si.a = i;
+                si.b = ip;
+            }
         }
+        else
+        if ( vp > 0 )
+        {
+            if ( vc < 0 )
+            {
+                Set2<nat> & si = vi.inc();
+                si.a = i;
+                si.b = guru.newVert ( i, ip );
+            }
+            else
+            if ( status.cnext(i) <= 0 )
+            {
+                Set2<nat> & si = vi.inc();
+                si.a = i;
+                si.b = i;
+            }
+        }//*/
         ip = i;
     }
     const nat m = vo.size();
