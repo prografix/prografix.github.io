@@ -100,9 +100,9 @@ Def<Circle2d> getCirclePnt1 ( CArrRef<Vector2d> p );
 //
 //             Аппроксимация многоугольника кругом
 //
-//************************ 06.11.2009 *******************************//
+//************************ 15.09.2026 *******************************//
 
-Def<Circle2d> getCirclePlg ( CArrRef<Vector2d> poly );
+Def<Circle2d> getCirclePlg ( CCArrRef<Vector2d> & poly );
 
 
 //************************ 11.11.2008 *******************************//
@@ -111,7 +111,7 @@ Def<Circle2d> getCirclePlg ( CArrRef<Vector2d> poly );
 //
 //************************ 06.11.2009 *******************************//
 
-Def<Ellipse2d> getEllipsePlg ( CArrRef<Vector2d> poly );
+Def<Ellipse2d> getEllipsePlg ( CCArrRef<Vector2d> & poly );
 
 
 //************************ 25.09.2009 *******************************//
@@ -120,7 +120,7 @@ Def<Ellipse2d> getEllipsePlg ( CArrRef<Vector2d> poly );
 //
 //************************ 06.09.2010 *******************************//
 
-Def<Rectangle2d> getRectanglePlg ( CArrRef<Vector2d> poly );
+Def<Rectangle2d> getRectanglePlg ( CCArrRef<Vector2d> & poly );
 
 
 //************************ 25.02.2023 *******************************//

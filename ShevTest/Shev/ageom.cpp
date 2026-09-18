@@ -45,70 +45,45 @@ bool cutPolygon ( ICutPolygonGuru & guru, SuiteRef< Suite<nat> > & minus )
     if ( n < 3 )
         return false;
 // Найдём пересечения многоугольника с гиперплоскостью
-    nat i, ip = n - 1;
+    nat i, ia = n - 1;
     const nat n2 = n / 2;
     DynArray<Set2<nat> > arr ( n );
     LtdSuiteRef<Set2<nat> > vi ( arr, 0, n2 ), vo ( arr, n2, n2 );
     int sum = 0;
     for ( i = 0; i < n; ++i )
     {
-        const int vp = status[ip];
-        const int vc = status[i];
-        sum += vc;
-// vp | va | vb | vn |  r  |
-//    | -1 |  1 |    | a-b | o
-//    | -1 |  0 | >= |  b  | o
-//    |  1 | -1 |    | a-b | i
-// >= |  0 | -1 |    |  a  | i
-        /*
-        if ( vp < 0 && vc >= 0 )
-        {
-            if ( vc > 0 || status.cnext(i) >= 0 )
-            {
-                Set2<nat> & si = vo.inc();
-                si.a = i;
-                si.b = vc > 0 ? guru.newVert ( ip, i ) : i;
-            }
-        }
-        else
-        if ( vc < 0 && vp >= 0 )
-        {
-            if ( vp > 0 || status.cprev(ip) >= 0 )
-            {
-                Set2<nat> & si = vi.inc();
-                si.a = i;
-                si.b = vp > 0 ? guru.newVert ( i, ip ) : ip;
-            }
-        }/*/
+        const int va = status[ia];
+        const int vb = status[i];
+        sum += vb;
 // vp | va | vb | vn |  r  |
 //    | -1 |  1 |    | a-b | o
 // <= |  0 |  1 |    |  a  | o
 //    |  1 | -1 |    | a-b | i
 //    |  1 |  0 | <= |  b  | i
-        if ( vc > 0 )
+        if ( vb > 0 )
         {
-            if ( vp < 0 )
+            if ( va < 0 )
             {
                 Set2<nat> & si = vo.inc();
                 si.a = i;
-                si.b = guru.newVert ( ip, i );
+                si.b = guru.newVert ( ia, i );
             }
             else
-            if ( vp == 0 && status.cprev(ip) <= 0 )
+            if ( va == 0 && status.cprev(ia) <= 0 )
             {
                 Set2<nat> & si = vo.inc();
                 si.a = i;
-                si.b = ip;
+                si.b = ia;
             }
         }
         else
-        if ( vp > 0 )
+        if ( va > 0 )
         {
-            if ( vc < 0 )
+            if ( vb < 0 )
             {
                 Set2<nat> & si = vi.inc();
                 si.a = i;
-                si.b = guru.newVert ( i, ip );
+                si.b = guru.newVert ( i, ia );
             }
             else
             if ( status.cnext(i) <= 0 )
@@ -117,8 +92,8 @@ bool cutPolygon ( ICutPolygonGuru & guru, SuiteRef< Suite<nat> > & minus )
                 si.a = i;
                 si.b = i;
             }
-        }//*/
-        ip = i;
+        }
+        ia = i;
     }
     if ( vi.size() != vo.size() )
         return false;
@@ -209,64 +184,45 @@ bool cutPolygon ( ICutPolygonGuru & guru, SuiteRef< Suite<nat> > & plus, SuiteRe
     if ( n < 3 )
         return false;
 // Найдём пересечения многоугольника с гиперплоскостью
-    nat i, ip = n - 1;
+    nat i, ia = n - 1;
     const nat n2 = n / 2;
     DynArray<Set2<nat> > arr ( n );
     LtdSuiteRef<Set2<nat> > vi ( arr, 0, n2 ), vo ( arr, n2, n2 );
     int sum = 0;
     for ( i = 0; i < n; ++i )
     {
-        const int vp = status[ip];
-        const int vc = status[i];
-        sum += vc;
-        /*if ( vp < 0 && vc >= 0 )
-        {
-            if ( vc > 0 || status.cnext(i) >= 0 )
-            {
-                Set2<nat> & si = vo.inc();
-                si.a = i;
-                si.b = vc > 0 ? guru.newVert ( ip, i ) : i;
-            }
-        }
-        else
-        if ( vc < 0 && vp >= 0 )
-        {
-            if ( vp > 0 || status.cprev(ip) >= 0 )
-            {
-                Set2<nat> & si = vi.inc();
-                si.a = i;
-                si.b = vp > 0 ? guru.newVert ( i, ip ) : ip;
-            }
-        }/*/
+        const int va = status[ia];
+        const int vb = status[i];
+        sum += vb;
 // vp | va | vb | vn |  r  |
 //    | -1 |  1 |    | a-b | o
 // <= |  0 |  1 |    |  a  | o
 //    |  1 | -1 |    | a-b | i
 //    |  1 |  0 | <= |  b  | i
-        if ( vc > 0 )
+        if ( vb > 0 )
         {
-            if ( vp < 0 )
+            if ( va < 0 )
             {
                 Set2<nat> & si = vo.inc();
                 si.a = i;
-                si.b = guru.newVert ( ip, i );
+                si.b = guru.newVert ( ia, i );
             }
             else
-            if ( vp == 0 && status.cprev(ip) <= 0 )
+            if ( va == 0 && status.cprev(ia) <= 0 )
             {
                 Set2<nat> & si = vo.inc();
                 si.a = i;
-                si.b = ip;
+                si.b = ia;
             }
         }
         else
-        if ( vp > 0 )
+        if ( va > 0 )
         {
-            if ( vc < 0 )
+            if ( vb < 0 )
             {
                 Set2<nat> & si = vi.inc();
                 si.a = i;
-                si.b = guru.newVert ( i, ip );
+                si.b = guru.newVert ( i, ia );
             }
             else
             if ( status.cnext(i) <= 0 )
@@ -275,9 +231,11 @@ bool cutPolygon ( ICutPolygonGuru & guru, SuiteRef< Suite<nat> > & plus, SuiteRe
                 si.a = i;
                 si.b = i;
             }
-        }//*/
-        ip = i;
+        }
+        ia = i;
     }
+    if ( vi.size() != vo.size() )
+        return false;
     const nat m = vo.size();
 // Нет пересечения с гиперплоскостью
     if ( m == 0 )
