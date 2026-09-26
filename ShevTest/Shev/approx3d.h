@@ -21,11 +21,11 @@ using namespace Shev;
 //
 //************************* 02.09.2010 ******************************//
 
-Def<Line3d> getLine2 ( CArrRef<Vector3d> point );
+Def<Line3d> getLine2 ( CCArrRef<Vector3d> & point );
 
-Def<Line3d> getLine2 ( CArrRef<Vector3d> point, CArrRef<double> mass );
+Def<Line3d> getLine2 ( CCArrRef<Vector3d> & point, CCArrRef<double> & mass );
 
-Def<Line3d> getLine2 ( CArrRef<Segment3d> segm );
+Def<Line3d> getLine2 ( CCArrRef<Segment3d> & segm );
 
 
 //************************* 02.05.2013 ******************************//
@@ -43,13 +43,13 @@ Line3d getLineU ( CCArrRef<Vector3d> & data, double & r );
 //      Аппроксимация плоскостью множеств точек и отрезков
 //      Минимум суммы квадратов расстояний
 //
-//************************* 29.09.2010 ******************************//
+//************************* 22.09.2026 ******************************//
 
-Plane3d getPlane2 ( CCArrRef<Vector3d> & point );
+Def<Plane3d> getPlane2 ( CCArrRef<Vector3d> & point );
 
-Plane3d getPlane2 ( CCArrRef<Vector3d> & point, CCArrRef<double> & mass );
+Def<Plane3d> getPlane2 ( CCArrRef<Vector3d> & point, CCArrRef<double> & mass );
 
-Plane3d getPlane2 ( CCArrRef<Segment3d> & segm );
+Def<Plane3d> getPlane2 ( CCArrRef<Segment3d> & segm );
 
 
 //************************ 05.02.2010 *******************************//

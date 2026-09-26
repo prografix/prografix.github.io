@@ -41,17 +41,17 @@ inline Def<Line3d> getLine2 ( const Def<Mom3d> & mom )
     return res;
 }
 
-Def<Line3d> getLine2 ( CArrRef<Vector3d> point )
+Def<Line3d> getLine2 ( CCArrRef<Vector3d> & point )
 {
     return getLine2 ( momentum2pnt ( point ) );
 }
 
-Def<Line3d> getLine2 ( CArrRef<Vector3d> point, CArrRef<double> mass )
+Def<Line3d> getLine2 ( CCArrRef<Vector3d> & point, CCArrRef<double> & mass )
 {
     return getLine2 (  momentum2pnt ( point, mass ) );
 }
 
-Def<Line3d> getLine2 ( CArrRef<Segment3d> segm )
+Def<Line3d> getLine2 ( CCArrRef<Segment3d> & segm )
 {
     return getLine2 ( momentum2sgm ( segm ) );
 }
@@ -254,29 +254,31 @@ m2:     Vector3d v = data[i1] - data[i0];
     return res;
 }
 
-//*******************************************************************//
+//************************* 19.01.2006 ******************************//
 //
 //      Аппроксимация плоскостью множеств точек и отрезков
 //      Минимум суммы квадратов расстояний
 //
-//************************* 29.09.2010 ******************************//
+//************************* 22.09.2026 ******************************//
 
-inline Plane3d getPlane2 ( const Def<Mom3d> & mom )
+inline Def<Plane3d> getPlane2 ( const Def<Mom3d> & mom )
 {
-    return mom.isDef ? Plane3d ( mom.minNorm, -mom.minNorm*mom.o ) : Plane3d ( null3d, 0 );
+    if ( ! mom.isDef || mom.midMom < 1e-9 * mom.maxMom )
+        return Def<Plane3d>();
+    return Plane3d ( mom.minNorm, -mom.minNorm * mom.o );
 }
 
-Plane3d getPlane2 ( CCArrRef<Vector3d> & point )
+Def<Plane3d> getPlane2 ( CCArrRef<Vector3d> & point )
 {
     return getPlane2 ( momentum2pnt ( point ) );
 }
 
-Plane3d getPlane2 ( CCArrRef<Vector3d> & point, CCArrRef<double> & mass )
+Def<Plane3d> getPlane2 ( CCArrRef<Vector3d> & point, CCArrRef<double> & mass )
 {
     return getPlane2 ( momentum2pnt ( point, mass ) );
 }
 
-Plane3d getPlane2 ( CCArrRef<Segment3d> & segm )
+Def<Plane3d> getPlane2 ( CCArrRef<Segment3d> & segm )
 {
     return getPlane2 ( momentum2sgm ( segm ) );
 }

@@ -348,7 +348,7 @@
       <Filter>Shev cpp</Filter>
     </ClCompile>
     <ClCompile Include="Shev\ageom.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Shev cpp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
