@@ -340,7 +340,7 @@ void intersectSegmentPolygon()
 
 void cutLinePolygon()
 {
-    FixArray<Vector2d, 9> vert;
+    FixArray<Vector2d, 8> vert;
     FixArray<Vector2d,4> quad;
     quad[0] = Vector2d ( 2, 2 );
     quad[1] = Vector2d (-2, 2 );
@@ -354,20 +354,31 @@ void cutLinePolygon()
         a = 0.5 * prand();
         b = 0.5 * prand();
     }
-    /*vert[0] = Vector2d ( 1, 0 );
+    /*
+    vert[0] = Vector2d ( 0, 0 );
     vert[1] = Vector2d ( 0, 1 );
-    vert[2] = Vector2d (-1, 0 );
+    vert[2] = Vector2d (-0.5, 1 );
     vert[3] = Vector2d (-0.5, 0 );
-    vert[4] = Vector2d ( 0, -1 );
-    vert[5] = Vector2d (0.5, 0 );
+    vert[4] = Vector2d (-1, 0 );
+    vert[5] = Vector2d (-1, -1 );
+    vert[6] = Vector2d (0.5, -1 );
+    vert[7] = Vector2d (0.5, 0 );
     a = Vector2d ( 1, 0 );
-    b = Vector2d (-1, 0 );*/
-    vert.reverse();
+    b = Vector2d (-1, 0 );
+    //*/
+    //vert.reverse();
     drawPolygon ( vert, 0, 1, 1 );
     const Line2d line ( a, b );
     DynArray<Segment2d> seg;
-    if ( intersection ( quad, line, seg ).size() > 0 ) draw ( seg[0], 1, 1, 0 );
-    /*
+    if ( intersection ( quad, line, seg ).size() > 0 )
+    {
+        const Segment2d & s = seg[0];
+        draw ( s, 1, 1, 0 );
+        const Vector2d o = 0.5 * ( s.a + s.b );
+        const Vector2d v = 0.01 * ( s.a - s.b ).leftPerpendicular();
+        draw ( Segment2d ( o, o + v ), 1, 1, 0 );
+    }
+    //*
     {
         DynArray< DynArray<Vector2d> > res;
         cutPolygon ( vert, line, res );
@@ -748,9 +759,9 @@ void intersect2d_test ()
 //    intersectSegmentEllipse();
 //    intersectLinePolygon();
 //    intersectSegmentPolygon();
-//    cutLinePolygon();
+    cutLinePolygon();
 //    intersect1c_test();
-    intersectPolygons();
+//    intersectPolygons();
 //    intersectHalfPlanes();
     endNewList();
 }
