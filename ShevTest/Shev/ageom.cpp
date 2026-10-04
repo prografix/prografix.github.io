@@ -44,6 +44,169 @@ bool cutPolygon ( ICutPolygonGuru & guru, SuiteRef< Suite<nat> > & minus )
     const nat n = status.size();
     if ( n < 3 )
         return false;
+    nat ia = n - 1;
+    const nat n2 = n / 2;
+    DynArray<Set2<nat> > arr ( n );
+    LtdSuiteRef<Set2<nat> > vi ( arr, 0, n2 ), vo ( arr, n2, n2 ); // Входящие и выходящие вершины (b), (a) - соседние отрицательные вершины
+    nat null = 0; // Счётчик нулевых статусов
+    int sum = 0; // Сумма всех статусов
+// Найдём пересечения рёбер с границей
+    for ( nat ib = 0; ib < n; ++ib )
+    {
+        const int va = status[ia];
+        const int vb = status[ib];
+        sum += vb;
+        if ( vb > 0 )
+        {
+            if ( va < 0 )
+            {
+                Set2<nat> & si = vo.inc();
+                si.a = ia;
+                si.b = guru.newVert ( ia, ib );
+            }
+        }
+        else
+        if ( vb < 0 )
+        {
+            if ( va > 0 )
+            {
+                Set2<nat> & si = vi.inc();
+                si.a = ib;
+                si.b = guru.newVert ( ia, ib );
+            }
+        }
+        else
+            ++null;
+        ia = ib;
+    }
+    if ( null > 0 ) // Редкое событие, когда какие-то вершины лежат на границе
+    {
+        if ( null == n ) // Все вершины лежат на границе
+        {
+            /*Suite<nat> & poly = minus.inc();
+            poly.resize(n);
+            for ( nat i = 0; i < n; ++i ) poly[i] = i;*/
+            return true;
+        }
+        nat i1 = 0; // Найдём первый ненулевой статус
+        while ( ! status[i1] ) ++i1;
+        // Теперь ищем группы нулевых статусов
+        nat f0 = n, l0; // индексы первого и последнего члена группы
+        for ( nat i = 1; i <= n; ++i )
+        {
+            nat j = i1 + i;
+            if ( j >= n ) j -= n;
+            const int vb = status[j];
+            if ( ! vb )
+            {
+                // Строим группу нулевых статусов
+                if ( f0 == n ) f0 = j;
+                l0 = j;
+                continue;
+            }
+            if ( f0 == n ) // Группы ещё нет
+                continue;
+            // Рассматриваем построенную группу
+            const nat a = f0 > 0 ? f0 - 1 : n - 1;
+            const int va = status[a];
+            if ( vb > 0 )
+            {
+                if ( va < 0 )
+                {
+                    Set2<nat> & si = vo.inc();
+                    si.a = a;
+                    si.b = f0;
+                }
+            }
+            else
+            {
+                if ( va > 0 )
+                {
+                    Set2<nat> & si = vi.inc();
+                    si.a = j;
+                    si.b = l0;
+                }
+            }
+            f0 = n; // начинаем поиск новой группы нулевых статусов
+        }
+    }
+    if ( vi.size() != vo.size() )
+        return false;
+    const nat m = vo.size();
+// Нет пересечения с границей
+    if ( m == 0 )
+    {
+        if ( sum < 0 )
+        {
+            Suite<nat> & poly = minus.inc();
+            poly.resize(n);
+            for ( nat i = 0; i < n; ++i ) poly[i] = i;
+        }
+        return true;
+    }
+// Пересечение с границей - это один отрезок
+    if ( m == 1 )
+    {
+        Suite<nat> & s = minus.inc();
+        s.resize();
+        s.inc() = vi[0].b;
+        for ( nat i = vi[0].a;; )
+        {
+            s.inc() = i;
+            if ( i == vo[0].a ) break;
+            if ( ++i == n ) i = 0;
+        }
+        s.inc() = vo[0].b;
+        return true;
+    }
+// Пересечение с границей - это несколько отрезков
+    nat i;
+    DynArray<nat> arr2 ( 3 * m );
+    ArrRef<nat> si ( arr2, 0, m ), so ( arr2, m, m ), outPos ( arr2, m+m, m );
+    if ( vo[0].a < vi[0].a ) vo <<= 1;
+    for ( i = 0; i < m; ++i )
+    {
+        si[i] = vi[i].b;
+        so[i] = vo[i].b;
+    }
+    guru.arrange ( si, so );
+    for ( i = 0; i < m; ++i )
+    {
+        outPos[so[i]] = i; // завести массив outPos подсказал ИИ
+    }
+    for ( nat j = 0; j < m; ++j )
+    {
+        if ( si[j] == m ) continue;
+        Suite<nat> & s = minus.inc();
+        s.resize();
+        for ( nat k = j;; )
+        {
+            const nat c = si[k];
+            const Set2<nat> & vik = vi[c];
+            si[k] = m;
+            const Set2<nat> & vok = vo[so[k]];
+            s.inc() = vik.b;
+            for ( i = vik.a;; )
+            {
+                s.inc() = i;
+                if ( i == vok.a ) break;
+                if ( ++i == n ) i = 0;
+            }
+            s.inc() = vok.b;
+            k = outPos[c];
+            if ( k == j ) break;
+        }
+    }
+    return true;
+}
+
+bool cutPolygon1 ( ICutPolygonGuru & guru, SuiteRef< Suite<nat> > & minus )
+{
+    minus.resize();
+    CCArrRef<int> & status = guru.getStatus();
+    const nat n = status.size();
+    if ( n < 3 )
+        return false;
 // Найдём пересечения многоугольника с гиперплоскостью
     nat i, ia = n - 1;
     const nat n2 = n / 2;
