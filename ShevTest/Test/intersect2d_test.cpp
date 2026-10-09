@@ -338,9 +338,29 @@ void intersectSegmentPolygon()
     for ( nat i = 0; i < res.size(); ++i ) draw ( res[i], 1, 0, 1 );
 }
 
+void make1 ( DynArrRef<Vector2d> & vert )
+{
+    vert.resize(13);
+    vert[0] = Vector2d (-3,-2 );
+    vert[1] = Vector2d (-2,-2 );
+    vert[2] = Vector2d (-2, 3 );
+    vert[3] = Vector2d ( 2, 3 );
+    vert[4] = Vector2d ( 2,-1 );
+    vert[5] = Vector2d ( 1,-1 );
+    vert[6] = Vector2d ( 1, 1 );
+    vert[7] = Vector2d ( 0, 2 );
+    vert[8] = Vector2d (-1, 1 );
+    vert[9] = Vector2d (-1,-2 );
+    vert[10] = Vector2d ( 3,-2 );
+    vert[11] = Vector2d ( 3, 4 );
+    vert[12] = Vector2d (-3, 4 );
+    vert -= Vector2d ( 0, 1 );
+    vert *= 0.25;
+}
+
 void cutLinePolygon()
 {
-    FixArray<Vector2d, 8> vert;
+    DynArray<Vector2d> vert;
     FixArray<Vector2d,4> quad;
     quad[0] = Vector2d ( 2, 2 );
     quad[1] = Vector2d (-2, 2 );
@@ -350,7 +370,8 @@ void cutLinePolygon()
     Vector2d a, b;
 //    for ( nat j = 0; j < 15; ++j )
     {
-        randPolygon ( vert );
+        make1 ( vert );
+        //randPolygon ( vert.resize(8) );
         a = 0.5 * prand();
         b = 0.5 * prand();
     }
@@ -368,7 +389,7 @@ void cutLinePolygon()
     //*/
     //vert.reverse();
     drawPolygon ( vert, 0, 1, 1 );
-    const Line2d line ( a, b );
+    const Line2d line ( b, a );
     DynArray<Segment2d> seg;
     if ( intersection ( quad, line, seg ).size() > 0 )
     {
