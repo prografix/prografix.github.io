@@ -1,5 +1,6 @@
 
 #include "ageom.h"
+#include "func1t.h"
 
 //**************************** 20.08.2026 *********************************//
 //
@@ -37,7 +38,7 @@ static void checkPolygon ( Suite<nat> & poly, CCArrRef<int> & status )
 //
 //**************************** 26.08.2026 *********************************//
 
-bool cutPolygon ( ICutPolygonGuru & guru, SuiteRef< Suite<nat> > & minus )
+bool cutPolygon1 ( ICutPolygonGuru & guru, SuiteRef< Suite<nat> > & minus )
 {
     minus.resize();
     CCArrRef<int> & status = guru.getStatus();
@@ -46,8 +47,8 @@ bool cutPolygon ( ICutPolygonGuru & guru, SuiteRef< Suite<nat> > & minus )
         return false;
     nat ia = n - 1;
     const nat n2 = n / 2;
-    DynArray<Set2<nat> > arr ( n );
-    LtdSuiteRef<Set2<nat> > vi ( arr, 0, n2 ), vo ( arr, n2, n2 ); // Входящие и выходящие вершины (b), (a) - соседние отрицательные вершины
+    DynArray<SortItem<nat> > arr ( n );
+    LtdSuiteRef<SortItem<nat> > vi ( arr, 0, n2 ), vo ( arr, n2, n2 ); // Входящие и выходящие вершины (b), (a) - соседние отрицательные вершины
     nat null = 0; // Счётчик нулевых статусов
     int sum = 0; // Сумма всех статусов
 // Найдём пересечения рёбер с границей
@@ -60,9 +61,9 @@ bool cutPolygon ( ICutPolygonGuru & guru, SuiteRef< Suite<nat> > & minus )
         {
             if ( va < 0 )
             {
-                Set2<nat> & si = vo.inc();
-                si.a = ia;
-                si.b = guru.newVert ( ia, ib );
+                SortItem<nat> & si = vo.inc();
+                si.head = ia;
+                si.tail = guru.newVert ( ia, ib );
             }
         }
         else
@@ -70,9 +71,9 @@ bool cutPolygon ( ICutPolygonGuru & guru, SuiteRef< Suite<nat> > & minus )
         {
             if ( va > 0 )
             {
-                Set2<nat> & si = vi.inc();
-                si.a = ib;
-                si.b = guru.newVert ( ia, ib );
+                SortItem<nat> & si = vi.inc();
+                si.head = ib;
+                si.tail = guru.newVert ( ia, ib );
             }
         }
         else
@@ -83,9 +84,6 @@ bool cutPolygon ( ICutPolygonGuru & guru, SuiteRef< Suite<nat> > & minus )
     {
         if ( null == n ) // Все вершины лежат на границе
         {
-            /*Suite<nat> & poly = minus.inc();
-            poly.resize(n);
-            for ( nat i = 0; i < n; ++i ) poly[i] = i;*/
             return true;
         }
         nat i1 = 0; // Найдём первый ненулевой статус
@@ -113,18 +111,18 @@ bool cutPolygon ( ICutPolygonGuru & guru, SuiteRef< Suite<nat> > & minus )
             {
                 if ( va < 0 )
                 {
-                    Set2<nat> & si = vo.inc();
-                    si.a = a;
-                    si.b = f0;
+                    SortItem<nat> & si = vo.inc();
+                    si.head = a;
+                    si.tail = f0;
                 }
             }
             else
             {
                 if ( va > 0 )
                 {
-                    Set2<nat> & si = vi.inc();
-                    si.a = j;
-                    si.b = l0;
+                    SortItem<nat> & si = vi.inc();
+                    si.head = j;
+                    si.tail = l0;
                 }
             }
             f0 = n; // начинаем поиск новой группы нулевых статусов
@@ -149,25 +147,30 @@ bool cutPolygon ( ICutPolygonGuru & guru, SuiteRef< Suite<nat> > & minus )
     {
         Suite<nat> & s = minus.inc();
         s.resize();
-        s.inc() = vi[0].b;
-        for ( nat i = vi[0].a;; )
+        s.inc() = vi[0].tail;
+        for ( nat i = vi[0].head;; )
         {
             s.inc() = i;
-            if ( i == vo[0].a ) break;
+            if ( i == vo[0].head ) break;
             if ( ++i == n ) i = 0;
         }
-        s.inc() = vo[0].b;
+        s.inc() = vo[0].tail;
         return true;
     }
 // Пересечение с границей - это несколько отрезков
+    //if ( null > 0 )
+    {
+        insertSort123 ( vi );
+        insertSort123 ( vo );
+    }
+    if ( vo[0].head < vi[0].head ) vo <<= 1;
     nat i;
     DynArray<nat> arr2 ( 3 * m );
     ArrRef<nat> si ( arr2, 0, m ), so ( arr2, m, m ), outPos ( arr2, m+m, m );
-    if ( vo[0].a < vi[0].a ) vo <<= 1;
     for ( i = 0; i < m; ++i )
     {
-        si[i] = vi[i].b;
-        so[i] = vo[i].b;
+        si[i] = vi[i].tail;
+        so[i] = vo[i].tail;
     }
     guru.arrange ( si, so );
     for ( i = 0; i < m; ++i )
@@ -182,17 +185,17 @@ bool cutPolygon ( ICutPolygonGuru & guru, SuiteRef< Suite<nat> > & minus )
         for ( nat k = j;; )
         {
             const nat c = si[k];
-            const Set2<nat> & vik = vi[c];
+            const SortItem<nat> & vik = vi[c];
+            const SortItem<nat> & vok = vo[c];
             si[k] = m;
-            const Set2<nat> & vok = vo[so[k]];
-            s.inc() = vik.b;
-            for ( i = vik.a;; )
+            s.inc() = vik.tail;
+            for ( i = vik.head;; )
             {
                 s.inc() = i;
-                if ( i == vok.a ) break;
+                if ( i == vok.head ) break;
                 if ( ++i == n ) i = 0;
             }
-            s.inc() = vok.b;
+            s.inc() = vok.tail;
             k = outPos[c];
             if ( k == j ) break;
         }
@@ -200,7 +203,7 @@ bool cutPolygon ( ICutPolygonGuru & guru, SuiteRef< Suite<nat> > & minus )
     return true;
 }
 
-bool cutPolygon1 ( ICutPolygonGuru & guru, SuiteRef< Suite<nat> > & minus )
+bool cutPolygon ( ICutPolygonGuru & guru, SuiteRef< Suite<nat> > & minus )
 {
     minus.resize();
     CCArrRef<int> & status = guru.getStatus();
