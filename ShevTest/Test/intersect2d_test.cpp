@@ -340,20 +340,19 @@ void intersectSegmentPolygon()
 
 void make1 ( DynArrRef<Vector2d> & vert )
 {
-    vert.resize(13);
+    vert.resize(12);
     vert[0] = Vector2d (-3,-2 );
     vert[1] = Vector2d (-2,-2 );
     vert[2] = Vector2d (-2, 3 );
     vert[3] = Vector2d ( 2, 3 );
     vert[4] = Vector2d ( 2,-1 );
     vert[5] = Vector2d ( 1,-1 );
-    vert[6] = Vector2d ( 1, 1 );
-    vert[7] = Vector2d ( 0, 2 );
-    vert[8] = Vector2d (-1, 1 );
-    vert[9] = Vector2d (-1,-2 );
-    vert[10] = Vector2d ( 3,-2 );
-    vert[11] = Vector2d ( 3, 4 );
-    vert[12] = Vector2d (-3, 4 );
+    vert[6] = Vector2d ( 1, 2 );
+    vert[7] = Vector2d (-1, 2 );
+    vert[8] = Vector2d (-1,-2 );
+    vert[9] = Vector2d ( 3,-2 );
+    vert[10] = Vector2d ( 3, 4 );
+    vert[11] = Vector2d (-3, 4 );
     vert -= Vector2d ( 0, 1 );
     vert *= 0.25;
 }
@@ -384,12 +383,12 @@ void cutLinePolygon()
     vert[5] = Vector2d (-1, -1 );
     vert[6] = Vector2d (0.5, -1 );
     vert[7] = Vector2d (0.5, 0 );
-    a = Vector2d ( 1, 0 );
-    b = Vector2d (-1, 0 );
     //*/
+    a = Vector2d ( 1, 0.5 );
+    b = Vector2d (-1, 0.5 );
     //vert.reverse();
     drawPolygon ( vert, 0, 1, 1 );
-    const Line2d line ( b, a );
+    const Line2d line ( a, b );
     DynArray<Segment2d> seg;
     if ( intersection ( quad, line, seg ).size() > 0 )
     {
