@@ -1093,6 +1093,7 @@ void median7_test ()
     nat k13 = 0;
     nat k14 = 0;
     nat kn = 0;
+    double time = 0;
     for ( nat i1 = 1; i1 <= 7; ++i1 )
     {
         for ( nat i2 = 1; i2 <= 7; ++i2 )
@@ -1121,11 +1122,15 @@ void median7_test ()
                                 a[4] = i5;
                                 a[5] = i6;
                                 a[6] = i7;
-                                if ( a[median7b ( a )] != 4 )
+isum = 0;
+double t0 = timeInSec();
+                                if ( _median7b ( a ) != 4 )
                                 {
-                                    median7b ( a );
+                                    //median7b ( a );
                                     display << "err" << NL;
                                 }
+double t1 = timeInSec();
+time += t1 - t0;
                                 switch(isum)
                                 {
                                 case 6: ++k6; break;
@@ -1141,7 +1146,7 @@ void median7_test ()
                                 }
                                 if(kn)
                                 {
-                                    median7b ( a );
+                                    //median7b ( a );
                                 }
                             }
                         }
@@ -1163,6 +1168,7 @@ void median7_test ()
     display << (6*k6+7*k7+8*k8+9*k9+10*k10+11*k11+12*k12+13*k13+14*k14)/5040. << NL;
     nat kk = k6 + k7 + k8 + k9 + k10 + k11 + k12 + k13 + k14 + kn;
     if ( kk != 5040 ) display << "kk != 5040" << NL;
+    display << time << NL;
 }
 
 template <class T> T median8k ( const T * a )
@@ -2234,9 +2240,9 @@ void func1d_test ()
 //    sorting_test ();
 //    median_test();
 //    median9_time_test();
-//    median6_test ();
+    median7_test ();
 //    median13_test ();
-    selectW_test();
+//    selectW_test();
 //    select_test();
 //    sort5_test ();
 //    mergeSort_test ();
