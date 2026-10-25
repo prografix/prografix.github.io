@@ -494,6 +494,7 @@ template <class T> nat __median7b ( const T * a )
 
 template <class T> inline bool before ( const T * x, const T * y )
 {
+    ++isum;
     return *x <= *y;
 }
 
@@ -623,37 +624,39 @@ template <class T> T median7b ( const T * x0, const T * x1, const T * x2, const 
             x1 = t;
         }
     }
-    else if ( before ( x1, x2 ) )
+    else
     {
-        if ( before ( x0, x2 ) ) _swap ( x0, x1 );
-        else
+        if ( before ( x1, x2 ) )
         {
-            const T * t = x0;
-            x0 = x1;
-            x1 = x2;
-            x2 = t;
+            if ( before ( x0, x2 ) ) _swap ( x0, x1 );
+            else
+            {
+                const T * t = x0;
+                x0 = x1;
+                x1 = x2;
+                x2 = t;
+            }
         }
+        else
+            _swap ( x0, x2 );
+    }
+// Остальное
+    if ( before ( x1, x3 ) )
+    {
+        if ( before ( x4, x1 ) )
+            return *median7b4 ( x0, x5, x4, x6, x1, x3, x2 );
+        if ( before ( x3, x4 ) )
+            _swap ( x3, x4 );
+        return *median7b3 ( x1, x5, x2, x6, x4, x3 );
     }
     else
     {
-        _swap ( x0, x2 );
-    }
-// 
-    if ( before ( x1, x3 ) )
-    {
         if ( before ( x1, x4 ) )
-        {
-            if ( before ( x3, x4 ) )
-                _swap ( x3, x4 );
-            return *median7b3 ( x1, x5, x2, x6, x4, x3 );
-        }
-        return *median7b4 ( x0, x5, x4, x6, x1, x3, x2 );
+            return *median7b4 ( x0, x5, x3, x6, x1, x4, x2 );
+        if ( before ( x3, x4 ) )
+            _swap ( x3, x4 );
+        return *median7b2 ( x0, x6, x4, x5, x3, x1 );
     }
-    if ( before ( x1, x4 ) )
-        return *median7b4 ( x0, x5, x3, x6, x1, x4, x2 );
-    if ( before ( x3, x4 ) )
-        _swap ( x3, x4 );
-    return *median7b2 ( x0, x6, x4, x5, x3, x1 );
 }
 
 template <class T> inline T _median7b ( const T * a )
