@@ -5,7 +5,16 @@
 #include "sorting.h"
 #include "ShevArray.h"
 
-//************************ Алгоритмы **************************//
+// Теоретические минимумы числа сравнений для медиан в худшем случае:
+// 1, 2, 3, 4, 5, 6,  7,  8,  9, 10, 11, 12, 13, 14, 15
+// 0, 1, 3, 4, 6, 8, 10, 12, 14, 16, 18, 20, 23, 25, 27
+//
+// Теоретические минимумы числа сравнений для медиан в среднем:
+//     3       |       5       |         7       |            9
+// 3/8 = 2.667 | 88/15 = 5.867 | 977/105 = 9.305 | 72517/5670 = 12.790
+//
+//
+//                      Алгоритмы 
 //
 //      _median3
 //      Сравнения: 3 в худшем случае, 2.667 в среднем
@@ -22,8 +31,11 @@
 //      _median6
 //      Сравнения: 9 в худшем случае, 8.333 в среднем
 //
-//      _median7
+//      _median7a
 //      Сравнения: 10 в худшем случае, 9.549 в среднем
+//
+//      _median7b
+//      Сравнения: 12 в худшем случае, 9.305 в среднем
 //
 //      _median8
 //      Сравнения: 14 в худшем случае, 12.819 в среднем
@@ -284,7 +296,7 @@ template <class T> T _median6 ( const T * a )
 //
 //*********************** 19.11.2011 **************************//
 
-template <class T> nat __median7 ( const T * a )
+template <class T> nat median7a ( const T * a )
 {
     nat i1, i2, i3, i4, i5, i6;
 
@@ -386,225 +398,148 @@ template <class T> nat __median7 ( const T * a )
     return a[i5] > a[6] ? i5 : 6;
 }
 
-template <class T> inline T _median7 ( const T * a )
+template <class T> inline T _median7a ( const T * a )
 {
-    return a[__median7(a)];
+    return a[median7a(a)];
 }
 
-template <class T> nat __median7b ( const T * a )
+template <class T> inline bool before ( const T * x, const T * y )
 {
-    nat i1, i2, i3;
-
-    if ( a[1] <= a[2] )
-    {
-        if ( a[2] <= a[3] )
-        {
-            i1 = 1;
-            i2 = 2;
-            i3 = 3;
-        }
-        else
-        {
-            if ( a[1] <= a[3] )
-            {
-                i1 = 1;
-                i2 = 3;
-                i3 = 2;
-            }
-            else
-            {
-                i1 = 3;
-                i2 = 1;
-                i3 = 2;
-            }
-        }
-    }
-    else
-    {
-        if ( a[1] <= a[3] )
-        {
-            i1 = 2;
-            i2 = 1;
-            i3 = 3;
-        }
-        else
-        {
-            if ( a[2] <= a[3] )
-            {
-                i1 = 2;
-                i2 = 3;
-                i3 = 1;
-            }
-            else
-            {
-                i1 = 3;
-                i2 = 2;
-                i3 = 1;
-            }
-        }
-    }
-
-    if ( a[i2] < a[4] )
-    {
-        if ( a[i2] < a[0] )
-        {
-            if ( a[4] < a[0] )
-                return a[4] > a[i3] ? i3 : 4;
-            else
-                return a[0] > a[i3] ? i3 : 0;
-        }
-    }
-    else
-    {
-        if ( a[i2] > a[0] )
-        {
-            if ( a[4] > a[0] )
-                return a[4] < a[i1] ? i1 : 4;
-            else
-                return a[0] < a[i1] ? i1 : 0;
-        }
-    }
-    return i2;
+//    ++isum;
+    return *x <= *y;
 }
 
 //*********************** 25.10.2026 **************************//
 //
 //      Медиана семи чисел.
 //      Сравнения: 12 в худшем случае, 9.305 в среднем
-//       6 - 288 
-//       7 - 576 
-//       8 - 288 
+//       6 -  288 
+//       7 -  576 
+//       8 -  288 
 //       9 - 1280 
 //      10 - 1664 
-//      11 - 656 
-//      12 - 288 
+//      11 -  656 
+//      12 -  288 
 //
 //      Алгоритм:
 //
-//      1. Упорядочиваем первые три числа по возрастанию (2 или 3 сравнения). 
-//         Меньший из них — А, средний — Б, больший — В. Четвёртое число — Г, пятое — Д, шестое — Е, седьмое — Ж.
-//      2. Сравниваем Б с Г и Б с Д (1 или 2 сравнения).
-//      3. Если Б не больше Г и не больше Д, упорядочиваем Г и Д. Медиану среди Б, В, меньшего и большего из Г и Д, Е и Ж находит median7b3.
-//      4. Если Б не больше Г, но Д меньше Б, медиану среди А, Б, В, Г, Д, Е и Ж находит median7b4.
-//      5. Если Б не больше Д, но Г меньше Б, медиану среди А, Б, В, Г, Д, Е и Ж находит median7b4.
-//      6. Если Г и Д меньше Б, упорядочиваем Г и Д. Медиану среди А, Б, меньшего и большего из Г и Д, Е и Ж находит median7b2.
-//      median7b2, median7b3 и median7b4 на каждом шаге делают одно сравнение и отбрасывают число, которое меньше трёх или больше трёх из оставшихся.
+//      1. Упорядочиваем первые три числа по возрастанию ( 2 или 3 сравнения ). Получаем — x0, x1, x2, x3, x4, x5, x6.
+//      2. Сравниваем x1 с x3 и с x4 ( 2 сравнения ).
+//      3. Если x1 не больше x3 и x4 не больше x1, медиану среди x0, x5, x4, x6, x1, x3, x2 находит median7b4.
+//      4. Если x1    больше x3 и x1 не больше x4, медиану среди x0, x5, x3, x6, x1, x4, x2 находит median7b4.
+//      5. Если x1 не больше x3 и x4 больше x1, упорядочиваем x3 и x4. Медиану среди x1, x5, x2, x6, x4, x3 находит median7b3.
+//      6. Если x1    больше x3 и x1 больше x4, упорядочиваем x3 и x4. Медиану среди x0, x6, x4, x5, x3, x1 находит median7b2.
+//      median7b2, median7b3 и median7b4 на каждом шаге делают одно сравнение и отбрасывают число, которое меньше или больше трёх из оставшихся.
 //
 //*********************** 25.10.2026 **************************//
 
-template <class T> inline bool before ( const T * x, const T * y )
-{
-    ++isum;
-    return *x <= *y;
-}
-
 template <class T> const T * median7b4 ( const T * x0, const T * x1, const T * x2, const T * x3, const T * x4, const T * x5, const T * x6 )
 {
-    if ( before ( x4, x1 ) )
+    if ( before ( x1, x5 ) )
     {
-        if ( before ( x4, x3 ) )
+        if ( before ( x1, x6 ) )
         {
-            const T * s = before ( x6, x5 ) ? x6 : x5;
-            const T * m = before ( x1, x3 ) ? x1 : x3;
+            const T * s = before ( x2, x4 ) ? x2 : x4;
+            const T * m = before ( x5, x6 ) ? x5 : x6;
             return before ( s, m ) ? s : m;
         }
-        return x4;
+        return x1;
     }
-    if ( before ( x4, x3 ) )
-        return x4;
-    const T * s = before ( x0, x2 ) ? x2 : x0;
-    const T * m = before ( x1, x3 ) ? x3 : x1;
+    if ( before ( x1, x6 ) )
+        return x1;
+    const T * s = before ( x0, x3 ) ? x3 : x0;
+    const T * m = before ( x5, x6 ) ? x6 : x5;
     return before ( s, m ) ? m : s;
 }
 
-template <class T> const T * median7b3 ( const T * x0, const T * x1, const T * x2, const T * x3, const T * x4, const T * x5 )
+template <class T> const T * median7b3 ( const T * x1, const T * x2, const T * x3, const T * x4, const T * x5, const T * x6 )
 {
-    if ( before ( x4, x1 ) )
+    if ( before ( x4, x5 ) )
     {
-        if ( before ( x4, x3 ) )
+        if ( before ( x4, x6 ) )
         {
-            if ( before ( x2, x3 ) )
+            if ( before ( x2, x6 ) )
             {
                 if ( before ( x2, x4 ) )
                     return x4;
-                const T * s = before ( x5, x1 ) ? x5 : x1;
+                const T * s = before ( x3, x5 ) ? x3 : x5;
                 return before ( x2, s ) ? x2 : s;
             }
-            const T * s = before ( x5, x1 ) ? x5 : x1;
-            return before ( s, x3 ) ? s : x3;
+            const T * s = before ( x3, x5 ) ? x3 : x5;
+            return before ( s, x6 ) ? s : x6;
         }
         if ( before ( x2, x4 ) )
-            return before ( x2, x3 ) ? x3 : x2;
+            return before ( x2, x6 ) ? x6 : x2;
         return x4;
+    }
+    if ( before ( x1, x6 ) )
+    {
+        if ( before ( x4, x6 ) )
+        {
+            if ( before ( x2, x4 ) )
+                return before ( x2, x5 ) ? x5 : x2;
+            return x4;
+        }
+        if ( before ( x5, x6 ) )
+        {
+            if ( before ( x2, x6 ) )
+                return before ( x2, x5 ) ? x5 : x2;
+            return x6;
+        }
+        if ( before ( x2, x5 ) )
+            return before ( x2, x6 ) ? x6 : x2;
+        return x5;
+    }
+    if ( before ( x1, x5 ) )
+        return before ( x2, x5 ) ? x2 : x5;
+    return x1;
+}
+
+template <class T> const T * median7b2 ( const T * x0, const T * x1, const T * x3, const T * x4, const T * x5, const T * x6 )
+{
+    if ( before ( x3, x5 ) )
+    {
+        if ( before ( x3, x6 ) )
+        {
+            if ( before ( x1, x6 ) )
+            {
+                if ( before ( x1, x5 ) )
+                    return x1;
+                return before ( x0, x5 ) ? x5 : x0;
+            }
+            if ( before ( x0, x6 ) )
+            {
+                if ( before ( x5, x6 ) )
+                    return before ( x0, x5 ) ? x5 : x0;
+                return x6;
+            }
+            if ( before ( x0, x5 ) )
+                return x0;
+            return before ( x5, x6 ) ? x6 : x5;
+        }
+        if ( before ( x0, x3 ) )
+            return x3;
+        return before ( x0, x5 ) ? x0 : x5;
+    }
+    if ( before ( x3, x6 ) )
+    {
+        if ( before ( x0, x3 ) )
+            return x3;
+        return before ( x0, x6 ) ? x0 : x6;
+    }
+    if ( before ( x0, x6 ) )
+    {
+        if ( before ( x4, x5 ) )
+            return before ( x5, x6 ) ? x6 : x5;
+        return before ( x4, x6 ) ? x6 : x4;
     }
     if ( before ( x0, x3 ) )
     {
-        if ( before ( x4, x3 ) )
-        {
-            if ( before ( x2, x4 ) )
-                return before ( x2, x1 ) ? x1 : x2;
-            return x4;
-        }
-        if ( before ( x1, x3 ) )
-        {
-            if ( before ( x2, x3 ) )
-                return before ( x2, x1 ) ? x1 : x2;
-            return x3;
-        }
-        if ( before ( x2, x1 ) )
-            return before ( x2, x3 ) ? x3 : x2;
-        return x1;
+        if ( before ( x4, x5 ) )
+            return before ( x0, x5 ) ? x5 : x0;
+        return before ( x0, x4 ) ? x4 : x0;
     }
-    if ( before ( x0, x1 ) )
-        return before ( x2, x1 ) ? x2 : x1;
-    return x0;
-}
-
-template <class T> const T * median7b2 ( const T * x0, const T * x1, const T * x2, const T * x3, const T * x4, const T * x5 )
-{
-    if ( before ( x4, x3 ) )
-    {
-        if ( before ( x4, x1 ) )
-        {
-            if ( before ( x5, x1 ) )
-            {
-                if ( before ( x5, x3 ) )
-                    return x5;
-                return before ( x0, x3 ) ? x3 : x0;
-            }
-            if ( before ( x0, x1 ) )
-            {
-                if ( before ( x3, x1 ) )
-                    return before ( x0, x3 ) ? x3 : x0;
-                return x1;
-            }
-            if ( before ( x0, x3 ) )
-                return x0;
-            return before ( x3, x1 ) ? x1 : x3;
-        }
-        if ( before ( x0, x4 ) )
-            return x4;
-        return before ( x0, x3 ) ? x0 : x3;
-    }
-    if ( before ( x4, x1 ) )
-    {
-        if ( before ( x0, x4 ) )
-            return x4;
-        return before ( x0, x1 ) ? x0 : x1;
-    }
-    if ( before ( x0, x1 ) )
-    {
-        if ( before ( x2, x3 ) )
-            return before ( x3, x1 ) ? x1 : x3;
-        return before ( x2, x1 ) ? x1 : x2;
-    }
-    if ( before ( x0, x4 ) )
-    {
-        if ( before ( x2, x3 ) )
-            return before ( x0, x3 ) ? x3 : x0;
-        return before ( x0, x2 ) ? x2 : x0;
-    }
-    return x4;
+    return x3;
 }
 
 template <class T> T median7b ( const T * x0, const T * x1, const T * x2, const T * x3, const T * x4, const T * x5, const T * x6 )
@@ -644,18 +579,18 @@ template <class T> T median7b ( const T * x0, const T * x1, const T * x2, const 
     if ( before ( x1, x3 ) )
     {
         if ( before ( x4, x1 ) )
-            return *median7b4 ( x0, x5, x4, x6, x1, x3, x2 );
+            return *median7b4 ( x0, x1, x2, x4, x3, x5, x6 );
         if ( before ( x3, x4 ) )
             _swap ( x3, x4 );
-        return *median7b3 ( x1, x5, x2, x6, x4, x3 );
+        return *median7b3 ( x1, x2, x3, x4, x5, x6 );
     }
     else
     {
         if ( before ( x1, x4 ) )
-            return *median7b4 ( x0, x5, x3, x6, x1, x4, x2 );
+            return *median7b4 ( x0, x1, x2, x3, x4, x5, x6 );
         if ( before ( x3, x4 ) )
             _swap ( x3, x4 );
-        return *median7b2 ( x0, x6, x4, x5, x3, x1 );
+        return *median7b2 ( x0, x1, x3, x4, x5, x6 );
     }
 }
 
@@ -1413,7 +1348,7 @@ template <class T> inline T _median13 ( const T * a )
 //
 //*********************** 29.12.2021 **************************//
 
-template <class T> bool select ( ArrRef<T> a, nat i )
+template <class T> bool select ( ArrRef<T> & a, nat i )
 {
     nat n = a.size();
     if ( i >= n ) return false;
@@ -1490,9 +1425,9 @@ m1:     if ( i <= j1 )
 //                  Медиана множества чисел
 //  После вызова этой функции порядок чисел может быть изменён
 //
-//*********************** 23.01.2016 **************************//
+//*********************** 04.11.2026 **************************//
 
-template <class T> T median ( ArrRef<T> a )
+template <class T> T median ( ArrRef<T> & a )
 {
     const nat n = a.size();
     // Частные случаи
@@ -1505,7 +1440,7 @@ template <class T> T median ( ArrRef<T> a )
     case  4: return _median4 ( a() );
     case  5: return _median5b( a() );
     case  6: return _median6 ( a() );
-    case  7: return _median7 ( a() );
+    case  7: return _median7b( a() );
     case  8: return _median8 ( a() );
     case  9: return _median9b( a() );
     case 10: return _median10( a() );

@@ -26,7 +26,7 @@ static double median7 ( nat n, double * a )
         }
         const nat m = n / 7;
         nat j;
-        for ( j = 0; j < m; ++j ) d[j] = _median7 ( s + 7 * j );
+        for ( j = 0; j < m; ++j ) d[j] = _median7a ( s + 7 * j );
         res = median7 ( m, d );
         nat j1 = 0;
         nat j2 = n - 1;
@@ -75,7 +75,7 @@ Def<double> select7 ( CArrRef<double> a, nat i )
         }
         const nat m = n / 7;
         nat j;
-        for ( j = 0; j < m; ++j ) d[j] = _median7 ( s + 7 * j );
+        for ( j = 0; j < m; ++j ) d[j] = _median7a ( s + 7 * j );
         res = median7 ( m, d );
         nat j1 = 0;
         nat j2 = n - 1;
