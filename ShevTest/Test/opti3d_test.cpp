@@ -3826,7 +3826,7 @@ void maxCuboidInConvexPolyhedron_test()
 
 class D4 {};
 
-inline double operator * ( const D4 &, const Double<4> & b )
+inline double operator * ( const D4 &, const Double<7> & b )
 {
     return b.d0 + b.d1 + b.d2 + b.d3;
 }
@@ -3839,45 +3839,43 @@ struct CoefAB
     double zt, zx, zy;
 };
 
-bool maxPolyhedronInConvexPolyhedron2 ( const Polyhedron & inner, const Polyhedron & outer, const CoefAB & c, LinTran3d & lt )
+struct LinTask7
+{
+    Double<7> arr[8];
+
+    LinTask7 ()
+    {
+        arr[0].fill ( 1 );
+        for ( nat i = 1; i < 8; ++i ) arr[i].fill ( 0 );
+        arr[1].d0 = arr[2].d1 = arr[3].d2 = arr[4].d3 = arr[5].d4 = arr[6].d5 = arr[7].d6 = -1;
+    }
+};
+
+bool maxPolyhedronInConvexPolyhedron1 ( CCArrRef<Vector3d> & vert, CCArrRef<Plane3d> & plane, Affin3d & af )
 {
     nat i;
-    const nat nv = inner.vertex.size();
-    if ( nv < 2 ) return false;
-    const nat np = outer.facet.size();
-    if ( nv < 4 ) return false;
-    CCArrRef<Vector3d> & vert = inner.vertex;
-    DynArray<Plane3d> plane ( np );
-    /*Def<Segment3d> dim1 = dimensions (inner.vertex);
-    Def<Segment3d> dim2 = dimensions ( outer.vertex );
-    if ( ! dim2.isDef ) return err;
-    const double r1 = normU ( dim1.a - dim1.b );
-    const double r2 = normU ( dim2.a - dim2.b );
-    if ( ! r1 || ! r2 ) return err;
-    const Vector3d o1 = 0.5 * ( dim1.a + dim1.b );
-    const Vector3d o2 = 0.5 * ( dim2.a + dim2.b );
-    const double c1 = 4 / r1;
-    for ( i = 0; i < nv; ++i )
-    {
-        vert[i] = ( inner.vertex[i] - o1 ) * c1;
-    }
-    const Conform3d conf1 = Conform3d ( c1 ) * Conform3d ( -o1 );
-    const Conform3d conf2 = Conform3d ( 2 / r2 ) * Conform3d ( -o2 );
-    const Similar3d sim2 ( conf2 );*/
-    for ( i = 0; i < np; ++i )
-    {
-        plane[i] =  ( outer.facet[i].plane );
-    }
+    const nat nv = vert.size();
+    const nat np = plane.size();
+// »нициализаци€ областей допустимых преобразований
+    LinTask7 data[8];
+    const double eps = 1e-6;
+    LinTran3d & lt = af.t;
+    return false;
+}
+
+bool maxPolyhedronInConvexPolyhedron2 ( CCArrRef<Vector3d> & vert, CCArrRef<Plane3d> & plane, const CoefAB & c, Affin3d & af )
+{
+    nat i;
+    const nat nv = vert.size();
+    const nat np = plane.size();
 // »нициализаци€ области допустимых преобразований
-    const nat N = 4;
+    const nat N = 7;
     Double<N> arr[N+1], cor;
     arr[0].fill ( 1 );
-    arr[1].fill ( 0 );
-    arr[2].fill ( 0 );
-    arr[3].fill ( 0 );
-    arr[4].fill ( 0 );
-    arr[1].d0 = arr[2].d1 = arr[3].d2 = arr[4].d3 = -1;
+    for ( i = 1; i <= N; ++i ) arr[i].fill ( 0 );
+    arr[1].d0 = arr[2].d1 = arr[3].d2 = arr[4].d3 = arr[5].d4 = arr[6].d5 = arr[7].d6 = -1;
     const double eps = 1e-6;
+    LinTran3d & lt = af.t;
     for ( i = 0; i < 400; ++i )
     {
 // ѕоиск максимального решени€
@@ -3896,11 +3894,14 @@ bool maxPolyhedronInConvexPolyhedron2 ( const Polyhedron & inner, const Polyhedr
         lt.x.x = tt + xx - yy - zz; lt.x.y = xy - zt;           lt.x.z = zx + yt;
         lt.y.x = xy + zt;           lt.y.y = tt + yy - zz - xx; lt.y.z = yz - xt;
         lt.z.x = zx - yt;           lt.z.y = yz + xt;           lt.z.z = tt + zz - xx - yy;
+        af.s.x = best.d4;
+        af.s.y = best.d5;
+        af.s.z = best.d6;
         double max = 0;
         nat jm, km;
         for ( nat j = 0; j < nv; ++j )
         {
-            const Vector3d p = lt ( vert[j] );
+            const Vector3d p = af ( vert[j] );
             for ( nat k = 0; k < np; ++k )
             {
                 const double d = plane[k] % p;
@@ -3962,6 +3963,9 @@ bool maxPolyhedronInConvexPolyhedron2 ( const Polyhedron & inner, const Polyhedr
         cor.d1 = nxx - nyy - nzz + c.yx * xyp + c.tx * yzm + c.zx * zxp;
         cor.d2 = nyy - nzz - nxx + c.xy * xyp + c.zy * yzp + c.ty * zxm;
         cor.d3 = nzz - nxx - nyy + c.tz * xym + c.yz * yzp + c.xz * zxp;
+        cor.d4 = n.x;
+        cor.d5 = n.y;
+        cor.d6 = n.z;
 //double t = cor * best + plane[km].dist; t -= max;
         if ( ! cutSimplex ( arr, D4(), cor, max ) )
             return false;
@@ -3969,8 +3973,34 @@ bool maxPolyhedronInConvexPolyhedron2 ( const Polyhedron & inner, const Polyhedr
     return false;
 }
 
-bool maxPolyhedronInConvexPolyhedron2 ( const Polyhedron & inner, const Polyhedron & outer, LinTran3d & res )
+bool maxPolyhedronInConvexPolyhedron2 ( const Polyhedron & inner, const Polyhedron & outer, Affin3d & res )
 {
+    CCArrRef<Vector3d> & vert = inner.vertex;
+    const nat nv = vert.size();
+    if ( nv < 2 ) return false;
+    const nat np = outer.facet.size();
+    if ( nv < 4 ) return false;
+    /*Def<Segment3d> dim1 = dimensions (inner.vertex);
+    Def<Segment3d> dim2 = dimensions ( outer.vertex );
+    if ( ! dim2.isDef ) return err;
+    const double r1 = normU ( dim1.a - dim1.b );
+    const double r2 = normU ( dim2.a - dim2.b );
+    if ( ! r1 || ! r2 ) return err;
+    const Vector3d o1 = 0.5 * ( dim1.a + dim1.b );
+    const Vector3d o2 = 0.5 * ( dim2.a + dim2.b );
+    const double c1 = 4 / r1;
+    for ( i = 0; i < nv; ++i )
+    {
+        vert[i] = ( inner.vertex[i] - o1 ) * c1;
+    }
+    const Conform3d conf1 = Conform3d ( c1 ) * Conform3d ( -o1 );
+    const Conform3d conf2 = Conform3d ( 2 / r2 ) * Conform3d ( -o2 );
+    const Similar3d sim2 ( conf2 );*/
+    DynArray<Plane3d> plane ( np );
+    for ( nat i = 0; i < np; ++i )
+    {
+        plane[i] =  ( outer.facet[i].plane );
+    }
     CoefAB c;
     bool ok = false;
     double max = 0;
@@ -4007,15 +4037,15 @@ bool maxPolyhedronInConvexPolyhedron2 ( const Polyhedron & inner, const Polyhedr
             c.xz = - c.xz;
             c.zx = - c.zx;
         }
-        LinTran3d lt;
-        if ( maxPolyhedronInConvexPolyhedron2 ( inner, outer, c, lt ) )
+        Affin3d af;
+        if ( maxPolyhedronInConvexPolyhedron2 ( vert, plane, c, af ) )
         {
-            double t = lt.x * ( lt.y % lt.z );
-            display << i << t << NL;
+            double t = af.t.x * ( af.t.y % af.t.z );
+//display << i << t << NL;
             if ( _maxa ( max, t ) )
             {
                 ok = true;
-                res = lt;
+                res = af;
             }
         }
     }
@@ -4028,8 +4058,8 @@ void maxPolyhedronInConvexPolyhedron2_test()
     const Spin3d spin ( rand(), rand() );
     double time = 0;
     Polyhedron inner;
-    //inner.makeCube(1);
-    inner.makeTetrahedron(1);
+    inner.makeCube(1);
+    //inner.makeTetrahedron(1);
     inner *= spin;
 //    for ( nat k = 0; k < 340; ++k )
 //    {
@@ -4039,19 +4069,19 @@ void maxPolyhedronInConvexPolyhedron2_test()
 //        if ( k != 333 ) continue;
 //        display << k << NL;
         draw ( outer, 0, 1, 1, 0, VM_WIRE );
-        LinTran3d lt;
+        Affin3d af;
         double t1 = timeInSec();
-        if ( ! maxPolyhedronInConvexPolyhedron2 ( inner, outer, lt ) )
+        if ( ! maxPolyhedronInConvexPolyhedron2 ( inner, outer, af ) )
         {
             display << "error" << NL;
             return;
         }
-        inner *= lt;
+        inner *= af;
         double t2 = timeInSec();
         time += t2 - t1;
         draw ( inner, 1, 1, 0, 1, VM_WIRE );
 //    }
-    display << "end" << time << lt.x * ( lt.y % lt.z ) << NL;
+    display << "end" << time << af.t.x * ( af.t.y % af.t.z ) << NL;
 }
 
 void opti3d_test ()
