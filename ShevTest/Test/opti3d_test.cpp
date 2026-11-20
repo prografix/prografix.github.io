@@ -23,6 +23,7 @@
 #include "../Shev/RealFile.h"
 #include "../Shev/filePYH.h"
 #include "../Shev/trans.h"
+#include "../Shev/heap.h"
 #include "PolyhedronErrorRecipient.h"
 #include "../draw.h"
 
@@ -3839,30 +3840,6 @@ struct CoefAB
     double zt, zx, zy;
 };
 
-struct LinTask7
-{
-    Double<7> arr[8];
-
-    LinTask7 ()
-    {
-        arr[0].fill ( 1 );
-        for ( nat i = 1; i < 8; ++i ) arr[i].fill ( 0 );
-        arr[1].d0 = arr[2].d1 = arr[3].d2 = arr[4].d3 = arr[5].d4 = arr[6].d5 = arr[7].d6 = -1;
-    }
-};
-
-bool maxPolyhedronInConvexPolyhedron1 ( CCArrRef<Vector3d> & vert, CCArrRef<Plane3d> & plane, Affin3d & af )
-{
-    nat i;
-    const nat nv = vert.size();
-    const nat np = plane.size();
-// »нициализаци€ областей допустимых преобразований
-    LinTask7 data[8];
-    const double eps = 1e-6;
-    LinTran3d & lt = af.t;
-    return false;
-}
-
 bool maxPolyhedronInConvexPolyhedron2 ( CCArrRef<Vector3d> & vert, CCArrRef<Plane3d> & plane, const CoefAB & c, Affin3d & af )
 {
     nat i;
@@ -3973,6 +3950,132 @@ bool maxPolyhedronInConvexPolyhedron2 ( CCArrRef<Vector3d> & vert, CCArrRef<Plan
     return false;
 }
 
+struct PCPContext
+{
+    Double<7> arr[8];
+    CoefAB coef;
+};
+
+bool maxPCP ( CCArrRef<Vector3d> & vert, CCArrRef<Plane3d> & plane, const CoefAB & coef, Affin3d & af )
+{
+    const nat nv = vert.size();
+    const nat np = plane.size();
+    Double<7> cor;
+    PCPContext cont[8];
+    MaxHeap<SortItem<double,nat> > heap ( 8 );
+    for ( nat k = 0; k < 8; ++k )
+    {
+        heap << SortItem<double,nat> ( 4, k );
+        Double<7> * arr = cont[k].arr;
+        arr[0].fill ( 1 );
+        for ( nat i = 1; i <= 7; ++i ) arr[i].fill ( 0 );
+        arr[1].d0 = arr[2].d1 = arr[3].d2 = arr[4].d3 = arr[5].d4 = arr[6].d5 = arr[7].d6 = -1;
+        CoefAB & c = cont[k].coef;
+        c = coef;
+        if ( k & 1 )
+        {
+            c.tx = - c.tx;
+            c.xt = - c.xt;
+            c.yx = - c.yx;
+            c.xy = - c.xy;
+            c.zx = - c.zx;
+            c.xz = - c.xz;
+        }
+        if ( k & 2 )
+        {
+            c.ty = - c.ty;
+            c.yt = - c.yt;
+            c.xy = - c.xy;
+            c.yx = - c.yx;
+            c.zy = - c.zy;
+            c.yz = - c.yz;
+        }
+        if ( k & 4 )
+        {
+            c.tz = - c.tz;
+            c.zt = - c.zt;
+            c.yz = - c.yz;
+            c.zy = - c.zy;
+            c.xz = - c.xz;
+            c.zx = - c.zx;
+        }
+    }
+    nat i;
+    const double eps = 1e-6;
+    LinTran3d & lt = af.t;
+    for ( i = 0; i < 400; ++i )
+    {
+        PCPContext & ci = cont[heap[0]->tail];
+        const CoefAB & c = ci.coef;
+// ѕоиск максимального решени€
+        Double<7> & best = ci.arr[0];
+// ѕоиск максимального нарушени€ ограничений дл€ выбранного решени€
+        const double tt = best.d0;
+        const double xx = best.d1;
+        const double yy = best.d2;
+        const double zz = best.d3;
+        const double xy = c.yx * xx + c.xy * yy;
+        const double yz = c.zy * yy + c.yz * zz;
+        const double zx = c.xz * zz + c.zx * xx;
+        const double xt = c.tx * xx + c.xt * tt;
+        const double yt = c.ty * yy + c.yt * tt;
+        const double zt = c.tz * zz + c.zt * tt;
+        lt.x.x = tt + xx - yy - zz; lt.x.y = xy - zt;           lt.x.z = zx + yt;
+        lt.y.x = xy + zt;           lt.y.y = tt + yy - zz - xx; lt.y.z = yz - xt;
+        lt.z.x = zx - yt;           lt.z.y = yz + xt;           lt.z.z = tt + zz - xx - yy;
+        af.s.x = best.d4;
+        af.s.y = best.d5;
+        af.s.z = best.d6;
+        double max = 0;
+        nat jm, km;
+        for ( nat j = 0; j < nv; ++j )
+        {
+            const Vector3d p = af ( vert[j] );
+            for ( nat k = 0; k < np; ++k )
+            {
+                const double d = plane[k] % p;
+                if ( max < d ) max = d, jm = j, km = k;
+            }
+        }
+// ≈сли нарушение мало, то завершение программы
+        if ( max < eps )
+        {
+//display << i << NL;
+            return true;
+        }
+// ѕрименение ограничени€ к области допустимых преобразований
+        const Vector3d & n = plane[km].norm;
+        const Vector3d & v = vert[jm];
+        const double nxx = n.x * v.x;
+        const double nxy = n.x * v.y;
+        const double nxz = n.x * v.z;
+        const double nyx = n.y * v.x;
+        const double nyy = n.y * v.y;
+        const double nyz = n.y * v.z;
+        const double nzx = n.z * v.x;
+        const double nzy = n.z * v.y;
+        const double nzz = n.z * v.z;
+        const double xyp = nyx + nxy;
+        const double xym = nyx - nxy;
+        const double yzp = nyz + nzy;
+        const double yzm = nzy - nyz;
+        const double zxp = nzx + nxz;
+        const double zxm = nxz - nzx;
+        cor.d0 = nxx + nyy + nzz + c.zt * xym + c.xt * yzm + c.yt * zxm;
+        cor.d1 = nxx - nyy - nzz + c.yx * xyp + c.tx * yzm + c.zx * zxp;
+        cor.d2 = nyy - nzz - nxx + c.xy * xyp + c.zy * yzp + c.ty * zxm;
+        cor.d3 = nzz - nxx - nyy + c.tz * xym + c.yz * yzp + c.xz * zxp;
+        cor.d4 = n.x;
+        cor.d5 = n.y;
+        cor.d6 = n.z;
+        if ( ! cutSimplex ( ci.arr, D4(), cor, max ) )
+            return false;
+        heap[0]->head = best.d0 + best.d1 + best.d2 + best.d3;
+        heap.down ( 0 );
+    }
+    return false;
+}
+
 bool maxPolyhedronInConvexPolyhedron2 ( const Polyhedron & inner, const Polyhedron & outer, Affin3d & res )
 {
     CCArrRef<Vector3d> & vert = inner.vertex;
@@ -4001,7 +4104,24 @@ bool maxPolyhedronInConvexPolyhedron2 ( const Polyhedron & inner, const Polyhedr
     {
         plane[i] =  ( outer.facet[i].plane );
     }
+    /*
+end 1.020e-004 0.036 
+end 9.650e-005 0.035 
+end 7.940e-005 0.044 
+end 8.640e-005 0.038 
+end 8.130e-005 0.038 
+end 7.880e-005 0.072 
+end 9.670e-005 0.047 
+end 8.870e-005 0.045 
+end 1.012e-004 0.065 
+end 9.190e-005 0.056 
+*/
     CoefAB c;
+    c.tx = c.ty = c.tz = 1;
+    c.xt = c.xy = c.xz = 1;
+    c.yt = c.yx = c.yz = 1;
+    c.zt = c.zx = c.zy = 1;
+    //return maxPCP ( vert, plane, c, res );
     bool ok = false;
     double max = 0;
     for ( nat i = 0; i < 8; ++i )

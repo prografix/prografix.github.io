@@ -168,3 +168,12 @@ Def<Vector4d> getNearPoint2 ( CCArrRef<Plane4d> & plane );
 //************************ 04.05.2019 *******************************//
 
 Def<Vector4d> getNearPointU ( CCArrRef<Plane4d> & plane );
+
+
+//************************ 21.10.2026 *******************************//
+//
+//      Выпуклая оболочка множества четырёхмерных точек
+//
+//************************ 21.10.2026 *******************************//
+
+DynArrRef<Vector4d> & convexHull ( CCArrRef<Vector4d> & point, DynArrRef<Vector4d> & vert );

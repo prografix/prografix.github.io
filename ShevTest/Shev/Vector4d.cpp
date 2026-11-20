@@ -4,6 +4,10 @@
 #include "LinAlg.h"
 #include "Vector4d.h"
 #include "DoubleN.h"
+#include "Vector2d.h"
+#include "Vector3d.h"
+#include "func2d.h"
+#include "TrianFacet.h"
 
 // Задание векторных норм
 
@@ -285,4 +289,483 @@ Def<Vector4d> getNearPointU ( CCArrRef<Plane4d> & plane )
         }
     }
     return Def<Vector4d>();
+}
+
+//**************************** 21.10.2026 *********************************//
+//
+//      Выпуклая оболочка множества четырёхмерных точек
+//
+//**************************** 21.10.2026 *********************************//
+
+namespace
+{
+
+const nat NIL = nat ( -1 );
+
+double det3 ( double a11, double a12, double a13,
+              double a21, double a22, double a23,
+              double a31, double a32, double a33 )
+{
+    return a11 * ( a22 * a33 - a23 * a32 )
+         - a12 * ( a21 * a33 - a23 * a31 )
+         + a13 * ( a21 * a32 - a22 * a31 );
+}
+
+// Вектор, ортогональный трём данным: его скалярное произведение с x равно det ( u, v, w, x )
+Vector4d cross4 ( const Vector4d & u, const Vector4d & v, const Vector4d & w )
+{
+    return Vector4d
+    (
+        det3 ( u.x2, v.x2, w.x2, u.x3, v.x3, w.x3, u.x4, v.x4, w.x4 ),
+       -det3 ( u.x1, v.x1, w.x1, u.x3, v.x3, w.x3, u.x4, v.x4, w.x4 ),
+        det3 ( u.x1, v.x1, w.x1, u.x2, v.x2, w.x2, u.x4, v.x4, w.x4 ),
+       -det3 ( u.x1, v.x1, w.x1, u.x2, v.x2, w.x2, u.x3, v.x3, w.x3 )
+    );
+}
+
+// Гиперплоскость через четыре точки. Внутренняя точка лежит с отрицательной стороны
+Plane4d makePlane ( const Vector4d & a, const Vector4d & b, const Vector4d & c, const Vector4d & d, const Vector4d & inner )
+{
+    Vector4d n = cross4 ( b - a, c - a, d - a );
+    if ( n * ( inner - a ) > 0 ) n = - n;
+    const double q = qmod ( n );
+    if ( q > 0 ) n *= 1 / sqrt ( q );
+    return Plane4d ( n, - ( n * a ) );
+}
+
+bool axes2 ( const Vector4d & u, const Vector4d & w, Vector4d & e1, Vector4d & e2 )
+{
+    e1 = u;
+    e1.setNorm2();
+    if ( ! e1 ) return false;
+    e2 = w - e1 * ( w * e1 );
+    e2.setNorm2();
+    if ( ! e2 ) return false;
+    return true;
+}
+
+DynArrRef<Vector4d> & hullLine ( CCArrRef<Vector4d> & point, DynArrRef<Vector4d> & vert, nat i0, const Vector4d & dir )
+{
+    double tmin = 0, tmax = 0;
+    nat imn = i0, imx = i0;
+    for ( nat i = 0; i < point.size(); ++i )
+    {
+        const double t = dir * ( point[i] - point[i0] );
+        if ( t < tmin ) tmin = t, imn = i;
+        if ( t > tmax ) tmax = t, imx = i;
+    }
+    if ( imn == imx )
+    {
+        vert.resize ( 1 );
+        vert[0] = point[imn];
+        return vert;
+    }
+    vert.resize ( 2 );
+    vert[0] = point[imn];
+    vert[1] = point[imx];
+    return vert;
+}
+
+DynArrRef<Vector4d> & hullFlat2 ( CCArrRef<Vector4d> & point, DynArrRef<Vector4d> & vert,
+    const Vector4d & origin, const Vector4d & e1, const Vector4d & e2 )
+{
+    const nat n = point.size();
+    DynArray<Vector2d> q ( n );
+    for ( nat i = 0; i < n; ++i )
+    {
+        const Vector4d x = point[i] - origin;
+        q[i] = Vector2d ( x * e1, x * e2 );
+    }
+    Suite<nat> id;
+    convexNlogN ( q, id );
+    vert.resize ( id.size() );
+    for ( nat i = 0; i < id.size(); ++i ) vert[i] = point[id[i]];
+    return vert;
+}
+
+DynArrRef<Vector4d> & hullFlat3 ( CCArrRef<Vector4d> & point, DynArrRef<Vector4d> & vert,
+    const Vector4d & origin, const Vector4d & e1, const Vector4d & e2, const Vector4d & e3 )
+{
+    const nat n = point.size();
+    DynArray<Vector3d> q ( n );
+    for ( nat i = 0; i < n; ++i )
+    {
+        const Vector4d x = point[i] - origin;
+        q[i] = Vector3d ( x * e1, x * e2, x * e3 );
+    }
+    if ( n >= 4 )
+    {
+        nat nv, nf;
+        DynArray<nat> iv ( n );
+        DynArray<TrianFacet> tri ( 2 * n - 4 );
+        if ( convexHull ( q, nv, iv, nf, tri ) )
+        {
+            vert.resize ( nv );
+            for ( nat i = 0; i < nv; ++i ) vert[i] = point[iv[i]];
+            return vert;
+        }
+    }
+    return hullFlat2 ( point, vert, origin, e1, e2 );
+}
+
+struct Facet4
+{
+    nat vertex[4];
+    nat nei[4];
+    nat side[4];
+    Plane4d plane;
+    nat head;
+    nat mark;
+    bool alive;
+
+    Facet4 () : head ( NIL ), mark ( 0 ), alive ( false )
+    {
+        vertex[0] = vertex[1] = vertex[2] = vertex[3] = 0;
+        nei[0] = nei[1] = nei[2] = nei[3] = NIL;
+        side[0] = side[1] = side[2] = side[3] = 0;
+    }
+};
+
+struct Horizon4
+{
+    nat nei, side, v0, v1, v2;
+};
+
+struct Edge4
+{
+    nat a, b, facet, face;
+};
+
+void linkEdge ( Suite<Edge4> & edge, nat a, nat b, nat facetId, nat face, Suite<Facet4> & facet )
+{
+    if ( a > b ) _swap ( a, b );
+    for ( nat i = 0; i < edge.size(); ++i )
+    {
+        if ( edge[i].a != a || edge[i].b != b ) continue;
+        const nat f1 = edge[i].facet;
+        const nat s1 = edge[i].face;
+        facet[f1].nei[s1] = facetId;
+        facet[f1].side[s1] = face;
+        facet[facetId].nei[face] = f1;
+        facet[facetId].side[face] = s1;
+        edge.del ( i );
+        return;
+    }
+    Edge4 & e = edge.inc();
+    e.a = a;
+    e.b = b;
+    e.facet = facetId;
+    e.face = face;
+}
+
+struct Work
+{
+    CArrRef<Vector4d> point;
+    Suite<Facet4> facet;
+    DynArray<nat> next;
+    DynArray<bool> on;
+    DynArray<bool> skip;
+    DynArray<nat> seen;
+    Suite<nat> hull;
+    Vector4d inner;
+    double tol;
+    nat gen;
+    nat seenId;
+
+    Work ( CCArrRef<Vector4d> & p, double t );
+    void pushOut ( nat f, nat p );
+    void seed ( const nat s[5] );
+    bool addPoint ( nat p, nat seedFacet );
+    void run ();
+};
+
+Work::Work ( CCArrRef<Vector4d> & p, double t )
+    : point ( p ), next ( p.size(), NIL ), on ( p.size(), false ), skip ( p.size(), false ),
+      seen ( p.size(), nat(0) ), tol ( t ), gen ( 0 ), seenId ( 0 )
+{}
+
+void Work::pushOut ( nat f, nat p )
+{
+    next[p] = facet[f].head;
+    facet[f].head = p;
+}
+
+void Work::seed ( const nat s[5] )
+{
+    nat loc[5][4];
+    nat i, k;
+    for ( i = 0; i < 5; ++i )
+    {
+        nat t = 0;
+        for ( nat j = 0; j < 5; ++j ) if ( j != i ) loc[i][t++] = j;
+    }
+    inner = point[s[0]];
+    for ( k = 1; k < 5; ++k ) inner += point[s[k]];
+    inner *= 0.2;
+    for ( i = 0; i < 5; ++i )
+    {
+        Facet4 & f = facet.inc();
+        for ( k = 0; k < 4; ++k ) f.vertex[k] = s[loc[i][k]];
+        f.plane = makePlane ( point[f.vertex[0]], point[f.vertex[1]], point[f.vertex[2]], point[f.vertex[3]], point[s[i]] );
+        f.alive = true;
+        f.head = NIL;
+        f.mark = 0;
+        for ( k = 0; k < 4; ++k )
+        {
+            const nat other = loc[i][k];
+            f.nei[k] = other;
+            nat ns = 0;
+            for ( nat t = 0; t < 4; ++t ) if ( loc[other][t] == i ) ns = t;
+            f.side[k] = ns;
+        }
+    }
+    for ( k = 0; k < 5; ++k )
+    {
+        on[s[k]] = true;
+        hull.add ( s[k] );
+    }
+    for ( i = 0; i < point.size(); ++i ) if ( ! on[i] )
+    {
+        nat best = NIL;
+        double mx = tol;
+        for ( nat f = 0; f < 5; ++f )
+        {
+            const double d = facet[f].plane % point[i];
+            if ( d > mx ) mx = d, best = f;
+        }
+        if ( best != NIL ) pushOut ( best, i );
+    }
+}
+
+bool Work::addPoint ( nat p, nat seedFacet )
+{
+    ++gen;
+    Suite<nat> stack, vis;
+    Suite<Horizon4> hor;
+    facet[seedFacet].mark = gen;
+    stack.add ( seedFacet );
+    while ( stack.size() > 0 )
+    {
+        const nat f = stack.las();
+        stack.dec();
+        vis.add ( f );
+        for ( nat k = 0; k < 4; ++k )
+        {
+            const nat g = facet[f].nei[k];
+            if ( g == NIL || facet[g].mark == gen || ! facet[g].alive ) continue;
+            if ( facet[g].plane % point[p] > tol )
+            {
+                facet[g].mark = gen;
+                stack.add ( g );
+                continue;
+            }
+            nat vv[3];
+            nat t = 0;
+            for ( nat j = 0; j < 4; ++j ) if ( j != k ) vv[t++] = facet[f].vertex[j];
+            const nat ns = facet[f].side[k];
+            Horizon4 & h = hor.inc();
+            h.nei = g;
+            h.side = ns;
+            h.v0 = vv[0];
+            h.v1 = vv[1];
+            h.v2 = vv[2];
+        }
+    }
+    if ( hor.size() == 0 ) return false;
+
+    ++seenId;
+    Suite<nat> cand;
+    nat i;
+    for ( i = 0; i < vis.size(); ++i )
+    {
+        const nat f = vis[i];
+        for ( nat s = facet[f].head; s != NIL; s = next[s] )
+        {
+            if ( s == p || on[s] || seen[s] == seenId ) continue;
+            seen[s] = seenId;
+            cand.add ( s );
+        }
+        facet[f].head = NIL;
+        facet[f].alive = false;
+    }
+
+    const nat nh = hor.size();
+    const nat base = facet.size();
+    for ( i = 0; i < nh; ++i )
+    {
+        const nat nb = hor[i].nei;
+        const nat ns = hor[i].side;
+        const nat v0 = hor[i].v0;
+        const nat v1 = hor[i].v1;
+        const nat v2 = hor[i].v2;
+        Facet4 & fn = facet.inc();
+        fn.vertex[0] = v0;
+        fn.vertex[1] = v1;
+        fn.vertex[2] = v2;
+        fn.vertex[3] = p;
+        fn.plane = makePlane ( point[v0], point[v1], point[v2], point[p], inner );
+        fn.alive = true;
+        fn.head = NIL;
+        fn.mark = 0;
+        fn.nei[0] = fn.nei[1] = fn.nei[2] = NIL;
+        fn.nei[3] = nb;
+        fn.side[3] = ns;
+        facet[nb].nei[ns] = base + i;
+        facet[nb].side[ns] = 3;
+    }
+
+    Suite<Edge4> edge;
+    for ( i = 0; i < nh; ++i )
+    {
+        const nat id = base + i;
+        linkEdge ( edge, facet[id].vertex[1], facet[id].vertex[2], id, 0, facet );
+        linkEdge ( edge, facet[id].vertex[0], facet[id].vertex[2], id, 1, facet );
+        linkEdge ( edge, facet[id].vertex[0], facet[id].vertex[1], id, 2, facet );
+    }
+
+    for ( i = 0; i < cand.size(); ++i )
+    {
+        const nat c = cand[i];
+        if ( c == p || on[c] ) continue;
+        nat best = NIL;
+        double mx = tol;
+        for ( nat f = 0; f < facet.size(); ++f ) if ( facet[f].alive )
+        {
+            const double d = facet[f].plane % point[c];
+            if ( d > mx ) mx = d, best = f;
+        }
+        if ( best != NIL ) pushOut ( best, c );
+    }
+    return true;
+}
+
+void Work::run ()
+{
+    while ( true )
+    {
+        nat bestF = NIL, bestP = NIL;
+        double mx = tol;
+        nat f;
+        for ( f = 0; f < facet.size(); ++f ) if ( facet[f].alive )
+        {
+            for ( nat s = facet[f].head; s != NIL; s = next[s] )
+            {
+                if ( on[s] || skip[s] ) continue;
+                const double d = facet[f].plane % point[s];
+                if ( d > mx ) mx = d, bestF = f, bestP = s;
+            }
+        }
+        if ( bestP == NIL )
+        {
+            for ( nat p = 0; p < point.size(); ++p ) if ( ! on[p] && ! skip[p] )
+            {
+                for ( f = 0; f < facet.size(); ++f ) if ( facet[f].alive )
+                {
+                    const double d = facet[f].plane % point[p];
+                    if ( d > mx ) mx = d, bestF = f, bestP = p;
+                }
+            }
+        }
+        if ( bestP == NIL ) break;
+        if ( addPoint ( bestP, bestF ) )
+        {
+            on[bestP] = true;
+            hull.add ( bestP );
+        }
+        else skip[bestP] = true;
+    }
+}
+
+}
+
+DynArrRef<Vector4d> & convexHull ( CCArrRef<Vector4d> & point, DynArrRef<Vector4d> & vert )
+{
+    const nat n = point.size();
+    if ( n == 0 ) return vert.resize();
+
+    nat i, i0 = 0;
+    double mq = qmod ( point[0] );
+    for ( i = 1; i < n; ++i )
+    {
+        const double q = qmod ( point[i] );
+        if ( q > mq ) mq = q, i0 = i;
+    }
+    const double tol = 1e-9 * sqrt ( mq );
+
+    nat i1 = NIL;
+    double best = tol * tol;
+    for ( i = 0; i < n; ++i ) if ( i != i0 )
+    {
+        const double q = qmod ( point[i] - point[i0] );
+        if ( q > best ) best = q, i1 = i;
+    }
+    if ( i1 == NIL )
+    {
+        vert.resize ( 1 );
+        vert[0] = point[i0];
+        return vert;
+    }
+
+    const Vector4d dir = point[i1] - point[i0];
+    const double dd = dir * dir;
+    nat i2 = NIL;
+    best = tol * tol * dd;
+    for ( i = 0; i < n; ++i ) if ( i != i0 && i != i1 )
+    {
+        const Vector4d x = point[i] - point[i0];
+        const double q = dd * qmod ( x ) - _pow2 ( dir * x );
+        if ( q > best ) best = q, i2 = i;
+    }
+    Vector4d e1, e2;
+    if ( i2 == NIL || ! axes2 ( dir, point[i2] - point[i0], e1, e2 ) )
+        return hullLine ( point, vert, i0, dir );
+
+    const Vector4d u = dir;
+    const Vector4d w = point[i2] - point[i0];
+    const double uu = u * u;
+    const double uw = u * w;
+    const double ww = w * w;
+    const double g2 = uu * ww - uw * uw;
+    nat i3 = NIL;
+    best = tol * tol;
+    for ( i = 0; i < n; ++i ) if ( i != i0 && i != i1 && i != i2 )
+    {
+        const Vector4d x = point[i] - point[i0];
+        const double ux = u * x;
+        const double wx = w * x;
+        const double xx = qmod ( x );
+        double det = xx * g2 - ux * ( ux * ww - wx * uw ) + wx * ( ux * uw - wx * uu );
+        if ( det < 0 ) det = 0;
+        const double q = g2 > 0 ? det / g2 : 0;
+        if ( q > best ) best = q, i3 = i;
+    }
+    if ( i3 == NIL ) return hullFlat2 ( point, vert, point[i0], e1, e2 );
+
+    Vector4d e3 = point[i3] - point[i0];
+    e3 -= e1 * ( e3 * e1 );
+    e3 -= e2 * ( e3 * e2 );
+    e3.setNorm2();
+    if ( ! e3 ) return hullFlat2 ( point, vert, point[i0], e1, e2 );
+
+    Vector4d n3 = cross4 ( e1, e2, e3 );
+    n3.setNorm2();
+    if ( ! n3 ) return hullFlat3 ( point, vert, point[i0], e1, e2, e3 );
+
+    nat i4 = NIL;
+    best = tol;
+    for ( i = 0; i < n; ++i )
+    {
+        if ( i == i0 || i == i1 || i == i2 || i == i3 ) continue;
+        const double d = fabs ( n3 * ( point[i] - point[i0] ) );
+        if ( d > best ) best = d, i4 = i;
+    }
+    if ( i4 == NIL ) return hullFlat3 ( point, vert, point[i0], e1, e2, e3 );
+
+    const nat simp[5] = { i0, i1, i2, i3, i4 };
+    Work work ( point, tol );
+    work.seed ( simp );
+    work.run ();
+    vert.resize ( work.hull.size() );
+    for ( i = 0; i < work.hull.size(); ++i ) vert[i] = point[work.hull[i]];
+    return vert;
 }
