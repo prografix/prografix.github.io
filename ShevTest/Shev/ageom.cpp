@@ -7,13 +7,13 @@
 //
 //**************************** 16.10.2026 *********************************//
 
-static void makePolygons ( const nat n, CCArrRef<Set2<nat> > & vi, ArrRef<Set2<nat> > & vo, ICutPolygonGuru & guru, SuiteRef< Suite<nat> > & minus )
+static void makePolygons ( const nat n, CCArrRef<Set2<nat> > & vi, ArrRef<Set2<nat> > & vo, ICutPolygonGuru & guru, SuiteRef< Suite<nat> > & result )
 {
     const nat m = vo.size();
 // Пересечение с границей - это один отрезок
     if ( m == 1 )
     {
-        Suite<nat> & s = minus.inc();
+        Suite<nat> & s = result.inc();
         s.resize();
         s.inc() = vi[0].b;
         for ( nat i = vi[0].a;; )
@@ -44,7 +44,7 @@ static void makePolygons ( const nat n, CCArrRef<Set2<nat> > & vi, ArrRef<Set2<n
     for ( nat j = 0; j < m; ++j )
     {
         if ( si[j] == m ) continue;
-        Suite<nat> & s = minus.inc();
+        Suite<nat> & s = result.inc();
         s.resize();
         for ( nat k = j;; )
         {
@@ -148,7 +148,7 @@ bool cutPolygon ( ICutPolygonGuru & guru, SuiteRef< Suite<nat> > & minus )
 
 //**************************** 20.08.2026 *********************************//
 //
-//               Разрезание многоугольника на две части
+//                     Разрезание многоугольника
 //
 //**************************** 16.10.2026 *********************************//
 
