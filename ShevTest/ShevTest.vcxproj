@@ -243,6 +243,7 @@
     <ClCompile Include="Extra\maxConvPolyInPolyNR3d.cpp" />
     <ClCompile Include="Extra\PolyhedronDoctor.cpp" />
     <ClCompile Include="Extra\TRANS3.CPP" />
+    <ClCompile Include="Test\Vector4d_test .cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ShevTest.rc" />

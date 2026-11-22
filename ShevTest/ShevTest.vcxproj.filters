@@ -350,6 +350,9 @@
     <ClCompile Include="Shev\ageom.cpp">
       <Filter>Shev cpp</Filter>
     </ClCompile>
+    <ClCompile Include="Test\Vector4d_test .cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="ShevTest.rc">
