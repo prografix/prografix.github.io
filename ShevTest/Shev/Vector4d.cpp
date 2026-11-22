@@ -333,37 +333,15 @@ Plane4d makePlane ( const Vector4d & a, const Vector4d & b, const Vector4d & c, 
     return Plane4d ( n, - ( n * a ) );
 }
 
-bool axes2 ( const Vector4d & u, const Vector4d & w, Vector4d & e1, Vector4d & e2 )
+inline bool axes2 ( const Vector4d & u, const Vector4d & w, Vector4d & e1, Vector4d & e2 )
 {
+    if ( ! u ) return false;
     e1 = u;
     e1.setNorm2();
-    if ( ! e1 ) return false;
     e2 = w - e1 * ( w * e1 );
-    e2.setNorm2();
     if ( ! e2 ) return false;
+    e2.setNorm2();
     return true;
-}
-
-DynArrRef<Vector4d> & hullLine ( CCArrRef<Vector4d> & point, DynArrRef<Vector4d> & vert, nat i0, const Vector4d & dir )
-{
-    double tmin = 0, tmax = 0;
-    nat imn = i0, imx = i0;
-    for ( nat i = 0; i < point.size(); ++i )
-    {
-        const double t = dir * ( point[i] - point[i0] );
-        if ( t < tmin ) tmin = t, imn = i;
-        if ( t > tmax ) tmax = t, imx = i;
-    }
-    if ( imn == imx )
-    {
-        vert.resize ( 1 );
-        vert[0] = point[imn];
-        return vert;
-    }
-    vert.resize ( 2 );
-    vert[0] = point[imn];
-    vert[1] = point[imx];
-    return vert;
 }
 
 DynArrRef<Vector4d> & hullFlat2 ( CCArrRef<Vector4d> & point, DynArrRef<Vector4d> & vert,
@@ -526,14 +504,14 @@ void Work::seed ( const nat s[5] )
     }
     for ( i = 0; i < point.size(); ++i ) if ( ! on[i] )
     {
-        nat best = NIL;
+        nat best = 6;
         double mx = tol;
         for ( nat f = 0; f < 5; ++f )
         {
             const double d = facet[f].plane % point[i];
             if ( d > mx ) mx = d, best = f;
         }
-        if ( best != NIL ) pushOut ( best, i );
+        if ( best != 6 ) pushOut ( best, i );
     }
 }
 
@@ -682,24 +660,30 @@ DynArrRef<Vector4d> & convexHull ( CCArrRef<Vector4d> & point, DynArrRef<Vector4
 {
     const nat n = point.size();
     if ( n == 0 ) return vert.resize();
+    if ( n == 1 )
+    {
+        vert.resize ( 1 );
+        vert[0] = point[0];
+        return vert;
+    }
 
     nat i, i0 = 0;
     double mq = qmod ( point[0] );
     for ( i = 1; i < n; ++i )
     {
-        const double q = qmod ( point[i] );
-        if ( q > mq ) mq = q, i0 = i;
+        if ( _maxa ( mq, qmod ( point[i] ) ) )
+            i0 = i;
     }
     const double tol = 1e-9 * sqrt ( mq );
 
-    nat i1 = NIL;
+    nat i1 = n;
     double best = tol * tol;
     for ( i = 0; i < n; ++i ) if ( i != i0 )
     {
-        const double q = qmod ( point[i] - point[i0] );
-        if ( q > best ) best = q, i1 = i;
+        if ( _maxa ( best, qmod ( point[i] - point[i0] ) ) )
+            i1 = i;
     }
-    if ( i1 == NIL )
+    if ( i1 == n )
     {
         vert.resize ( 1 );
         vert[0] = point[i0];
@@ -708,17 +692,36 @@ DynArrRef<Vector4d> & convexHull ( CCArrRef<Vector4d> & point, DynArrRef<Vector4
 
     const Vector4d dir = point[i1] - point[i0];
     const double dd = dir * dir;
-    nat i2 = NIL;
+    nat i2 = n;
     best = tol * tol * dd;
     for ( i = 0; i < n; ++i ) if ( i != i0 && i != i1 )
     {
         const Vector4d x = point[i] - point[i0];
-        const double q = dd * qmod ( x ) - _pow2 ( dir * x );
-        if ( q > best ) best = q, i2 = i;
+        if ( _maxa ( best, dd * qmod ( x ) - _pow2 ( dir * x ) ) )
+            i2 = i;
     }
     Vector4d e1, e2;
-    if ( i2 == NIL || ! axes2 ( dir, point[i2] - point[i0], e1, e2 ) )
-        return hullLine ( point, vert, i0, dir );
+    if ( i2 == n || ! axes2 ( dir, point[i2] - point[i0], e1, e2 ) )
+    {
+        double tmin = 0, tmax = 0;
+        nat imn = i0, imx = i0;
+        for ( nat i = 0; i < point.size(); ++i )
+        {
+            const double t = dir * ( point[i] - point[i0] );
+            if ( t < tmin ) tmin = t, imn = i;
+            if ( t > tmax ) tmax = t, imx = i;
+        }
+        if ( imn == imx )
+        {
+            vert.resize ( 1 );
+            vert[0] = point[imn];
+            return vert;
+        }
+        vert.resize ( 2 );
+        vert[0] = point[imn];
+        vert[1] = point[imx];
+        return vert;
+    }
 
     const Vector4d u = dir;
     const Vector4d w = point[i2] - point[i0];
@@ -726,7 +729,7 @@ DynArrRef<Vector4d> & convexHull ( CCArrRef<Vector4d> & point, DynArrRef<Vector4
     const double uw = u * w;
     const double ww = w * w;
     const double g2 = uu * ww - uw * uw;
-    nat i3 = NIL;
+    nat i3 = n;
     best = tol * tol;
     for ( i = 0; i < n; ++i ) if ( i != i0 && i != i1 && i != i2 )
     {
@@ -739,19 +742,19 @@ DynArrRef<Vector4d> & convexHull ( CCArrRef<Vector4d> & point, DynArrRef<Vector4
         const double q = g2 > 0 ? det / g2 : 0;
         if ( q > best ) best = q, i3 = i;
     }
-    if ( i3 == NIL ) return hullFlat2 ( point, vert, point[i0], e1, e2 );
+    if ( i3 == n ) return hullFlat2 ( point, vert, point[i0], e1, e2 );
 
     Vector4d e3 = point[i3] - point[i0];
     e3 -= e1 * ( e3 * e1 );
     e3 -= e2 * ( e3 * e2 );
-    e3.setNorm2();
     if ( ! e3 ) return hullFlat2 ( point, vert, point[i0], e1, e2 );
+    e3.setNorm2();
 
     Vector4d n3 = cross4 ( e1, e2, e3 );
-    n3.setNorm2();
     if ( ! n3 ) return hullFlat3 ( point, vert, point[i0], e1, e2, e3 );
+    n3.setNorm2();
 
-    nat i4 = NIL;
+    nat i4 = n;
     best = tol;
     for ( i = 0; i < n; ++i )
     {
@@ -759,7 +762,7 @@ DynArrRef<Vector4d> & convexHull ( CCArrRef<Vector4d> & point, DynArrRef<Vector4
         const double d = fabs ( n3 * ( point[i] - point[i0] ) );
         if ( d > best ) best = d, i4 = i;
     }
-    if ( i4 == NIL ) return hullFlat3 ( point, vert, point[i0], e1, e2, e3 );
+    if ( i4 == n ) return hullFlat3 ( point, vert, point[i0], e1, e2, e3 );
 
     const nat simp[5] = { i0, i1, i2, i3, i4 };
     Work work ( point, tol );
