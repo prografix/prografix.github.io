@@ -176,4 +176,10 @@ Def<Vector4d> getNearPointU ( CCArrRef<Plane4d> & plane );
 //
 //************************ 21.10.2026 *******************************//
 
-DynArrRef<Vector4d> & convexHull ( CCArrRef<Vector4d> & point, DynArrRef<Vector4d> & vert );
+struct Facet4d
+{
+    nat vertex[4];
+    Plane4d plane;
+};
+
+bool convexHull ( CCArrRef<Vector4d> & point, DynArrRef<nat> & ivert, DynArrRef<Facet4d> & facet );
