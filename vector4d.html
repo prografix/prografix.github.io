@@ -2,12 +2,9 @@
 <head><title>Четырёхмерные вектора</title>
 <link rel="stylesheet" type="text/css" href="stylle.css"></head>
 <body bgcolor=#eeeeba MARGINWIDTH=0 MARGINHEIGHT=0 link=#0000F0 alink=#aaaaFF vlink=#339900>
-<div align="center"><center>
-<table width="680" cellspacing="0" cellpadding="0">
 <div align=center><br>
 <font color="" style="font-size: 20pt">Четырёхмерные вектора</font>
-</div>
-<div align=left><td><br>
+<table width="680" cellspacing="0" cellpadding="0"><tr><td><br>
 <p>&bull; Интерфейс класса Vector4d аналогичен интерфейсу <a href="rus_vector.html">класса Vector3d</a>:
 </p>
 <pre>class Vector4d
@@ -162,6 +159,18 @@ Def&lt;Vector4d> getNearPoint2 ( CCArrRef&lt;Plane4d> & plane );
 <pre>
 Def&lt;Vector4d> getNearPointU ( CCArrRef&lt;Plane4d> & plane );
 </pre>
+&bull; Построение выпуклой оболочки множества точек
+<pre>
+struct Facet4d
+{
+    nat vertex[4];
+    Plane4d plane;
+};
+
+bool convexHull ( CCArrRef&lt;Vector4d> & point, DynArrRef&lt;nat> & ivert, DynArrRef&lt;Facet4d> & facet );
+</pre>
+Здесь point - это набор входных точек, ivert - индексы вершин выпуклой оболочки, facet - гиперграни выпуклой оболочки.
+Если точки образуют вырожденное множество, то возвращается false.
 <p>
 Описание шаблона классов Def находится <a href="def.html">здесь</a>.
 <br>Описание шаблона классов CCArrRef находится <a href="array.html">здесь</a>.
@@ -171,5 +180,6 @@ Def&lt;Vector4d> getNearPointU ( CCArrRef&lt;Plane4d> & plane );
 <pre>
 
 </pre>
+</td></tr></table></div>
 </body>
 </html>
